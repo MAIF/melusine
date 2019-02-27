@@ -1,0 +1,12 @@
+language: python
+python:
+- 3.6
+deploy:
+  provider: pypi
+  distributions: sdist bdist_wheel
+  password:
+    secure: 
+  on:
+    tags: true
+    repo: MAIF/melusine
+    python: 3.6
