@@ -1,11 +1,13 @@
 language: python
 python:
 - 3.6
+install: pip install -U tox-travis
+script: tox
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
   password:
-    secure: 
+    secure:
   on:
     tags: true
     repo: MAIF/melusine
