@@ -1,0 +1,133 @@
+import logging
+import nltk
+from sklearn.base import BaseEstimator, TransformerMixin
+from melusine.config.config import ConfigJsonReader
+
+conf_reader = ConfigJsonReader()
+config = conf_reader.get_config_file()
+
+newStopWords = config["words_list"]["stopwords"]
+stopwords = nltk.corpus.stopwords.words('french')
+stopwords.extend(newStopWords)
+
+regex_tokenize = "\w+(?:[\?\-\"_]\w+)*"
+
+
+class Tokenizer(BaseEstimator, TransformerMixin):
+    """Class to train and apply tokenizer.
+
+    Compatible with scikit-learn API (i.e. contains fit, transform methods).
+
+    Parameters
+    ----------
+    input_column : str,
+        Input text column to consider for the tokenizer.
+
+    stopwords : list of strings, optional
+        List of words to remove from list of tokens.
+        Default value, list defined in conf file
+
+    stop_removal : boolean, optional
+        True if stopwords to be removed, else False.
+        Default value, False.
+
+    n_jobs : int, optional
+        Number of cores used for computation.
+        Default value, 20.
+
+    Attributes
+    ----------
+    stopwords, stop_removal, n_jobs
+
+    Examples
+    --------
+    >>> from melusine.nlp_tools.tokenizer import Tokenizer
+    >>> tokenizer = Tokenizer()
+    >>> X = tokenizer.fit_transform(X)
+    >>> tokenizer.save(filepath)
+    >>> tokenizer = Tokenizer().load(filepath)
+
+    """
+
+    def __init__(self,
+                 input_column='clean_text',
+                 stopwords=stopwords,
+                 stop_removal=True,
+                 n_jobs=20):
+        self.input_column = input_column
+        self.stopwords = stopwords
+        self.stop_removal = stop_removal
+        self.n_jobs = n_jobs
+        self.logger = logging.getLogger('emails_application.preprocessing.Preprocessing')
+        self.logger.debug('creating an instance of Preprocessing')
+
+    def __getstate__(self):
+        """should return a dict of attributes that will be pickled
+        To override the default pickling behavior and
+        avoid the pickling of the logger
+        """
+        d = self.__dict__.copy()
+        d['n_jobs'] = 1
+        if 'logger' in d:
+            d['logger'] = d['logger'].name
+        return d
+
+    def __setstate__(self, d):
+        """To override the default pickling behavior and
+        avoid the pickling of the logger"""
+        if 'logger' in d:
+            d['logger'] = logging.getLogger(d['logger'])
+        self.__dict__.update(d)
+
+    def fit(self, X, y=None):
+        """Unused method. Defined only for compatibility with scikit-learn API.
+        """
+        return self
+
+    def transform(self, X):
+        """Applies tokenize method on pd.Dataframe.
+
+        Parameters
+        ----------
+        X : pandas.DataFrame,
+            Data on which transformations are applied.
+
+        Returns
+        -------
+        pandas.DataFrame
+        """
+        self.logger.debug('Start transform tokenizing')
+        X['tokens'] = X[[self.input_column]].apply(self.tokenize, axis=1)
+        X['tokens'] = X['tokens'].apply(lambda x: x[0])
+        self.logger.info('X shape : %s' % str(X.shape))
+        self.logger.debug('Done.')
+        return X
+
+    def tokenize(self, row):
+        """Returns list of tokens.
+
+        Parameters
+        ----------
+        row : row of pd.Dataframe
+
+        Returns
+        -------
+        pd.Series
+
+        """
+        text = row[self.input_column]
+        tokens = self._tokenize(text)
+        tokens = self._remove_stopwords(tokens)
+        return [tokens]
+
+    def _tokenize(self, text, pattern=regex_tokenize):
+        """Returns list of tokens from text."""
+        return nltk.tokenize.regexp_tokenize(str(text), pattern=pattern)
+
+    def _remove_stopwords(self, list):
+        """ Removes stopwords from list if stop_removal parameter
+        set to True."""
+        if self.stop_removal:
+            return [x for x in list if x not in self.stopwords]
+        else:
+            return list

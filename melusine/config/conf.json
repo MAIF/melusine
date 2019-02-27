@@ -1,0 +1,174 @@
+{
+    "words_list": {
+      "keywords": ["vam", "auto", "voiture", "moto", "bonus", "transfert", "assurance", "assurances",
+                   "pret", "immatriculation", "conducteur", "conduite", "raqvam", "maison", "appartement",
+                   "habitation", "residence", "principale", "secondaire", "logement", "responsabilite",
+                   "vente", "achat", "location", "attestation", "certificat", "cession", "adresse", "demenagement",
+                   "assurance", "enfant", "profession", "voyage", "vacances", "etranger", "financement",
+                   "protection", "juridique", "accident", "corporel", "assistance", "justificatif", "divorce",
+                   "carte", "constat", "contrat", "bulletin", "automobile", "franchise", "mandat", "resiliation",
+                   "devis", "resilier", "vehicule", "autorisation", "responsabilite", "naissance", "garantie",
+                   "conducteur", "epargne", "cotisation", "souscription", "raqvam", "sinistres", "vehicules",
+                   "auto", "deces", "vehicule", "contrat", "cloturer", "attestations", "indemnisation",
+                   "proprietaire", "carte_verte", "carte_grise", "cartes_vertes", "cartes_grises", "sinistre",
+                    "bulletin", "mensualisation", "rib", "cheque", "prelevement", "confidentialite", "rgpd",
+                    "gdpr", "retraite", "questionnaire", "proprietaire"],
+      "stopwords": ["attached", "see", "file", "flagnsocpp_", "adobe", "reader", "flag_cons_", "flag_mail_",
+        "flag_url_", "flag_phone_", "flag_amount_", "flag_time_", "flag_immat_",
+        "flag_cp_", "flag_ndos_", "flag_date_", "tr", "soc", "flag_nsoc_PM", "flag_nsoc_PP"
+        , "pdf", "to", "cdlt", "cdt"],
+      "names": ["tom"]
+    },
+
+
+    "regex": {
+
+        "manage_transfer_reply" : {
+
+            "begin_transfer" : "^[;\\s]*[-\\s]*Transféré par",
+            "begin_transfer_cons" : "De\\s*:\\s*[^<]*?<?[a-zA-Z0-9._%+-\/=]+\\@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?\\s(?:[;A:]|(?:Envoyé))",
+            "transfer_other" : "^Le.*,.*a ecrit\\xa0:",
+            "extract_from" : "De\\s*:\\s*(.*?)\\s(?:[\nA:]|(?:Envoyé))",
+            "extract_to" : "[ÀA]\\s*:\\s*(.*?)\\s(?:[\n(?:Date)]|(?:Objet))",
+            "extract_date" : "(?:(?:Envoyé) ?|(?:Date))\\s*:\\s*(.*?)\\s(?:[\n(?:Objet)]|A)",
+            "extract_header" : "Objet\\s*:\\s*(.*?)\\s[;|\n]",
+            "answer_header": "RE\\s*:|re\\s*:|Re\\s*:",
+            "transfer_header": "Tr\\s*:|TR\\s*:|Fwd\\s*:|FW\\s*:|FWD\\s*:|Fw\\s*:"
+
+        },
+
+        "build_historic" : {
+
+            "transition_list" : [
+              "[- ]*?Mail transféré.*?[;|\n]",
+              "[- ]*?gestionsocietaire@maif.fr a [ée]crit.*?[;|\n]",
+              "Courriel original.+?Objet\\s*:.+?[;|\n]",
+              "Transféré par.+?Objet\\s*:.+?[;|\n]",
+              "Message transmis.+?Objet\\s*:.+?[;|\n]",
+              "Message transféré.+?Objet\\s*:.+?[;|\n]",
+              "Message transféré.+?Pour\\s*:.+?[;|\n]",
+              "Début du message transféré.+?Objet\\s*:.+?[;|\n]",
+              "Début du message réexpédié.+?Objet\\s*:.+?[;|\n]",
+              "Début du message transféré.+?Destinataire\\s*:.+?[;|\n]",
+              "mail transféré.+?Objet\\s*:.+?[;|\n]",
+              "Forwarded message.+?To\\s*:.+?[;|\n]",
+              "Message d'origine.+?Objet\\s*:.+?[;|\n]",
+              "Mail original.+?Objet\\s*:.+?[;|\n]",
+              "Original Message.+?Subject\\s*:.+?[;|\n]",
+              "Message original.+?Objet\\s*:.+?[;|\n]",
+              "Expéditeur.+?Objet\\s*:.+?[;|\n]",
+              "(?:>?[;|\n]?\\s*(?:Envoyé|De|À|Objet|Cc|Envoyé par|Date|A|Destinataire|Sent|To|Subject|From|Copie à)+?\\s*:\\s*(?:.*?)\\s*[;|\n]\\s*)+",
+              "En date de.+?écrit",
+              ">?\\s*Le[^;\n]+?[;|\n]{0,1}[^;\n]+?a[^;\n]+?;{0,1}[^;\n]+?écrit\\s*:?",
+              ">?\\s*Message de.+?Objet\\s*:.+?[;|\n]",
+              ">?\\s*Message du.+?Objet\\s*:.+?[;|\n]",
+              "En date de.+?écrit"
+            ]
+        },
+
+        "cleaning" : {
+
+            "flags_dict": {
+
+                "\\w+ \\w+\/\\w+\/maif" : " flag_cons_ ",
+                "<?[a-zA-Z0-9._%+-\/=]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?" : " flag_mail_ ",
+                "(?:^| )(?:https?:\/\/)?(?:www\\.)?[-a-zA-Z0-9:%._\\+~#=]{2,256}\\.[a-zA-Z]{2,4}(?:[-a-zA-Z0-9:%_\\+.~#?&\/=]*) " : " flag_url_ ",
+                "(?:0|0033|\\+33 ?|.?33 ?|\\(0\\))+[1-9].??(?:\\d{2}[ |\\.|-]??){4}" : " flag_phone_ ",
+                " [A-Z]{2}[- ]?\\d{3}[- ]?[A-Z]{2}|\\d{3,4}[- ]?[A-Z]{2,3}[- ]?\\d{2,3} " : " flag_immat_ ",
+                "[\\d \\.\\,]+ ?(?:€|EUR|eur|dollar|dollars|\\$)(?:os)?" : " flag_amount_ ",
+                "(?:^| )\\d{5}(?! flag_amount_|\\d)" : " flag_cp_ ",
+                "[MF]{1} ??\\d{2} ??\\d{7}[A-Z]{1}" : " flag_ndos_ ",
+                "\\d{2}[:|H|h]\\d{2}(?::\\d{2})?" : " flag_time_ ",
+                "(?:\\d{1,4}[\/\\-\\.]){1,2}(?:\\d{2,4})" : " flag_date_ ",
+                "\\d{1,2} (?:janvier|fevrier|février|mars|avril|mai|juin|juillet|aout?|août?|septembre|octobre|novembre|decembre|décembre|janv?\\.?|fevr?\\.?|févr?\\.?|avr\\.?|juil\\.?|sept?\\.?|oct\\.?|nov\\.?|dec\\.?|déc\\.?) ?(?:\\d{2,4})?" : " flag_date_ "
+
+            },
+
+            "clean_header_dict" : {
+
+                "^re\\s*:" : "",
+                "^fw\\s*:" : "",
+                "^tr\\s*:" : "",
+                "^fwd\\s*:" : ""
+
+            },
+
+            "remove_multiple_spaces_list" : ["\\t", "[\\s\\-\\*]{2,}"]
+        },
+
+        "mail_segmenting" : {
+
+            "segmenting_dict" : {
+
+                "RE/TR" : [],
+
+                "DISCLAIMER" : ["^.{0,10}Ce message et toutes les pièces jointes sont confidentiels et établis à l'intention exclusive de son ou ses destinataires.*",
+                  "^.{0,10}Si vous avez reçu ce message par erreur, merci d'en avertir immédiatement l'émetteur et de détruire le message.*",
+                  "^.{0,10}Toute modification, édition, utilisation ou diffusion non autorisée est interdite.*",
+                  "^.{0,10}L'émetteur décline toute responsabilité au titre de ce message s'il a été modifié, déformé, falsifié, infecté par un virus ou encore édité ou diffusé sans autorisation.",
+                  "^.{0,10}This message and any attachments are confidential and intended for the named addressee.* only.*",
+                  "^.{0,10}If you have received this message in error, please notify immediately the sender, then delete the message.*",
+                  "^.{0,10}Any unauthorized modification, edition, use or dissemination is prohibited.*",
+                  "^.{0,10}The sender shall not be liable for this message if it has been modified, altered, falsified, infected by a virus or even edited or disseminated without authorization.*"
+                ],
+
+                "GREETINGS" : ["^.{0,30}cordialement.{0,30}$",
+                  "^.{0,10}cdl?t.{0,16}$",
+                  "^.{0,10}bien [àa] vous.{0,16}$",
+                  "^.{0,30}sentiments mutualistes.{0,16}$",
+                  "^.{0,60}salutations.{0,16}$",
+                  "^.{0,30}expression de (?:nos|mes) sentiments.{0,16}$",
+                  "^.{0,25}bon(?:ne)? (?:soir[ée]e|journ[ée]e|apr[èe]s-midi|courage).{0,16}(?!.)",
+                  "^.{0,10}bonne r[ée]ception.{0,16}$",
+                  "^.{0,30}[aà] votre disposition.{0,45}$",
+                  "^.{0,30}dans l'attente .{0,30}$"
+                ],
+
+                "PJ" : ["\\(See attached file:.*?\\)",
+                  "\\(Embedded image.*?\\)"
+                ],
+
+                "FOOTER" : ["(?:.{0,10}courrier électronique|.{0,30}virus|.{0,130}antivirus){2,}",
+                  "Provenance : Courrier pour Windows",
+                  "garanti sans virus.{0,30}",
+                  ".{0,10}www.avg.com",
+                  ".{0,10}www.avast.com",
+                  "(?:Obtenez|Télécharge[zr]) Outlook pour .",
+                  "^.{0,10}La visualisation des fichiers PDF nécessite Adobe Reader.*",
+                  "^.{0,10}Si vous recevez ce message par erreur",
+                  "^.{0,10}Retrouvez-nous sur www\\.maif-\\w+\\.fr",
+                  "afin de contribuer au respect de l'environnement, merci de n'imprimer ce courriel qu'en cas de nécessité",
+                  "^.{0,10}(?:Envoyé|Numérisé|Partagé) de(?:puis)?\\s*(?:mon)?\\s*(?:mobile|smartphone|appareil|iP.|Galaxy|Yahoo|(?:l\\'application))"
+                ],
+
+                "HELLO" : ["^.{0,16}(?:(?:bonjour)|(?:bonsoir)|(?:madame)|(?:monsieur)|(?:mesdames)|(?:messieurs)).{0,20}(?!.)"],
+
+                "THANKS" : ["^.{0,30}merci.{0,30}(?!.)"]
+            },
+
+            "meta_from1" : "De\\s*:\\s*(.*?)\\s\n",
+            "meta_from2" : "^>?\\s*Le.*,(.*)a écrit",
+            "meta_to" : "A\\s*:\\s*(.*?)\\s\n",
+            "meta_date1" : "Date\\s*:\\s*(.*?)\\s\n",
+            "meta_date2" : "^>?\\s*Le(.*),.*a écrit",
+            "meta_header" : "Objet\\s*:\\s*(.*?)\\s\n",
+            "pattern_pj" : "(\\(See attached file:.*?\\)|.\\(Embedded image.*?\\))",
+            "pattern_separteurs_evidents" : "[?!]|\\.{3}|$|",
+            "pattern_sep_doubles_points_virgules_espace" : "(?:\\;\\s*){2,}|",
+            "pattern_exception_une_lettre_maj" : "(?<!\\b[A-Z])",
+            "pattern_exception_Mr" : "(?<!\\bMr)",
+            "pattern_exception_Dr" : "(?<!\\bDr)",
+            "pattern_exception_Mme" : "(?<!\\bMme)",
+            "pattern_exception" : "[.?!]\\s+",
+            "pattern_beginning" : "((?:.*?)(?:\\,\\s*\\;\\s*",
+            "pattern_end" : "))",
+            "tag_typo" : "^(?:[\\s;.,*|-])*$",
+            "tag" : "\\s*;?\\s*",
+            "tag_subsentence" : "(.*?;|.*?$)",
+            "split_message_to_sentences_list" : ["; ", " ;", "([\\?\\!\\.])\\.", "\\1", "\n"]
+
+        }
+
+    }
+
+}

@@ -1,0 +1,58 @@
+import pandas as pd
+from melusine.prepare_email.mail_segmenting import structure_email
+
+structured_historic = [
+    {'text': " \n  \n  \n Bonjours, \n  \n Suite a notre conversation \
+téléphonique de Mardi , pourriez vous me dire la \n somme que je vous \
+dois afin d'd'être en régularisation . \n  \n Merci bonne journée",
+     'meta': ''},
+    {'text': " \n Bonjour. \n  \n Merci de bien vouloir prendre connaissance \
+du document ci-joint : \n 1 - Relevé d'identité postal MUTUELLE \
+(contrats) \n  \n Sentiments mutualistes. \n  \n La Mututelle \n  \n \
+La visualisation des fichiers PDF nécessite Adobe Reader. \n  ",
+     'meta': ' \n  \n Le mar. 22 mai 2018 à 10:20,  \
+<gestionsocietaire@mutuelle.fr> a écrit\xa0:'}]
+
+output = [{'meta': {'date': None, 'from': None, 'to': None},
+           'structured_text': {'header': None,
+                               'text': [
+                                   {'part': ' Bonjours, ',
+                                    'tags': 'HELLO'},
+                                   {'part': "    Suite a notre conversation \
+téléphonique de Mardi , pourriez vous me dire la   somme que je vous dois \
+afin d'd'être en régularisation . \n  \n ",
+                                    'tags': 'BODY'},
+                                   {'part': 'Merci bonne journée',
+                                    'tags': 'GREETINGS'}
+                                   ]
+                               }
+           },
+          {'meta': {'date': ' mar. 22 mai 2018 à 10:20',
+                    'from': '  <gestionsocietaire@mutuelle.fr> ',
+                    'to': None},
+           'structured_text': {'header': None,
+                               'text': [
+                                   {'part': ' Bonjour. \n  \n ',
+                                    'tags': 'HELLO'},
+                                   {'part': "Merci de bien vouloir prendre \
+connaissance du document ci-joint :   1 - Relevé d'identité postal MUTUELLE \
+(contrats)    ",
+                                    'tags': 'BODY'},
+                                   {'part': ' Sentiments mutualistes. ',
+                                    'tags': 'GREETINGS'},
+                                   {'part': '        La Mututelle    ',
+                                    'tags': 'BODY'},
+                                   {'part': ' La visualisation des fichiers \
+PDF nécessite Adobe Reader. \n',
+                                    'tags': 'FOOTER'}]}}]
+
+
+def test_structure_email():
+    input_df = pd.DataFrame({
+        'structured_historic': [structured_historic]
+    })
+
+    output_df = pd.Series([output])
+
+    result = input_df.apply(structure_email, axis=1)
+    pd.testing.assert_series_equal(result, output_df)

@@ -1,0 +1,22 @@
+# Mac OS variable
+.DS_Store
+
+
+# Doc build
+_build/
+build/
+
+
+# Package
+*.egg-info/
+dist/
+
+
+# Python cache
+__pycache__/
+*.pyc
+.pytest_cache/
+
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
