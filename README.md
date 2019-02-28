@@ -34,7 +34,7 @@ This package is designed for the preprocessing, classification and automatic sum
 
 * ``prepare_email`` : to preprocess and clean the emails.
 * ``summarizer`` : to extract keywords from an email.
-* ``models`` : to classify e-mails according to categories pre-defined defined by the user.
+* ``models`` : to classify e-mails according to categories pre-defined by the user.
 
 **2 other subpackages are offered as building blocks :**
 
