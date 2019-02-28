@@ -26,7 +26,6 @@ The basic requirement to use Melusine is to have an input e-mail DataFrame with 
 In the examples presented below, a toy email DataFrame containing anonymized emails is used.
 The toy DataFrame can be loaded as follows::
 
-    import melusine
     from melusine.melusine.utils.data_loader import load_email_data
 
     df_emails = load_email_data()
