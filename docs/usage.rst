@@ -604,3 +604,51 @@ The specific parameters of the :ref:`NeuralModel <train>` class are:
     - ``loss`` : loss function for training (Default 'categorical_crossentropy')
     - ``batch_size`` : size of batches for the training of the neural network model
     - ``n_epochs`` : number of epochs for the training of the neural network model
+
+Use a custom config file
+------------------------
+
+To optimize Melusine for your needs, a custom configuration file may be used.
+Through a custom configuration file, the user can specify parameters such as:
+
+    - Custom keywords : List of keywords that Melusine should focus on
+        - Example: extract keywords with the KeywordExtractor
+    - Custom stopwords : List of stopwords that Melusine should ignore
+        - Example: tokenize sentences with a Tokenizer
+    - Custom regular expressions (regex) : regex used in the melusine functions
+        - Example: Regex to detect that a message is a reply
+
+The following code shows how to specify a custom configuration file::
+
+    from melusine.config.config import ConfigJsonReader
+
+    conf = ConfigJsonReader()
+
+    # Print the path to the current configuration file
+    with open(conf.path_ini_file_, 'r') as ini_file:
+        print(ini_file.read())
+
+    # Print the content of the current configuration file
+    conf_dict = conf.get_config_file()
+    print(conf_dict)  # will print the json
+
+    # Set a new path to the configuration file
+    conf.set_config_path(file_path='my/path/conf.json')
+
+    # Print the new path to the configuration file
+    with open(conf.path_ini_file_, 'r') as ini_file:
+        print(ini_file.read())
+
+    # Print the content of the new configuration file
+    conf_dict = conf.get_config_file()
+    print(conf_dict)  # will print the json
+
+It is also possible to go back to the original configuration file::
+
+    from melusine.config.config import ConfigJsonReader
+
+    conf = ConfigJsonReader()
+    conf.reset_config_path()
+
+Warning : the configuration file is loaded by the different modules (Tokenizer, KeywordExtractor, etc) during the import,
+therefore, for the new configuration file to be effective, the code / kernel should be restarted after each modification of the configuration file.
