@@ -113,7 +113,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         self.model = model
         pass
 
-    def __getstate__(self, filepath):
+    def __getstate__(self):
         """Method called before serialization for a specific treatment to save
         model weight and structure instead of standard serialization."""
         dict_attr = dict(self.__dict__)
@@ -123,7 +123,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             del dict_attr["pretrained_embedding"]
         return dict_attr
 
-    def __setstate__(self, dict_attr, filepath):
+    def __setstate__(self, dict_attr):
         """Method called before loading class for a specific treatment to load
         model weight and structure instead of standard serialization."""
         self.__dict__ = dict_attr
