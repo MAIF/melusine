@@ -11,9 +11,7 @@ conf_reader = ConfigJsonReader()
 config = conf_reader.get_config_file()
 
 keywords = config["words_list"]["keywords"]
-prenoms_list = config["words_list"]["names"]
-newStopWords = config["words_list"]["stopwords"]
-stopwords = prenoms_list + newStopWords
+stopwords = config["words_list"]["stopwords"] + config["words_list"]["names"]
 
 
 class KeywordsGenerator(BaseEstimator, TransformerMixin):

@@ -1,18 +1,20 @@
 import sys
 import logging
 import gensim
-import nltk
 import pickle
 import re
 from melusine.utils.streamer import Streamer
+from melusine.config.config import ConfigJsonReader
 
+conf_reader = ConfigJsonReader()
+config = conf_reader.get_config_file()
+common_terms = config["words_list"]["stopwords"] + config["words_list"]["names"]
 
 regex_tokenize_with_punctuations = r"(.*?[\s'])"
 tokenize_without_punctuations = r"(.*?)[\s']"
 regex_process = "\w+(?:[\?\-\'\"_]\w+)*"
 regex_split_parts = r"(.*?[;.,?!])"
 
-common_terms = nltk.corpus.stopwords.words("french")
 
 log = logging.getLogger('nlp_tools')
 log.setLevel(logging.DEBUG)
