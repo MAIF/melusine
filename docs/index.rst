@@ -15,6 +15,8 @@ The project has been developed by MAIF assisted by Quantmetry.
 |   :align: center                       |                                                          |                                                          |
 |   :scale: 60%                          |                                                          |                                                          |
 +----------------------------------------+----------------------------------------------------------+----------------------------------------------------------+
+| .. image:: ./_static/quantmetry.png    | `Quantmetry GitHub <https://github.com/quantmetry>`_     | `Quantmetry <https://www.quantmetry.com>`_               |
++----------------------------------------+----------------------------------------------------------+----------------------------------------------------------+
 
 .. toctree::
    :maxdepth: 2
