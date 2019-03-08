@@ -2,8 +2,8 @@
 Credits
 =======
 
-Development Lead (Quantmetry Team support Maif Team)
-----------------------------------------------------
+Development Lead
+----------------
 
 * Sacha Samama <ssamama@quantmetry.com>
 * Tom Stringer <tstringer@quantmetry.com>
