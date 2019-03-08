@@ -53,7 +53,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Melusine'
-copyright = u"Maif & Quantmetry"
+copyright = u"Maif"
 author = u"Sacha Samama & Tom Stringer"
 
 # The version info for the project you're documenting, acts as replacement

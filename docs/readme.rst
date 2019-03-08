@@ -298,7 +298,7 @@ Origin of the project
 and is under pressure to reply to their requests as efficiently as possible. As such an efficient routing system is of the
 upmost importance to assign each emails to its right entity.
 However the previously outdated routing system put the company under ever increasing difficulties to fulfill its pledge.
-In order to face up to this challenge, MAIF in collaboration with **Quantmetry**, has implemented a new routing system
+In order to face up to this challenge, MAIF assisted by **Quantmetry**, has implemented a new routing system
 based on state-of-the-art NLP and Deep Learning techniques that would classify each email under the right label
 according to its content and extract the relevant information to help the MAIF counsellors processing the emails.
 
@@ -308,11 +308,6 @@ Ambitions of the project
 The ambition of this Python package is to become a reference, but also to live in the French NLP community by federating users and contributors.
 Initially developed to answer the problem of routing e-mails received by the MAIF, the solution was implemented using state-of-the-art techniques in Deep Learning and NLP.
 Melusine can be interfaced with Scikit-Learn: it offers the user the possibility to train his own classification and automatic summarization model according to the constraints of his problem.
-
-The collaboration between Quantmetry and MAIF
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-After collaborating for the implementation of its routing system with Quantmetry,
-a pure player consulting firm in AI, MAIF pursued the partnership to develop the *Melusine* package.
 
 Why Melusine ?
 ^^^^^^^^^^^^^^
