@@ -1,7 +1,7 @@
 # Melusine
 
 <!-- <img src=`docs/_static/melusine.png` width=`200`/> -->
-![](docs/_static/melusine.png =100x20)
+![](docs/_static/melusine.png)
 
 [![pypi badge](https://img.shields.io/pypi/v/melusine.svg)](https://pypi.python.org/pypi/melusine)
 [![](https://img.shields.io/travis/sachasamama/melusine.svg)](https://travis-ci.org/sachasamama/melusine)
