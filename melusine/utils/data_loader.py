@@ -13,7 +13,7 @@ def load_email_data():
     """
 
     # Data file name
-    email_data_file = 'emails_anonymized.pickle'
+    email_data_file = 'emails.pickle'
 
     # Path to utils folder
     utils_path = os.path.join(os.path.dirname(__file__))
