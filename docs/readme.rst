@@ -92,8 +92,9 @@ The basic requirement to use Melusine is to have an input e-mail DataFrame with 
 
 To import the test dataset: ::
 
-    import pandas as pd
-    df_emails = pd.read_pickle('./data/emails.pickle')
+    from melusine.melusine.utils.data_loader import load_email_data
+
+    df_emails = load_email_data()
 
 Pre-processing pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^
