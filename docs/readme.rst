@@ -4,7 +4,7 @@ Melusine
 
 .. image:: ./_static/melusine.png
   :align: center
-  :scale: 25%
+  :scale: 100%
 
 .. image:: https://img.shields.io/pypi/v/melusine.svg
         :target: https://pypi.python.org/pypi/melusine
