@@ -4,7 +4,7 @@
 ![](docs/_static/melusine.png)
 
 [![pypi badge](https://img.shields.io/pypi/v/melusine.svg)](https://pypi.python.org/pypi/melusine)
-[![](https://img.shields.io/travis/sachasamama/melusine.svg)](https://travis-ci.org/sachasamama/melusine)
+[![Build Status](https://travis-ci.org/MAIF/melusine.svg?branch=master)](https://travis-ci.org/MAIF/melusine)
 [![documentation badge](https://readthedocs.org/projects/melusine/badge/?version=latest)](https://readthedocs.org/projects/melusine/)
 
 - Free software: Apache Software License 2.0

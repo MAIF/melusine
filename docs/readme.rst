@@ -9,8 +9,8 @@ Melusine
 .. image:: https://img.shields.io/pypi/v/melusine.svg
         :target: https://pypi.python.org/pypi/melusine
 
-.. image:: https://img.shields.io/travis/sachasamama/melusine.svg
-        :target: https://travis-ci.org/sachasamama/melusine
+.. image:: https://travis-ci.org/MAIF/melusine.svg?branch=master
+        :target: https://travis-ci.org/MAIF/melusine
 
 .. image:: https://readthedocs.org/projects/melusine/badge/?version=latest
         :target: https://melusine.readthedocs.io/en/latest/?badge=latest
