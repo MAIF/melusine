@@ -28,7 +28,7 @@ Use **Melusine** if you need a library which :
 This package is designed for the preprocessing, classification and automatic summarization of emails written in french.
 
 <!-- <img src=`docs/_static/schema_1.png` width=`600`/> -->
-![](docs/_static/schema_1.png =700x)
+![](docs/_static/schema_1.png)
 
 **3 main subpackages are offered :**
 
