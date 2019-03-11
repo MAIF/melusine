@@ -92,7 +92,7 @@ The basic requirement to use Melusine is to have an input e-mail DataFrame with 
 
 To import the test dataset: ::
 
-    from melusine.melusine.utils.data_loader import load_email_data
+    from melusine.data.data_loader import load_email_data
 
     df_emails = load_email_data()
 

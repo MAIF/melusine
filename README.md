@@ -75,6 +75,15 @@ The basic requirement to use Melusine is to have an input e-mail DataFrame with 
 |:---------------------------|:--------------:|:------------------------------:|:----------------------------:|:-------------------------------------:|:-------:|
 | Thank you.\\nBye,\\nJohn   | Re: Your order | jeudi 24 mai 2018 11 h 49 CEST | anonymous.sender@unknown.com | anonymous.recipient@unknown.fr | label_1 |
 
+To import the test dataset:
+
+```python
+from melusine.data.data_loader import load_email_data
+
+df_emails = load_email_data()
+```
+
+
 ### Pre-processing pipeline
 
 A working pre-processing pipeline is given below::
@@ -82,15 +91,11 @@ A working pre-processing pipeline is given below::
 ```python
 from sklearn.pipeline import Pipeline
 from melusine.utils.transformer_scheduler import TransformerScheduler
-from melusine.prepare_email.manage_transfer_reply import check_mail_begin_by_transfer
-from melusine.prepare_email.manage_transfer_reply import update_info_for_transfer_mail
-from melusine.prepare_email.manage_transfer_reply import add_boolean_answer
-from melusine.prepare_email.manage_transfer_reply import add_boolean_transfer
+from melusine.prepare_email.manage_transfer_reply import check_mail_begin_by_transfer, update_info_for_transfer_mail, add_boolean_transfer, add_boolean_answer
 from melusine.prepare_email.build_historic import build_historic
 from melusine.prepare_email.mail_segmenting import structure_email
 from melusine.prepare_email.body_header_extraction import extract_last_body
 from melusine.prepare_email.cleaning import clean_body
-from melusine.prepare_email.cleaning import clean_header
 
 ManageTransferReply = TransformerScheduler(
 functions_scheduler=[
@@ -109,8 +114,7 @@ functions_scheduler=[
 Cleaning = TransformerScheduler(
 functions_scheduler=[
     (extract_last_body, None, ['last_body']),
-    (clean_body, None, ['clean_body']),
-    (clean_header, None, ['clean_header'])
+    (clean_body, None, ['clean_body'])
 ])
 
 prepare_data_pipeline = Pipeline([
@@ -139,20 +143,17 @@ A pipeline to train and apply the phraser end tokenizer is given below::
 from melusine.nlp_tools.phraser import Phraser
 from melusine.nlp_tools.tokenizer import Tokenizer
 
-phraser = Phraser(columns='clean_body')
+phraser = Phraser(input_column='clean_body')
 phraser.train(df_email)
-phraser.save('./phraser.pkl')
-phraser = Phraser().load('./phraser.pkl')
 
 PhraserTransformer = TransformerScheduler(
 functions_scheduler=[
-    (phraser_on_body, (phraser,), ['clean_body']),
-    (phraser_on_header, (phraser,), ['clean_header'])
+    (phraser_on_body, (phraser,), ['clean_body'])
 ])
 
 phraser_tokenizer_pipeline = Pipeline([
   ('PhraserTransformer', PhraserTransformer),
-  ('Tokenizer', Tokenizer(columns=['clean_body', 'clean_header']))
+  ('Tokenizer', Tokenizer(input_column='clean_body'))
 ])
 
 df_email = phraser_tokenizer_pipeline.fit_transform(df_email)
@@ -165,9 +166,8 @@ An example of embedding training is given below::
 ```python
 from melusine.nlp_tools.embedding import Embedding
 
-embedding = Embedding(columns='clean_body')
+embedding = Embedding(input_column='clean_body')
 embedding.train(df_email)
-embedding.save('./embedding.pkl')
 ```
 
 ### Metadata pipeline
@@ -175,14 +175,12 @@ embedding.save('./embedding.pkl')
 A pipeline to prepare the metadata is given below:
 
 ```python
-from melusine.prepare_email.metadata_engineering import MetaExtension
-from melusine.prepare_email.metadata_engineering import MetaDate
-from melusine.prepare_email.metadata_engineering import Dummifier
+from melusine.prepare_email.metadata_engineering import MetaExtension, MetaDate, Dummifier
 
 metadata_pipeline = Pipeline([
   ('MetaExtension', MetaExtension()),
   ('MetaDate', MetaDate()),
-  ('Dummifier', Dummifier(columns_to_dummify=['extension', 'dayofweek', 'hour']))
+  ('Dummifier', Dummifier())
 ])
 
 df_meta = metadata_pipeline.fit_transform(df_email)
@@ -196,7 +194,7 @@ An example of keywords extraction is given below::
 from melusine.summarizer.keywords_generator import KeywordsGenerator
 
 keywords_generator = KeywordsGenerator()
-df_email = phraser_tokenizer_pipeline.fit_transform(df_email)
+df_email = keywords_generator.fit_transform(df_email)
 ```
 
 ### Classification
@@ -214,12 +212,12 @@ y = df_email.label
 le = LabelEncoder()
 y = le.fit_transform(y)
 
-pretrained_embedding = Embedding().load(./embedding.pkl)
+pretrained_embedding = embedding
 
-nn_model = NeuralModel(neural_architecture_function=cnn_model,
+nn_model = NeuralModel(architecture_function=cnn_model,
                        pretrained_embedding=pretrained_embedding)
 nn_model.fit(X, y)
-y_res = nn_model.transform(X_test)
+y_res = nn_model.transform(X)
 ```
 
 ## Glossary
