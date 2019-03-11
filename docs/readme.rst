@@ -4,7 +4,7 @@ Melusine
 
 .. image:: ./_static/melusine.png
   :align: center
-  :scale: 100%
+  :scale: 200%
 
 .. image:: https://img.shields.io/pypi/v/melusine.svg
         :target: https://pypi.python.org/pypi/melusine
@@ -22,7 +22,7 @@ Melusine
 
 Overview
 --------
-**Melusine** is a high-level Scikit-Learn API for emails classification and feature extraction,
+**Melusine** is a high-level Python library for emails classification and feature extraction,
 written in Python and capable of running on top of Scikit-Learn, Keras or Tensorflow.
 It was developed with a focus on emails written in french.
 
