@@ -279,36 +279,3 @@ Each messages of an email are segmented the in the **structured_body** columns a
 * `HELLO` : any salutations such as `Bonjour,`.
 * `THANKS` : any thanks such as `Avec mes remerciements`
 * `BODY` : the core of the the message which contains the valuable information.
-
-
-## Motivation & history
-
-
-### Origin of the project
-
-**MAIF**, being one of the leading mutual insurance companies in France, receives daily a large volume of emails from its clients
-and is under pressure to reply to their requests as efficiently as possible. As such an efficient routing system is of the
-upmost importance to assign each emails to its right entity.
-However the previously outdated routing system put the company under ever increasing difficulties to fulfill its pledge.
-In order to face up to this challenge, MAIF assisted by **Quantmetry**, has implemented a new routing system
-based on state-of-the-art NLP and Deep Learning techniques that would classify each email under the right label
-according to its content and extract the relevant information to help the MAIF counsellors processing the emails.
-
-### Ambitions of the project
-
-**Melusine** is the first Open Source and free-of-use solution dedicated specifically to the qualification of e-mails written in french.
-The ambition of this Python package is to become a reference, but also to live in the French NLP community by federating users and contributors.
-Initially developed to answer the problem of routing e-mails received by the MAIF, the solution was implemented using state-of-the-art techniques in Deep Learning and NLP.
-Melusine can be interfaced with Scikit-Learn: it offers the user the possibility to train his own classification and automatic summarization model according to the constraints of his problem.
-
-
-### Why Melusine ?
-
-Following MAIF's tradition to name its open source packages after deities, it was chosen to release this package
-under the name of Melusine as an homage to a legend from the local folklore in the Poitou region in France
-where MAIF is historically based.
-
-
-## Credits
-
-This package was created with [Cookiecutter](https://github.com/audreyr/cookiecutter) and the [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage) project template.

@@ -6,7 +6,7 @@ Welcome to Melusine's documentation !
   :scale: 50%
 
 This package aims to be the reference in the processing and modelization of French email data.
-The project has been developed by MAIF assisted by Quantmetry.
+The project has been developed by MAIF.
 
 +----------------------------------------+----------------------------------------------------------+----------------------------------------------------------+
 | Company                                | GitHub Account                                           | Website                                                  |
@@ -14,8 +14,6 @@ The project has been developed by MAIF assisted by Quantmetry.
 | .. image:: ./_static/maif.png          | `MAIF GitHub <https://github.com/MAIF>`_                 | `MAIF <https://www.maif.fr/>`_                           |
 |   :align: center                       |                                                          |                                                          |
 |   :scale: 60%                          |                                                          |                                                          |
-+----------------------------------------+----------------------------------------------------------+----------------------------------------------------------+
-| .. image:: ./_static/quantmetry.png    | `Quantmetry GitHub <https://github.com/quantmetry>`_     | `Quantmetry <https://www.quantmetry.com>`_               |
 +----------------------------------------+----------------------------------------------------------+----------------------------------------------------------+
 
 .. toctree::

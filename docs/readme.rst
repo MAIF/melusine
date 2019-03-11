@@ -286,7 +286,7 @@ Origin of the project
 and is under pressure to reply to their requests as efficiently as possible. As such an efficient routing system is of the
 upmost importance to assign each emails to its right entity.
 However the previously outdated routing system put the company under ever increasing difficulties to fulfill its pledge.
-In order to face up to this challenge, MAIF assisted by **Quantmetry**, has implemented a new routing system
+In order to face up to this challenge, MAIF has implemented a new routing system
 based on state-of-the-art NLP and Deep Learning techniques that would classify each email under the right label
 according to its content and extract the relevant information to help the MAIF counsellors processing the emails.
 
