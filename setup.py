@@ -54,12 +54,15 @@ setup(
         'melusine.nlp_tools': 'melusine/nlp_tools',
         'melusine.prepare_email': 'melusine/prepare_email',
         'melusine.summarizer': 'melusine/summarizer',
-        'melusine.models': 'melusine/models'
+        'melusine.models': 'melusine/models',
+        'melusine.data': 'melusine/data'
     },
     packages=['melusine', 'melusine.config', 'melusine.utils',
               'melusine.nlp_tools', 'melusine.prepare_email',
-              'melusine.summarizer', 'melusine.models'],
-    data_files=[('config', ['melusine/config/conf.json'])],
+              'melusine.summarizer', 'melusine.models',
+              'melusine.data'],
+    data_files=[('config', ['melusine/config/conf.json']),
+                ('data', ['melusine/data/emails.pickle'])],
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,

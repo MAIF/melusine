@@ -161,7 +161,6 @@
                 " [A-Z]{2}[- ]?\\d{3}[- ]?[A-Z]{2}|\\d{3,4}[- ]?[A-Z]{2,3}[- ]?\\d{2,3} " : " flag_immat_ ",
                 "[\\d \\.\\,]+ ?(?:€|EUR|eur|dollar|dollars|\\$)(?:os)?" : " flag_amount_ ",
                 "(?:^| )\\d{5}(?! flag_amount_|\\d)" : " flag_cp_ ",
-                "[MF]{1} ??\\d{2} ??\\d{7}[A-Z]{1}" : " flag_ndos_ ",
                 "\\d{2}[:|H|h]\\d{2}(?::\\d{2})?" : " flag_time_ ",
                 "(?:\\d{1,4}[\/\\-\\.]){1,2}(?:\\d{2,4})" : " flag_date_ ",
                 "\\d{1,2} (?:janvier|fevrier|février|mars|avril|mai|juin|juillet|aout?|août?|septembre|octobre|novembre|decembre|décembre|janv?\\.?|fevr?\\.?|févr?\\.?|avr\\.?|juil\\.?|sept?\\.?|oct\\.?|nov\\.?|dec\\.?|déc\\.?) ?(?:\\d{2,4})?" : " flag_date_ "
