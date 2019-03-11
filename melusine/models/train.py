@@ -5,6 +5,7 @@ from keras.utils import np_utils
 from keras.models import model_from_json
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
+from keras.optimizers import Adam
 
 
 class NeuralModel(BaseEstimator, ClassifierMixin):
@@ -75,8 +76,8 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
     """
 
     def __init__(self,
-                 neural_architecture_function,
-                 pretrained_embedding,
+                 architecture_function=None,
+                 pretrained_embedding=None,
                  text_input_column='clean_text',
                  meta_input_list=['extension', 'dayofweek', 'hour', 'min'],
                  vocab_size=25000,
@@ -85,7 +86,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                  batch_size=4096,
                  n_epochs=15,
                  **kwargs):
-        self.architecture_function = neural_architecture_function
+        self.architecture_function = architecture_function
         self.pretrained_embedding = pretrained_embedding
         self.text_input_column = text_input_column
         self.meta_input_list = meta_input_list
@@ -106,23 +107,26 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         """Save model from json and load weights from .h5."""
         model = model_from_json(open(filepath+".json").read())
         model.load_weights(filepath+"_model_weights.h5")
+        model.compile(optimizer=Adam(),
+                      loss='categorical_crossentropy',
+                      metrics=['accuracy'])
+        self.model = model
+        pass
 
-        return model
-
-    def __getstate__(self, filepath):
+    def __getstate__(self):
         """Method called before serialization for a specific treatment to save
         model weight and structure instead of standard serialization."""
         dict_attr = dict(self.__dict__)
         if 'model' in dict_attr:
-            self.save_nn_model(filepath)
             del dict_attr["model"]
+            del dict_attr["embedding_matrix"]
+            del dict_attr["pretrained_embedding"]
         return dict_attr
 
-    def __setstate__(self, dict_attr, filepath):
+    def __setstate__(self, dict_attr):
         """Method called before loading class for a specific treatment to load
         model weight and structure instead of standard serialization."""
         self.__dict__ = dict_attr
-        self.model = self.load_nn_model(filepath)
 
     def fit(self, X, y, **kwargs):
         """Fit the neural network model on X and y.

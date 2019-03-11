@@ -84,6 +84,8 @@ class ConfigJsonReader():
 
     def reset_config_path(self):
         self.config['PATH']['template_config'] = self.path_default_conf_json_
+        with open(self.path_ini_file_, 'w') as configfile:
+            self.config.write(configfile)
 
         pass
 

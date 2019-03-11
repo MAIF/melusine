@@ -4,7 +4,7 @@ Melusine
 
 .. image:: ./_static/melusine.png
   :align: center
-  :scale: 50%
+  :scale: 25%
 
 .. image:: https://img.shields.io/pypi/v/melusine.svg
         :target: https://pypi.python.org/pypi/melusine
@@ -66,8 +66,8 @@ This package is designed for the preprocessing, classification and automatic sum
 * :ref:`config <config>` : contains *ConfigJsonReader* class to setup and handle a *conf.json* file. This JSON file is the core of this package since it's used by different submodules to preprocess the data.
 
 
-Getting started: 30 seconds to Melusine
----------------------------------------
+Getting started : 30 seconds to Melusine
+----------------------------------------
 Importing Melusine
 ^^^^^^^^^^^^^^^^^^
 To use Melusine in a project::
@@ -82,7 +82,7 @@ The basic requirement to use Melusine is to have an input e-mail DataFrame with 
     - *header* : Header of an email
     - *date*   : Reception date of an email
     - *from*   : Email address of the sender
-    - *to*     : Email address of the recipient
+    - *to*  (optional): Email address of the recipient
     - *label* (optional): Label of the email for a classification task (examples: Business, Spam, Finance or Family)
 
 .. csv-table::
@@ -90,21 +90,23 @@ The basic requirement to use Melusine is to have an input e-mail DataFrame with 
 
     "Thank you.\\nBye,\\nJohn", "Re: Your order", "jeudi 24 mai 2018 11 h 49 CEST", "anonymous.sender@unknown.com", "anonymous.recipient@unknown.fr", "??"
 
+To import the test dataset: ::
+
+    from melusine.melusine.utils.data_loader import load_email_data
+
+    df_emails = load_email_data()
+
 Pre-processing pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^
 A working pre-processing pipeline is given below::
 
     from sklearn.pipeline import Pipeline
     from melusine.utils.transformer_scheduler import TransformerScheduler
-    from melusine.prepare_email.manage_transfer_reply import check_mail_begin_by_transfer
-    from melusine.prepare_email.manage_transfer_reply import update_info_for_transfer_mail
-    from melusine.prepare_email.manage_transfer_reply import add_boolean_answer
-    from melusine.prepare_email.manage_transfer_reply import add_boolean_transfer
+    from melusine.prepare_email.manage_transfer_reply import check_mail_begin_by_transfer, update_info_for_transfer_mail, add_boolean_answer, add_boolean_transfer
     from melusine.prepare_email.build_historic import build_historic
     from melusine.prepare_email.mail_segmenting import structure_email
     from melusine.prepare_email.body_header_extraction import extract_last_body
     from melusine.prepare_email.cleaning import clean_body
-    from melusine.prepare_email.cleaning import clean_header
 
     ManageTransferReply = TransformerScheduler(
     functions_scheduler=[
@@ -123,8 +125,7 @@ A working pre-processing pipeline is given below::
     Cleaning = TransformerScheduler(
     functions_scheduler=[
         (extract_last_body, None, ['last_body']),
-        (clean_body, None, ['clean_body']),
-        (clean_header, None, ['clean_header'])
+        (clean_body, None, ['clean_body'])
     ])
 
     prepare_data_pipeline = Pipeline([
@@ -135,14 +136,6 @@ A working pre-processing pipeline is given below::
 
     df_email = prepare_data_pipeline.fit_transform(df_email)
 
-In this example, the pre-processing functions applied are:
-
-    - :ref:`check_mail_begin_by_transfer <manage_transfer_reply>` : Email is a direct transfer (True/False)
-    - :ref:`update_info_for_transfer_mail <manage_transfer_reply>` : Update body, header, from, to, date if direct transfer
-    - :ref:`add_boolean_answer<manage_transfer_reply>` : Email is an answer (True/False)
-    - :ref:`add_boolean_transfer<manage_transfer_reply>` : Email is transferred (True/False)
-    - :ref:`build_historic<build_historic>` : When email is a conversation, reconstructs the individual message historic
-    - :ref:`structure_email<mail_segmenting>` : Splits parts of each messages in historic and tags them (tags: Hello, Body, Greetings, etc)
 
 Phraser and Tokenizer pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -151,20 +144,17 @@ A pipeline to train and apply the phraser end tokenizer is given below::
     from melusine.nlp_tools.phraser import Phraser
     from melusine.nlp_tools.tokenizer import Tokenizer
 
-    phraser = Phraser(columns='clean_body')
+    phraser = Phraser(input_column='clean_body')
     phraser.train(df_email)
-    phraser.save('./phraser.pkl')
-    phraser = Phraser().load('./phraser.pkl')
 
     PhraserTransformer = TransformerScheduler(
     functions_scheduler=[
-        (phraser_on_body, (phraser,), ['clean_body']),
-        (phraser_on_header, (phraser,), ['clean_header'])
+        (phraser_on_body, (phraser,), ['clean_body'])
     ])
 
     phraser_tokenizer_pipeline = Pipeline([
       ('PhraserTransformer', PhraserTransformer),
-      ('Tokenizer', Tokenizer(columns=['clean_body', 'clean_header']))
+      ('Tokenizer', Tokenizer(input_column='clean_body'))
     ])
 
     df_email = phraser_tokenizer_pipeline.fit_transform(df_email)
@@ -175,23 +165,20 @@ An example of embedding training is given below::
 
     from melusine.nlp_tools.embedding import Embedding
 
-    embedding = Embedding(columns='clean_body')
+    embedding = Embedding(input_column='clean_body')
     embedding.train(df_email)
-    embedding.save('./embedding.pkl')
 
 
 Metadata pipeline
 ^^^^^^^^^^^^^^^^^
 A pipeline to prepare the metadata is given below::
 
-    from melusine.prepare_email.metadata_engineering import MetaExtension
-    from melusine.prepare_email.metadata_engineering import MetaDate
-    from melusine.prepare_email.metadata_engineering import Dummifier
+    from melusine.prepare_email.metadata_engineering import MetaExtension, MetaDate, Dummifier
 
     metadata_pipeline = Pipeline([
       ('MetaExtension', MetaExtension()),
       ('MetaDate', MetaDate()),
-      ('Dummifier', Dummifier(columns_to_dummify=['extension', 'dayofweek', 'hour']))
+      ('Dummifier', Dummifier())
     ])
 
     df_meta = metadata_pipeline.fit_transform(df_email)
@@ -203,14 +190,14 @@ An example of keywords extraction is given below::
     from melusine.summarizer.keywords_generator import KeywordsGenerator
 
     keywords_generator = KeywordsGenerator()
-    df_email = phraser_tokenizer_pipeline.fit_transform(df_email)
+
+    df_email = keywords_generator.fit_transform(df_email)
 
 Classification
 ^^^^^^^^^^^^^^
 An example of classification is given below::
 
     from sklearn.preprocessing import LabelEncoder
-    from melusine.nlp_tools.embedding import Embedding
     from melusine.models.neural_architectures import cnn_model
     from melusine.models.train import NeuralModel
 
@@ -220,12 +207,13 @@ An example of classification is given below::
     le = LabelEncoder()
     y = le.fit_transform(y)
 
-    pretrained_embedding = Embedding().load(./embedding.pkl)
+    pretrained_embedding = embedding
 
-    nn_model = NeuralModel(neural_architecture_function=cnn_model,
+    nn_model = NeuralModel(architecture_function=cnn_model,
                            pretrained_embedding=pretrained_embedding)
+
     nn_model.fit(X, y)
-    y_res = nn_model.transform(X_test)
+    y_res = nn_model.transform(X)
 
 
 Glossary
@@ -309,7 +297,10 @@ The ambition of this Python package is to become a reference, but also to live i
 Initially developed to answer the problem of routing e-mails received by the MAIF, the solution was implemented using state-of-the-art techniques in Deep Learning and NLP.
 Melusine can be interfaced with Scikit-Learn: it offers the user the possibility to train his own classification and automatic summarization model according to the constraints of his problem.
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> develop
 Why Melusine ?
 ^^^^^^^^^^^^^^
 Following MAIF's tradition to name its open source packages after deities, it was chosen to release this package

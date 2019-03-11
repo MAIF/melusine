@@ -1,7 +1,7 @@
 # Melusine
 
 <!-- <img src=`docs/_static/melusine.png` width=`200`/> -->
-![](docs/_static/melusine.png)
+![](docs/_static/melusine.png width="20")
 
 [![pypi badge](https://img.shields.io/pypi/v/melusine.svg)](https://pypi.python.org/pypi/melusine)
 [![](https://img.shields.io/travis/sachasamama/melusine.svg)](https://travis-ci.org/sachasamama/melusine)
@@ -28,13 +28,13 @@ Use **Melusine** if you need a library which :
 This package is designed for the preprocessing, classification and automatic summarization of emails written in french.
 
 <!-- <img src=`docs/_static/schema_1.png` width=`600`/> -->
-![](docs/_static/schema_1.png =700x)
+![](docs/_static/schema_1.png)
 
 **3 main subpackages are offered :**
 
 * ``prepare_email`` : to preprocess and clean the emails.
 * ``summarizer`` : to extract keywords from an email.
-* ``models`` : to classify e-mails according to categories pre-defined defined by the user.
+* ``models`` : to classify e-mails according to categories pre-defined by the user.
 
 **2 other subpackages are offered as building blocks :**
 
