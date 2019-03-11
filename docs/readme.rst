@@ -297,10 +297,7 @@ The ambition of this Python package is to become a reference, but also to live i
 Initially developed to answer the problem of routing e-mails received by the MAIF, the solution was implemented using state-of-the-art techniques in Deep Learning and NLP.
 Melusine can be interfaced with Scikit-Learn: it offers the user the possibility to train his own classification and automatic summarization model according to the constraints of his problem.
 
-<<<<<<< HEAD
 
-=======
->>>>>>> develop
 Why Melusine ?
 ^^^^^^^^^^^^^^
 Following MAIF's tradition to name its open source packages after deities, it was chosen to release this package
