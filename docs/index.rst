@@ -3,7 +3,7 @@ Welcome to Melusine's documentation !
 
 .. image:: ./_static/melusine.png
   :align: center
-  :scale: 25%
+  :scale: 50%
 
 This package aims to be the reference in the processing and modelization of French email data.
 The project has been developed by MAIF assisted by Quantmetry.
