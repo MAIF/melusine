@@ -80,7 +80,7 @@ To import the test dataset:
 ```python
 from melusine.data.data_loader import load_email_data
 
-df_emails = load_email_data()
+df_email = load_email_data()
 ```
 
 
@@ -140,7 +140,7 @@ In this example, the pre-processing functions applied are:
 A pipeline to train and apply the phraser end tokenizer is given below::
 
 ```python
-from melusine.nlp_tools.phraser import Phraser
+from melusine.nlp_tools.phraser import Phraser, phraser_on_body
 from melusine.nlp_tools.tokenizer import Tokenizer
 
 phraser = Phraser(input_column='clean_body')
@@ -166,7 +166,7 @@ An example of embedding training is given below::
 ```python
 from melusine.nlp_tools.embedding import Embedding
 
-embedding = Embedding(input_column='clean_body')
+embedding = Embedding(input_column='clean_body', min_count=10)
 embedding.train(df_email)
 ```
 
@@ -215,9 +215,10 @@ y = le.fit_transform(y)
 pretrained_embedding = embedding
 
 nn_model = NeuralModel(architecture_function=cnn_model,
-                       pretrained_embedding=pretrained_embedding)
+                       pretrained_embedding=pretrained_embedding,
+                       text_input_column='clean_body')
 nn_model.fit(X, y)
-y_res = nn_model.transform(X)
+y_res = nn_model.predict(X)
 ```
 
 ## Glossary
