@@ -67,6 +67,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/MAIF/melusine',
-    version='1.5.3',
+    version='1.5.4',
     zip_safe=False,
 )
