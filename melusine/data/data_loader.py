@@ -4,7 +4,7 @@ import pandas as pd
 
 def load_email_data():
     """
-    Load a pickle file containing toy email data
+    Load a csv file containing toy email data
 
     Return
     ------
