@@ -78,7 +78,7 @@ Input data : Email DataFrame
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The basic requirement to use Melusine is to have an input e-mail DataFrame with the following columns:
 
-    - *body*   : Body of an email (single message or conversation historic)
+    - *body*   : Body of an email (single message or conversation history)
     - *header* : Header of an email
     - *date*   : Reception date of an email
     - *from*   : Email address of the sender
@@ -225,7 +225,7 @@ Because Melusine manipulates pandas dataframes, the naming of the columns is imp
 Here is a basic glossary to provide an understanding of each columns manipulated.
 Initial columns of the dataframe:
 
-* **body :** the body of the email. It can be composed of a unique message, a historic of messages, a transfer of messages or a combination of historics and transfers.
+* **body :** the body of the email. It can be composed of a unique message, a history of messages, a transfer of messages or a combination of history and transfers.
 * **header :** the subject of the email.
 * **date :** the date the email has been sent. It corresponds to the date of the last message of the email has been written.
 * **from :** the email address of the author of the last message of the email.
@@ -234,14 +234,14 @@ Initial columns of the dataframe:
 Columns added by Melusine:
 
 * **is_begin_by_transfer :** boolean, indicates if the email is a direct transfer. In that case it is recommended to update the value of the initial columns with the informations of the message transferred.
-* **is_answer :** boolean, indicates if the email contains a historic of messages
+* **is_answer :** boolean, indicates if the email contains a history of messages
 * **is_transfer :** boolean, indicates if the email is a transfer (in that case it does not have to be a direct transfer).
-* **structured_historic :** list of dictionaries, each dictionary corresponds to a message of the email. The first dictionary corresponds to the last message (the one that has been written) while the last dictionary corresponds to the first message of the historic. Each dictionary has two keys :
+* **structured_historic :** list of dictionaries, each dictionary corresponds to a message of the email. The first dictionary corresponds to the last message (the one that has been written) while the last dictionary corresponds to the first message of the history. Each dictionary has two keys :
 
   - *meta :* to access the metadata of the message as a string.
   - *text :* to access the message itself as a string.
 
-* **structured_body :** list of dictionaries, each dictionary corresponds to a message of the email. The first dictionary corresponds to the last message (the one that has been written) while the last dictionary corresponds to the first message of the historic. Each dictionary has two keys :
+* **structured_body :** list of dictionaries, each dictionary corresponds to a message of the email. The first dictionary corresponds to the last message (the one that has been written) while the last dictionary corresponds to the first message of the history. Each dictionary has two keys :
 
   - *meta :* to access the metadata of the message as a dictionary. The dictionary has three keys:
 

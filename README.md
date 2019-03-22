@@ -12,9 +12,9 @@
 
 # Overview
 
-**Melusine** is a high-level Python library for emails classification and feature extraction,
+**Melusine** is a high-level Python library for email classification and feature extraction,
 written in Python and capable of running on top of Scikit-Learn, Keras or Tensorflow.
-It was developed with a focus on emails written in french.
+It is developed with a focus on emails written in french.
 
 Use **Melusine** if you need a library which :
   * Supports both convolutional networks and recurrent networks, as well as combinations of the two.
@@ -32,14 +32,14 @@ This package is designed for the preprocessing, classification and automatic sum
 
 **3 main subpackages are offered :**
 
-* ``prepare_email`` : to preprocess and clean the emails.
+* ``prepare_email`` : to preprocess and clean emails.
 * ``summarizer`` : to extract keywords from an email.
 * ``models`` : to classify e-mails according to categories pre-defined by the user.
 
 **2 other subpackages are offered as building blocks :**
 
 * ``nlp_tools`` : to provide classic NLP tools such as tokenizer, phraser and embeddings.
-* ``utils`` : to provide a *TransformerScheduler* class to build your own transformer and integrate it into a scikit-learn Pipeline.
+* ``utils`` : to provide a *TransformerScheduler* class to build your own transformer and integrate into a scikit-learn Pipeline.
 
 **An other subpackage is also provided** to manage, modify or add parameters such as : regular expressions, keywords, stopwords, etc.
 
@@ -64,7 +64,7 @@ import melusine
 
 The basic requirement to use Melusine is to have an input e-mail DataFrame with the following columns:
 
-- *body*   : Body of an email (single message or conversation historic)
+- *body*   : Body of an email (single message or conversation history)
 - *header* : Header/Subject of an email
 - *date*   : Reception date of an email
 - *from*   : Email address of the sender
@@ -132,8 +132,8 @@ In this example, the pre-processing functions applied are:
 - ``update_info_for_transfer_mail`` : Update body, header, from, to, date if direct transfer
 - ``add_boolean_answer`` : Email is an answer (True/False)
 - ``add_boolean_transfer`` : Email is transferred (True/False)
-- ``build_historic`` : When email is a conversation, reconstructs the individual message historic
-- ``structure_email`` : Splits parts of each messages in historic and tags them (tags: Hello, Body, Greetings, etc)
+- ``build_historic`` : When email is a conversation, reconstructs the individual message history
+- ``structure_email`` : Splits each messages into parts and tags them (tags: Hello, Body, Greetings, etc)
 
 ### Phraser and Tokenizer pipeline
 
@@ -229,23 +229,23 @@ Because Melusine manipulates pandas dataframes, the naming of the columns is imp
 Here is a basic glossary to provide an understanding of each columns manipulated.
 Initial columns of the dataframe:
 
-* **body :** the body of the email. It can be composed of a unique message, a historic of messages, a transfer of messages or a combination of historics and transfers.
+* **body :** the body of the email. It can be composed of a unique message, a history of messages, a transfer of messages or a combination of history and transfers.
 * **header :** the subject of the email.
-* **date :** the date the email has been sent. It corresponds to the date of the last message of the email has been written.
-* **from :** the email address of the author of the last message of the email.
-* **to :** the email address of the recipient of the last message.
+* **date :** the date the email has been sent. It corresponds to the date of the last email message.
+* **from :** the email address of the author of the last email message.
+* **to :** the email address of the recipient of the last email message.
 
 Columns added by Melusine:
 
-* **is_begin_by_transfer :** boolean, indicates if the email is a direct transfer. In that case it is recommended to update the value of the initial columns with the informations of the message transferred.
-* **is_answer :** boolean, indicates if the email contains a historic of messages
+* **is_begin_by_transfer :** boolean, indicates if the email is a direct transfer. In that case it is recommended to update the value of the initial columns with the information of the message transferred.
+* **is_answer :** boolean, indicates if the email contains a history of messages
 * **is_transfer :** boolean, indicates if the email is a transfer (in that case it does not have to be a direct transfer).
-* **structured_historic :** list of dictionaries, each dictionary corresponds to a message of the email. The first dictionary corresponds to the last message (the one that has been written) while the last dictionary corresponds to the first message of the historic. Each dictionary has two keys :
+* **structured_historic :** list of dictionaries, each dictionary corresponds to a message of the email. The first dictionary corresponds to the last message (the one that has been written) while the last dictionary corresponds to the first message of the history. Each dictionary has two keys :
 
   - *meta :* to access the metadata of the message as a string.
   - *text :* to access the message itself as a string.
 
-* **structured_body :** list of dictionaries, each dictionary corresponds to a message of the email. The first dictionary corresponds to the last message (the one that has been written) while the last dictionary corresponds to the first message of the historic. Each dictionary has two keys :
+* **structured_body :** list of dictionaries, each dictionary corresponds to a message of the email. The first dictionary corresponds to the last message (the one that has been written) while the last dictionary corresponds to the first message of the history. Each dictionary has two keys :
 
   - *meta :* to access the metadata of the message as a dictionary. The dictionary has three keys:
     + *date :* the date of the message.
@@ -259,7 +259,7 @@ Columns added by Melusine:
       - *tags :* to access the tag of the part of the message.
 
 
-* **last_body :** string, corresponds to the part of the last message of the email that has been tagged as `BODY`.
+* **last_body :** string, corresponds to the part of the last email message that has been tagged as `BODY`.
 * **clean_body :** string, corresponds a cleaned last_body.
 * **clean_header :** string, corresponds to a cleaned header.
 * **clean_text :** string, concatenation of clean_header and clean_body.
@@ -268,9 +268,9 @@ Columns added by Melusine:
 
 ### Tags
 
-Each messages of an email are segmented the in the **structured_body** columns and each parts are assigned a tag:
+Each messages of an email are segmented in the **structured_body** columns and each part is assigned a tag:
 
-* `RE/TR` : any metadata such as date, from, to etc.
+* `RE/TR` : any metadata such as date, from, to, etc.
 * `DISCLAIMER` : any disclaimer such as `L'émetteur décline toute responsabilité...`.
 * `GREETINGS` : any greetings such as `Salutations`.
 * `PJ` : any indication of an attached document such as `See attached file...`.
