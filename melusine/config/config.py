@@ -2,7 +2,8 @@ import json
 import os.path as op
 import logging
 from configparser import ConfigParser
-
+import pandas as pd
+import unidecode
 
 class ConfigJsonReader():
     """Class to initialize a config.json file that contains your own
@@ -40,6 +41,7 @@ class ConfigJsonReader():
         config_directory = op.dirname(op.abspath(__file__))
         self.path_ini_file_ = op.join(config_directory, 'path.ini')
         self.path_default_conf_json_ = op.join(config_directory, 'conf.json')
+        self.path_default_names_csv_ = op.join(config_directory, 'names.csv')
 
         if not op.exists(self.path_ini_file_):
             logging.info("Create an path.ini file to configure your own config.json")
@@ -47,6 +49,7 @@ class ConfigJsonReader():
             conf = ConfigParser()
             conf.add_section('PATH')
             conf.set('PATH', 'template_config', self.path_default_conf_json_)
+            conf.set('PATH', 'default_name_file', self.path_default_names_csv_)
             conf.write(ini_file)
             ini_file.close()
 
@@ -72,13 +75,24 @@ class ConfigJsonReader():
         pass
 
     def get_config_file(self):
-        """Load a config json file from the given path."""
+        """Load a config json file from the given path.
+           Load the list of names from the names.csv file.
+        """
         path = self.config['PATH']['template_config']
 
         if path == self.path_default_conf_json_:
             config_file = self.load_config_file(path=None)
         else:
             config_file = self.load_config_file(path=path)
+
+        name_file_path = self.config['PATH']['default_name_file']
+
+        if name_file_path == self.path_default_names_csv_:
+            name_list = self.load_name_file(path=None)
+        else:
+            name_list = self.load_name_file(path=name_file_path)
+
+        config_file['words_list']['names'] = name_list
 
         return config_file
 
@@ -96,6 +110,45 @@ class ConfigJsonReader():
             path = self.path_default_conf_json_
 
         with open(file=path, mode='r') as file:
-            return json.load(file)
+            config_file = json.load(file)
+
+        return config_file
 
         logging.info("Load config from path: {}.".format(path))
+
+    def set_name_file_path(self, file_path=None):
+        """Set a path for your own `names.csv`.
+
+        Parameters
+        ----------
+        file_path: str, optional
+            Path to the csv file. If set to None (default), it will use the default
+            csv located in the built-in package `melusine/config/names.csv`.
+        """
+        if file_path is not None:
+            # if file_path is specified, it writes new path in the .ini file.
+            self.config['PATH']['default_name_file'] = file_path
+            with open(self.path_ini_file_, 'w') as configfile:
+                self.config.write(configfile)
+        pass
+
+    def reset_name_file_path(self):
+        self.config['PATH']['default_name_file'] = self.path_default_names_csv_
+        with open(self.path_ini_file_, 'w') as configfile:
+            self.config.write(configfile)
+        pass
+
+    def load_name_file(self, path):
+        """Load csv."""
+        # by default it takes native the names.csv
+        if path is None:
+            path = self.path_default_names_csv_
+
+        try:
+            df_names = pd.read_csv(path, encoding="latin-1", sep=";")
+            name_list = df_names['Name'].values
+            name_list = [unidecode.unidecode(p).lower() for p in name_list]
+        except FileNotFoundError:
+            name_list = []
+
+        return name_list
