@@ -652,3 +652,72 @@ It is also possible to go back to the original configuration file::
 
 Warning : the configuration file is loaded by the different modules (Tokenizer, KeywordExtractor, etc) during the import,
 therefore, for the new configuration file to be effective, the code / kernel should be restarted after each modification of the configuration file.
+
+Use a custom name file
+------------------------
+
+While working with text data, names might undergo specific processing:
+
+- stopword processing : if names are irrelevant, they may be discarded during the text processing
+- flagging : if the information that the text contains a name is relevant but the name itself is irrelevant, names may be replaced with a name_flag (bob -> flag_name)
+
+By default, Melusine identifies names using an explicit list of names available in a file ('melusine/config/names.csv').
+The default name list comes from a name dataset publicly available on the french government `website <https://https://www.data.gouv.fr/fr/datasets/ficher-des-prenoms-de-1900-a-2017>`_.
+This list contains first names given to children (french or not) born in France between 1900 and 2017.
+
+Melusine users may specify a **custom name list** using a **custom 'names.csv' file**.
+
+The following code shows how to specify a custom configuration file::
+
+    import os
+    import pandas as pd
+    from melusine.config.config import ConfigJsonReader
+
+    conf = ConfigJsonReader()
+
+    # Print the path to the current name file
+    with open(conf.path_ini_file_, 'r') as ini_file:
+            print(ini_file.read())
+
+    # Print the current name list
+    conf_dict = conf.get_config_file()
+    print(conf_dict['words_list']['names'][:5])
+
+    ### Use a custom name file
+    # 1. Create a new (custom) name file
+    #    - The file should be a csv file with a column called `Name`
+    # 2. Set the new file as the current Melusine name file    with open(conf.path_ini_file_, 'r') as ini_file:
+    # Set a new path to the configuration file
+
+    # Create a name DataFrame
+    df_names = pd.DataFrame({'Name' : ['Daenerys', 'Tyrion', 'Jon', 'Raegar']})
+
+    # Path to the new name.csv file
+    new_path = os.path.join(os.getcwd(), 'data', 'names.csv')
+
+    # Save new name.csv file
+    df_names.to_csv(new_path, encoding="latin-1", sep=";", index=False)
+
+    # Set a new path to the name file in Melusine
+    conf.set_name_file_path(file_path=new_path)
+
+    # Print the new path to the name file
+    with open(conf.path_ini_file_, 'r') as ini_file:
+        print(ini_file.read())
+
+    # Print the new file list
+    conf_dict = conf.get_config_file()
+    print(conf_dict['words_list']['names'][:5])
+
+It is possible to go back to the original name file::
+
+    from melusine.config.config import ConfigJsonReader
+
+    conf = ConfigJsonReader()
+    conf.reset_name_file_path()
+
+    conf_dict = conf.get_config_file()
+    print(conf_dict['words_list']['names'][:5])
+
+Warning : the name file is loaded by the different modules (Tokenizer, KeywordExtractor, etc) during the import,
+therefore, for the new name file to be effective, the code / kernel should be restarted after each modification of the name file.
