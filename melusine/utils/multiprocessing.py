@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from sklearn.externals import joblib
+from sklearn.externals.joblib import Parallel, delayed
 
 
 def _apply_df(args):
@@ -11,7 +11,6 @@ def _apply_df(args):
 
 def apply_by_multiprocessing(df, func, n_jobs=1, **kwargs):
     """Apply a function along an axis of the DataFrame using multiprocessing.
-    A maximum of half of the core available in the system will be used.
 
     Parameters
     ----------
@@ -25,8 +24,8 @@ def apply_by_multiprocessing(df, func, n_jobs=1, **kwargs):
     pd.DataFrame
         Returns the DataFrame with the function applied.
     """
-    result = joblib.Parallel(n_jobs=n_jobs, prefer='processes')(
-        joblib.delayed(apply_on_chunk)(d, func, **kwargs) for d in np.array_split(df, n_jobs)
+    result = Parallel(n_jobs=n_jobs, prefer='processes')(
+        delayed(apply_on_chunk)(d, func, **kwargs) for d in np.array_split(df, n_jobs)
     )
     return pd.concat(list(result))
 
