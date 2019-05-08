@@ -46,7 +46,7 @@ class Embedding():
         self.logger.addHandler(ch)
         self.logger.debug('Create an Embedding instance.')
         self.input_column = input_column
-        self.streamer = Streamer(columns=self.input_column)
+        self.streamer = Streamer(column=self.input_column)
         self.workers = workers
         self.seed = seed
         self.iter = iter

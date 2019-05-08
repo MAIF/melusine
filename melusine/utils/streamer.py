@@ -10,7 +10,7 @@ class Streamer():
 
     Attributes
     ----------
-    columns : str or list of str,
+    column : str,
         Input text column(s) to consider for the streamer.
 
     stream : MailIterator object,
@@ -25,8 +25,8 @@ class Streamer():
 
     """
 
-    def __init__(self, columns='clean_body', n_jobs=40):
-        self.columns_ = columns
+    def __init__(self, column='clean_body', n_jobs=2):
+        self.column_ = column
         self.n_jobs = n_jobs
 
     def to_stream(self, X):
@@ -60,9 +60,12 @@ class Streamer():
         -------
         list of lists of strings
         """
-        tokenized_sentences_list = apply_by_multiprocessing(X[self.columns_],
-                                                            self.to_list_of_tokenized_sentences,
-                                                            workers=self.n_jobs
+        tokenized_sentences_list = apply_by_multiprocessing(df=X[[self.column_]],
+                                                            func=lambda x: self.to_list_of_tokenized_sentences(x[self.column_]),
+                                                            #func=self.to_list_of_tokenized_sentences,
+                                                            args=None,
+                                                            workers=self.n_jobs,
+                                                            progress_bar=False
                                                             )
         flattoks = [item for sublist in tokenized_sentences_list
                     for item in sublist]
@@ -80,6 +83,7 @@ class Streamer():
         -------
         list of list of strings
         """
+        #text = row[self.column_]
         sentences_list = split_message_to_sentences(text)
         tokenized_sentences_list = [nltk.regexp_tokenize(sentence,
                                                          pattern="\w+(?:[\?\-\'\"_]\w+)*")
