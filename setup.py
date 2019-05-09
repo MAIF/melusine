@@ -17,7 +17,7 @@ requirements = ['pandas>=0.22.0',
                 'nltk>=3.3',
                 'keras>=2.2.0',
                 'tqdm>=4.14',
-                'tensorflow>=1.10.0',
+                'tensorflow>=1.10.0,<=1.13.1',
                 'unidecode'
                 ]
 
