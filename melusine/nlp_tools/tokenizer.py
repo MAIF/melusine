@@ -1,14 +1,14 @@
 import logging
-import nltk
+import re
 from sklearn.base import BaseEstimator, TransformerMixin
 from melusine.config.config import ConfigJsonReader
 
 conf_reader = ConfigJsonReader()
 config = conf_reader.get_config_file()
 
-stopwords = config["words_list"]["stopwords"] + config["words_list"]["names"]
-
-regex_tokenize = "\w+(?:[\?\-\"_]\w+)*"
+stopwords = config["words_list"]["stopwords"]
+names_list = config["words_list"]["names"]
+regex_tokenize = config["regex"]["tokenizer"]
 
 
 class Tokenizer(BaseEstimator, TransformerMixin):
@@ -53,8 +53,9 @@ class Tokenizer(BaseEstimator, TransformerMixin):
                  stop_removal=True,
                  n_jobs=20):
         self.input_column = input_column
-        self.stopwords = stopwords
+        self.stopwords = set(stopwords)
         self.stop_removal = stop_removal
+        self.names_list = set(names_list)
         self.n_jobs = n_jobs
         self.logger = logging.getLogger('emails_application.preprocessing.Preprocessing')
         self.logger.debug('creating an instance of Preprocessing')
@@ -96,7 +97,7 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         """
         self.logger.debug('Start transform tokenizing')
         X['tokens'] = X[[self.input_column]].apply(self.tokenize, axis=1)
-        X['tokens'] = X['tokens'].apply(lambda x: x[0])
+        X['tokens'] = X.apply(lambda x: x['tokens'][0], axis=1)
         self.logger.info('X shape : %s' % str(X.shape))
         self.logger.debug('Done.')
         return X
@@ -115,17 +116,21 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         """
         text = row[self.input_column]
         tokens = self._tokenize(text)
-        tokens = self._remove_stopwords(tokens)
         return [tokens]
 
     def _tokenize(self, text, pattern=regex_tokenize):
         """Returns list of tokens from text."""
-        return nltk.tokenize.regexp_tokenize(str(text), pattern=pattern)
+        if isinstance(text, str):
+            tokens = re.findall("\w+(?:[\?\-\"_]\w+)*", text, re.M+re.DOTALL)
+            tokens = self._remove_stopwords(tokens)
+        else:
+            tokens = []
+        return tokens
 
     def _remove_stopwords(self, list):
         """ Removes stopwords from list if stop_removal parameter
         set to True."""
         if self.stop_removal:
-            return [x for x in list if x not in self.stopwords]
+            return [tok if tok not in self.names_list else "flag_name_" for tok in list if tok not in self.stopwords]
         else:
             return list
