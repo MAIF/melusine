@@ -18,7 +18,7 @@
         "aurais", "aurait", "aurions", "auriez", "auraient", "avais", "avait",
         "avions", "aviez", "avaient", "eut", "eûmes", "eûtes", "eurent", "aie",
         "aies", "ait", "ayons", "ayez", "aient", "eusse", "eusses", "eût",
-        "eussions", "eussiez", "eussent"],
+        "eussions", "eussiez", "eussent", "nan"],
       "names": ["abel", "absolon", "achille", "adam", "adelaide", "adele", "adeline",
         "adolphe", "adrien", "adrienne", "agathe", "agnes", "aime", "aimee", "alain",
         "albert", "albertine", "alexandre", "alexandrie", "alexis", "alfred", "alice",
@@ -107,6 +107,8 @@
 
     "regex": {
 
+        "tokenizer" : "\\w+(?:[\\?\\-\"_]\\w+)*",
+
         "manage_transfer_reply" : {
 
             "begin_transfer" : "^[;\\s]*[-\\s]*Transféré par",
@@ -143,7 +145,7 @@
               "Expéditeur.+?Objet\\s*:.+?[;|\n]",
               "(?:>?[;|\n]?\\s*(?:Envoyé|De|À|Objet|Cc|Envoyé par|Date|A|Destinataire|Sent|To|Subject|From|Copie à)+?\\s*:\\s*(?:.*?)\\s*[;|\n]\\s*)+",
               "En date de.+?écrit",
-              ">?\\s*Le[^;\n]+?[;|\n]{0,1}[^;\n]+?a[^;\n]+?;{0,1}[^;\n]+?écrit\\s*:?",
+              ">?\\s*Le[^;\n]{0,30}[;|\n]{0,1}[^;\n]{0,30}a[^;\n]{0,30};{0,1}[^;\n]{0,30}écrit\\s*:?",
               ">?\\s*Message de.+?Objet\\s*:.+?[;|\n]",
               ">?\\s*Message du.+?Objet\\s*:.+?[;|\n]",
               "En date de.+?écrit"

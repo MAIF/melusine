@@ -38,7 +38,8 @@ class Embedding():
                  iter=15,
                  size=300,
                  window=5,
-                 min_count=100):
+                 min_count=100,
+                 stop_removal = True):
         self.logger = logging.getLogger('NLUtils.Embedding')
         ch = logging.StreamHandler()
         ch.setLevel(logging.INFO)
@@ -46,7 +47,8 @@ class Embedding():
         self.logger.addHandler(ch)
         self.logger.debug('Create an Embedding instance.')
         self.input_column = input_column
-        self.streamer = Streamer(column=self.input_column)
+        self.stop_removal = stop_removal
+        self.streamer = Streamer(column=self.input_column, stop_removal=stop_removal)
         self.workers = workers
         self.seed = seed
         self.iter = iter
@@ -78,12 +80,16 @@ class Embedding():
         """
         self.logger.info('Start training for embedding')
         self.streamer.to_stream(X)
-        self.embedding = Word2Vec(self.streamer.stream,
-                                  workers=self.workers,
+        self.embedding = Word2Vec(workers=self.workers,
                                   seed=self.seed,
                                   iter=self.iter,
                                   size=self.size,
                                   window=self.window,
                                   min_count=self.min_count)
+        self.embedding.build_vocab(self.streamer.stream)
+        self.embedding.train(self.streamer.stream,
+                             total_examples=self.embedding.corpus_count,
+                             epochs=self.embedding.epochs)
+
         self.logger.info('Done.')
         pass
