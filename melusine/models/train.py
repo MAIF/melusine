@@ -1,9 +1,9 @@
+from melusine.nlp_tools.tokenizer import Tokenizer
 import numpy as np
 from collections import Counter
 from sklearn.base import BaseEstimator, ClassifierMixin
 from keras.utils import np_utils
 from keras.models import model_from_json
-from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.optimizers import Adam
 
@@ -76,22 +76,25 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
     """
 
     def __init__(self,
+                pretrained_embedding=None,
                  architecture_function=None,
-                 pretrained_embedding=None,
                  text_input_column='clean_text',
                  meta_input_list=['extension', 'dayofweek', 'hour', 'min'],
                  vocab_size=25000,
                  seq_size=100,
+                 embedding_dim=200,
                  loss='categorical_crossentropy',
                  batch_size=4096,
                  n_epochs=15,
                  **kwargs):
         self.architecture_function = architecture_function
         self.pretrained_embedding = pretrained_embedding
+        self.tokenizer = Tokenizer(input_column = text_input_column)
         self.text_input_column = text_input_column
         self.meta_input_list = meta_input_list
         self.vocab_size = vocab_size
         self.seq_size = seq_size
+        self.embedding_dim = embedding_dim
         self.loss = loss
         self.batch_size = batch_size
         self.n_epochs = n_epochs
@@ -146,10 +149,13 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         self : object
             Returns the instance
         """
-        self._fit_tokenizer(X)
-        self._create_word_indexes_from_tokens()
-        self._get_embedding_matrix()
 
+        X = self.tokenizer.transform(X)
+        if self.pretrained_embedding:
+            self._get_embedding_matrix()
+        else:
+            self._create_vocabulary_from_tokens(X)
+            self._generate_random_embedding_matrix()
         X_seq = self._prepare_sequences(X)
         X_meta, nb_meta_features = self._get_meta(X)
         y_categorical = np_utils.to_categorical(y)
@@ -200,6 +206,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         -------
         np.array
         """
+        X = self.tokenizer.transform(X)
         X_seq = self._prepare_sequences(X)
         X_meta, nb_meta_features = self._get_meta(X)
         if nb_meta_features == 0:
@@ -208,46 +215,62 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             X_input = [X_seq, X_meta]
         return self.model.predict(X_input, **kwargs)
 
-    def _fit_tokenizer(self, X):
-        """Fit a Tokenizer instance from Keras on a clean body."""
-        self.tokenizer = Tokenizer(num_words=self.vocab_size,
-                                   oov_token='UNK')
-        self.tokenizer.fit_on_texts(X[self.text_input_column])
-        pass
-
-    def _create_word_indexes_from_tokens(self):
+    def _create_vocabulary_from_tokens(self, X):
         """Create a word indexes dictionary from tokens."""
-        c = Counter(self.tokenizer.word_counts)
-        self.tokenizer.word_index = {t[0]: i + 1 for i, t
-                                     in enumerate(c.most_common(len(c)))}
-        self.tokenizer.word_index['UNK'] = 0
+        tokens = X['tokens']
+        c = Counter([token for text in X.tokens for token in text])
+        self.vocabulary = [t[0] for t in c.most_common(self.vocab_size)]
         pass
 
     def _get_embedding_matrix(self):
         """Prepares the embedding matrix to be used as an input for
-        the neural network model."""
+        the neural network model.
+        The vocabulary of the NN is those of the pretrained embedding
+        """
         pretrained_embedding = self.pretrained_embedding
-        vocab_size = self.vocab_size
+        self.vocabulary = pretrained_embedding.embedding.wv.index2word
+        vocab_size = len(self.vocabulary)
         vector_dim = pretrained_embedding.embedding.vector_size
-        wv_dict = {word: vec for word, vec in
-                   zip(pretrained_embedding.embedding.wv.index2word,
-                       pretrained_embedding.embedding.wv.syn0)}
-        embedding_matrix = np.zeros((vocab_size+1, vector_dim))
-        for word, index in self.tokenizer.word_index.items():
-            if index >= vocab_size:
-                continue
-            embedding_vector = wv_dict.get(word)
-            if embedding_vector is not None:
-                embedding_matrix[index] = embedding_vector
+        embedding_matrix = np.zeros((vocab_size + 2, vector_dim))
+        for index, word in enumerate(self.vocabulary):
+            if word not in ['PAD', 'UNK']:
+                embedding_matrix[index + 2, :] = pretrained_embedding.embedding.wv.get_vector(word)
+        embedding_matrix[1, :] = np.mean(embedding_matrix, axis=0)
+
+        self.vocabulary.insert(0, 'PAD')
+        self.vocabulary.insert(1, 'UNK')
         self.embedding_matrix = embedding_matrix
         pass
 
+    def _generate_random_embedding_matrix(self):
+        """Prepares the embedding matrix to be used as an input for
+        the neural network model.
+        The vocabulary of the NN is those of the pretrained embedding
+        """
+        vocab_size = len(self.vocabulary)
+        vector_dim = self.embedding_dim
+        embedding_matrix = np.random.uniform(low=-1,high=1,size=(vocab_size + 2, vector_dim))
+        embedding_matrix[0:2, :] = np.zeros((2, vector_dim))
+        self.vocabulary.insert(0, 'PAD')
+        self.vocabulary.insert(1, 'UNK')
+        self.embedding_matrix = embedding_matrix
+        pass
+
+    def tokens_to_indices(self, tokens):
+        """
+        Input : list of tokens ["ma", "carte_verte", ...]
+        Output : list of indices [46, 359, ...]
+        """
+        return [self.vocabulary.index(t) if t in self.vocabulary else 1 for t in tokens]
+
     def _prepare_sequences(self, X):
         """Prepares the sequence to be used as input for the neural network
-        model."""
-        seqs = self.tokenizer.texts_to_sequences(X[self.text_input_column])
+        model.
+        The input column must be an already tokenized text : tokens
+        The tokens must have been optained using the same tokenizer than the
+        one used for the pre-trained embedding."""
+        seqs = X['tokens'].apply(self.tokens_to_indices)
         X_seq = pad_sequences(seqs, maxlen=self.seq_size)
-
         return X_seq
 
     def _get_meta(self, X):
