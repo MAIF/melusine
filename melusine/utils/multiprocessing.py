@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from sklearn.externals.joblib import Parallel, delayed
+from joblib import Parallel, delayed
 
 def apply_df(input_args):
     df, func, kwargs = input_args

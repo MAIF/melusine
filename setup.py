@@ -14,11 +14,12 @@ with open('HISTORY.rst') as history_file:
 requirements = ['pandas>=0.22.0',
                 'scikit-learn>=0.19.0',
                 'gensim>=3.3.0',
-                'nltk>=3.3',
+                #'nltk>=3.3',
                 'keras>=2.2.0',
                 'tqdm>=4.14',
                 'tensorflow>=1.10.0,<=1.13.1',
-                'unidecode'
+                'unidecode',
+                'joblib'
                 ]
 
 setup_requirements = ['pytest-runner', ]
@@ -26,7 +27,7 @@ setup_requirements = ['pytest-runner', ]
 test_requirements = ['pytest', ]
 
 setup(
-    author="Sacha Samama, Tom Stringer, Antoine Simoulin",
+    author="Sacha Samama, Tom Stringer, Antoine Simoulin, Benoit Lebreton",
     author_email='ssamama@quantmetry.com',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
