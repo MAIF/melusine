@@ -1,15 +1,27 @@
 import numpy as np
 import pandas as pd
-from sklearn.externals.joblib import Parallel, delayed
 
+from tqdm import tqdm
+from joblib import Parallel, delayed
 
-def _apply_df(args):
-    """Apply a function along an axis of the DataFrame"""
-    df, func, kwargs = args
-    return df.apply(func, **kwargs)
+def apply_df(input_args):
+    df, func, kwargs = input_args
+    if "progress_bar" in kwargs:
+        progress_bar = kwargs.pop('progress_bar')
+    else:
+        progress_bar = False
+    if "args" in kwargs:
+        args_ = kwargs.pop('args')
+    else:
+        args_ = None
+    if progress_bar:
+        tqdm.pandas(leave=False, desc=func.__name__, unit='emails', dynamic_ncols=True, mininterval=2.0)
+        df = df.progress_apply(func, axis=1, args=args_)
+    else:
+        df = df.apply(func, axis=1, args=args_)
+    return df
 
-
-def apply_by_multiprocessing(df, func, n_jobs=1, **kwargs):
+def apply_by_multiprocessing(df, func, **kwargs):
     """Apply a function along an axis of the DataFrame using multiprocessing.
 
     Parameters
@@ -24,23 +36,11 @@ def apply_by_multiprocessing(df, func, n_jobs=1, **kwargs):
     pd.DataFrame
         Returns the DataFrame with the function applied.
     """
-    result = Parallel(n_jobs=n_jobs, prefer='processes')(
-        delayed(apply_on_chunk)(d, func, **kwargs) for d in np.array_split(df, n_jobs)
-    )
-    return pd.concat(list(result))
+    workers = kwargs.pop('workers')
+    workers = min(workers, int(df.shape[0]/2))
+    workers = max(workers, 1)
+    if (df.shape[0]==1) or (workers==1):
+        return apply_df((df, func, kwargs))
+    retLst = Parallel(n_jobs=workers)(delayed(apply_df)(input_args=(d, func, kwargs)) for d in np.array_split(df, workers))
+    return pd.concat(retLst)
 
-def apply_on_chunk(X, func, **kwargs):
-    if "progress_bar" in kwargs:
-        progress_bar = kwargs.pop('progress_bar')
-    else:
-        progress_bar = False
-    X = apply_df(X, func, progress_bar)
-    return X
-
-def apply_df(df, func, progress_bar):
-    if progress_bar:
-        tqdm.pandas(leave=False, desc=func.__name__, unit='emails', dynamic_ncols=True, mininterval=2.0)
-        df = df.progress_apply(func, axis=1)
-    else:
-        df = df.apply(func, axis=1)
-    return df

@@ -93,6 +93,9 @@ def structure_email(row):
     structured_body = []
     for message in row['structured_historic']:
         structured_message = structure_message(message)
+        if len(structured_message["structured_text"]["text"]) == 0:
+            if structured_message["structured_text"]["header"] is None:
+                continue
         structured_body.append(structured_message)
 
     return structured_body
