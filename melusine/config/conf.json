@@ -111,12 +111,12 @@
 
         "manage_transfer_reply" : {
 
-            "begin_transfer" : "^[;\\s]*[-\\s]*Transféré par",
-            "begin_transfer_cons" : "De\\s*:\\s*[^<]*?<?[a-zA-Z0-9._%+-\/=]+\\@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?\\s(?:[;A:]|(?:Envoyé))",
-            "transfer_other" : "^Le.*,.*a ecrit\\xa0:",
-            "extract_from" : "De\\s*:\\s*(.*?)\\s(?:[\nA:]|(?:Envoyé))",
-            "extract_to" : "[ÀA]\\s*:\\s*(.*?)\\s(?:[\n(?:Date)]|(?:Objet))",
-            "extract_date" : "(?:(?:Envoyé) ?|(?:Date))\\s*:\\s*(.*?)\\s(?:[\n(?:Objet)]|A)",
+            "begin_transfer" : "^[;\\s]*[-\\s]*Transf[ée]r[ée] par",
+            "begin_transfer_cons" : "De\\s*:\\s*[^<]*?<?[a-zA-Z0-9._%+-\/=]+\\@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?\\s(?:[;AÀ:]|(?:Envoy[ée]))",
+            "transfer_other" : "^Le.*,.*a ecrit(?:\\xa0|\\s|\\t):",
+            "extract_from" : "(?:De|Exp[ée]diteur)\\s*:\\s*(.*?)\\s*(?:\n|A|À|:|Envoy[ée])",
+            "extract_to" : "[ÀA]\\s*:\\s*(.*?)\\s(?:\n|Date|Objet)",
+            "extract_date" : "(?:Envoy[ée]|Date)\\s*:\\s*(.*?)\\s(?:\n|Objet|A|À)",
             "extract_header" : "Objet\\s*:\\s*(.*?)\\s[;|\n]",
             "answer_header": "RE\\s*:|re\\s*:|Re\\s*:",
             "transfer_header": "Tr\\s*:|TR\\s*:|Fwd\\s*:|FW\\s*:|FWD\\s*:|Fw\\s*:"
@@ -126,29 +126,29 @@
         "build_historic" : {
 
             "transition_list" : [
-              "[- ]*?Mail transféré.*?[;|\n]",
+              "[- ]*?Mail transf[ée]r[ée].*?[;|\n]",
               "[- ]*?gestionsocietaire@maif.fr a [ée]crit.*?[;|\n]",
               "Courriel original.+?Objet\\s*:.+?[;|\n]",
-              "Transféré par.+?Objet\\s*:.+?[;|\n]",
+              "Transf[ée]r[ée] par.+?Objet\\s*:.+?[;|\n]",
               "Message transmis.+?Objet\\s*:.+?[;|\n]",
-              "Message transféré.+?Objet\\s*:.+?[;|\n]",
-              "Message transféré.+?Pour\\s*:.+?[;|\n]",
-              "Début du message transféré.+?Objet\\s*:.+?[;|\n]",
-              "Début du message réexpédié.+?Objet\\s*:.+?[;|\n]",
-              "Début du message transféré.+?Destinataire\\s*:.+?[;|\n]",
-              "mail transféré.+?Objet\\s*:.+?[;|\n]",
+              "Message transf[ée]r[ée].+?Objet\\s*:.+?[;|\n]",
+              "Message transf[ée]r[ée].+?Pour\\s*:.+?[;|\n]",
+              "D[ée]but du message transf[ée]r[ée].+?Objet\\s*:.+?[;|\n]",
+              "D[ée]but du message r[ée]exp[ée]di[ée].+?Objet\\s*:.+?[;|\n]",
+              "D[ée]but du message transf[ée]r[ée].+?Destinataire\\s*:.+?[;|\n]",
+              "mail transf[ée]r[ée].+?Objet\\s*:.+?[;|\n]",
               "Forwarded message.+?To\\s*:.+?[;|\n]",
               "Message d'origine.+?Objet\\s*:.+?[;|\n]",
               "Mail original.+?Objet\\s*:.+?[;|\n]",
               "Original Message.+?Subject\\s*:.+?[;|\n]",
               "Message original.+?Objet\\s*:.+?[;|\n]",
-              "Expéditeur.+?Objet\\s*:.+?[;|\n]",
-              "(?:>?[;|\n]?\\s*(?:Envoyé|De|À|Objet|Cc|Envoyé par|Date|A|Destinataire|Sent|To|Subject|From|Copie à)+?\\s*:\\s*(?:.*?)\\s*[;|\n]\\s*)+",
-              "En date de.+?écrit",
-              ">?\\s*Le[^;\n]{0,30}[;|\n]{0,1}[^;\n]{0,30}a[^;\n]{0,30};{0,1}[^;\n]{0,30}écrit\\s*:?",
+              "Exp[ée]diteur.+?Objet\\s*:.+?[;|\n]",
+              "(?:>?[;|\n]?\\s*(?:Envoy[ée]|De|Objet|Cc|Envoy[ée] par|Date|A|À|Destinataire|Sent|To|Subject|From|Copie [àa])+?\\s*:\\s*(?:.*?)\\s*[;|\n]\\s*)+",
+              "En date de.+?[ée]crit",
+              ">?\\s*Le[^;\n]{0,30}[;|\n]{0,1}[^;\n]{0,30}a[^;\n]{0,30};{0,1}[^;\n]{0,30}[ée]crit\\s*:?",
               ">?\\s*Message de.+?Objet\\s*:.+?[;|\n]",
               ">?\\s*Message du.+?Objet\\s*:.+?[;|\n]",
-              "En date de.+?écrit"
+              "En date de.+?[ée]crit"
             ]
         },
 
@@ -165,7 +165,7 @@
                 "(?:^| )\\d{5}(?! flag_amount_|\\d)" : " flag_cp_ ",
                 "\\d{2}[:|H|h]\\d{2}(?::\\d{2})?" : " flag_time_ ",
                 "(?:\\d{1,4}[\/\\-\\.]){1,2}(?:\\d{2,4})" : " flag_date_ ",
-                "\\d{1,2} (?:janvier|fevrier|février|mars|avril|mai|juin|juillet|aout?|août?|septembre|octobre|novembre|decembre|décembre|janv?\\.?|fevr?\\.?|févr?\\.?|avr\\.?|juil\\.?|sept?\\.?|oct\\.?|nov\\.?|dec\\.?|déc\\.?) ?(?:\\d{2,4})?" : " flag_date_ "
+                "\\d{1,2} (?:janvier|fevrier|f[ée]vrier|mars|avril|mai|juin|juillet|ao[ûu]t?|septembre|octobre|novembre|d[ée]cembre|janv?\\.?|f[ée]vr?\\.?|avr\\.?|juil\\.?|sept?\\.?|oct\\.?|nov\\.?|d[ée]c\\.?) ?(?:\\d{2,4})?" : " flag_date_ "
 
             },
 
@@ -187,10 +187,10 @@
 
                 "RE/TR" : [],
 
-                "DISCLAIMER" : ["^.{0,10}Ce message et toutes les pièces jointes sont confidentiels et établis à l'intention exclusive de son ou ses destinataires.*",
-                  "^.{0,10}Si vous avez reçu ce message par erreur, merci d'en avertir immédiatement l'émetteur et de détruire le message.*",
-                  "^.{0,10}Toute modification, édition, utilisation ou diffusion non autorisée est interdite.*",
-                  "^.{0,10}L'émetteur décline toute responsabilité au titre de ce message s'il a été modifié, déformé, falsifié, infecté par un virus ou encore édité ou diffusé sans autorisation.",
+                "DISCLAIMER" : ["^.{0,10}Ce message et toutes les pi[èe]ces jointes sont confidentiels et [ée]tablis [àa] l'intention exclusive de son ou ses destinataires.*",
+                  "^.{0,10}Si vous avez reçu ce message par erreur, merci d'en avertir imm[ée]diatement l'[ée]metteur et de d[ée]truire le message.*",
+                  "^.{0,10}Toute modification, [ée]dition, utilisation ou diffusion non autoris[ée]e est interdite.*",
+                  "^.{0,10}L'[ée]metteur d[ée]cline toute responsabilit[ée] au titre de ce message s'il a [ée]t[ée] modifi[ée], d[ée]form[ée], falsifi[ée], infect[ée] par un virus ou encore [ée]dit[ée] ou diffus[ée] sans autorisation.",
                   "^.{0,10}This message and any attachments are confidential and intended for the named addressee.* only.*",
                   "^.{0,10}If you have received this message in error, please notify immediately the sender, then delete the message.*",
                   "^.{0,10}Any unauthorized modification, edition, use or dissemination is prohibited.*",
@@ -213,17 +213,17 @@
                   "\\(Embedded image.*?\\)"
                 ],
 
-                "FOOTER" : ["(?:.{0,10}courrier électronique|.{0,30}virus|.{0,130}antivirus){2,}",
+                "FOOTER" : ["(?:.{0,10}courrier [ée]lectronique|.{0,30}virus|.{0,130}antivirus){2,}",
                   "Provenance : Courrier pour Windows",
                   "garanti sans virus.{0,30}",
                   ".{0,10}www.avg.com",
                   ".{0,10}www.avast.com",
-                  "(?:Obtenez|Télécharge[zr]) Outlook pour .",
-                  "^.{0,10}La visualisation des fichiers PDF nécessite Adobe Reader.*",
+                  "(?:Obtenez|T[ée]l[ée]charge[zr]) Outlook pour .",
+                  "^.{0,10}La visualisation des fichiers PDF n[ée]cessite Adobe Reader.*",
                   "^.{0,10}Si vous recevez ce message par erreur",
                   "^.{0,10}Retrouvez-nous sur www\\.maif-\\w+\\.fr",
-                  "afin de contribuer au respect de l'environnement, merci de n'imprimer ce courriel qu'en cas de nécessité",
-                  "^.{0,10}(?:Envoyé|Numérisé|Partagé) de(?:puis)?\\s*(?:mon)?\\s*(?:mobile|smartphone|appareil|iP.|Galaxy|Yahoo|(?:l\\'application))"
+                  "afin de contribuer au respect de l'environnement, merci de n'imprimer ce courriel qu'en cas de n[ée]cessit[ée]",
+                  "^.{0,10}(?:Envoy[ée]|Num[ée]ris[ée]|Partag[ée]) de(?:puis)?\\s*(?:mon)?\\s*(?:mobile|smartphone|appareil|iP.|Galaxy|Yahoo|(?:l\\'application))"
                 ],
 
                 "HELLO" : ["^.{0,16}(?:(?:bonjour)|(?:bonsoir)|(?:madame)|(?:monsieur)|(?:mesdames)|(?:messieurs)).{0,20}(?!.)"],
@@ -232,10 +232,10 @@
             },
 
             "meta_from1" : "De\\s*:\\s*(.*?)\\s\n",
-            "meta_from2" : "^>?\\s*Le.*,(.*)a écrit",
+            "meta_from2" : "^>?\\s*Le.*,(.*)a [ée]crit",
             "meta_to" : "A\\s*:\\s*(.*?)\\s\n",
             "meta_date1" : "Date\\s*:\\s*(.*?)\\s\n",
-            "meta_date2" : "^>?\\s*Le(.*),.*a écrit",
+            "meta_date2" : "^>?\\s*Le(.*),.*a [ée]crit",
             "meta_header" : "Objet\\s*:\\s*(.*?)\\s\n",
             "pattern_pj" : "(\\(See attached file:.*?\\)|.\\(Embedded image.*?\\))",
             "pattern_separteurs_evidents" : "[?!]|\\.{3}|$|",
@@ -248,7 +248,7 @@
             "pattern_beginning" : "((?:.*?)(?:\\,\\s*\\;\\s*",
             "pattern_end" : "))",
             "tag_typo" : "^(?:[\\s;.,*|-])*$",
-            "tag" : "\\s*;?\\s*",
+            "tag" : "\\s*",
             "tag_subsentence" : "(.*?;|.*?$)",
             "split_message_to_sentences_list" : ["; ", " ;", "([\\?\\!\\.])\\.", "\\1", "\n"]
 
