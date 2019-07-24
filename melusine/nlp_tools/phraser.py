@@ -200,7 +200,7 @@ class Phraser():
         self.threshold = threshold
         self.min_count = min_count
         self.input_column = input_column
-        self.streamer = Streamer(columns=self.input_column)
+        self.streamer = Streamer(column=self.input_column, stop_removal=False)
         ch = logging.StreamHandler(sys.stdout)
         ch.setLevel(logging.INFO)
         ch.setFormatter(formatter)

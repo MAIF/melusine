@@ -110,24 +110,20 @@ class TransformerScheduler(BaseEstimator, TransformerMixin):
     def __init__(self,
                  functions_scheduler,
                  mode='apply',
-                 n_jobs=None,
+                 n_jobs=1,
                  progress_bar=True,
                  copy=True,
                  verbose=0):
         self.functions_scheduler = functions_scheduler
         self.mode = mode
         self.n_jobs = n_jobs
-        self.progress_bar = progress_bar
+        self.progress_bar=True
         self.copy = copy
         self.verbose = verbose
 
         # check input parameters type
         for tuple_ in functions_scheduler:
             func, args, cols = _check_tuple(*tuple_)
-
-        if n_jobs is None:
-            self.n_jobs = 1
-        pass
 
     def fit(self, X, y=None):
         """Unused method. Defined only for compatibility with scikit-learn API.
@@ -153,6 +149,7 @@ class TransformerScheduler(BaseEstimator, TransformerMixin):
 
         for tuple_ in self.functions_scheduler:
             func_, args_, cols_ = _check_tuple(*tuple_)
+            # cols_ = cols_ or X_.columns
 
             if self.mode == 'apply':
                 if cols_ is None:
@@ -164,24 +161,23 @@ class TransformerScheduler(BaseEstimator, TransformerMixin):
             else:  # 'apply_by_multiprocessing'
                 if cols_ is None:
                     X_ = apply_by_multiprocessing(df=X_,
-                                                  func=func_,
-                                                  args=args_,
-                                                  axis=1,
-                                                  workers=self.n_jobs,
-                                                  progress_bar=self.progress_bar)
+                                                    func=func_,
+                                                    args=args_,
+                                                    axis=1,
+                                                    workers=self.n_jobs,
+                                                    progress_bar=self.progress_bar)
                 elif len(cols_) == 1:
                     X_[cols_[0]] = apply_by_multiprocessing(df=X_,
-                                                            func=func_,
-                                                            args=args_,
-                                                            axis=1,
-                                                            workers=self.n_jobs,
-                                                            progress_bar=self.progress_bar)
+                                                    func=func_,
+                                                    args=args_,
+                                                    axis=1,
+                                                    workers=self.n_jobs,
+                                                    progress_bar=self.progress_bar)
                 else:
                     X_[cols_] = apply_by_multiprocessing(df=X_,
-                                                         func=func_,
-                                                         args=args_,
-                                                         axis=1,
-                                                         workers=self.n_jobs,
-                                                         progress_bar=self.progress_bar).apply(pd.Series)
-
+                                                    func=func_,
+                                                    args=args_,
+                                                    axis=1,
+                                                    workers=self.n_jobs,
+                                                    progress_bar=self.progress_bar).apply(pd.Series)
         return X_

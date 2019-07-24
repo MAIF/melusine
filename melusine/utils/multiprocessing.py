@@ -1,22 +1,24 @@
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from multiprocessing import Pool
+from joblib import Parallel, delayed
 
-
-def _apply_df(args):
-    """Apply a function along an axis of the DataFrame"""
-    df, func, kwargs = args
-    if 'progress_bar' not in kwargs:
-        progress_bar = False
-    else:
+def apply_df(input_args):
+    df, func, kwargs = input_args
+    if "progress_bar" in kwargs:
         progress_bar = kwargs.pop('progress_bar')
-
+    else:
+        progress_bar = False
+    if "args" in kwargs:
+        args_ = kwargs.pop('args')
+    else:
+        args_ = None
     if progress_bar:
-        tqdm.pandas(leave=False, desc=func.__name__, ncols=100, unit='emails')
-        return df.progress_apply(func, **kwargs)
-    return df.apply(func, **kwargs)
-
+        tqdm.pandas(leave=False, desc=func.__name__, unit='emails', dynamic_ncols=True, mininterval=2.0)
+        df = df.progress_apply(func, axis=1, args=args_)
+    else:
+        df = df.apply(func, axis=1, args=args_)
+    return df
 
 def apply_by_multiprocessing(df, func, **kwargs):
     """Apply a function along an axis of the DataFrame using multiprocessing.
@@ -32,17 +34,12 @@ def apply_by_multiprocessing(df, func, **kwargs):
     Returns
     -------
     pd.DataFrame
-        Returns the DataFrame with the funtion applied.
+        Returns the DataFrame with the function applied.
     """
-    # define the number of cores to work with
     workers = kwargs.pop('workers')
-    workers = min(workers, int(df.shape[0] / 2))
+    workers = min(workers, int(df.shape[0]/2))
     workers = max(workers, 1)
-    if df.shape[0] == 1:
-        return _apply_df((df, func, kwargs))
-
-    pool = Pool(processes=workers)
-    result = pool.map(_apply_df, [(d, func, kwargs)
-                                  for d in np.array_split(df, workers)])
-    pool.close()
-    return pd.concat(list(result))
+    if (df.shape[0]==1) or (workers==1):
+        return apply_df((df, func, kwargs))
+    retLst = Parallel(n_jobs=workers)(delayed(apply_df)(input_args=(d, func, kwargs)) for d in np.array_split(df, workers))
+    return pd.concat(retLst)
