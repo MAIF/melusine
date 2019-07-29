@@ -1,7 +1,9 @@
-import nltk
 from melusine.prepare_email.mail_segmenting import split_message_to_sentences
 from melusine.utils.multiprocessing import apply_by_multiprocessing
+from melusine.nlp_tools.tokenizer import Tokenizer
+from melusine.config.config import ConfigJsonReader
 
+conf_reader = ConfigJsonReader()
 
 class Streamer():
     """Class to transform pd.Series into stream.
@@ -25,9 +27,12 @@ class Streamer():
 
     """
 
-    def __init__(self, column='clean_body', n_jobs=2):
+    def __init__(self, stop_removal=False, column='clean_body', n_jobs=1):
         self.column_ = column
         self.n_jobs = n_jobs
+        config = conf_reader.get_config_file()
+        stopwords = config["words_list"]["stopwords"] + config["words_list"]["names"]
+        self.tokenizer = Tokenizer(stopwords, stop_removal=stop_removal)
 
     def to_stream(self, X):
         """Build a MailIterator object containing a stream of tokens from
@@ -62,7 +67,6 @@ class Streamer():
         """
         tokenized_sentences_list = apply_by_multiprocessing(df=X[[self.column_]],
                                                             func=lambda x: self.to_list_of_tokenized_sentences(x[self.column_]),
-                                                            #func=self.to_list_of_tokenized_sentences,
                                                             args=None,
                                                             workers=self.n_jobs,
                                                             progress_bar=False
@@ -85,8 +89,7 @@ class Streamer():
         """
         #text = row[self.column_]
         sentences_list = split_message_to_sentences(text)
-        tokenized_sentences_list = [nltk.regexp_tokenize(sentence,
-                                                         pattern="\w+(?:[\?\-\'\"_]\w+)*")
+        tokenized_sentences_list = [self.tokenizer._tokenize(sentence)
                                     for sentence in sentences_list
                                     if sentence != ""]
         return tokenized_sentences_list

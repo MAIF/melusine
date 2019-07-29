@@ -79,12 +79,10 @@ class ConfigJsonReader():
            Load the list of names from the names.csv file.
         """
         path = self.config['PATH']['template_config']
-
         if path == self.path_default_conf_json_:
             config_file = self.load_config_file(path=None)
         else:
             config_file = self.load_config_file(path=path)
-
         name_file_path = self.config['PATH']['default_name_file']
 
         if name_file_path == self.path_default_names_csv_:
