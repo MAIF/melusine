@@ -1,6 +1,6 @@
 import re
-from unidecode import unidecode
 from melusine.config.config import ConfigJsonReader
+from melusine.prepare_email.cleaning import remove_accents
 
 conf_reader = ConfigJsonReader()
 config = conf_reader.get_config_file()
@@ -293,13 +293,10 @@ def tag(string):
     Examples
     --------
     """
-    def _remove_accents(string):
-        return unidecode(string)
     regex_parts = regex_segmenting_dict.items()
-    sentence_with_no_accent = _remove_accents(string)
+    sentence_with_no_accent = remove_accents(string)
     for k, reg in regex_parts:
         for r in reg:
-            r = _remove_accents(r)
             r = r.replace(" ", regex_tag)
             if re.search(r, sentence_with_no_accent, re.I):
                 return [(string, k)], True

@@ -2,7 +2,7 @@
 Cleaning of the body and the header
 """
 
-import unidecode
+import unidecode, unicodedata
 import re
 from melusine.config import ConfigJsonReader
 
@@ -95,9 +95,18 @@ def text_to_lowercase(text):
     return text.lower()
 
 
-def remove_accents(text):
-    """Remove accents from text"""
-    return unidecode.unidecode(text)
+def remove_accents(text, use_unidecode=False):
+    """
+    Remove accents from text
+    Using unidecode is more powerful but much more time consuming
+    Exemple: the joined 'ae' character is converted to 'a' + 'e' by unidecode while it is suppressed by unicodedata.
+
+    """
+    if use_unidecode:
+        return unidecode.unidecode(text)
+    else:
+        utf8_str = unicodedata.normalize('NFKD', text).encode('ASCII', 'ignore').decode("utf-8")
+        return utf8_str
 
 
 def remove_line_break(text):
