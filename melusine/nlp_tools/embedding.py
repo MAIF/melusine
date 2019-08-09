@@ -19,10 +19,20 @@ class Embedding:
     Attributes
     ----------
     input_column : str,
-        Input text column to consider for the embedding.
-    stream : Streamer instance,
+        String of the input column name for the pandas dataframe to compute the embedding on.
+    stop_removal : bool,
+        If True, dynamically removes stopwords from the Streamer's output.
+    streamer : Streamer instance,
         Builds a stream a tokens from a pd.Dataframe to train the embeddings.
-    embedding : Word2Vec instance from Gensim
+    word2id: dict,
+        Word vocabulary (key: word, value: word_index.
+    embedding : Gensim KeyedVector Instance,
+        Gensim KeyedVector Instance relative to the specific trained or imported embedding.
+    train_params : dict,
+        Dictionary of parameters used for training the embeddings.
+    method : str,
+        One of the following :
+
     Examples
     --------
     >>> from melusine.nlp_tools.embedding import Embedding
@@ -35,12 +45,58 @@ class Embedding:
     def __init__(self,
                  input_column='clean_text',
                  workers=40,
-                 seed=42,
+                 random_seed=42,
                  iter=15,
                  size=300,
                  window=5,
                  min_count=100,
-                 stop_removal = True):
+                 stop_removal = True,
+                 method="word2vec-CBOW",
+                 size=100,
+                 alpha=0.025,
+                 window=5,
+                 min_count=5,
+                 max_vocab_size=None,
+                 sample=0.001,
+                 min_alpha=0.0001,
+                 ns_exponent=0.75,
+                 cbow_mean=1,
+                 iter=5,
+                 null_word=0,
+                 trim_rule=None,
+                 sorted_vocab=1,
+                 batch_words=10000,
+                 compute_loss=False,
+                 callbacks=(),
+                 max_final_vocab=None,
+                 ):
+        """
+        input_column : str,
+            String of the input column name for the pandas dataframe to compute the embedding on (default="clean_text").
+        workers : int,
+            Number of CPUs to use for the embedding training process (default=40).
+        random_seed : int,
+            Seed for reproducibility (default=42).
+        iter : int,
+            Number of epochs (default=15). Used for Word2Vec and GloVe only.
+        size : int,
+            Desired embedding size (default=300).
+        window : int,
+            If Word2Vec, window used to find center-context word relationships.
+            If GloVe, window used to compute the co-occurence matrix.
+        min_count : int,
+            Minimum number of appeareance of a token in the corpus for it to be kept in the vocabulary (default=100).
+        stop_removal : bool,
+            If True, removes stopwords in the Streamer proces (default=True).
+        method : str,
+            One of the following :
+            - "word2vec-sg" : Trains a Word2Vec Embedding using the Skip-Gram method (usually takes a long time).
+            - "word2vec-ns" : Trains a Word2Vec Embedding using the Negative-Sampling method.
+            - "word2vec-cbow" : Trains a Word2Vec Embedding using the Continuous Bag-Of-Words method.
+            - "lsa-docterm" : Trains an Embedding by using an SVD on a Document-Term Matrix.
+            - "lsa_tfidf" : Trains an Embedding by using an SVD on a TF-IDFized Document-Term Matrix.
+            - "glove" : Trains a GloVe Embedding.
+        """
 
         self.logger = logging.getLogger('NLUtils.Embedding')
         ch = logging.StreamHandler()
@@ -51,15 +107,40 @@ class Embedding:
         self.input_column = input_column
         self.stop_removal = stop_removal
         self.streamer = Streamer(column=self.input_column, stop_removal=stop_removal)
+        self.word2id = {}
+        self.embedding = None
+        self.method=method
+
+        self.train_params={"size"=size,
+                            "window"=window,
+                            "min_count"=min_count,
+                            "workers"=workers,
+                            "ns_exponent"=ns_exponent,
+                            "cbow_mean"=cbow_mean,
+                            "learning_rate"=learning_rate,
+                            "seed"=random_seed,
+                            "max_vocab_size"=max_vocab_size,
+                            "max_final_vocab"=max_final_vocab,
+                            "sample"=sample,
+                            "iter"=iter,
+                            "trim_rule"=trim_rule,
+                            "sorted_vocab"=sorted_vocab,
+                            "batch_words"=batch_words,
+                            "compute_loss"=compute_loss,
+                            "callbacks"=callbacks,
+
+
+        }
+
+
+
         self.workers = workers
-        self.seed = seed
+        self.random_seed = seed
         self.iter = iter
         self.size = size
         self.window = window
         self.min_count = min_count
-        self.word2id = {}
-        self.embedding = None
-        self.kv = None
+
 
     def save(self, filepath):
         """Method to save Embedding object."""
@@ -78,10 +159,6 @@ class Embedding:
             Containing a clean body column.
         embedding_type: str
             Desired embedding type
-        Returns
-        -------
-        self : object
-            Returns the instance
         """
         self.logger.info('Start training for embedding')
 
@@ -99,11 +176,11 @@ class Embedding:
         self.logger.info('Done.')
 
     def train_tfidf(self, X, input_column):
-        """TODO
+        """Train a TF-IDF Vectorizer to compute a TF-IDFized Doc-Term Matrix relative to a corpus.
         Parameters
         ----------
         X : pd.Dataframe
-            Containing a column with tokens.
+            Containing a column with tokeized documents.
         input_column: str
             Name of the input column containing tokens
         """
@@ -128,11 +205,11 @@ class Embedding:
         self.create_keyedvector_from_matrix(embedding_matrix, self.word2id)
 
     def train_docterm(self, X, input_column):
-        """TODO
+        """Train a Count Vectorizer to compute a Doc-Term Matrix relative to a corpus.
         Parameters
         ----------
         X : pd.Dataframe
-            Containing a column with tokens.
+            Containing a column with tokenized documents
         input_column: str
             Name of the input column containing tokens
         """
@@ -157,7 +234,7 @@ class Embedding:
         self.create_keyedvector_from_matrix(embedding_matrix, self.word2id)
 
     def train_svd(self, vectorized_corpus_data):
-        """TODO
+        """Fits a TruncatedSVD on a Doc-Term/TF-IDFized Doc-Term Matrix for dimensionality reduction.
         Parameters
         ----------
         vectorized_corpus_data: TODO
