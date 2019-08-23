@@ -385,7 +385,7 @@ class Embedding:
             Word vocabulary (key: word, value: word_index)
         """
 
-        vocab = {word:vocab[word] for word in sorted(word2id, key=word2id.__getitem__, reverse=False)}
+        vocab = {word:word2id[word] for word in sorted(word2id, key=word2id.__getitem__, reverse=False)}
         embedding_matrix = embedding_matrix
         vector_size = embedding_matrix.shape[1]
 
