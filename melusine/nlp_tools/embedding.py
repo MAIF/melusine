@@ -210,7 +210,7 @@ class Embedding:
 
         self.logger.info('Done.')
 
-    def train_tfidf(self, X, input_column):
+    def train_tfidf(self):
         """Train a TF-IDF Vectorizer to compute a TF-IDFized Doc-Term Matrix relative to a corpus.
         Parameters
         ----------
@@ -252,7 +252,7 @@ class Embedding:
 
         self.create_keyedvector_from_matrix(embedding_matrix, self.word2id)
 
-    def train_docterm(self, X):
+    def train_docterm(self):
         """Train a Count Vectorizer to compute a Doc-Term Matrix relative to a corpus.
         Parameters
         ----------
