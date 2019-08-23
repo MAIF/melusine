@@ -56,9 +56,11 @@ class Embedding:
                  iter=15,
                  size=300,
                  method="word2vec_cbow",
-                 stop_removal=True
+                 stop_removal=True,
+                 min_count=100
                  ):
         """
+
         input_column : str,
             String of the input column name for the pandas dataframe to compute the embedding on (default="clean_text").
         workers : int,
@@ -84,7 +86,7 @@ class Embedding:
                 - "lsa_docterm" : Trains an Embedding by using an SVD on a Document-Term Matrix.
                 - "lsa_tfidf" : Trains an Embedding by using an SVD on a TF-IDFized Document-Term Matrix.
                 - "glove" : Trains a GloVe Embedding. NOT IMPLEMENTED YET.
-
+        min_count : TODO
         """
 
         self.logger = logging.getLogger('NLUtils.Embedding')
@@ -104,7 +106,7 @@ class Embedding:
                  "size":size,
                  "alpha":0.025,
                  "window":5,
-                 "min_count":5,
+                 "min_count":min_count,
                  "max_vocab_size":None,
                  "sample":0.001,
                  "seed":random_seed,
