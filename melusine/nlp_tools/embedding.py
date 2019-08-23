@@ -127,9 +127,7 @@ class Embedding:
                             "sorted_vocab"=sorted_vocab,
                             "batch_words"=batch_words,
                             "compute_loss"=compute_loss,
-                            "callbacks"=callbacks,
-
-
+                            "callbacks"=callbacks
         }
 
 
@@ -289,7 +287,7 @@ class Embedding:
             Word vocabulary (key: word, value: word_index)
         """
 
-        vocab = word2id
+        vocab = {word:vocab[word] for word in sorted(word2id, key=word2id.__getitem__, reverse=False)}
         embedding_matrix = embedding_matrix
         vector_size = embedding_matrix.shape[1]
 
