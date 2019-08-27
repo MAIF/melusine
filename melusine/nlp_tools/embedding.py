@@ -353,8 +353,9 @@ class Embedding:
                             callbacks=self.train_params["callbacks"],
                             max_final_vocab=self.train_params["max_final_vocab"])
 
-        embedding.build_vocab(self.streamer.stream)
-        embedding.train(self.streamer.stream,
+        #TODO Fix Streamer
+        embedding.build_vocab(list(self.streamer.stream))
+        embedding.train(list(self.streamer.stream),
                         total_examples=embedding.corpus_count,
                         epochs=self.train_params["iter"])
 
