@@ -12,8 +12,12 @@ config = Config()
 
 class SentimentDetector(BaseEstimator, TransformerMixin):
 
-    def __init__(self, base_seed_words, input_column, n_jobs=1, progress_bar=False, root=False,
-                 normalize_lexicon=False):
+    def __init__(self, base_seed_words, tokens_column, n_jobs=1,
+                 progress_bar=False, root=False,
+                 normalize_lexicon=False,
+                 aggregation_function_seed_wise=np.max,
+                 aggregation_function_email_wise=lambda x: np.percentile(x, 60)
+                 ):
         """
         TODO
 
@@ -25,14 +29,17 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
         self.progress_bar = progress_bar
 
         self.base_seed_words = base_seed_words
-        self.seed_dict = {word: [word] for word in self.base_seed_words}
+        self.seed_dict = {word: [] for word in self.base_seed_words}
         self.seed_list = base_seed_words
         self.root = root
-        self.input_column = input_column
+        self.tokens_column = tokens_column
         self.normalize_lexicon = normalize_lexicon
 
         self.lexicon_dict = {}
         self.normalized_lexicon_dict = {}
+
+        self.aggregation_function_seed_wise = aggregation_function_seed_wise
+        self.aggregation_function_email_wise = aggregation_function_email_wise
 
     def __getstate__(self):
         """should return a dict of attributes that will be pickled
@@ -123,10 +130,10 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
 
         self.normalized_lexicon_dict = normalized_lexicon
 
-    def rate_email(self, row, aggregation_function='TODO'):
+    def rate_email(self, row):
 
         # TODO make the aggregation function as an argument
-        input_column = self.input_column
+        tokens_column = self.tokens_column
         seed_list = self.seed_list
 
         if self.normalize_lexicon:
@@ -134,16 +141,16 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
         else:
             lexicon_dict = self.lexicon_dict
 
-        effective_tokens_series = pd.Series([token for token in row[input_column] if token in lexicon_dict[seed_list[0]]])
+        effective_tokens_list = [token for token in row[tokens_column] if token in lexicon_dict[seed_list[0]]]
 
-        seed_score_list = []
+        token_score_list = [
+            self.aggregation_function_seed_wise(
+                [lexicon_dict[seed][token] for seed in seed_list]
+            )
+            for token in effective_tokens_list
+        ]
 
-        for seed in seed_list:
-            token_score_series = effective_tokens_series.apply(lambda x: lexicon_dict[seed][x])
-            seed_score_list.append(token_score_series.quantile(0.9))
-
-        return np.mean(seed_score_list)
-
+        return self.aggregation_function_email_wise(token_score_list)
 
     def print_topn_mails(mails_rated, mails_raw, n=5, lab=False, rev=True):
         get_mails_idx=list()
