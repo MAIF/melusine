@@ -5,9 +5,7 @@ import pandas as pd
 from multiprocessing import Pool
 
 from sklearn.base import BaseEstimator, TransformerMixin
-from utils.config.config import Config
-from utils.utils import applyParallel, remove_punctuation, remove_accents, regex_merge_generator
-config = Config()
+from melusine.utils.multiprocessing import apply_by_multiprocessing
 
 
 class SentimentDetector(BaseEstimator, TransformerMixin):
@@ -113,7 +111,7 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
         -------
 
         """
-        X['sentiment_score'] = applyParallel(X, self.rate_email, workers=self.n_jobs,
+        X['sentiment_score'] = apply_by_multiprocessing(X, self.rate_email, workers=self.n_jobs,
                                              progress_bar=self.progress_bar)
 
         return X
