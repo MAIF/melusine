@@ -9,15 +9,49 @@ from melusine.utils.multiprocessing import apply_by_multiprocessing
 
 
 class SentimentDetector(BaseEstimator, TransformerMixin):
+    """Class to fit a Lexicon on an embedding and predicts the
+    Attributes
+    ----------
+    base_seed_words : list,
+        Seedwords list containing the seedwords for computing the Lexicons given by the User.
+    seed_list : list,
+        Same as base_seed_words but only the seeds present in the embedding vocabulary are kept.
+    n_jobs : int,
+        Number of CPUs to use to rate the emails.
+    progress_bar : bool,
+        Whether to print or not the progress bar while rating the emails.
+    root : bool,
+        Whether to use the seedwords as prefixes.
+    seed_dict : dict,
+        Filled if root==True. Key : prefix, Value : list of seedwords having this prefix in the vocabulary
+    tokens_column : str,
+        Name of the column corresponding
+    normalize_scores : bool,
+        Whether or not to normalize the lexicons' scores (so that they are centered around 0 and with a variance of 1)
+    lexicon_dict : dict,
+        Key : Seedword, Value : dict having all the embedding vocabulary as keys, and their semantic polarity value (cosine similarity) towards the seedword as values
+    normalized_lexicon_dict : dict,
+        Filled only if nomalize_scores==True. Contains the same as lexicon_dict, but with the normalized polarity values instead.
+    aggregation_function_seed_wise : function,
+        Function to aggregate the scores returned by all the different Lexicons associated to the seedwords, for a specific token (default=np.max)
+    aggregation_function_email_wise : function,
+        Function to aggregate the scores given to the tokens in a e-mail (default=np.percentile(.,60))
+
+    Examples
+    --------
+
+    """
 
     def __init__(self, base_seed_words, tokens_column, n_jobs=1,
                  progress_bar=False, root=False,
-                 normalize_lexicon=False,
+                 normalize_scores=False,
                  aggregation_function_seed_wise=np.max,
                  aggregation_function_email_wise=lambda x: np.percentile(x, 60)
                  ):
         """
-        TODO
+        Parameters
+        --------
+
 
         :param n_jobs:
         :param progress_bar:
@@ -31,7 +65,7 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
         self.seed_list = base_seed_words
         self.root = root
         self.tokens_column = tokens_column
-        self.normalize_lexicon = normalize_lexicon
+        self.normalize_scores = normalize_scores
 
         self.lexicon_dict = {}
         self.normalized_lexicon_dict = {}
@@ -71,7 +105,15 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
         if self.root:
             self.seed_dict, self.seed_list = self.compute_seeds_from_root(embedding, self.base_seed_words)
 
+        self.seed_list = [token for token in self.seed_list if token in embedding.embedding.vocab.keys()]
+
+        if not self.seed_list:
+            raise ValueError('None of the seed words are in the vocabulary associated with the Embedding')
+
         self.lexicon_dict = self.compute_lexicon(embedding, self.seed_list)
+
+        if self.normalize_scores :
+            self.normalize_lexicon()
 
     @staticmethod
     def compute_seeds_from_root(embedding, base_seed_words):
@@ -122,7 +164,7 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
         normalized_lexicon=dict()
         for seed in lexicon_dict.keys() :
             mean=np.mean(list(lexicon_dict[seed].values()))
-            sd=np.std(list(pols[seed].values()))
+            sd=np.std(list(lexicon_dict[seed].values()))
             lex_norm={k:(v-mean)/sd for k,v in lexicon_dict[seed].items()}
             normalized_lexicon[seed]=lex_norm
 
@@ -138,48 +180,17 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
             lexicon_dict = self.normalized_lexicon_dict
         else:
             lexicon_dict = self.lexicon_dict
-
         effective_tokens_list = [token for token in row[tokens_column] if token in lexicon_dict[seed_list[0]]]
 
-        token_score_list = [
-            self.aggregation_function_seed_wise(
-                [lexicon_dict[seed][token] for seed in seed_list]
-            )
-            for token in effective_tokens_list
-        ]
+        if effective_tokens_list:
 
-        return self.aggregation_function_email_wise(token_score_list)
+            token_score_list = [
+                self.aggregation_function_seed_wise(
+                    [lexicon_dict[seed][token] for seed in seed_list]
+                )
+                for token in effective_tokens_list
+            ]
 
-    def print_topn_mails(mails_rated, mails_raw, n=5, lab=False, rev=True):
-        get_mails_idx=list()
-        ids=sorted(mails_rated, key=mails_rated.__getitem__, reverse=rev)
-        for j in range(n) :
-            get_mails_idx.append(ids[j])
-        for elem in get_mails_idx :
-            print("Index : " + str(mails_raw.index.values[elem]))
-            if lab==True :
-                print("Label : " + str(mails_raw.iloc[elem].mec_label))
-            print("Score : "+ str(mails_rated[elem] ))
-            print("\n")
-            print("Header : "+str(mails_raw.iloc[elem].conversation_epure[0]['structured_text']["header"]))
-            print("Body : " +str(mails_raw.iloc[elem].conversation_epure[0]['structured_text']["text"]))
-            print("\n---------------------------------------------------\n")
-
-
-    def get_parse_results(session_id):
-        url = "http://sc100525.maif.local:8099/api/sessions/results/"+str(session_id)
-        querystring = {"rasa":"False%20"}
-        headers = {'User-Agent': "PostmanRuntime/7.15.0",'Accept': "*/*",'Cache-Control': "no-cache",'Postman-Token': "8fa3962c-8204-48eb-92ef-df1b79678331,1db1abec-b1c9-4ac9-b709-bc7b992c9dc4",'Host': "sc100525.maif.local:8099",'accept-encoding': "gzip, deflate",'Connection': "keep-alive",'cache-control': "no-cache"}
-        response = requests.request("GET", url, headers=headers, params=querystring)
-        res=json.loads(response.text)
-        res_label=dict()
-        for email in res :
-            id_mail=int(re.search("(?:\|\|)(\d+)(?:\|\|)", email['text'])[1])
-            if email["answer"]=='accept':
-                label=1
-            elif email["answer"]=='reject' :
-                label=0
-            else :
-                label=-1
-            res_label[id_mail]=label
-        return(res_label)
+            return self.aggregation_function_email_wise(token_score_list)
+        else :
+            return(np.nan)

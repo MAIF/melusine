@@ -60,7 +60,8 @@ class Embedding:
                  min_count=100
                  ):
         """
-
+        Parameters :
+        ----------
         input_column : str,
             String of the input column name for the pandas dataframe to compute the embedding on (default="clean_text").
         workers : int,
