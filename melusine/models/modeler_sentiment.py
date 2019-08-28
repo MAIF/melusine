@@ -221,9 +221,8 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
 
         Parameters
         ----------
-        row : ???,
-            A Pandas Row corresponding to a tokenized document.
-
+        row : row,
+            A Pandas Dataframe containing a tokenized document.
         """
 
         # TODO make the aggregation function as an argument
