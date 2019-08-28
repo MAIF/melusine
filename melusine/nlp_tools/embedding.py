@@ -298,8 +298,8 @@ class Embedding:
         """Fits a TruncatedSVD on a Doc-Term/TF-IDFized Doc-Term Matrix for dimensionality reduction.
         Parameters
         ----------
-        vectorized_corpus_data: TODO
-            Vectorized data TODO
+        vectorized_corpus_data: CountVectorizer or TfidfVectorizer object,
+            Sklearn object on which the TruncatedSVD will be computed.
         """
 
         svd=TruncatedSVD(n_components=self.train_params["svd_n_components"],
@@ -314,8 +314,6 @@ class Embedding:
 
     def train_word2vec(self):
         """Fits a Word2Vec Embedding on the given documents, and update the embedding attribute.
-        Parameters
-        ----------
         """
 
         if self.method== "word2vec_sg":
@@ -378,7 +376,8 @@ class Embedding:
     #    self.create_keyedvector_from_matrix(glove.word_vectors, self.word2id)
 
     def create_keyedvector_from_matrix(self, embedding_matrix, word2id):
-        """TODO
+        """
+        Imports the necessary attributes for the Embedding object from an embedding matrix and a word2id vocabulary. Can be used for custom pre-trained embeddings.
         Parameters
         ----------
         embedding_matrix: numpy.ndarray

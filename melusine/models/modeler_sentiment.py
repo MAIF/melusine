@@ -25,7 +25,7 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
     seed_dict : dict,
         Filled if root==True. Key : prefix, Value : list of seedwords having this prefix in the vocabulary
     tokens_column : str,
-        Name of the column corresponding
+        Name of the column in the Pandas Dataframe on which the polarity scores will be computed. Must be a column of tokens.
     normalize_scores : bool,
         Whether or not to normalize the lexicons' scores (so that they are centered around 0 and with a variance of 1)
     lexicon_dict : dict,
@@ -51,10 +51,22 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
         """
         Parameters
         --------
-
-
-        :param n_jobs:
-        :param progress_bar:
+        base_seed_words : list,
+            Seedwords list containing the seedwords for computing the Lexicons given by the User.
+        tokens_column : str,
+            Name of the column in the Pandas Dataframe on which the polarity scores will be computed. Must be a column of tokens.
+        n_jobs : int,
+            Number of CPUs to use to rate the emails.
+        progress_bar : bool,
+            Whether to print or not the progress bar while rating the emails.
+        root : bool,
+            Whether to use the seedwords as prefixes.
+        normalize_scores : bool,
+            Whether or not to normalize the lexicons' scores (so that they are centered around 0 and with a variance of 1)
+        aggregation_function_seed_wise : function,
+            Function to aggregate the scores returned by all the different Lexicons associated to the seedwords, for a specific token (default=np.max)
+        aggregation_function_email_wise : function,
+            Function to aggregate the scores given to the tokens in a e-mail (default=np.percentile(.,60))
         """
 
         self.n_jobs = n_jobs
@@ -95,10 +107,11 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
 
     def fit(self, embedding):
         """
-        Not used
-
-        Returns
+        Computes the Lexicons for the specific embedding.
+        Parameters
         -------
+        embedding : Embedding Object,
+            A Melusine Embedding object.
 
         """
 
@@ -117,6 +130,22 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
 
     @staticmethod
     def compute_seeds_from_root(embedding, base_seed_words):
+        """
+        Uses the seedwords list provided by the User and treats them as prefixes to find the effective tokens that will be used to compute the Lexicons.
+
+        Parameters
+        --------
+        embedding : Embedding Object,
+            A Melusine Embedding object.
+        base_seed_words :list,
+            Seedwords list containing the seedwords for computing the Lexicons given by the User.
+
+        Returns
+        -------
+        (seed_dict, seed_list) : (dict, list),
+            Tuple contraining a dict with key:prefixe value : list of seedwords, and a list containing all the seedwords found with the given prefixes
+
+        """
         words = list(embedding.embedding.vocab.keys())
         seed_dict = dict()
         seed_list = []
@@ -130,6 +159,22 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
 
     @staticmethod
     def compute_lexicon(embedding, seed_list):
+        """
+        Computes the Lexicons for the given embedding. Computes the cosine similarity between all the tokens in seed_list and the embedding's vocabulary.
+
+        Parameters
+        --------
+        embedding : Embedding Object,
+            A Melusine Embedding object on which the cosine similarity between the words will be computed.
+        seed_list : list,
+            A list containing the seedwords on which the cosine similarity will be computed.
+
+        Returns
+        -------
+        lexicon_dict : dict,
+            A dict representing the lexicon. The keys will be all the tokens in seed_list, the values will be a dict which keys will be all the tokens of the embedding's vocabulary, and the values their cosine similarity with the seed.
+
+        """
         words = list(embedding.embedding.vocab.keys())
         lexicon_dict = {}
 
@@ -143,14 +188,11 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
 
     def predict(self, X):
         """
-
+        Given the objet has already been fitted, will add a new column "sentiment_score" to the Pandas Dataset containing the polarity scores of the documents towards the list of seeds provided.
         Parameters
         ----------
         X : DataFrame
             Input emails DataFrame
-
-        Returns
-        -------
 
         """
         X['sentiment_score'] = apply_by_multiprocessing(X, self.rate_email, workers=self.n_jobs,
@@ -159,6 +201,9 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
         return X
 
     def normalize_lexicon(self) :
+        """
+        Normalizes the Lexicon scores (centered around 0, with variance 1).
+        """
         lexicon_dict = self.lexicon_dict
 
         normalized_lexicon=dict()
@@ -171,6 +216,15 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
         self.normalized_lexicon_dict = normalized_lexicon
 
     def rate_email(self, row):
+        """
+        Given the object has been fitted, will compute the polarity score towards the seedwords for a specific e-mail.
+
+        Parameters
+        ----------
+        row : ???,
+            A Pandas Row corresponding to a tokenized document.
+
+        """
 
         # TODO make the aggregation function as an argument
         tokens_column = self.tokens_column
