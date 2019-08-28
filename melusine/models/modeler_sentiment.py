@@ -20,10 +20,10 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
         Number of CPUs to use to rate the emails.
     progress_bar : bool,
         Whether to print or not the progress bar while rating the emails.
-    root : bool,
+    extend_seed_word_list : bool,
         Whether to use the seedwords as prefixes.
     seed_dict : dict,
-        Filled if root==True. Key : prefix, Value : list of seedwords having this prefix in the vocabulary
+        Filled if extend_seed_word_list==True. Key : prefix, Value : list of seedwords having this prefix in the vocabulary
     tokens_column : str,
         Name of the column in the Pandas Dataframe on which the polarity scores will be computed. Must be a column of tokens.
     normalize_scores : bool,
@@ -43,8 +43,9 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
     """
 
     def __init__(self, base_seed_words, tokens_column, n_jobs=1,
-                 progress_bar=False, root=False,
-                 normalize_scores=False,
+                 progress_bar=False,
+                 extend_seed_word_list=False,
+                 normalize_lexicon_scores=False,
                  aggregation_function_seed_wise=np.max,
                  aggregation_function_email_wise=lambda x: np.percentile(x, 60)
                  ):
@@ -59,7 +60,7 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
             Number of CPUs to use to rate the emails.
         progress_bar : bool,
             Whether to print or not the progress bar while rating the emails.
-        root : bool,
+        extend_seed_word_list : bool,
             Whether to use the seedwords as prefixes.
         normalize_scores : bool,
             Whether or not to normalize the lexicons' scores (so that they are centered around 0 and with a variance of 1)
@@ -75,9 +76,9 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
         self.base_seed_words = base_seed_words
         self.seed_dict = {word: [] for word in self.base_seed_words}
         self.seed_list = base_seed_words
-        self.root = root
+        self.extend_seed_word_list = extend_seed_word_list
         self.tokens_column = tokens_column
-        self.normalize_scores = normalize_scores
+        self.normalize_lexicon_scores = normalize_lexicon_scores
 
         self.lexicon_dict = {}
         self.normalized_lexicon_dict = {}
@@ -115,7 +116,7 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
 
         """
 
-        if self.root:
+        if self.extend_seed_word_list:
             self.seed_dict, self.seed_list = self.compute_seeds_from_root(embedding, self.base_seed_words)
 
         self.seed_list = [token for token in self.seed_list if token in embedding.embedding.vocab.keys()]
@@ -125,7 +126,7 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
 
         self.lexicon_dict = self.compute_lexicon(embedding, self.seed_list)
 
-        if self.normalize_scores :
+        if self.normalize_lexicon_scores:
             self.normalize_lexicon()
 
     @staticmethod
@@ -229,10 +230,11 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
         tokens_column = self.tokens_column
         seed_list = self.seed_list
 
-        if self.normalize_lexicon:
+        if self.normalize_lexicon_scores:
             lexicon_dict = self.normalized_lexicon_dict
         else:
             lexicon_dict = self.lexicon_dict
+
         effective_tokens_list = [token for token in row[tokens_column] if token in lexicon_dict[seed_list[0]]]
 
         if effective_tokens_list:
