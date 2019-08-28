@@ -11,11 +11,11 @@ with open('README.md') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['pandas>=0.22.0',
+requirements = ['pandas>=0.25.0',
                 'scikit-learn>=0.19.0',
                 'gensim>=3.3.0',
                 'keras>=2.2.0',
-                'tqdm>=4.14',
+                'tqdm>=4.34',
                 'tensorflow>=1.10.0,<=1.13.1',
                 'unidecode',
                 'joblib'
