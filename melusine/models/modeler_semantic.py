@@ -8,7 +8,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from melusine.utils.multiprocessing import apply_by_multiprocessing
 
 
-class SentimentDetector(BaseEstimator, TransformerMixin):
+class SemanticDetector(BaseEstimator, TransformerMixin):
     """Class to fit a Lexicon on an embedding and predicts the
     Attributes
     ----------
@@ -186,18 +186,21 @@ class SentimentDetector(BaseEstimator, TransformerMixin):
 
         return lexicon_dict
 
-
-    def predict(self, X):
+    def predict(self, X, return_column='score'):
         """
-        Given the objet has already been fitted, will add a new column "sentiment_score" to the Pandas Dataset containing the polarity scores of the documents towards the list of seeds provided.
+        Given the objet has already been fitted, will add a new column "score"
+        (or the column name specified as argument) to the Pandas Dataset containing the polarity scores of the
+        documents towards the list of seeds provided.
         Parameters
         ----------
         X : DataFrame
             Input emails DataFrame
+        return_column : str
+            Name of the new column added to the DataFrame containing the semantic score
 
         """
-        X['sentiment_score'] = apply_by_multiprocessing(X, self.rate_email, workers=self.n_jobs,
-                                             progress_bar=self.progress_bar)
+        X[return_column] = apply_by_multiprocessing(X, self.rate_email, workers=self.n_jobs,
+                                                    progress_bar=self.progress_bar)
 
         return X
 
