@@ -24,9 +24,7 @@ regex_segmenting_dict['RE/TR'] = [regex_begin_transfer,
                                   regex_extract_from,
                                   regex_extract_to,
                                   regex_extract_date,
-                                  regex_extract_header,
-                                  regex_answer_header,
-                                  regex_transfert_header]
+                                  regex_extract_header]
 
 compiled_regex_segmenting_dict = {}
 for tag, regex_list in regex_segmenting_dict.items():
