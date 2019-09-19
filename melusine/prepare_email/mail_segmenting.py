@@ -28,7 +28,7 @@ regex_segmenting_dict['RE/TR'] = [regex_begin_transfer,
 
 compiled_regex_segmenting_dict = {}
 for tag, regex_list in regex_segmenting_dict.items():
-    compiled_regex_segmenting_dict[tag] = [regex.replace(" ", regex_tag) for regex in regex_list]
+    compiled_regex_segmenting_dict[tag] = [re.compile(regex.replace(" ", regex_tag)) for regex in regex_list]
 
 regex_from1 = REGEX_SEG['meta_from1']
 regex_from2 = REGEX_SEG['meta_from2']
