@@ -28,7 +28,10 @@ regex_segmenting_dict['RE/TR'] = [regex_begin_transfer,
 
 compiled_regex_segmenting_dict = {}
 for tag, regex_list in regex_segmenting_dict.items():
-    compiled_regex_segmenting_dict[tag] = [re.compile(regex.replace(" ", regex_tag)) for regex in regex_list]
+    compiled_regex_segmenting_dict[tag] = [
+        re.compile(regex.replace(" ", regex_tag), re.I)
+        for regex in regex_list
+    ]
 
 regex_from1 = REGEX_SEG['meta_from1']
 regex_from2 = REGEX_SEG['meta_from2']
@@ -59,7 +62,7 @@ regex_pattern = (regex_pattern_beginning
                  + regex_pattern_exceptions
                  + regex_pattern_end)
 
-compiled_regex_typo = re.compile(REGEX_SEG['tag_typo'])
+compiled_regex_typo = re.compile(REGEX_SEG['tag_typo'], re.I)
 regex_tag_subsentence = REGEX_SEG['tag_subsentence']
 regex_split_message_to_sentences_list = REGEX_SEG['split_message_to_sentences_list']
 
@@ -300,7 +303,7 @@ def tag(string):
     sentence_with_no_accent = remove_accents(string)
     for k, compiled_regex_list in regex_parts:
         for compiled_regex in compiled_regex_list:
-            if compiled_regex.search(sentence_with_no_accent, re.I):
+            if compiled_regex.search(sentence_with_no_accent):
                 return [(string, k)], True
 
     return string, False
@@ -356,7 +359,7 @@ def _update_typo_part(part_tag_tuple):
 
 def __is_typo(part, compiled_regex_typo=compiled_regex_typo):
     """ Check if a string is typo """
-    return compiled_regex_typo.search(part, re.I & re.M)
+    return compiled_regex_typo.search(part)
 
 
 def _remove_typo_parts(tagged_parts_list):
