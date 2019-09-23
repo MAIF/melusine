@@ -4,6 +4,7 @@ from melusine.prepare_email.cleaning import remove_accents
 
 conf_reader = ConfigJsonReader()
 config = conf_reader.get_config_file()
+
 REGEX_TR_RE = config['regex']['manage_transfer_reply']
 REGEX_SEG = config['regex']['mail_segmenting']
 
@@ -16,15 +17,21 @@ regex_extract_header = REGEX_TR_RE['extract_header']
 regex_answer_header = REGEX_TR_RE['answer_header']
 regex_transfert_header = REGEX_TR_RE['transfer_header']
 
+regex_tag = REGEX_SEG['tag']
 regex_segmenting_dict = REGEX_SEG['segmenting_dict']
 regex_segmenting_dict['RE/TR'] = [regex_begin_transfer,
                                   regex_transfer_other,
                                   regex_extract_from,
                                   regex_extract_to,
                                   regex_extract_date,
-                                  regex_extract_header,
-                                  regex_answer_header,
-                                  regex_transfert_header]
+                                  regex_extract_header]
+
+compiled_regex_segmenting_dict = {}
+for tag, regex_list in regex_segmenting_dict.items():
+    compiled_regex_segmenting_dict[tag] = [
+        re.compile(regex.replace(" ", regex_tag), re.I)
+        for regex in regex_list
+    ]
 
 regex_from1 = REGEX_SEG['meta_from1']
 regex_from2 = REGEX_SEG['meta_from2']
@@ -55,8 +62,7 @@ regex_pattern = (regex_pattern_beginning
                  + regex_pattern_exceptions
                  + regex_pattern_end)
 
-regex_typo = REGEX_SEG['tag_typo']
-regex_tag = REGEX_SEG['tag']
+compiled_regex_typo = re.compile(REGEX_SEG['tag_typo'], re.I)
 regex_tag_subsentence = REGEX_SEG['tag_subsentence']
 regex_split_message_to_sentences_list = REGEX_SEG['split_message_to_sentences_list']
 
@@ -293,12 +299,11 @@ def tag(string):
     Examples
     --------
     """
-    regex_parts = regex_segmenting_dict.items()
+    regex_parts = compiled_regex_segmenting_dict.items()
     sentence_with_no_accent = remove_accents(string)
-    for k, reg in regex_parts:
-        for r in reg:
-            r = r.replace(" ", regex_tag)
-            if re.search(r, sentence_with_no_accent, re.I):
+    for k, compiled_regex_list in regex_parts:
+        for compiled_regex in compiled_regex_list:
+            if compiled_regex.search(sentence_with_no_accent):
                 return [(string, k)], True
 
     return string, False
@@ -352,9 +357,9 @@ def _update_typo_part(part_tag_tuple):
     return part_tag_tuple
 
 
-def __is_typo(part, regex_typo=regex_typo):
+def __is_typo(part, compiled_regex_typo=compiled_regex_typo):
     """ Check if a string is typo """
-    return re.search(regex_typo, part, re.I & re.M)
+    return compiled_regex_typo.search(part)
 
 
 def _remove_typo_parts(tagged_parts_list):

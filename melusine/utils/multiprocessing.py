@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+
 from tqdm import tqdm
 from joblib import Parallel, delayed
 
@@ -22,7 +23,6 @@ def apply_df(input_args):
 
 def apply_by_multiprocessing(df, func, **kwargs):
     """Apply a function along an axis of the DataFrame using multiprocessing.
-    A maximum of half of the core available in the system will be used.
 
     Parameters
     ----------
@@ -43,3 +43,4 @@ def apply_by_multiprocessing(df, func, **kwargs):
         return apply_df((df, func, kwargs))
     retLst = Parallel(n_jobs=workers)(delayed(apply_df)(input_args=(d, func, kwargs)) for d in np.array_split(df, workers))
     return pd.concat(retLst)
+
