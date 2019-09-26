@@ -53,15 +53,15 @@ def _get_index_transitions(email_body):
     different messages in an email."""
     index = []
     for regex in regex_transition_list:
-        for match in re.finditer(regex, email_body):
+        for match in re.finditer(regex, email_body, flags=re.S):
             idx = (match.start(), match.end())
             index.append(idx)
 
     index = [(0, 0)] + index
     index = index + [(len(email_body), len(email_body))]
-    index = list(set(index))
-    index = sorted(index, key=lambda tup: tup[0])
+    index = sorted(list(set(index)))
     index = __filter_overlap(index)
+    index = _check_intervals_between_matches(index, email_body)
     nb_parts = len(index) - 1
 
     return index, nb_parts
@@ -86,3 +86,23 @@ def __filter_overlap(index):
     index_f += [index[i]]
 
     return index_f[:i+1]
+
+
+def is_only_typo(text):
+   """check if the string contains any word character"""
+   if not re.search(r"\w", text):
+       return True
+   else:
+       return False
+
+
+def _check_intervals_between_matches(index, email_body):
+    """If an interval between matches is only typographic
+    then we remove this interval. Otherwise it would be considered as an email"""
+    for i in range(1, len(index)-2):
+        begin_inter = index[i][1]
+        end_inter = index[i+1][0]
+        if is_only_typo(email_body[begin_inter:end_inter]):
+            index[i+1] = (index[i][0], index[i+1][1])
+            del index[i]
+    return index
