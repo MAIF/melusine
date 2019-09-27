@@ -44,7 +44,7 @@ def build_historic(row):
         {'text': email_body[index_messages[i][1]:index_messages[i+1][0]],
          'meta': email_body[index_messages[i][0]:index_messages[i][1]]
          } for i in range(nb_messages)]
-
+    structured_historic = __remove_empty_mails(structured_historic)
     return structured_historic
 
 
@@ -61,7 +61,6 @@ def _get_index_transitions(email_body):
     index = index + [(len(email_body), len(email_body))]
     index = sorted(list(set(index)))
     index = __filter_overlap(index)
-    index = _check_intervals_between_matches(index, email_body)
     nb_parts = len(index) - 1
 
     return index, nb_parts
@@ -87,7 +86,6 @@ def __filter_overlap(index):
 
     return index_f[:i+1]
 
-
 def is_only_typo(text):
    """check if the string contains any word character"""
    if not re.search(r"\w", text):
@@ -95,14 +93,21 @@ def is_only_typo(text):
    else:
        return False
 
-
-def _check_intervals_between_matches(index, email_body):
-    """If an interval between matches is only typographic
-    then we remove this interval. Otherwise it would be considered as an email"""
-    for i in range(1, len(index)-2):
-        begin_inter = index[i][1]
-        end_inter = index[i+1][0]
-        if is_only_typo(email_body[begin_inter:end_inter]):
-            index[i+1] = (index[i][0], index[i+1][1])
-            del index[i]
-    return index
+def __remove_empty_mails(structured_historic):
+    """If an interval between two matches of transitions is empty (or typographic)
+    then we remove this interval and we report the meta data to the previous email.
+    Otherwise this empty interval would be considered as an email and the meta data
+    will be lost"""
+    purged_structured_historic = []
+    meta_to_reinclude = None
+    for text_meta in structured_historic:
+        if meta_to_reinclude: # if the precedent piece had meta data to reinclude
+            text_meta["meta"] = meta_to_reinclude + text_meta.get("meta")
+            meta_to_reinclude = None
+        text, meta = text_meta.get("text"), text_meta.get("meta")
+        if not is_only_typo(text):
+            purged_structured_historic.append(text_meta)
+        else:
+            if not is_only_typo(meta):
+                meta_to_reinclude = meta
+    return purged_structured_historic
