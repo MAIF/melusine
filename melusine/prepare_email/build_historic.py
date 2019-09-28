@@ -86,12 +86,14 @@ def __filter_overlap(index):
 
     return index_f[:i+1]
 
+
 def is_only_typo(text):
    """check if the string contains any word character"""
    if not re.search(r"\w", text):
        return True
    else:
        return False
+       
 
 def __remove_empty_mails(structured_historic):
     """If an interval between two matches of transitions is empty (or typographic)
