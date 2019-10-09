@@ -24,9 +24,10 @@ def print_color_mail(structured_body):
             tag = sentence.get("tags")
             print_color(text, tag)
 
-
+       
 def print_color(text, part=None):
     """Select according to the tag the right color to use when printing."""
+    text = text.replace("\r", "")
     switcher_tag = {
         "HELLO": "\033[0;37;44m" + "HELLO" + "\033[0m",
         "GREETINGS": "\033[0;37;45m" + "GREETINGS" + "\033[0m",
@@ -53,8 +54,7 @@ def print_color(text, part=None):
         "HEADER": "\033[0;37;41m" + text + "\033[0m"
     }
 
-    # print("TAG : ", switcher_tag.get(part, text))
-    if part == "BODY":
-        print("> BODY : ", switcher.get(part, text))
+    if part in switcher.keys():
+       print("> ", switcher_tag.get(part, text), " : ", switcher.get(part, text), "\n")
     else:
-        print("> ", switcher_tag.get(part, text), " : ", switcher.get(part, text))
+       print("> BODY : ", switcher.get(part, text), "\n")
