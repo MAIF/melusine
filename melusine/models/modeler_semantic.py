@@ -7,6 +7,19 @@ from multiprocessing import Pool
 from sklearn.base import BaseEstimator, TransformerMixin
 from melusine.utils.multiprocessing import apply_by_multiprocessing
 
+def aggregation_percentile_60(x):
+    """
+    Explicit definition of the percentile 60 function.
+    This is done because lambda function can not be used in multiprocessing (can't be pickled).
+    NOT OK : aggregation_function_email_wise = lambda x: np.percentile(x, 60)
+    OK : aggregation_function_email_wise = aggregation_percentile_60
+
+    Parameters
+    ----------
+    x: list or numpy array
+        list of scores associated with the tokens in the document
+    """
+    return np.percentile(x, 60)
 
 class SemanticDetector(BaseEstimator, TransformerMixin):
     """Class to fit a Lexicon on an embedding and predicts the
@@ -47,11 +60,11 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
                  extend_seed_word_list=False,
                  normalize_lexicon_scores=False,
                  aggregation_function_seed_wise=np.max,
-                 aggregation_function_email_wise=lambda x: np.percentile(x, 60)
+                 aggregation_function_email_wise=aggregation_percentile_60
                  ):
         """
         Parameters
-        --------
+        ----------
         base_seed_words : list,
             Seedwords list containing the seedwords for computing the Lexicons given by the User.
         tokens_column : str,
