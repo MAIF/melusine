@@ -114,12 +114,12 @@
             "begin_transfer" : "^[;\\s]*[-\\s]*Transf[ée]r[ée] par",
             "begin_transfer_cons" : "De\\s*:\\s*[^<]*?<?[a-zA-Z0-9._%+-\/=]+\\@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?\\s(?:[;AÀ:]|(?:Envoy[ée]))",
             "transfer_other" : "^Le.*,.*a ecrit(?:\\xa0|\\s|\\t):",
-            "extract_from" : "(?:De|Exp[ée]diteur)\\s*:\\s*(.*?)\\s*(?:\n|A|À|:|Envoy[ée])",
-            "extract_to" : "[ÀA]\\s*:\\s*(.*?)\\s(?:\n|Date|Objet)",
-            "extract_date" : "(?:Envoy[ée]|Date)\\s*:\\s*(.*?)\\s(?:\n|Objet|A|À)",
-            "extract_header" : "Objet\\s*:\\s*(.*?)\\s[;|\n]",
-            "answer_header": "RE\\s*:|re\\s*:|Re\\s*:",
-            "transfer_header": "Tr\\s*:|TR\\s*:|Fwd\\s*:|FW\\s*:|FWD\\s*:|Fw\\s*:"
+            "extract_from" : "(?:Message de\\b|\\bDe\\b||Exp[ée]diteur|\\bFrom\\b)\\s*:\\s*(.{,120}?)\\s*(?:\n|A|À|:|Envoy[ée])",
+            "extract_to" : "(?:Destinataire|\\b[ÀA]\\b|\\bTo\\b)\\s*:\\s*(.{,120}?)\\s(?:\n|Date|Objet)",
+            "extract_date" : "(?:Envoy[ée]|\\bDate\\b|\\bSent\\b)\\s*:\\s*(.{,120}?)\\s(?:\n|Objet|A|À)",
+            "extract_header" : "(?:Subject|\\bObjet\\b)\\s*:\\s*(.{,120}?)\\s[;|\n]",
+            "answer_header": "\\bRE\\s*:|\\bre\\s*:|\\bRe\\s*:",
+            "transfer_header": "\\bTr\\s*:|\\bTR\\s*:|\\bFwd\\s*:|\\bFW\\s*:|\\bFWD\\s*:|\\bFw\\s*:"
 
         },
 
@@ -146,9 +146,8 @@
               "Exp[ée]diteur.+?Objet\\s*:.+?[;|\n]",
               "(?:>?[;|\n]?\\s*(?:Envoy[ée]|De|Objet|Cc|Envoy[ée] par|Date|A|À|Destinataire|Sent|To|Subject|From|Copie [àa])+?\\s*:\\s*(?:.*?)\\s*[;|\n]\\s*)+",
               "En date de.+?[ée]crit",
-              ">?\\s*Le[^;\n]{0,30}[;|\n]{0,1}[^;\n]{0,30}a[^;\n]{0,30};{0,1}[^;\n]{0,30}[ée]crit\\s*:?",
-              ">?\\s*Message de.+?Objet\\s*:.+?[;|\n]",
-              ">?\\s*Message du.+?Objet\\s*:.+?[;|\n]",
+              ">?\\s*\\bLe[^;\n]{0,30}[;|\n]{0,1}[^;\n]{0,30}a[^;\n]{0,30};{0,1}[^;\n]{0,30}[ée]crit\\s*:?",
+              ">?\\s*Message d[eu].+?Objet\\s*:.+?[;|\n]",
               "En date de.+?[ée]crit"
             ]
         },
@@ -179,7 +178,9 @@
 
             },
 
-            "remove_multiple_spaces_list" : ["\\t", "[\\s\\-\\*]{2,}"]
+            "remove_multiple_spaces_list" : ["\\t", "[\\s\\-\\*]{2,}"],
+
+            "newline_character" : "\n"
         },
 
         "mail_segmenting" : {
@@ -203,8 +204,8 @@
                   "^.{0,10}bien [àa] vous.{0,16}$",
                   "^.{0,30}sentiments mutualistes.{0,16}$",
                   "^.{0,60}salutations.{0,16}$",
-                  "^.{0,30}expression de (?:nos|mes) sentiments.{0,16}$",
-                  "^.{0,25}bon(?:ne)? (?:soir[ée]e|journ[ée]e|apr[èe]s-midi|courage).{0,16}(?!.)",
+                  "^.{0,40}expression de (?:nos|mes) sentiments.{0,16}$",
+                  "^.{0,35}bon(?:ne)? (?:soir[ée]e|journ[ée]e|apr[èe]s-midi|courage).{0,16}(?!.)",
                   "^.{0,10}bonne r[ée]ception.{0,16}$",
                   "^.{0,30}[aà] votre disposition.{0,45}$",
                   "^.{0,30}dans l'attente .{0,30}$"
@@ -240,7 +241,7 @@
             "meta_date1" : "Date\\s*:\\s*(.*?)\\s\n",
             "meta_date2" : "^>?\\s*Le(.*),.*a [ée]crit",
             "meta_header" : "Objet\\s*:\\s*(.*?)\\s\n",
-            "pattern_pj" : "(\\(See attached file:.*?\\)|.\\(Embedded image.*?\\))",
+            "pattern_pj" : "(\\(See attached file:.*?\\)|\\(Embedded image.*?\\))",
             "pattern_separteurs_evidents" : "[?!]|\\.{3}|$|",
             "pattern_sep_doubles_points_virgules_espace" : "(?:\\;\\s*){2,}|",
             "pattern_exception_une_lettre_maj" : "(?<!\\b[A-Z])",
@@ -253,8 +254,8 @@
             "tag_typo" : "^(?:[\\s;.,*|-])*$",
             "tag" : "\\s*",
             "tag_subsentence" : "(.*?;|.*?$)",
-            "split_message_to_sentences_list" : ["; ", " ;", "([\\?\\!\\.])\\.", "\\1", "\n"]
-
+            "split_message_to_sentences_list" : ["; ", " ;", "([\\?\\!\\.])\\.", "\\1", "\n"],
+            "signature_token_threshold" : 5
         }
 
     }
