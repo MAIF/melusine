@@ -107,7 +107,7 @@ class ConfigJsonReader():
         if path is None:
             path = self.path_default_conf_json_
 
-        with open(file=path, mode='r') as file:
+        with open(file=path, mode='r', encoding='utf-8') as file:
             config_file = json.load(file)
 
         return config_file
@@ -143,7 +143,7 @@ class ConfigJsonReader():
             path = self.path_default_names_csv_
 
         try:
-            df_names = pd.read_csv(path, encoding="latin-1", sep=";")
+            df_names = pd.read_csv(path, encoding='utf-8', sep=";")
             name_list = df_names['Name'].values
             name_list = [unidecode.unidecode(p).lower() for p in name_list]
         except FileNotFoundError:
