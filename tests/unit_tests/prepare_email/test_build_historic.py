@@ -24,13 +24,19 @@ La visualisation des fichiers PDF nécessite Adobe Reader. \n  ",
 <gestionsocietaire@mutuelle.fr> a écrit\xa0: \n\nObjet : Envoi d'un document \n\n "}]
 
 
+empty_body = "\n\nA :  societaireimaginaire@boiteemail.fr \nDate :  28/12/2018 14:23:16 \nObjet :  Un objet \n\n"
+empty_output = [
+    {'text': '',
+    'meta': '\n\nA :  societaireimaginaire@boiteemail.fr \nDate :  28/12/2018 14:23:16 \nObjet :  Un objet \n\n'}]
+
 
 def test_build_historic():
-    input_df = pd.DataFrame({
-        'body': [body]
-    })
-
-    output_df = pd.Series([output])
-
+    input_df = pd.DataFrame([
+        {'body': body},
+        {'body': empty_body}
+    ])
+    print(input_df)
+    output_df = pd.Series([output, empty_output])
+    print(output_df)
     result = input_df.apply(build_historic, axis=1)
     pd.testing.assert_series_equal(result, output_df)
