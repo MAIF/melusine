@@ -44,7 +44,7 @@
         "build_historic" : {
 
             "transition_list" : [
-              "De\\s*:\\s*[^<]*?<?[a-zA-Z0-9._%+-\/=]+\\@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?\\s[;\nAÀ:](?:.{,80}\n){,3}Objet.+$",
+              "De\\s*:\\s*[^<]*?<?[a-zA-Z0-9._%+-\/=]+\\@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?\\s[;\nAÀ:](?:.{,80}\n){,3}Objet.+\\n",
               "[- ]*?Mail transf[ée]r[ée].*?[;|\n]",
               "[- ]*?gestionsocietaire@maif.fr a [ée]crit.*?[;|\n]",
               "Courriel original.+?Objet\\s*:.+?[;|\n]",
