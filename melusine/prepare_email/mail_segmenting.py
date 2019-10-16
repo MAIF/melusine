@@ -4,6 +4,10 @@ from melusine.prepare_email.cleaning import remove_accents
 
 conf_reader = ConfigJsonReader()
 config = conf_reader.get_config_file()
+
+newline_character = config['regex']['cleaning']['newline_character']
+signature_token_threshold = config['regex']['mail_segmenting']['signature_token_threshold']
+
 REGEX_TR_RE = config['regex']['manage_transfer_reply']
 REGEX_SEG = config['regex']['mail_segmenting']
 
@@ -16,15 +20,21 @@ regex_extract_header = REGEX_TR_RE['extract_header']
 regex_answer_header = REGEX_TR_RE['answer_header']
 regex_transfert_header = REGEX_TR_RE['transfer_header']
 
+regex_tag = REGEX_SEG['tag']
 regex_segmenting_dict = REGEX_SEG['segmenting_dict']
 regex_segmenting_dict['RE/TR'] = [regex_begin_transfer,
                                   regex_transfer_other,
                                   regex_extract_from,
                                   regex_extract_to,
                                   regex_extract_date,
-                                  regex_extract_header,
-                                  regex_answer_header,
-                                  regex_transfert_header]
+                                  regex_extract_header]
+
+compiled_regex_segmenting_dict = {}
+for tag, regex_list in regex_segmenting_dict.items():
+    compiled_regex_segmenting_dict[tag] = [
+        re.compile(regex.replace(" ", regex_tag), re.I)
+        for regex in regex_list
+    ]
 
 regex_from1 = REGEX_SEG['meta_from1']
 regex_from2 = REGEX_SEG['meta_from2']
@@ -55,8 +65,7 @@ regex_pattern = (regex_pattern_beginning
                  + regex_pattern_exceptions
                  + regex_pattern_end)
 
-regex_typo = REGEX_SEG['tag_typo']
-regex_tag = REGEX_SEG['tag']
+compiled_regex_typo = re.compile(REGEX_SEG['tag_typo'], re.I)
 regex_tag_subsentence = REGEX_SEG['tag_subsentence']
 regex_split_message_to_sentences_list = REGEX_SEG['split_message_to_sentences_list']
 
@@ -293,12 +302,11 @@ def tag(string):
     Examples
     --------
     """
-    regex_parts = regex_segmenting_dict.items()
+    regex_parts = compiled_regex_segmenting_dict.items()
     sentence_with_no_accent = remove_accents(string)
-    for k, reg in regex_parts:
-        for r in reg:
-            r = r.replace(" ", regex_tag)
-            if re.search(r, sentence_with_no_accent, re.I):
+    for k, compiled_regex_list in regex_parts:
+        for compiled_regex in compiled_regex_list:
+            if compiled_regex.search(sentence_with_no_accent):
                 return [(string, k)], True
 
     return string, False
@@ -352,9 +360,9 @@ def _update_typo_part(part_tag_tuple):
     return part_tag_tuple
 
 
-def __is_typo(part, regex_typo=regex_typo):
+def __is_typo(part, compiled_regex_typo=compiled_regex_typo):
     """ Check if a string is typo """
-    return re.search(regex_typo, part, re.I & re.M)
+    return compiled_regex_typo.search(part)
 
 
 def _remove_typo_parts(tagged_parts_list):
@@ -381,3 +389,89 @@ def _tuples_to_dict(meta, header, tagged_parts):
     structured_message["structured_text"]["text"] = structured_text
 
     return structured_message
+
+
+def tag_signature(row, token_threshold = signature_token_threshold):
+    """
+    Function to be called after the mail_segmenting function as it requires a "structured_body" column.
+    This function detects parts of a message that qualify as "signature".
+    Exemples of parts qualifying as signature are sender name, company name, phone number, etc.
+
+    The methodology to detect a signature is the following:
+    - Look for a THANKS or GREETINGS part indicating that the message is approaching the end
+    - Check the length of the following message parts currently tagged as "BODY"
+    - (The maximum number of words is specified through the variable "signature_token_threshold")
+    - If ALL the "ending parts" contain few words => tag them as "SIGNATURE" parts
+    - Otherwise : cancel the signature tagging
+
+    Parameters
+    ----------
+    row : pd.Series
+        Row of an email DataFrame
+
+    Returns
+    -------
+    structured_body : Updated structured body
+    """
+
+    # Get the part and tags in the email
+    last_body_parts = row['structured_body'][0]["structured_text"]['text']
+
+    # Get index of the first occurrence of a THANKS or GREETINGS part
+    ending_part_index = next((i for i, x in enumerate(last_body_parts) if x['tags'] in ['GREETINGS', 'THANKS']), -1)
+
+    # Detect parts that qualify as signature
+    signature_indices = _detect_signature_parts(last_body_parts, ending_part_index, token_threshold)
+
+    # Modify tag for parts that qualify as SIGNATURE
+    for signature_part_index in signature_indices:
+        last_body_parts[signature_part_index]['tags'] = "SIGNATURE"
+
+    return row['structured_body']
+
+
+def _detect_signature_parts(last_body_parts, part_index, token_threshold):
+    """
+    Check the length of the "BODY" parts at the end of a message.
+    If all the ending "BODY" parts contains fewer words than the specified threshold, return the indices of the parts.
+
+    Parameters
+    ----------
+    last_body_parts : list of dict
+        Tag and part content for the different parts in a message.
+    part_index : int
+        Index of the part tagged as "GREETINGS" or "THANKS"
+    token_threshold : int
+        Maximum number of words/tokens in a sentence to qualify as a SIGNATURE sentence
+
+    Returns
+    -------
+    list : indices of the parts to be tagged as SIGNATURE
+    """
+    signature_indices = []
+
+    # If at least 1 THANKS / GREETINGS part
+    if part_index == -1:
+        return signature_indices
+
+    # Loop on parts AFTER the THANKS / GREETINGS part
+    for i, part_tag in enumerate(last_body_parts[part_index + 1:]):
+
+        # Check that part is a BODY part (ignore other parts)
+        if part_tag['tags'] == 'BODY':
+
+            # Split text to sentences (Because identical consecutive parts have been previously merged)
+            sentences = part_tag['part'].split(newline_character)
+
+            # Count number of words/tokens in sentences
+            for sentence in sentences:
+                n_words = len(re.sub(r"[;.,:!?]", "", sentence).split())
+
+                # If at one sentence or more contains more than 4 words, cancel signature tagging
+                if n_words >= token_threshold:
+                    return []
+
+            # If part qualifies as SIGNATURE, store index
+            signature_indices.append(part_index + 1 + i)
+
+    return signature_indices
