@@ -19,89 +19,7 @@
         "avions", "aviez", "avaient", "eut", "eûmes", "eûtes", "eurent", "aie",
         "aies", "ait", "ayons", "ayez", "aient", "eusse", "eusses", "eût",
         "eussions", "eussiez", "eussent", "nan"],
-      "names": ["abel", "absolon", "achille", "adam", "adelaide", "adele", "adeline",
-        "adolphe", "adrien", "adrienne", "agathe", "agnes", "aime", "aimee", "alain",
-        "albert", "albertine", "alexandre", "alexandrie", "alexis", "alfred", "alice",
-        "aline", "alison", "alphonse", "alphonsine", "amarante", "amaury", "ambre",
-        "ambroise", "amedee", "amelie", "anais", "anastasie", "anatole", "andre",
-        "andree", "angele", "angeline", "angelique", "anne", "annette", "anselme",
-        "antoine", "antoinette", "apollinaire", "apolline", "ariane", "arianne",
-        "arienne", "aristide", "arlette", "armand", "armel", "armelle", "arnaud",
-        "arnaude", "aude", "auguste", "augustin", "aurele", "aurelie", "aurelien",
-        "aurore", "avril", "axelle","baptiste", "barbara", "barnabe","barthelemy",
-        "basile", "bastien", "baudouin", "beatrice", "benedicte", "benjamin", "benjamine",
-        "benoit", "benoite", "bernadette", "bernard", "bernardine", "berthe", "bertrand",
-        "blaise", "blanche", "boniface", "brice", "brigitte", "bruno", "camille",
-        "carine", "carole", "caroline", "catherine", "cecile", "celeste", "celestin",
-        "celestine", "celine", "cerise", "cesaire", "cesar", "chantal", "chante",
-        "charles", "charline", "charlot", "charlotte", "chloe", "christelle", "christian",
-        "christiane", "christianne", "christine", "christophe", "claire", "clarice",
-        "clarisse", "claude", "claudette", "claudine", "clemence", "clement", "clementine",
-        "clothilde", "colette", "colombain", "colombe", "constance", "constant",
-        "constantin", "corentin", "corin", "corinne", "cosette", "cunegonde", "cyrille",
-        "damien", "daniel", "daniele", "danielle", "david", "delphine",  "denis",
-        "denise", "dennis", "desire", "desiree", "diane", "dianne", "didier", "dieudonne",
-        "dieudonnee", "dimitri", "diodore", "dion", "dominique", "donat", "donatien",
-        "donatienne", "doriane", "dorothee", "edgar", "edgard", "edith", "edmond",
-        "edouard", "edwige", "eleonore", "eliane", "elisabeth", "elise", "elodie",
-        "eloi", "eloise", "emeline", "emile", "emilie", "emilien", "emma", "emmanuel",
-        "emmanuelle", "eric", "ermenegilde", "esme", "esmee", "esther", "etienne",
-        "eugene", "eugenie", "eulalie", "eustache", "evariste", "eve", "evette",
-        "evrard", "fabien", "fabienne", "fabiola", "fabrice", "faustine", "felicie",
-        "felicien", "felicienne", "felix", "ferdinand", "fernand", "fernande", "fiacre",
-        "fifi", "firmin", "flavie", "florence", "florentin", "florette", "florian",
-        "florianne", "francine", "franck", "francois", "francoise", "frederic",
-        "frederique", "gabriel", "gabrielle", "gaetan", "gaetane", "gaspard", "gaston",
-        "gautier", "genevieve", "geoffroi", "georges", "georgette", "georgine",
-        "gerald", "gerard", "geraud", "germain", "germaine", "gervais", "gervaise",
-        "ghislain", "ghislaine", "gigi", "gilbert", "gilberte", "gilles", "gisele",
-        "giselle", "gisselle", "godelieve", "gratien", "gregoire", "guillaume",
-        "gustave", "guy", "gwenaelle", "hannah", "hector", "helene", "heloise",
-        "henri", "henriette", "herbert", "hercule", "hermine", "herve", "hilaire",
-        "hippolyte", "honore", "honorine", "horace", "hortense", "hubert", "hugues",
-        "humbert", "hyacinthe", "ignace", "ines", "irene", "irene", "irenee", "isabel",
-        "isabelle", "isidore", "jacinthe", "jacqueline", "jacques", "jean", "jean-baptiste",
-        "jeanine", "jean-marie", "jeanne", "jeannette", "jeannine", "jeannot",
-        "jeremie", "jerome", "joachim", "joceline", "joel", "joelle", "jolie",
-        "josee", "joseph", "josephe", "josephine", "josette", "josiane", "josue",
-        "jourdain", "judith", "jules", "juliane", "julie", "julien", "julienne",
-        "juliette", "juste", "justin", "justine", "lambert", "laure", "laurence",
-        "laurent", "laurentine", "laurette", "lazare", "lea", "leandre", "leon",
-        "leonard", "leonce", "leonie", "leonne", "leontine", "leopold", "liane",
-        "lionel", "lisette", "loic", "lothaire", "louis", "louise", "loup", "luc",
-        "lucas", "luce", "lucie", "lucien", "lucienne", "lucile", "lucille", "lucinde",
-        "lucrece", "lunete", "lydie", "madeleine", "madeline", "manon", "marc",
-        "marcel", "marceline", "marcelle", "marcellette", "marcellin", "marcelline",
-        "margot", "marguerite", "marianne", "marie", "marielle", "mariette", "marin",
-        "marine", "marise", "marius", "marthe", "martin", "martine", "mathieu",
-        "mathilde", "mathis", "matthieu", "maurice", "maxime", "maximilien", "maximilienne",
-        "melanie", "melissa", "michel", "michele", "micheline", "michelle", "mignon",
-        "mirabelle", "mireille", "modeste", "modestine", "monique", "morgaine", "morgane",
-        "muriel", "myriam", "nadia", "nadine", "narcisse", "natalie", "nathalie",
-        "nazaire", "nicholas", "nicodeme", "nicolas", "nicole", "nicolette", "nina",
-        "ninette", "ninon", "noe", "noel", "noella", "noelle", "noemie", "oceane",
-        "odette", "odile", "odilon", "olivie", "olivier", "olympe", "onesime",
-        "oriane", "orianne", "osanne","ouida", "ozanne", "papillion", "pascal",
-        "pascale", "pascaline", "paschal", "patrice", "patrick", "paul", "paule",
-        "paulette", "pauline", "penelope", "perceval", "perrine", "philbert", "philibert",
-        "philippe", "philippine", "pierre", "pierrick", "placide", "pons", "prosper",
-        "quentin", "rachel", "rainier", "raoul", "raphael", "raphael", "raymond",
-        "raymonde", "rebecca", "regine", "regis", "reine", "remi", "remy", "renard",
-        "renaud", "rene", "renee", "reynaud", "richard", "robert", "roch", "rochelle",
-        "rodolph", "rodolphe", "rodrigue", "roger", "roland", "rolande", "romain",
-        "romaine", "rosalie", "rose", "roselle", "rosemonde", "rosette", "rosine",
-        "roxane", "roxanne", "sabine", "sacha", "salome", "samuel", "sandrine",
-        "sarah", "sebastien", "sebastienne", "seraphine", "serge", "severin",
-        "severine", "sibylle", "sidonie", "simon", "simone", "solange", "sophie",
-        "stephane", "stephanie", "suzanne", "suzette", "sybille", "sylvain", "sylvaine",
-        "sylvestre", "sylviane", "sylvianne", "sylvie", "tatienne", "telesphore",
-        "theirn", "theo", "theodore", "theophile", "therese", "thibault", "thierry",
-        "thomas", "timothee", "toinette", "toussaint", "tristan", "ulrich", "urbain",
-        "valentin", "valentine", "valere", "valerie", "valery", "veronique", "vespasien",
-        "victoire", "victor", "victorine", "vienne", "vincent", "violette", "virginie",
-        "vivien", "vivienne", "xavier", "yanick", "yann", "yannic", "yannick",
-        "yolande", "yseult", "yves", "yvette", "yvonne", "zacharie", "zephyrine",
-        "zoe"]
+      "names": []
     },
 
 
@@ -112,14 +30,14 @@
         "manage_transfer_reply" : {
 
             "begin_transfer" : "^[;\\s]*[-\\s]*Transf[ée]r[ée] par",
-            "begin_transfer_cons" : "De\\s*:\\s*[^<]*?<?[a-zA-Z0-9._%+-\/=]+\\@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?\\s(?:[;AÀ:]|(?:Envoy[ée]))",
+            "begin_transfer_cons" : "^[;\\s]*[-\\s]*De\\s*:\\s*[^<]*?<?[a-zA-Z0-9._%+-\/=]+\\@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?\\s(?:[;AÀ:]|(?:Envoy[ée]))",
             "transfer_other" : "^Le.*,.*a ecrit(?:\\xa0|\\s|\\t):",
-            "extract_from" : "(?:De|Exp[ée]diteur)\\s*:\\s*(.*?)\\s*(?:\n|A|À|:|Envoy[ée])",
-            "extract_to" : "[ÀA]\\s*:\\s*(.*?)\\s(?:\n|Date|Objet)",
-            "extract_date" : "(?:Envoy[ée]|Date)\\s*:\\s*(.*?)\\s(?:\n|Objet|A|À)",
-            "extract_header" : "Objet\\s*:\\s*(.*?)\\s[;|\n]",
-            "answer_header": "RE\\s*:|re\\s*:|Re\\s*:",
-            "transfer_header": "Tr\\s*:|TR\\s*:|Fwd\\s*:|FW\\s*:|FWD\\s*:|Fw\\s*:"
+            "extract_from" : "(?:Message de\\b|\\bDe\\b||Exp[ée]diteur|\\bFrom\\b)\\s*:\\s*(.{,120}?)\\s*(?:\n|A|À|:|Envoy[ée])",
+            "extract_to" : "(?:Destinataire|\\b[ÀA]\\b|\\bTo\\b)\\s*:\\s*(.{,120}?)\\s(?:\n|Date|Objet)",
+            "extract_date" : "(?:Envoy[ée]|\\bDate\\b|\\bSent\\b)\\s*:\\s*(.{,120}?)\\s(?:\n|Objet|A|À)",
+            "extract_header" : "(?:Subject|\\bObjet\\b)\\s*:\\s*(.{,120}?)\\s[;|\n]",
+            "answer_header": "\\bRE\\s*:|\\bre\\s*:|\\bRe\\s*:",
+            "transfer_header": "\\bTr\\s*:|\\bTR\\s*:|\\bFwd\\s*:|\\bFW\\s*:|\\bFWD\\s*:|\\bFw\\s*:"
 
         },
 
@@ -146,9 +64,8 @@
               "Exp[ée]diteur.+?Objet\\s*:.+?[;|\n]",
               "(?:>?[;|\n]?\\s*(?:Envoy[ée]|De|Objet|Cc|Envoy[ée] par|Date|A|À|Destinataire|Sent|To|Subject|From|Copie [àa])+?\\s*:\\s*(?:.*?)\\s*[;|\n]\\s*)+",
               "En date de.+?[ée]crit",
-              ">?\\s*Le[^;\n]{0,30}[;|\n]{0,1}[^;\n]{0,30}a[^;\n]{0,30};{0,1}[^;\n]{0,30}[ée]crit\\s*:?",
-              ">?\\s*Message de.+?Objet\\s*:.+?[;|\n]",
-              ">?\\s*Message du.+?Objet\\s*:.+?[;|\n]",
+              ">?\\s*\\bLe[^;\n]{0,30}[;|\n]{0,1}[^;\n]{0,30}a[^;\n]{0,30};{0,1}[^;\n]{0,30}[ée]crit\\s*:?",
+              ">?\\s*Message d[eu].+?Objet\\s*:.+?[;|\n]",
               "En date de.+?[ée]crit"
             ]
         },
@@ -161,11 +78,11 @@
                 "<?[a-zA-Z0-9._%+-\/=]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?" : " flag_mail_ ",
                 "(?:^| )(?:https?:\/\/)?(?:www\\.)?[-a-zA-Z0-9:%._\\+~#=]{2,256}\\.[a-zA-Z]{2,4}(?:[-a-zA-Z0-9:%_\\+.~#?&\/=]*) " : " flag_url_ ",
                 "(?:0|0033|\\+33 ?|.?33 ?|\\(0\\))+[1-9].??(?:\\d{2}[ |\\.|-]??){4}" : " flag_phone_ ",
-                " [A-Z]{2}[- ]?\\d{3}[- ]?[A-Z]{2}\\b|\\d{3,4}[- ]?[A-Z]{2,3}[- ]?\\d{2,3} " : " flag_immat_ ",
-                "[\\d \\.\\,]+ ?(?:€|EUR|eur|dollars?|\\$)(?:os)?" : " flag_amount_ ",
+                " [A-Z]{2}[- ]?\\d{3}[- ]?[A-Z]{2}|\\d{3,4}[- ]?[A-Z]{2,3}[- ]?\\d{2,3} " : " flag_immat_ ",
+                "[\\d \\.\\,]+ ?(?:€|EUR|eur|dollar|dollars|\\$)(?:os)?" : " flag_amount_ ",
                 "(?:^| )\\d{5}(?! flag_amount_|\\d)" : " flag_cp_ ",
                 "\\d{2}[:|H|h]\\d{2}(?::\\d{2})?" : " flag_time_ ",
-                "(?:(?:19|20)?\\d{2}[\\/\\-\\.][01]\\d[\\/\\-\\.][0123]\\d|[0123]\\d[\\/\\-\\.][01]\\d[\\/\\-\\.](?:19|20)?\\d{2}|[0123]\\d[\\/\\-][01]\\d) ?(?!€|eur|dollar)" : " flag_date_ ",
+                "(?:\\d{1,4}[\/\\-\\.]){1,2}(?:\\d{2,4})" : " flag_date_ ",
                 "\\d{1,2} (?:janvier|fevrier|f[ée]vrier|mars|avril|mai|juin|juillet|ao[ûu]t?|septembre|octobre|novembre|d[ée]cembre|janv?\\.?|f[ée]vr?\\.?|avr\\.?|juil\\.?|sept?\\.?|oct\\.?|nov\\.?|d[ée]c\\.?) ?(?:\\d{2,4})?" : " flag_date_ "
 
             },
@@ -179,7 +96,9 @@
 
             },
 
-            "remove_multiple_spaces_list" : ["\\t", "[\\s\\-\\*]{2,}"]
+            "remove_multiple_spaces_list" : ["\\t", "[\\s\\-\\*]{2,}"],
+
+            "newline_character" : "\n"
         },
 
         "mail_segmenting" : {
@@ -203,8 +122,8 @@
                   "^.{0,10}bien [àa] vous.{0,16}$",
                   "^.{0,30}sentiments mutualistes.{0,16}$",
                   "^.{0,60}salutations.{0,16}$",
-                  "^.{0,30}expression de (?:nos|mes) sentiments.{0,16}$",
-                  "^.{0,25}bon(?:ne)? (?:soir[ée]e|journ[ée]e|apr[èe]s-midi|courage).{0,16}(?!.)",
+                  "^.{0,40}expression de (?:nos|mes) sentiments.{0,16}$",
+                  "^.{0,35}bon(?:ne)? (?:soir[ée]e|journ[ée]e|apr[èe]s-midi|courage).{0,16}(?!.)",
                   "^.{0,10}bonne r[ée]ception.{0,16}$",
                   "^.{0,30}[aà] votre disposition.{0,45}$",
                   "^.{0,30}dans l'attente .{0,30}$"
@@ -240,7 +159,7 @@
             "meta_date1" : "Date\\s*:\\s*(.*?)\\s\n",
             "meta_date2" : "^>?\\s*Le(.*),.*a [ée]crit",
             "meta_header" : "Objet\\s*:\\s*(.*?)\\s\n",
-            "pattern_pj" : "(\\(See attached file:.*?\\)|.\\(Embedded image.*?\\))",
+            "pattern_pj" : "(\\(See attached file:.*?\\)|\\(Embedded image.*?\\))",
             "pattern_separteurs_evidents" : "[?!]|\\.{3}|$|",
             "pattern_sep_doubles_points_virgules_espace" : "(?:\\;\\s*){2,}|",
             "pattern_exception_une_lettre_maj" : "(?<!\\b[A-Z])",
@@ -253,8 +172,8 @@
             "tag_typo" : "^(?:[\\s;.,*|-])*$",
             "tag" : "\\s*",
             "tag_subsentence" : "(.*?;|.*?$)",
-            "split_message_to_sentences_list" : ["; ", " ;", "([\\?\\!\\.])\\.", "\\1", "\n"]
-
+            "split_message_to_sentences_list" : ["; ", " ;", "([\\?\\!\\.])\\.", "\\1", "\n"],
+            "signature_token_threshold" : 5
         }
 
     }

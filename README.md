@@ -86,7 +86,7 @@ df_email = load_email_data()
 
 ### Pre-processing pipeline
 
-A working pre-processing pipeline is given below::
+A working pre-processing pipeline is given below:
 
 ```python
 from sklearn.pipeline import Pipeline
@@ -137,7 +137,7 @@ In this example, the pre-processing functions applied are:
 
 ### Phraser and Tokenizer pipeline
 
-A pipeline to train and apply the phraser end tokenizer is given below::
+A pipeline to train and apply the phraser end tokenizer is given below:
 
 ```python
 from melusine.nlp_tools.phraser import Phraser, phraser_on_body
@@ -161,7 +161,7 @@ df_email = phraser_tokenizer_pipeline.fit_transform(df_email)
 
 ### Embeddings training
 
-An example of embedding training is given below::
+An example of embedding training is given below:
 
 ```python
 from melusine.nlp_tools.embedding import Embedding
@@ -188,7 +188,7 @@ df_meta = metadata_pipeline.fit_transform(df_email)
 
 ### Keywords extraction
 
-An example of keywords extraction is given below::
+An example of keywords extraction is given below:
 
 ```python
 from melusine.summarizer.keywords_generator import KeywordsGenerator
@@ -199,7 +199,7 @@ df_email = keywords_generator.fit_transform(df_email)
 
 ### Classification
 
-An example of classification is given below::
+An example of classification is given below:
 ```python
 from sklearn.preprocessing import LabelEncoder
 from melusine.nlp_tools.embedding import Embedding
