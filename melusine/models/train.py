@@ -57,7 +57,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
 
     model : Model instance from Keras,
 
-    tokenizer : Tokenizer instance from Keras,
+    tokenizer : Tokenizer instance from Melusine,
 
     embedding_matrix : np.array,
         Embedding matrix used as input for the neural network model.
