@@ -6,6 +6,7 @@ from multiprocessing import Pool
 
 from sklearn.base import BaseEstimator, TransformerMixin
 from melusine.utils.multiprocessing import apply_by_multiprocessing
+from gensim.models import Word2Vec
 
 def aggregation_percentile_60(x):
     """
@@ -189,6 +190,10 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
             A dict representing the lexicon. The keys will be all the tokens in seed_list, the values will be a dict which keys will be all the tokens of the embedding's vocabulary, and the values their cosine similarity with the seed.
 
         """
+
+        if type(embedding) == Word2Vec:
+            embedding = embedding.wv
+
         words = list(embedding.embedding.vocab.keys())
         lexicon_dict = {}
 
