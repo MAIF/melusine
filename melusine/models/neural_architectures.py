@@ -15,10 +15,10 @@ from keras.layers import Bidirectional
 
 
 def cnn_model(embedding_matrix_init,
-              ntargets=18,
-              seq_max=100,
-              nb_meta=252,
-              loss='categorical_crossentropy'):
+              ntargets,
+              seq_max,
+              nb_meta,
+              loss):
     """Pre-defined architecture of a CNN model.
 
     Parameters
