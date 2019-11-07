@@ -34,7 +34,7 @@ a:hover {
 .tagN2 {
   width: 20%;
   display: block;
-  margin: 0 auto;
+  margin: 20px auto;
 }
 
 .contentN2 {
@@ -193,14 +193,6 @@ h2 {
 .sidebar-content {
   flex-grow: 1;
   padding-top: 20px;
-}
-
-.logo-content {
-  background-image: url(../img/header-home.svg);
-  height: 80px;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center top;
 }
 
 .footer-content {
