@@ -261,7 +261,8 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         Input : list of tokens ["ma", "carte_verte", ...]
         Output : list of indices [46, 359, ...]
         """
-        return [self.vocabulary.index(t) if t in self.vocabulary else 1 for t in tokens]
+        vocabulary_dict = {word: i for i, word in enumerate(self.vocabulary)}
+        return [vocabulary_dict.get(token, 1) for token in tokens]
 
     def _prepare_sequences(self, X):
         """Prepares the sequence to be used as input for the neural network
