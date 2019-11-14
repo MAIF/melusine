@@ -8,7 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 from melusine.utils.streamer import Streamer
 
-log = logging.getLogger('Embeddings')
+log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                               datefmt='%d/%m %I:%M')
@@ -91,7 +91,7 @@ class Embedding:
         min_count : TODO
         """
 
-        self.logger = logging.getLogger('NLUtils.Embedding')
+        self.logger = logging.getLogger(__name__)
         ch = logging.StreamHandler()
         ch.setLevel(logging.INFO)
         ch.setFormatter(formatter)

@@ -57,8 +57,7 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         self.stop_removal = stop_removal
         self.names_list = set(names_list)
         self.n_jobs = n_jobs
-        self.logger = logging.getLogger('emails_application.preprocessing.Preprocessing')
-        self.logger.debug('creating an instance of Preprocessing')
+        self.logger = logging.getLogger(__name__)
 
     def __getstate__(self):
         """should return a dict of attributes that will be pickled
