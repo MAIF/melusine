@@ -266,7 +266,6 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         Input : list of tokens ["ma", "carte_verte", ...]
         Output : list of indices [46, 359, ...]
         """
-        vocabulary_dict = {word: i for i, word in enumerate(self.vocabulary)}
         return [self.vocabulary_dict.get(token, 1) for token in tokens]
 
     def _prepare_sequences(self, X):
