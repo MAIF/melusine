@@ -85,7 +85,7 @@ def clean_text(text):
     text = remove_accents(text)
     text = remove_line_break(text)
     text = remove_superior_symbol(text)
-    text = remove_apostrophe(text)
+    # text = remove_apostrophe(text)
     text = remove_multiple_spaces_and_strip_text(text)
     return text
 
