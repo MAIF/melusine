@@ -217,9 +217,10 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
 
     def _create_vocabulary_from_tokens(self, X):
         """Create a word indexes dictionary from tokens."""
-        tokens = X['tokens']
-        c = Counter([token for text in X.tokens for token in text])
+        token_series = X['tokens']
+        c = Counter([token for token_list in token_series for token in token_list])
         self.vocabulary = [t[0] for t in c.most_common(self.vocab_size)]
+        self.vocabulary_dict = {word: i for i, word in enumerate(self.vocabulary)}
         pass
 
     def _get_embedding_matrix(self):
@@ -239,6 +240,8 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
 
         self.vocabulary.insert(0, 'PAD')
         self.vocabulary.insert(1, 'UNK')
+
+        self.vocabulary_dict = {word: i for i, word in enumerate(self.vocabulary)}
         self.embedding_matrix = embedding_matrix
         pass
 
@@ -253,6 +256,8 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         embedding_matrix[0:2, :] = np.zeros((2, vector_dim))
         self.vocabulary.insert(0, 'PAD')
         self.vocabulary.insert(1, 'UNK')
+
+        self.vocabulary_dict = {word: i for i, word in enumerate(self.vocabulary)}
         self.embedding_matrix = embedding_matrix
         pass
 
@@ -261,8 +266,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         Input : list of tokens ["ma", "carte_verte", ...]
         Output : list of indices [46, 359, ...]
         """
-        vocabulary_dict = {word: i for i, word in enumerate(self.vocabulary)}
-        return [vocabulary_dict.get(token, 1) for token in tokens]
+        return [self.vocabulary_dict.get(token, 1) for token in tokens]
 
     def _prepare_sequences(self, X):
         """Prepares the sequence to be used as input for the neural network
