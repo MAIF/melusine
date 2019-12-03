@@ -16,7 +16,7 @@ regex_process = "\w+(?:[\?\-\'\"_]\w+)*"
 regex_split_parts = r"(.*?[;.,?!])"
 
 
-log = logging.getLogger('nlp_tools')
+log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s \
                               - %(message)s', datefmt='%d/%m %I:%M')

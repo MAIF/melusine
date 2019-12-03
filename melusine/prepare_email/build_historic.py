@@ -93,7 +93,7 @@ def is_only_typo(text):
        return True
    else:
        return False
-       
+
 
 def __remove_empty_mails(structured_historic):
     """If an interval between two matches of transitions is empty (or typographic)
@@ -112,4 +112,6 @@ def __remove_empty_mails(structured_historic):
         else:
             if not is_only_typo(meta):
                 meta_to_reinclude = meta
+    if len(purged_structured_historic) == 0:
+        purged_structured_historic = [{'text': '', 'meta': meta_to_reinclude}]
     return purged_structured_historic
