@@ -7,7 +7,8 @@ from keras.utils import np_utils
 from keras.models import model_from_json
 from keras.preprocessing.sequence import pad_sequences
 from keras.optimizers import Adam
-from keras.callbacks import Tensorboard
+from keras.callbacks import TensorBoard
+from melusine.config.config import ConfigJsonReader
 
 conf_reader = ConfigJsonReader()
 config = conf_reader.get_config_file()
@@ -181,7 +182,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             X_input = X_seq
         else:
             X_input = [X_seq, X_meta]
-            
+
         if tensorboard_log_dir is None:
             self.model.fit(X_input,
                            y_categorical,
@@ -201,7 +202,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             embeddings_data = ast.literal_eval(tensorboard_callback_parameters["embeddings_data"])
             update_freq = ast.literal_eval(tensorboard_callback_parameters["update_freq"])
 
-            tensorboard_callback = Tensorboard(log_dir=tensorboard_log_dir,
+            tensorboard_callback = TensorBoard(log_dir=tensorboard_log_dir,
                                                histogram_freq=histogram_freq,
                                                batch_size=batch_size,
                                                write_graph=write_graph,
