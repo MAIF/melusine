@@ -200,7 +200,13 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             embeddings_layer_names = ast.literal_eval(tensorboard_callback_parameters["embeddings_layer_names"])
             embeddings_metadata = ast.literal_eval(tensorboard_callback_parameters["embeddings_metadata"])
             embeddings_data = ast.literal_eval(tensorboard_callback_parameters["embeddings_data"])
-            update_freq = ast.literal_eval(tensorboard_callback_parameters["update_freq"])
+
+            if tensorboard_callback_parameters["update_freq"] in ['batch', 'epoch']:
+                update_freq = tensorboard_callback_parameters["update_freq"]
+            else:
+                update_freq = ast.literal_eval(tensorboard_callback_parameters["update_freq"])
+
+
 
             tensorboard_callback = TensorBoard(log_dir=tensorboard_log_dir,
                                                histogram_freq=histogram_freq,
