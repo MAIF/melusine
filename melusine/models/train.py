@@ -1,12 +1,18 @@
 from melusine.nlp_tools.tokenizer import Tokenizer
 import numpy as np
+import ast
 from collections import Counter
 from sklearn.base import BaseEstimator, ClassifierMixin
 from keras.utils import np_utils
 from keras.models import model_from_json
 from keras.preprocessing.sequence import pad_sequences
 from keras.optimizers import Adam
+from keras.callbacks import TensorBoard
+from melusine.config.config import ConfigJsonReader
 
+conf_reader = ConfigJsonReader()
+config = conf_reader.get_config_file()
+tensorboard_callback_parameters = config["tensorboard_callback"]
 
 class NeuralModel(BaseEstimator, ClassifierMixin):
     """Generic class for  neural models.
@@ -131,7 +137,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         model weight and structure instead of standard serialization."""
         self.__dict__ = dict_attr
 
-    def fit(self, X, y, **kwargs):
+    def fit(self, X, y,tensorboard_log_dir = None, **kwargs):
         """Fit the neural network model on X and y.
         If meta_input list is empty list or None the model is used
         without metadata.
@@ -143,6 +149,10 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         X : pd.DataFrame
 
         y : pd.Series
+
+        tensorboard_log_dir : str
+            If not None, will be used as path to write logs for tensorboard
+            Tensordboard callback parameters can be changed in config file
 
         Returns
         -------
@@ -173,11 +183,48 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         else:
             X_input = [X_seq, X_meta]
 
-        self.model.fit(X_input,
-                       y_categorical,
-                       batch_size=self.batch_size,
-                       epochs=self.n_epochs,
-                       **kwargs)
+        if tensorboard_log_dir is None:
+            self.model.fit(X_input,
+                           y_categorical,
+                           batch_size=self.batch_size,
+                           epochs=self.n_epochs,
+                           **kwargs)
+        else:
+
+            histogram_freq = ast.literal_eval(tensorboard_callback_parameters["histogram_freq"])
+            batch_size = ast.literal_eval(tensorboard_callback_parameters["batch_size"])
+            write_graph = ast.literal_eval(tensorboard_callback_parameters["write_graph"])
+            write_grads = ast.literal_eval(tensorboard_callback_parameters["write_grads"])
+            write_images = ast.literal_eval(tensorboard_callback_parameters["write_images"])
+            embeddings_freq = ast.literal_eval(tensorboard_callback_parameters["embeddings_freq"])
+            embeddings_layer_names = ast.literal_eval(tensorboard_callback_parameters["embeddings_layer_names"])
+            embeddings_metadata = ast.literal_eval(tensorboard_callback_parameters["embeddings_metadata"])
+            embeddings_data = ast.literal_eval(tensorboard_callback_parameters["embeddings_data"])
+
+            if tensorboard_callback_parameters["update_freq"] in ['batch', 'epoch']:
+                update_freq = tensorboard_callback_parameters["update_freq"]
+            else:
+                update_freq = ast.literal_eval(tensorboard_callback_parameters["update_freq"])
+
+
+
+            tensorboard_callback = TensorBoard(log_dir=tensorboard_log_dir,
+                                               histogram_freq=histogram_freq,
+                                               batch_size=batch_size,
+                                               write_graph=write_graph,
+                                               write_grads=write_grads,
+                                               write_images=write_images,
+                                               embeddings_freq=embeddings_freq,
+                                               embeddings_layer_names=embeddings_layer_names,
+                                               embeddings_metadata=embeddings_metadata,
+                                               embeddings_data=embeddings_data,
+                                               update_freq=update_freq)
+            self.model.fit(X_input,
+                           y_categorical,
+                           batch_size=self.batch_size,
+                           epochs=self.n_epochs,
+                           callbacks=[tensorboard_callback]
+                           **kwargs)
         pass
 
     def predict(self, X, **kwargs):
