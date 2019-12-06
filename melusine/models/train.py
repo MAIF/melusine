@@ -223,7 +223,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                            y_categorical,
                            batch_size=self.batch_size,
                            epochs=self.n_epochs,
-                           callbacks=[tensorboard_callback]
+                           callbacks=[tensorboard_callback],
                            **kwargs)
         pass
 
