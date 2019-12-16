@@ -22,12 +22,30 @@ def aggregation_percentile_60(x):
     """
     return np.percentile(x, 60)
 
+
+def aggregation_seedwise_max(numpy_mat):
+    """
+
+    Parameters
+    ----------
+    numpy_mat: np.ndarray
+        Matrix (n_seed x vocab_size) with the similarity score for every seed x every word
+
+    Returns
+    -------
+    _ : np.array
+        Seedwise aggregated score for every word (1 x vocab_size)
+    """
+    return np.max(numpy_mat, axis=0)
+
+
 class SemanticDetector(BaseEstimator, TransformerMixin):
-    """Class to fit a Lexicon on an embedding and predicts the
+    """Class to fit a Lexicon using an embedding
+
     Attributes
     ----------
     base_seed_words : list,
-        Seedwords list containing the seedwords for computing the Lexicons given by the User.
+        Seed words list containing the seedwords for computing the Lexicons given by the User.
     seed_list : list,
         Same as base_seed_words but only the seeds present in the embedding vocabulary are kept.
     n_jobs : int,
@@ -40,12 +58,10 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
         Filled if extend_seed_word_list==True. Key : prefix, Value : list of seedwords having this prefix in the vocabulary
     tokens_column : str,
         Name of the column in the Pandas Dataframe on which the polarity scores will be computed. Must be a column of tokens.
-    normalize_scores : bool,
+    normalize_lexicon_scores : bool,
         Whether or not to normalize the lexicons' scores (so that they are centered around 0 and with a variance of 1)
-    lexicon_dict : dict,
-        Key : Seedword, Value : dict having all the embedding vocabulary as keys, and their semantic polarity value (cosine similarity) towards the seedword as values
-    normalized_lexicon_dict : dict,
-        Filled only if nomalize_scores==True. Contains the same as lexicon_dict, but with the normalized polarity values instead.
+    lexicon : dict,
+        Key : dict Keys : tokens in the vocabulary, Value : token semantic score
     aggregation_function_seed_wise : function,
         Function to aggregate the scores returned by all the different Lexicons associated to the seedwords, for a specific token (default=np.max)
     aggregation_function_email_wise : function,
@@ -57,17 +73,23 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
     """
 
     def __init__(self, base_seed_words, tokens_column, n_jobs=1,
+                 base_anti_seed_words=(),
                  progress_bar=False,
                  extend_seed_word_list=False,
                  normalize_lexicon_scores=False,
-                 aggregation_function_seed_wise=np.max,
-                 aggregation_function_email_wise=aggregation_percentile_60
+                 aggregation_function_seed_wise=aggregation_seedwise_max,
+                 aggregation_function_email_wise=aggregation_percentile_60,
+                 anti_weight=0.3
                  ):
         """
         Parameters
         ----------
         base_seed_words : list,
-            Seedwords list containing the seedwords for computing the Lexicons given by the User.
+            List of (seed) words describing the desired theme
+        base_anti_seed_words : list
+            List of anti seed words describing the undesired theme(s)
+        anti_weight : float
+            Weight applied to the contribution of anti seed words to the computation of the semantic score
         tokens_column : str,
             Name of the column in the Pandas Dataframe on which the polarity scores will be computed. Must be a column of tokens.
         n_jobs : int,
@@ -76,7 +98,7 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
             Whether to print or not the progress bar while rating the emails.
         extend_seed_word_list : bool,
             Whether to use the seedwords as prefixes.
-        normalize_scores : bool,
+        normalize_lexicon_scores : bool,
             Whether or not to normalize the lexicons' scores (so that they are centered around 0 and with a variance of 1)
         aggregation_function_seed_wise : function,
             Function to aggregate the scores returned by all the different Lexicons associated to the seedwords, for a specific token (default=np.max)
@@ -90,15 +112,25 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
         self.base_seed_words = base_seed_words
         self.seed_dict = {word: [] for word in self.base_seed_words}
         self.seed_list = base_seed_words
+
+        self.base_anti_seed_words = base_anti_seed_words
+        self.anti_seed_dict = {word: [] for word in self.base_anti_seed_words}
+        self.anti_seed_list = base_anti_seed_words
+
+        if anti_weight > 1 or anti_weight < 0:
+            raise ValueError("anti_ratio parameter should be between 0 and 1")
+        else:
+            self.anti_weight = anti_weight
+
         self.extend_seed_word_list = extend_seed_word_list
         self.tokens_column = tokens_column
         self.normalize_lexicon_scores = normalize_lexicon_scores
 
-        self.lexicon_dict = {}
-        self.normalized_lexicon_dict = {}
-
         self.aggregation_function_seed_wise = aggregation_function_seed_wise
         self.aggregation_function_email_wise = aggregation_function_email_wise
+
+        self.lexicon, self.lexicon_mat = {}, np.nan
+        self.anti_lexicon, self.anti_lexicon_mat = {}, np.nan
 
     def __getstate__(self):
         """should return a dict of attributes that will be pickled
@@ -132,16 +164,17 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
 
         if self.extend_seed_word_list:
             self.seed_dict, self.seed_list = self.compute_seeds_from_root(embedding, self.base_seed_words)
+            self.anti_seed_dict, self.anti_seed_list = self.compute_seeds_from_root(embedding, self.base_anti_seed_words)
 
-        self.seed_list = [token for token in self.seed_list if token in embedding.embedding.vocab.keys()]
+        # self.seed_list = [token for token in self.seed_list if token in embedding.embedding.vocab.keys()]
 
         if not self.seed_list:
             raise ValueError('None of the seed words are in the vocabulary associated with the Embedding')
 
-        self.lexicon_dict = self.compute_lexicon(embedding, self.seed_list)
+        self.lexicon, self.lexicon_mat = self.compute_lexicon(embedding, self.seed_list)
 
-        if self.normalize_lexicon_scores:
-            self.normalize_lexicon()
+        if self.anti_seed_list:
+            self.anti_lexicon, self.anti_lexicon_mat = self.compute_lexicon(embedding, self.anti_seed_list)
 
     @staticmethod
     def compute_seeds_from_root(embedding, base_seed_words):
@@ -172,8 +205,7 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
 
         return seed_dict, seed_list
 
-    @staticmethod
-    def compute_lexicon(embedding, seed_list):
+    def compute_lexicon(self, embedding, seed_list):
         """
         Computes the Lexicons for the given embedding. Computes the cosine similarity between all the tokens in seed_list and the embedding's vocabulary.
 
@@ -186,8 +218,9 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
 
         Returns
         -------
-        lexicon_dict : dict,
-            A dict representing the lexicon. The keys will be all the tokens in seed_list, the values will be a dict which keys will be all the tokens of the embedding's vocabulary, and the values their cosine similarity with the seed.
+        lexicon : dict,
+            A dict representing the lexicon. The keys will be all the tokens of the embedding's vocabulary,
+            and the values their cosine similarity with the seeds (depending on the seedwise aggregation strategy).
 
         """
 
@@ -195,14 +228,22 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
             embedding = embedding.wv
 
         words = list(embedding.embedding.vocab.keys())
-        lexicon_dict = {}
 
-        for seed in seed_list:
-            lexicon_dict[seed] = {}
-            for word in words:
-                lexicon_dict[seed][word] = embedding.embedding.similarity(seed, word)
+        lexicon_mat = np.zeros((len(seed_list), len(words)))
 
-        return lexicon_dict
+        for i, seed in enumerate(seed_list):
+            for j, word in enumerate(words):
+                similarity_value = embedding.embedding.similarity(seed, word)
+                lexicon_mat[i, j] = similarity_value
+
+        lexicon_values = self.aggregation_function_seed_wise(lexicon_mat)
+
+        if self.normalize_lexicon_scores:
+            lexicon_values = (lexicon_values - lexicon_values.mean()) / lexicon_values.std()
+
+        lexicon = dict(zip(words, lexicon_values))
+
+        return lexicon, lexicon_mat
 
     def predict(self, X, return_column='score'):
         """
@@ -222,51 +263,35 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
 
         return X
 
-    def normalize_lexicon(self) :
-        """
-        Normalizes the Lexicon scores (centered around 0, with variance 1).
-        """
-        lexicon_dict = self.lexicon_dict
-
-        normalized_lexicon=dict()
-        for seed in lexicon_dict.keys() :
-            mean=np.mean(list(lexicon_dict[seed].values()))
-            sd=np.std(list(lexicon_dict[seed].values()))
-            lex_norm={k:(v-mean)/sd for k,v in lexicon_dict[seed].items()}
-            normalized_lexicon[seed]=lex_norm
-
-        self.normalized_lexicon_dict = normalized_lexicon
-
     def rate_email(self, row):
         """
-        Given the object has been fitted, will compute the polarity score towards the seedwords for a specific e-mail.
+        Given the lexicon has been fitted, compute the semantic score for a specific e-mail.
 
         Parameters
         ----------
         row : row,
             A Pandas Dataframe containing a tokenized document.
+
+        Returns
+        -------
+        _ float
+            Semantic score for the email
         """
 
-        # TODO make the aggregation function as an argument
-        tokens_column = self.tokens_column
-        seed_list = self.seed_list
-
-        if self.normalize_lexicon_scores:
-            lexicon_dict = self.normalized_lexicon_dict
-        else:
-            lexicon_dict = self.lexicon_dict
-
-        effective_tokens_list = [token for token in row[tokens_column] if token in lexicon_dict[seed_list[0]]]
+        # Make sure email contains at least one token in the vocabulary
+        effective_tokens_list = [token for token in row[self.tokens_column] if token in self.lexicon]
 
         if effective_tokens_list:
+            token_score_list = [self.lexicon[token] for token in effective_tokens_list]
 
-            token_score_list = [
-                self.aggregation_function_seed_wise(
-                    [lexicon_dict[seed][token] for seed in seed_list]
-                )
-                for token in effective_tokens_list
-            ]
+            # Negative contribution
+            if self.anti_seed_list:
+                token_anti_score_list = [self.anti_lexicon[token] for token in effective_tokens_list]
+
+                # Token score weighting
+                token_score_list = np.array(token_score_list) - (self.anti_weight * np.array(token_anti_score_list))
 
             return self.aggregation_function_email_wise(token_score_list)
-        else :
-            return(np.nan)
+
+        else:
+            return np.nan
