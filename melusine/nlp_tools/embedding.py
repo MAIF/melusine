@@ -82,9 +82,8 @@ class Embedding:
             If True, removes stopwords in the Streamer process (default=True).
         method : str,
             One of the following :
-                - "word2vec_sg" : Trains a Word2Vec Embedding using the Skip-Gram method (usually takes a long time).
-                - "word2vec_ns" : Trains a Word2Vec Embedding using the Negative-Sampling method.
-                - "word2vec_cbow" : Trains a Word2Vec Embedding using the Continuous Bag-Of-Words method.
+                - "word2vec_sg" : Trains a Word2Vec Embedding using the Skip-Gram method and Negative-Sampling.
+                - "word2vec_cbow" : Trains a Word2Vec Embedding using the Continuous Bag-Of-Words method and Negative-Sampling.
                 - "lsa_docterm" : Trains an Embedding by using an SVD on a Document-Term Matrix.
                 - "lsa_tfidf" : Trains an Embedding by using an SVD on a TF-IDFized Document-Term Matrix.
                 - "glove" : Trains a GloVe Embedding. NOT IMPLEMENTED YET.
@@ -331,13 +330,11 @@ class Embedding:
         """
 
         if self.method == "word2vec_sg":
-            self.train_params["negative"] = 1
-            self.train_params["sg"] = 1
-            self.train_params["hs"] = 1
-        elif self.method == "word2vec_ns":
-            self.train_params["negative"] = 1
+            self.train_params["negative"] = 5
             self.train_params["sg"] = 1
             self.train_params["hs"] = 0
+            self.train_params["window"] = 10
+    
         elif self.method == "word2vec_cbow":
             self.train_params["negative"] = 5
             self.train_params["sg"] = 0
