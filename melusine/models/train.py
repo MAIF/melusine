@@ -166,6 +166,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         else:
             self._create_vocabulary_from_tokens(X)
             self._generate_random_embedding_matrix()
+        self.vocabulary_dict = {word: i for i, word in enumerate(self.vocabulary)}
         X_seq = self._prepare_sequences(X)
         X_meta, nb_meta_features = self._get_meta(X)
         y_categorical = np_utils.to_categorical(y)
@@ -267,7 +268,6 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         token_series = X['tokens']
         c = Counter([token for token_list in token_series for token in token_list])
         self.vocabulary = [t[0] for t in c.most_common(self.vocab_size)]
-        self.vocabulary_dict = {word: i for i, word in enumerate(self.vocabulary)}
         pass
 
     def _get_embedding_matrix(self):
@@ -288,7 +288,6 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         self.vocabulary.insert(0, 'PAD')
         self.vocabulary.insert(1, 'UNK')
 
-        self.vocabulary_dict = {word: i for i, word in enumerate(self.vocabulary)}
         self.embedding_matrix = embedding_matrix
         pass
 
@@ -304,7 +303,6 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         self.vocabulary.insert(0, 'PAD')
         self.vocabulary.insert(1, 'UNK')
 
-        self.vocabulary_dict = {word: i for i, word in enumerate(self.vocabulary)}
         self.embedding_matrix = embedding_matrix
         pass
 
