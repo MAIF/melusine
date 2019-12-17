@@ -105,17 +105,18 @@ class Embedding:
         self.method = method
         self.workers = workers
 
-        if self.method in ['word2vec_sg', 'word2vec_cbow', 'word2vec_ns']:
+        if self.method in ['word2vec_sg', 'word2vec_cbow']:
             self.train_params = {
                  "size": size,
                  "alpha": 0.025,
-                 "window": 5,
                  "min_count": min_count,
                  "max_vocab_size": None,
                  "sample": 0.001,
                  "seed": random_seed,
                  "workers": workers,
                  "min_alpha": 0.0001,
+                 "negative" : 5,
+                 "hs": 0,
                  "ns_exponent": 0.75,
                  "cbow_mean": 1,
                  "iter": iter,
@@ -127,6 +128,14 @@ class Embedding:
                  "callbacks": (),
                  "max_final_vocab": None
                  }
+            if self.method == "word2vec_sg":
+                self.train_params["sg"] = 1
+                self.train_params["window"] = 10
+
+            elif self.method == "word2vec_cbow":
+                self.train_params["sg"] = 0
+                self.train_params["window"] = 5
+
         elif self.method in 'lsa_tfidf':
             self.train_params = {
                 # TfidfVectorizer Parameters
@@ -217,7 +226,7 @@ class Embedding:
             - input_column argument (containing raw text) 
             - tokens_column argument (containing) list of tokens""")
 
-        if self.method in ['word2vec_sg','word2vec_ns', 'word2vec_cbow']:
+        if self.method in ['word2vec_sg', 'word2vec_cbow']:
             self.train_word2vec()
         elif self.method == 'lsa_tfidf':
             self.train_tfidf()
@@ -329,16 +338,6 @@ class Embedding:
         """Fits a Word2Vec Embedding on the given documents, and update the embedding attribute.
         """
 
-        if self.method == "word2vec_sg":
-            self.train_params["negative"] = 5
-            self.train_params["sg"] = 1
-            self.train_params["hs"] = 0
-            self.train_params["window"] = 10
-    
-        elif self.method == "word2vec_cbow":
-            self.train_params["negative"] = 5
-            self.train_params["sg"] = 0
-            self.train_params["hs"] = 0
 
         embedding = Word2Vec(size=self.train_params["size"],
                              alpha=self.train_params["alpha"],
