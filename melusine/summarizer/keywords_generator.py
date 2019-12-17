@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 import pandas as pd
 import scipy.sparse as sp
@@ -5,6 +6,7 @@ from collections import Counter
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_extraction.text import TfidfVectorizer
 from melusine.utils.multiprocessing import apply_by_multiprocessing
+from melusine.utils.transformer_scheduler import TransformerScheduler
 from melusine.config.config import ConfigJsonReader
 
 conf_reader = ConfigJsonReader()
@@ -137,6 +139,9 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
         self : object
             Returns the instance itself.
         """
+        if isinstance(X, dict):
+            raise TypeError('You should not use fit on a dictionary object. Use a DataFrame')
+
         if self.resample:
             X_resample = self.resample_docs(X, y)
         else:
@@ -175,16 +180,30 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
         -------
         X_new : pandas.DataFrame, shape (n_samples, n_components)
         """
-        if self.copy:
-            X_ = X.copy()
-        else:
-            X_ = X
+        # Case input is a dict
+        if isinstance(X, dict):
+            if self.copy:
+                X_ = copy.deepcopy(X)
+            else:
+                X_ = X
 
-        X_['keywords'] = apply_by_multiprocessing(df=X_[['tokens']],
-                                                  func=self.get_keywords,
-                                                  axis=1,
-                                                  workers=self.n_jobs,
-                                                  progress_bar=self.progress_bar)
+            apply_func = TransformerScheduler.apply_dict
+
+        # Case input is a DataFrame
+        else:
+            if self.copy:
+                X_ = X.copy()
+            else:
+                X_ = X
+
+            apply_func = TransformerScheduler.apply_pandas_multiprocessing
+
+        X_['keywords'] = apply_func(
+            X_, self.get_keywords,
+            args_=None,
+            cols_=None,
+            n_jobs=self.n_jobs,
+            progress_bar=self.progress_bar)
 
         return X_
 

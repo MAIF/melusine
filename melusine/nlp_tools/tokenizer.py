@@ -2,6 +2,7 @@ import logging
 import re
 from sklearn.base import BaseEstimator, TransformerMixin
 from melusine.config.config import ConfigJsonReader
+from melusine.utils.transformer_scheduler import TransformerScheduler
 
 conf_reader = ConfigJsonReader()
 config = conf_reader.get_config_file()
@@ -95,9 +96,15 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         pandas.DataFrame
         """
         self.logger.debug('Start transform tokenizing')
-        X['tokens'] = X[[self.input_column]].apply(self.tokenize, axis=1)
-        X['tokens'] = X.apply(lambda x: x['tokens'][0], axis=1)
-        self.logger.info('X shape : %s' % str(X.shape))
+
+        if isinstance(X, dict):
+            apply_func = TransformerScheduler.apply_dict
+        else:
+            apply_func = TransformerScheduler.apply_pandas
+
+        X['tokens'] = apply_func(X, self.tokenize)
+        X['tokens'] = apply_func(X, lambda x: x['tokens'][0])
+
         self.logger.debug('Done.')
         return X
 

@@ -6,6 +6,7 @@ It is compatible with scikit-learn API (i.e. contains fit, transform methods).
 """
 
 import pandas as pd
+import copy
 from sklearn.base import BaseEstimator, TransformerMixin
 from melusine.utils.multiprocessing import apply_by_multiprocessing
 
@@ -142,42 +143,123 @@ class TransformerScheduler(BaseEstimator, TransformerMixin):
         -------
         pandas.DataFrame
         """
-        if self.copy:
-            X_ = X.copy()
+        # Case input is a dict
+        if isinstance(X, dict):
+            if self.copy:
+                X_ = copy.deepcopy(X)
+            else:
+                X_ = X
+
+            apply_func = self.apply_dict
+
+        # Case input is a DataFrame
         else:
-            X_ = X
+            if self.copy:
+                X_ = X.copy()
+            else:
+                X_ = X
+
+            # Multiprocessing (or progress bar or both)
+            if self.mode == 'apply_by_multiprocessing':
+                apply_func = self.apply_pandas_multiprocessing
+
+            # Single process (no progress bar)
+            else:
+                apply_func = self.apply_pandas
 
         for tuple_ in self.functions_scheduler:
             func_, args_, cols_ = _check_tuple(*tuple_)
-            # cols_ = cols_ or X_.columns
 
-            if self.mode == 'apply':
-                if cols_ is None:
-                    X_ = X_.apply(func_, args=args_, axis=1)
-                elif len(cols_) == 1:
-                    X_[cols_[0]] = X_.apply(func_, args=args_, axis=1)
-                else:
-                    X_[cols_] = X_.apply(func_, args=args_, axis=1).apply(pd.Series)
-            else:  # 'apply_by_multiprocessing'
-                if cols_ is None:
-                    X_ = apply_by_multiprocessing(df=X_,
+            X_ = apply_func(X_, func_, args_, cols_, n_jobs=self.n_jobs, progress_bar=self.progress_bar)
+
+        return X_
+
+    @staticmethod
+    def apply_pandas(X_, func_, args_=None, cols_=None, **kwargs):
+        """Apply a function on a pandas DataFrame.
+
+        Parameters
+        ----------
+        X_ : pandas.DataFrame,
+            Data on which transformations are applied.
+        args_ : list or tuple
+            List of arguments of the function to apply
+        cols_ : list or tuple
+            List of columns created by the transformation
+        func_ : func
+            Function to apply
+
+        Returns
+        -------
+        pandas.DataFrame
+        """
+        if cols_ is None:
+            X_ = X_.apply(func_, args=args_, axis=1)
+        elif len(cols_) == 1:
+            X_[cols_[0]] = X_.apply(func_, args=args_, axis=1)
+        else:
+            X_[cols_] = X_.apply(func_, args=args_, axis=1).apply(pd.Series)
+        return X_
+
+    @staticmethod
+    def apply_pandas_multiprocessing(X_, func_, args_=None, cols_=None, n_jobs=1, progress_bar=False, **kwargs):
+        if cols_ is None:
+            X_ = apply_by_multiprocessing(df=X_,
+                                          func=func_,
+                                          args=args_,
+                                          axis=1,
+                                          workers=n_jobs,
+                                          progress_bar=progress_bar)
+        elif len(cols_) == 1:
+            X_[cols_[0]] = apply_by_multiprocessing(df=X_,
                                                     func=func_,
                                                     args=args_,
                                                     axis=1,
-                                                    workers=self.n_jobs,
-                                                    progress_bar=self.progress_bar)
-                elif len(cols_) == 1:
-                    X_[cols_[0]] = apply_by_multiprocessing(df=X_,
-                                                    func=func_,
-                                                    args=args_,
-                                                    axis=1,
-                                                    workers=self.n_jobs,
-                                                    progress_bar=self.progress_bar)
-                else:
-                    X_[cols_] = apply_by_multiprocessing(df=X_,
-                                                    func=func_,
-                                                    args=args_,
-                                                    axis=1,
-                                                    workers=self.n_jobs,
-                                                    progress_bar=self.progress_bar).apply(pd.Series)
+                                                    workers=n_jobs,
+                                                    progress_bar=progress_bar)
+        else:
+            X_[cols_] = apply_by_multiprocessing(df=X_,
+                                                 func=func_,
+                                                 args=args_,
+                                                 axis=1,
+                                                 workers=n_jobs,
+                                                 progress_bar=progress_bar).apply(pd.Series)
+        return X_
+
+    @staticmethod
+    def apply_dict(X_, func_, args_=None, cols_=None, **kwargs):
+        """Apply a function on a dictionary.
+
+        Parameters
+        ----------
+        X_ : dict,
+            Data on which transformations are applied.
+        args_ : list or tuple
+            List of arguments of the function to apply
+        cols_ : list or tuple
+            List of columns created by the transformation
+        func_ : func
+            Function to apply
+
+        Returns
+        -------
+        dict
+        """
+        if not cols_:
+            if not args_:
+                X_ = func_(X_)
+            else:
+                X_ = func_(X_, *args_)
+        elif len(cols_) == 1:
+            if not args_:
+                X_[cols_[0]] = func_(X_)
+            else:
+                X_[cols_[0]] = func_(X_, *args_)
+        else:
+            X_[cols_] = X_.apply(func_, args=args_, axis=1).apply(pd.Series)
+            if not args_:
+                X_.update(list(zip(cols_, func_(X_))))
+            else:
+                X_.update(list(zip(cols_, func_(X_, *args_))))
+
         return X_
