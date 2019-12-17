@@ -8,6 +8,7 @@ from keras.models import model_from_json
 from keras.preprocessing.sequence import pad_sequences
 from keras.optimizers import Adam
 from keras.callbacks import TensorBoard
+from melusine.utils.transformer_scheduler import TransformerScheduler
 from melusine.config.config import ConfigJsonReader
 
 conf_reader = ConfigJsonReader()
@@ -137,7 +138,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         model weight and structure instead of standard serialization."""
         self.__dict__ = dict_attr
 
-    def fit(self, X, y,tensorboard_log_dir = None, **kwargs):
+    def fit(self, X, y,tensorboard_log_dir=None, **kwargs):
         """Fit the neural network model on X and y.
         If meta_input list is empty list or None the model is used
         without metadata.
@@ -319,7 +320,12 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         The input column must be an already tokenized text : tokens
         The tokens must have been optained using the same tokenizer than the
         one used for the pre-trained embedding."""
-        seqs = X['tokens'].apply(self.tokens_to_indices)
+
+        if isinstance(X, dict):
+            seqs = [self.tokens_to_indices(X['tokens'])]
+        else:
+            seqs = X['tokens'].apply(self.tokens_to_indices)
+
         X_seq = pad_sequences(seqs, maxlen=self.seq_size)
         return X_seq
 
@@ -333,10 +339,19 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         else:
             meta_input_list = self.meta_input_list
             meta_input_list = [col+'__' for col in meta_input_list]
-            columns_list = list(X.columns)
-            meta_columns_list = [col for col in columns_list
-                                 if col.startswith(tuple(meta_input_list))]
-            X_meta = X[meta_columns_list]
+
+            if isinstance(X, dict):
+                columns_list = list(X.keys())
+            else:
+                columns_list = list(X.columns)
+
+            meta_columns_list = [col for col in columns_list if col.startswith(tuple(meta_input_list))]
+
+            if isinstance(X, dict):
+                X_meta = np.array([[X[meta_feature] for meta_feature in meta_columns_list], ])
+            else:
+                X_meta = X[meta_columns_list]
+
             nb_meta_features = len(meta_columns_list)
 
         return X_meta, nb_meta_features
