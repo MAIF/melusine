@@ -29,7 +29,7 @@
         "begin_transfer": "^[;\\s]*[-\\s]*Transf[ée]r[ée] par",
         "begin_transfer_cons": "^[;\\s]*[-\\s]*De\\s*:\\s*[^<]*?<?[a-zA-Z0-9._%+-\/=]+\\@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?\\s(?:[;AÀ:]|(?:Envoy[ée]))",
         "transfer_other": "^Le.*,.*a ecrit(?:\\xa0|\\s|\\t):",
-        "extract_from": "(?:Message de\\b|\\bDe\\b||Exp[ée]diteur|\\bFrom\\b)\\s*:\\s*(.{,120}?)\\s*(?:\n|A|À|:|Envoy[ée])",
+        "extract_from": "(?:Message de\\b|\\bDe\\b|Exp[ée]diteur|\\bFrom\\b)\\s*:\\s*(.{,120}?)\\s*(?:\n|A|À|:|Envoy[ée])",
         "extract_to": "(?:Destinataire|\\b[ÀA]\\b|\\bTo\\b)\\s*:\\s*(.{,120}?)\\s(?:\n|Date|Objet)",
         "extract_date": "(?:Envoy[ée]|\\bDate\\b|\\bSent\\b)\\s*:\\s*(.{,120}?)\\s(?:\n|Objet|A|À)",
         "extract_header": "(?:Subject|\\bObjet\\b)\\s*:\\s*(.{,120}?)\\s[;|\n]",
