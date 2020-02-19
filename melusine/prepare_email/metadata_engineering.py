@@ -1,8 +1,9 @@
-import re
+import re, copy
 import pandas as pd
 from collections import Counter
 from sklearn import preprocessing
 from sklearn.base import BaseEstimator, TransformerMixin
+from melusine.utils.transformer_scheduler import TransformerScheduler
 
 
 class MetaExtension(BaseEstimator, TransformerMixin):
@@ -16,25 +17,37 @@ class MetaExtension(BaseEstimator, TransformerMixin):
         self.le_extension = preprocessing.LabelEncoder()
 
     def fit(self, X, y=None):
+
+        if isinstance(X, dict):
+            raise TypeError('You should not use fit on a dictionary object. Use a DataFrame')
+
         """ Fit LabelEncoder on encoded extensions."""
-        X['extension'] = X['from'].apply(self.get_extension)
+        X['extension'] = X.apply(self.get_extension, axis=1)
         self.top_extension = self.get_top_extension(X, n=100)
-        X['extension'] = X['extension'].apply(
-            lambda x: self.encode_extension(x, self.top_extension))
+        X['extension'] = X.apply(self.encode_extension, args=(self.top_extension,), axis=1)
         self.le_extension.fit(X['extension'])
         return self
 
     def transform(self, X):
         """Encode extensions"""
-        X['extension'] = X['from'].apply(self.get_extension)
-        X['extension'] = X['extension'].apply(
-            lambda x: self.encode_extension(x, self.top_extension))
-        X['extension'] = self.le_extension.transform(X['extension'])
+
+        if isinstance(X, dict):
+            apply_func = TransformerScheduler.apply_dict
+        else:
+            apply_func = TransformerScheduler.apply_pandas
+
+        X['extension'] = apply_func(X, self.get_extension)
+        X['extension'] = apply_func(X, self.encode_extension, args_=(self.top_extension,))
+        if isinstance(X['extension'], str):
+            X['extension'] = self.le_extension.transform([X['extension']])[0]
+        else:
+            X['extension'] = self.le_extension.transform(X['extension'])
         return X
 
     @staticmethod
-    def get_extension(x):
+    def get_extension(row):
         """Gets extension from email address."""
+        x = row['from']
         try:
             extension = re.findall(r'\@([^.]+)', x)[0]
         except Exception as e:
@@ -50,7 +63,8 @@ class MetaExtension(BaseEstimator, TransformerMixin):
         return a
 
     @staticmethod
-    def encode_extension(x, top_ext):
+    def encode_extension(row, top_ext):
+        x = row['extension']
         """Encode most common extensions and set the rest to 'other'."""
         if x in top_ext:
             return x
@@ -101,20 +115,23 @@ class MetaDate(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X):
+
+        if isinstance(X, dict):
+            apply_func = TransformerScheduler.apply_dict
+        else:
+            apply_func = TransformerScheduler.apply_pandas
+
         """Transform date to hour, min, day features."""
-        X['date'] = X['date'].apply(self.date_formatting,
-                                    args=(self.regex_date_format, ))
-        X['date'] = pd.to_datetime(X['date'],
-                                   format=self.date_format,
-                                   infer_datetime_format=False,
-                                   errors='coerce')
-        X['hour'] = X['date'].apply(self.get_hour)
-        X['min'] = X['date'].apply(self.get_min)
-        X['dayofweek'] = X['date'].apply(self.get_dayofweek)
+        X['date'] = apply_func(X, self.date_formatting, args_=(self.regex_date_format, ))
+        X['date'] = pd.to_datetime(X['date'], format=self.date_format, infer_datetime_format=False, errors='coerce')
+        X['hour'] = apply_func(X, self.get_hour)
+        X['min'] = apply_func(X, self.get_min)
+        X['dayofweek'] = apply_func(X, self.get_dayofweek)
         return X
 
-    def date_formatting(self, x, regex_format):
+    def date_formatting(self, row, regex_format):
         """Set a date in the right format"""
+        x = row['date']
         try:
             e = re.findall(regex_format, x)[0]
             date = e[0]+'/'+e[1]+'/'+e[2]+' '+e[3]+':'+e[4]
@@ -125,15 +142,17 @@ class MetaDate(BaseEstimator, TransformerMixin):
         return date
 
     @staticmethod
-    def get_hour(x):
+    def get_hour(row):
         """Get hour from date"""
+        x = row['date']
         try:
             return x.hour
         except Exception as e:
             return 0
 
     @staticmethod
-    def get_min(x):
+    def get_min(row):
+        x = row['date']
         """Get minutes from date"""
         try:
             return x.minute
@@ -141,8 +160,10 @@ class MetaDate(BaseEstimator, TransformerMixin):
             return 0
 
     @staticmethod
-    def get_dayofweek(x):
+    def get_dayofweek(row):
         """Get day of the week from date"""
+        x = row['date']
+
         try:
             return x.dayofweek
         except Exception as e:
@@ -165,6 +186,10 @@ class Dummifier(BaseEstimator, TransformerMixin):
         """Store dummified features to avoid inconsistance of
         new data which could contain new labels (unknown from train data).
         """
+
+        if isinstance(X, dict):
+            raise TypeError('You should not use fit on a dictionary object. Use a DataFrame')
+
         self.X_ = pd.get_dummies(
             X, columns=self.columns_to_dummify, prefix_sep='__', dummy_na=False)
 
@@ -176,12 +201,31 @@ class Dummifier(BaseEstimator, TransformerMixin):
     def transform(self, X, y=None):
         """Dummify features and keep only common labels with pretrained data.
         """
-        if self.copy:
-            X_ = X.copy()
+        return_dict = False
+
+        # Case input is a dict
+        if isinstance(X, dict):
+            if self.copy:
+                X_ = copy.deepcopy(X)
+            else:
+                X_ = X
+
+            X_ = pd.DataFrame([X_])
+
+            return_dict = True
+
+        # Case input is a DataFrame
         else:
-            X_ = X
+            if self.copy:
+                X_ = X.copy()
+            else:
+                X_ = X
 
         X_ = pd.get_dummies(
             X_, columns=self.columns_to_dummify, prefix_sep='__', dummy_na=False)
 
-        return X_[self.dummy_features]
+        if return_dict:
+            X_ = X_.T.reindex(self.dummy_features).T.fillna(0)
+            return X_[self.dummy_features].to_dict(orient='records')[0]
+        else:
+            return X_[self.dummy_features]
