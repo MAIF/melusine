@@ -72,10 +72,10 @@
           " [A-Z]{2}[- ]?\\d{3}[- ]?[A-Z]{2}\\b|\\d{3,4}[- ]?[A-Z]{2,3}[- ]?\\d{2,3} ": " flag_immat_ ",
           "[\\d \\.\\,]+ ?(?:€|EUR|eur|dollars?|\\$)(?:os)?": " flag_amount_ ",
           "(?:^| )\\d{5}(?! flag_amount_|\\d)": " flag_cp_ ",
-          "\\d{2}[:|H|h]\\d{2}(?::\\d{2})?": " flag_time_ ",
-          "(?:(?:19|20)?\\d{2}[\\/\\-\\.][01]\\d[\\/\\-\\.][0123]\\d|[0123]\\d[\\/\\-\\.][01]\\d[\\/\\-\\.](?:19|20)?\\d{2}|[0123]\\d[\\/\\-][01]\\d) ?(?!€|eur|dollar)": " flag_date_ ",
-          "\\d{1,2} (?:janvier|fevrier|f[ée]vrier|mars|avril|mai|juin|juillet|ao[ûu]t?|septembre|octobre|novembre|d[ée]cembre|janv?\\.?|f[ée]vr?\\.?|avr\\.?|juil\\.?|sept?\\.?|oct\\.?|nov\\.?|d[ée]c\\.?) ?(?:\\d{2,4})?": " flag_date_ "
-        },
+          "\\d{1,2}\\s?[:|h|H|heure]\\s?(?:\\d{2})?(?::\\d{2})?": " flag_time_ ",
+          "(?:\\d{1,4}[\\/\\-\\.\\s]){1,2}(?:\\d{2,4})": " flag_date_ ",
+          "(?:(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)(?:\\s\\d{1,2}\\b)?)(?:\\s?(?:\\d{1,2}\\s)?(?:\\b(?:janvier|fevrier|mars|avril|mai|juin|juillet|aout?|septembre|octobre|novembre|decembre|janv?\\.?|fevr?\\.?|avr\\.?|juil\\.?|sept?\\.?|oct\\.?|nov\\.?|dec\\.?)\\b)(?:\\s\\d{2,4})?)?": " flag_date_ ",
+          "(?:\\b\\d{1,2}\\s?)?(?:janvier|fevrier|mars|avril|mai|juin|juillet|aout?|septembre|octobre|novembre|decembre|janv?\\.?|fevr?\\.?|avr\\.?|juil\\.?|sept?\\.?|oct\\.?|nov\\.?|dec\\.?)\\b(?:\\s?\\d{2,4})?": " flag_date_ "},
         "clean_header_dict": {
           "^re\\s*:": "",
           "^fw\\s*:": "",
