@@ -38,7 +38,7 @@
       },
       "build_historic": {
         "transition_list": [
-          "De\\s*:\\s*[^<]*?<?[a-zA-Z0-9._%+-\/=]+\\@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?\\s[;\nAÀ:](?:.{,80}\n){,3}Objet.+\\n",
+          "De\\s*:\\s*[^<]*?<?[a-zA-Z0-9._%+-\/=]+\\@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?\\s[;\nAÀ:](?:.{,80}\n){,3}Objet.+\n",
           "[- ]*?Mail transf[ée]r[ée].*?[;|\n]",
           "[- ]*?gestionsocietaire@maif.fr a [ée]crit.*?[;|\n]",
           "Courriel original.+?Objet\\s*:.+?[;|\n]",
@@ -128,11 +128,11 @@
             "^.{0,10}Si vous recevez ce message par erreur",
             "^.{0,10}Retrouvez-nous sur www\\.maif-\\w+\\.fr",
             "afin de contribuer au respect de l'environnement, merci de n'imprimer ce courriel qu'en cas de n[ée]cessit[ée]",
-            "^.{0,10}(?:Envoy[ée]|Num[ée]ris[ée]|Partag[ée]) de(?:puis)?\\s*(?:mon)?\\s*(?:mobile|smartphone|appareil|iP.|Galaxy|Yahoo|(?:l\\'application))"
+            "^.{0,10}(?:Envoy[ée]|Num[ée]ris[ée]|Partag[ée]) de(?:puis)?\\s*(?:mon)?\\s*(?:mobile|smartphone|appareil|iP.|Galaxy|Yahoo|(?:l'application))"
           ],
           "HELLO": [
             "^.{0,16}(?:(?:bonjour)|(?:bonsoir)|(?:madame)|(?:monsieur)|(?:mesdames)|(?:messieurs)).{0,20}(?!.)",
-            "^\\s*cher[()es]{0,6}\\s*(?:\b\\w+\b.{0,4}){1,3}$"
+            "^\\s*cher[()es]{0,6}\\s*(?:\\b\\w+\\b.{0,4}){1,3}$"
           ],
           "THANKS": [
             "^.{0,20}\\b(?:re)?(?:merci(?:\\s(?:d'|par\\s)avance)?)(?!.{0,5}(?:\\s*de\\s*|d'|mais|cependant|par contre|toutefois|pourtant)).{0,40}(?!.)"
