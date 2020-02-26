@@ -89,6 +89,7 @@
         "newline_character": "\n"
       },
       "mail_segmenting": {
+        "segmenting_order":["DISCLAIMER", "PJ", "FOOTER", "RE/TR", "HELLO", "GREETINGS", "THANKS"],
         "segmenting_dict": {
           "RE/TR": [],
           "DISCLAIMER": [

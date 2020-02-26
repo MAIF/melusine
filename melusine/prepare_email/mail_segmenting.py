@@ -21,6 +21,7 @@ regex_answer_header = REGEX_TR_RE['answer_header']
 regex_transfert_header = REGEX_TR_RE['transfer_header']
 
 regex_tag = REGEX_SEG['tag']
+regex_segmenting_order = REGEX_SEG['segmenting_order']
 regex_segmenting_dict = REGEX_SEG['segmenting_dict']
 regex_segmenting_dict['RE/TR'] = [regex_begin_transfer,
                                   regex_transfer_other,
@@ -302,12 +303,11 @@ def tag(string):
     Examples
     --------
     """
-    regex_parts = compiled_regex_segmenting_dict.items()
     sentence_with_no_accent = remove_accents(string)
-    for k, compiled_regex_list in regex_parts:
-        for compiled_regex in compiled_regex_list:
+    for tag in regex_segmenting_order:
+        for compiled_regex in compiled_regex_segmenting_dict[tag]:
             if compiled_regex.search(sentence_with_no_accent):
-                return [(string, k)], True
+                return [(string, tag)], True
 
     return string, False
 
