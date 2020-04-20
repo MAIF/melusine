@@ -196,53 +196,84 @@ def discrimination():
 
     y_res = nn_model.predict(X)
     y_res = le.inverse_transform(y_res)
-
+    df_emails_preprocessed["prediction"] = y_res
+    df_emails_preprocessed["prediction_error"] = y_res != y
+    st.write("Model prediction over the choosen dataset")
+    st.dataframe(df_emails_preprocessed[["clean_text","label","prediction","prediction_error"]])
 
     # Build graphs
     st.write("## Build graphs 👩‍🎨")
     # Graphs counter
     i = 0
 
+    # Analyse Prediction Error
+    i += 1
+    status_text.text("Build graphs %i" % i)
+    st.write("### Prediction Error rate ")
+    label_counter = Counter()
+    error_counter = Counter()
+    for label, error in zip(df_emails_preprocessed['label'],df_emails_preprocessed["prediction_error"]):
+        label_counter.update([label])
+        if error ==1 :
+            error_counter.update([label])
+    labels = list(label_counter.keys())
+    count = list(label_counter.values())
+    labels_error = list(error_counter.keys())
+    count_error = list(error_counter.values())
+    fig_label_error = go.Figure(data = [
+        go.Bar(x=labels, y=count, name = "label count"),
+        go.Bar(x=labels_error, y= count_error, name = "prediction error")
+    ])
+    fig_label_error.update_layout(barmode='overlay')
+    fig_label_error.update_traces(opacity=0.75)
+    st.plotly_chart(fig_label_error)
+
     # Sexe distribution
     i+=1
     status_text.text("Build graphs %i" % i)
-    st.write("### Distribution of variable Sex")
-    fig_sex = px.pie(df_emails_preprocessed, names='sexe')
+    st.write("### Error rate in regards of variable Sex")
+    error_counter = Counter()
+    sex_counter = Counter()
+    for sex, error in zip(df_emails_preprocessed['sexe'],df_emails_preprocessed["prediction_error"]):
+        sex_counter.update([sex])
+        if error ==1 :
+            error_counter.update([sex])
+    sex = list(sex_counter.keys())
+    count = list(sex_counter.values())
+    sex_error = list(error_counter.keys())
+    count_error = list(error_counter.values())
+    fig_sex = go.Figure(data = [
+        go.Bar(x=sex, y=count, name = "sex count"),
+        go.Bar(x=sex_error, y= count_error, name = "prediction error")
+    ])
+    fig_sex.update_layout(barmode='overlay')
+    fig_sex.update_traces(opacity=0.75)
     st.plotly_chart(fig_sex)
 
     # Age distribution
     i+=1
     status_text.text("Build graphs %i" % i)
-    st.write("### Distribution of variable Age")
-    fig_age = px.histogram(df_emails_preprocessed, x="age")
+    st.write("### Error rate in regards of variable Age")
+    fig_age = px.histogram(df_emails_preprocessed, x="age", color="prediction_error")
+    fig_age.update_layout(barmode='group')
     st.plotly_chart(fig_age)
 
-    # Analyse structuration of emails
-    i+=1
-    status_text.text("Build graphs %i" % i)
-    st.write("### Structuration of emails")
-    tags_counter = Counter()
-    for email_tags in df_emails_preprocessed['parts_tags_set']:
-        tags_counter.update(email_tags)
-
-    tags = list(tags_counter.keys())
-    count = list(tags_counter.values())
-    fig_parts = go.Figure([go.Bar(x=tags, y=count)])
-    st.plotly_chart(fig_parts)
 
     # Analyse structuration of emails bis
     i+=1
     status_text.text("Build graphs %i" % i)
-    st.write("### Number of parts tag by email")
-    fig_nb_pt = px.histogram(df_emails_preprocessed, x="nb_parts_tags")
+    st.write("### Error rate in regards of number of parts tag by email")
+    fig_nb_pt = px.histogram(df_emails_preprocessed, x="nb_parts_tags", color="prediction_error")
+    fig_nb_pt.update_layout(barmode='group')
     st.plotly_chart(fig_nb_pt)
 
 
     # Analyse complexity of sentences
     i+=1
     status_text.text("Build graphs %i" % i)
-    st.write("### Complexity of body sentences")
-    fig_mw = px.histogram(df_emails_preprocessed, x="mean_words_per_sentence")
+    st.write("### Error rate in regards of the complexity of body sentences")
+    fig_mw = px.histogram(df_emails_preprocessed, x="mean_words_per_sentence", color="prediction_error")
+    fig_mw.update_layout(barmode='group')
     st.plotly_chart(fig_mw)
 
     progress_bar.progress(100)
