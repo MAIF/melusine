@@ -13,10 +13,11 @@ def structured_score(row):
     Returns
     -------
     tags_set : a set of the different parts tag found in the email
+    length of tags_set : count of parts tag found in the email
 
     """
     parts_type = []
-    for part in row['structured_body'[0]['structured_text']['text']]:
+    for part in row['structured_body'][0]['structured_text']['text']:
         parts_type.append(part['tags'])
     tags_set = set(parts_type)
     return (tags_set or set(['EMPTY']),len(tags_set))
@@ -29,7 +30,7 @@ def mean_words_by_sentence(row, tokenizer):
     ----------
     row : pd.Series
         Row of an email DataFrame
-        
+
     tokenizer : an object from the Tokenizer melusine class (nlp_tools.tokenizer.Tokenizer)
 
     Returns
@@ -38,7 +39,7 @@ def mean_words_by_sentence(row, tokenizer):
 
     """
     nb_words_per_sentence = []
-    for part in row['structured_body'[0]['structured_text']['text']]:
+    for part in row['structured_body'][0]['structured_text']['text']:
         if part['tags'] == 'BODY':
             for sentence in part['part'].split('. '):
                 nb_words = len(tokenizer._tokenize(sentence))

@@ -1,6 +1,6 @@
 
 import pandas as pd
-import numpy as np
+from melusine.prepare_email.compute_complexity import mean_words_by_sentence, structured_score
 from melusine.nlp_tools.tokenizer import Tokenizer
 tokenizer = Tokenizer(stop_removal=False)
 from collections import Counter
@@ -16,24 +16,6 @@ import plotly.graph_objects as go
 
 from sklearn.preprocessing import LabelEncoder
 import joblib
-
-
-def structured_score(structured_body):
-    parts_type = []
-    for part in structured_body[0]['structured_text']['text']:
-        parts_type.append(part['tags'])
-    tags_set = set(parts_type)
-    return (tags_set or set(['EMPTY']),len(tags_set))
-
-def mean_words_by_sentence(structured_body, tokenizer):
-    nb_words_per_sentence = []
-    for part in structured_body[0]['structured_text']['text']:
-        if part['tags'] == 'BODY':
-            for sentence in part['part'].split('. '):
-                nb_words = len(tokenizer._tokenize(sentence))
-                if nb_words > 1:
-                    nb_words_per_sentence.append(nb_words)
-    return np.round(np.mean(nb_words_per_sentence))
 
 
 def intro():
@@ -66,10 +48,9 @@ def exploration():
 
     df_emails_preprocessed['structured_body'] = df_emails_preprocessed['structured_body'].apply(ast.literal_eval)
     progress_bar.progress(20)
-    df_emails_preprocessed['mean_words_per_sentence'] = [mean_words_by_sentence(body, tokenizer) for body in
-                                                         df_emails_preprocessed['structured_body']]
-    df_emails_preprocessed['parts_tags'] = [structured_score(body) for body in
-                                            df_emails_preprocessed['structured_body']]
+    df_emails_preprocessed['mean_words_per_sentence'] = [mean_words_by_sentence(row, tokenizer) for index, row in
+                                                         df_emails_preprocessed.iterrows()]
+    df_emails_preprocessed['parts_tags'] = [structured_score(row) for index, row in df_emails_preprocessed.iterrows()]
     df_emails_preprocessed[['parts_tags_set', 'nb_parts_tags']] = pd.DataFrame(
         df_emails_preprocessed['parts_tags'].tolist(), index=df_emails_preprocessed.index)
     progress_bar.progress(30)
@@ -144,10 +125,9 @@ def discrimination():
 
     df_emails_preprocessed['structured_body'] = df_emails_preprocessed['structured_body'].apply(ast.literal_eval)
     progress_bar.progress(20)
-    df_emails_preprocessed['mean_words_per_sentence'] = [mean_words_by_sentence(body, tokenizer) for body in
-                                                         df_emails_preprocessed['structured_body']]
-    df_emails_preprocessed['parts_tags'] = [structured_score(body) for body in
-                                            df_emails_preprocessed['structured_body']]
+    df_emails_preprocessed['mean_words_per_sentence'] = [mean_words_by_sentence(row, tokenizer) for index, row in
+                                                         df_emails_preprocessed.iterrows()]
+    df_emails_preprocessed['parts_tags'] = [structured_score(row) for index, row in df_emails_preprocessed.iterrows()]
     df_emails_preprocessed[['parts_tags_set', 'nb_parts_tags']] = pd.DataFrame(
         df_emails_preprocessed['parts_tags'].tolist(), index=df_emails_preprocessed.index)
     progress_bar.progress(30)

@@ -278,3 +278,7 @@ Each messages of an email are segmented in the **structured_body** columns and e
 * `HELLO` : any salutations such as `Bonjour,`.
 * `THANKS` : any thanks such as `Avec mes remerciements`
 * `BODY` : the core of the the message which contains the valuable information.
+
+### Dashboard with StreamLit
+
+![](demo_dashboard.gif)
