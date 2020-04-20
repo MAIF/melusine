@@ -279,6 +279,16 @@ Each messages of an email are segmented in the **structured_body** columns and e
 * `THANKS` : any thanks such as `Avec mes remerciements`
 * `BODY` : the core of the the message which contains the valuable information.
 
-### Dashboard with StreamLit
+### Dashboard App
+
+Melusine also offered an easy and nice dashboard app with StreamLit.
+The App contains exploratory dasboard on the email dataset and more specific study on discrimination between the dataset 
+and a neural model classification.
+
+To run the app, run the following command in your terminal in the melusine/data directory :
+
+```python
+streamlit run dashboard_app.py
+```
 
 ![](docs/_static/demo_dashboard.gif)
