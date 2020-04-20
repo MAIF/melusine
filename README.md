@@ -281,4 +281,4 @@ Each messages of an email are segmented in the **structured_body** columns and e
 
 ### Dashboard with StreamLit
 
-![](demo_dashboard.gif)
+![](docs/_static/demo_dashboard.gif)
