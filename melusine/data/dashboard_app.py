@@ -39,7 +39,7 @@ def exploration():
     status_text.text("Load Data")
     st.write("## Load Data 📥 ")
     st.write("Loading Data from :")
-    data_path = st.text_input("Data path", '../../tutorial/data/emails_preprocessed_2.csv')
+    data_path = st.text_input("Data path", '../../tutorial/data/emails_preprocessed.csv')
     df_emails_preprocessed = pd.read_csv(data_path, encoding='utf-8', sep=';')
     progress_bar.progress(10)
     i = df_emails_preprocessed.shape[0]
@@ -115,7 +115,7 @@ def discrimination():
     status_text.text("Load Data")
     st.write("## Load Data 📥 ")
     st.write("Loading Data from :")
-    data_path = st.text_input("Data path", '../../tutorial/data/emails_preprocessed_2.csv')
+    data_path = st.text_input("Data path", '../../tutorial/data/emails_preprocessed.csv')
     df_emails_preprocessed = pd.read_csv(data_path, encoding='utf-8', sep=';')
     progress_bar.progress(10)
     i = df_emails_preprocessed.shape[0]
