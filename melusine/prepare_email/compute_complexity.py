@@ -12,7 +12,7 @@ def structured_score(row):
 
     Returns
     -------
-    tags_set : a set of the different parts tag found in the email
+    tags_set : a set of the different parts tag found in the email or EMPTY if None
     length of tags_set : count of parts tag found in the email
 
     """
