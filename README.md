@@ -292,3 +292,13 @@ streamlit run dashboard_app.py
 ```
 
 ![](docs/_static/demo_dashboard.gif)
+
+### Ethics Guidelines
+
+Melusine also contains Ethics Guidelines to evaluate AI project.
+The document and criteria are derived in particular from the work of the European Commission.
+
+
+The pdf file is located in the melusine/ethics_guidelines directory :
+
+![](docs/_static/demo_ethics_guide.gif)
