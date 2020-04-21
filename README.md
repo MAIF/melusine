@@ -34,7 +34,7 @@ This package is designed for the preprocessing, classification and automatic sum
 
 * ``prepare_email`` : to preprocess and clean emails.
 * ``summarizer`` : to extract keywords from an email.
-* ``models`` : to classify e-mails according to categories pre-defined by the user.
+* ``models`` : to classify e-mails according to categories pre-defined by the user or compute sentiment score based on sentiment described by the user with seed words.
 
 **2 other subpackages are offered as building blocks :**
 
@@ -45,6 +45,11 @@ This package is designed for the preprocessing, classification and automatic sum
 
 * ``config`` : contains *`ConfigJsonReader`* class to setup and handle a *conf.json* file. This JSON file is the core of this package since it's used by different submodules to preprocess the data.
 
+**2 other subpackages are offered to provide a dashboard app and ethics guidelines for AI project :**
+
+* ``data`` : contains a classic data loader and provide a *StreamLit application* with exploratory dashboards on input data and models.
+
+* ``ethics_guidelines`` : to provide an Ethics Guide to evaluate AI project, with guidelines and questionnaire. The questionnaire is based on criteria derived in particular from the work of the European Commission and grouped by categories.
 
 ## Getting started: 30 seconds to Melusine
 
@@ -278,3 +283,27 @@ Each messages of an email are segmented in the **structured_body** columns and e
 * `HELLO` : any salutations such as `Bonjour,`.
 * `THANKS` : any thanks such as `Avec mes remerciements`
 * `BODY` : the core of the the message which contains the valuable information.
+
+### Dashboard App
+
+Melusine also offered an easy and nice dashboard app with StreamLit.
+The App contains exploratory dasboard on the email dataset and more specific study on discrimination between the dataset 
+and a neural model classification.
+
+To run the app, run the following command in your terminal in the melusine/data directory :
+
+```python
+streamlit run dashboard_app.py
+```
+
+![](docs/_static/demo_dashboard.gif)
+
+### Ethics Guidelines
+
+Melusine also contains Ethics Guidelines to evaluate AI project.
+The document and criteria are derived in particular from the work of the European Commission.
+
+
+The pdf file is located in the melusine/ethics_guidelines directory :
+
+![](docs/_static/demo_ethics_guide.gif)
