@@ -21,6 +21,7 @@ regex_answer_header = REGEX_TR_RE['answer_header']
 regex_transfert_header = REGEX_TR_RE['transfer_header']
 
 regex_tag = REGEX_SEG['tag']
+regex_segmenting_order = REGEX_SEG['segmenting_order']
 regex_segmenting_dict = REGEX_SEG['segmenting_dict']
 regex_segmenting_dict['RE/TR'] = [regex_begin_transfer,
                                   regex_transfer_other,
@@ -69,6 +70,8 @@ compiled_regex_typo = re.compile(REGEX_SEG['tag_typo'], re.I)
 regex_tag_subsentence = REGEX_SEG['tag_subsentence']
 regex_split_message_to_sentences_list = REGEX_SEG['split_message_to_sentences_list']
 
+REGEX_CLEAN = config["regex"]['cleaning']
+regex_flags_dict = REGEX_CLEAN["flags_dict"]
 
 def structure_email(row):
     """ 1. Splits parts of each messages in historic and tags them.
@@ -302,12 +305,16 @@ def tag(string):
     Examples
     --------
     """
-    regex_parts = compiled_regex_segmenting_dict.items()
     sentence_with_no_accent = remove_accents(string)
-    for k, compiled_regex_list in regex_parts:
-        for compiled_regex in compiled_regex_list:
+    for tag in regex_segmenting_order:
+        for compiled_regex in compiled_regex_segmenting_dict[tag]:
             if compiled_regex.search(sentence_with_no_accent):
-                return [(string, k)], True
+                if tag in ["HELLO", "GREETINGS", "THANKS"]:
+                    # We search for words of the flag list who mean the sentence contains information as body
+                    for regex, value in regex_flags_dict.items():
+                        if re.search(pattern=regex, string=sentence_with_no_accent, flags=re.IGNORECASE):
+                            return string, False
+                return [(string, tag)], True
 
     return string, False
 

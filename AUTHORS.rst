@@ -13,4 +13,10 @@ Development Lead (Quantmetry Team support Maif Team)
 Contributors
 ------------
 
-None yet. Why not be the first?
+* Fabre Tiphaine <tiphaine.fabre@maif.fr>
+* Marouane Il Idrissi <ilidrissi.m@gmail.com>
+* Hugo Perrier <hperrier@quantmetry.com>
+* Florian Arthur <farthur@quantmetry.com>
+* Victor Bigand <vbigand@quantmetry.com>
+
+To be continued ...

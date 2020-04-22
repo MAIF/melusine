@@ -8,7 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 from melusine.utils.streamer import Streamer
 
-log = logging.getLogger('Embeddings')
+log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                               datefmt='%d/%m %I:%M')
@@ -82,16 +82,15 @@ class Embedding:
             If True, removes stopwords in the Streamer process (default=True).
         method : str,
             One of the following :
-                - "word2vec_sg" : Trains a Word2Vec Embedding using the Skip-Gram method (usually takes a long time).
-                - "word2vec_ns" : Trains a Word2Vec Embedding using the Negative-Sampling method.
-                - "word2vec_cbow" : Trains a Word2Vec Embedding using the Continuous Bag-Of-Words method.
+                - "word2vec_sg" : Trains a Word2Vec Embedding using the Skip-Gram method and Negative-Sampling.
+                - "word2vec_cbow" : Trains a Word2Vec Embedding using the Continuous Bag-Of-Words method and Negative-Sampling.
                 - "lsa_docterm" : Trains an Embedding by using an SVD on a Document-Term Matrix.
                 - "lsa_tfidf" : Trains an Embedding by using an SVD on a TF-IDFized Document-Term Matrix.
                 - "glove" : Trains a GloVe Embedding. NOT IMPLEMENTED YET.
         min_count : TODO
         """
 
-        self.logger = logging.getLogger('NLUtils.Embedding')
+        self.logger = logging.getLogger(__name__)
         ch = logging.StreamHandler()
         ch.setLevel(logging.INFO)
         ch.setFormatter(formatter)
@@ -106,17 +105,18 @@ class Embedding:
         self.method = method
         self.workers = workers
 
-        if self.method in ['word2vec_sg', 'word2vec_cbow', 'word2vec_ns']:
+        if self.method in ['word2vec_sg', 'word2vec_cbow']:
             self.train_params = {
                  "size": size,
                  "alpha": 0.025,
-                 "window": 5,
                  "min_count": min_count,
                  "max_vocab_size": None,
                  "sample": 0.001,
                  "seed": random_seed,
                  "workers": workers,
                  "min_alpha": 0.0001,
+                 "negative" : 5,
+                 "hs": 0,
                  "ns_exponent": 0.75,
                  "cbow_mean": 1,
                  "iter": iter,
@@ -128,6 +128,14 @@ class Embedding:
                  "callbacks": (),
                  "max_final_vocab": None
                  }
+            if self.method == "word2vec_sg":
+                self.train_params["sg"] = 1
+                self.train_params["window"] = 10
+
+            elif self.method == "word2vec_cbow":
+                self.train_params["sg"] = 0
+                self.train_params["window"] = 5
+
         elif self.method in 'lsa_tfidf':
             self.train_params = {
                 # TfidfVectorizer Parameters
@@ -218,7 +226,7 @@ class Embedding:
             - input_column argument (containing raw text) 
             - tokens_column argument (containing) list of tokens""")
 
-        if self.method in ['word2vec_sg','word2vec_ns', 'word2vec_cbow']:
+        if self.method in ['word2vec_sg', 'word2vec_cbow']:
             self.train_word2vec()
         elif self.method == 'lsa_tfidf':
             self.train_tfidf()
@@ -330,18 +338,6 @@ class Embedding:
         """Fits a Word2Vec Embedding on the given documents, and update the embedding attribute.
         """
 
-        if self.method == "word2vec_sg":
-            self.train_params["negative"] = 1
-            self.train_params["sg"] = 1
-            self.train_params["hs"] = 1
-        elif self.method == "word2vec_ns":
-            self.train_params["negative"] = 1
-            self.train_params["sg"] = 1
-            self.train_params["hs"] = 0
-        elif self.method == "word2vec_cbow":
-            self.train_params["negative"] = 5
-            self.train_params["sg"] = 0
-            self.train_params["hs"] = 0
 
         embedding = Word2Vec(size=self.train_params["size"],
                              alpha=self.train_params["alpha"],

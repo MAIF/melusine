@@ -2,6 +2,7 @@ import logging
 import re
 from sklearn.base import BaseEstimator, TransformerMixin
 from melusine.config.config import ConfigJsonReader
+from melusine.utils.transformer_scheduler import TransformerScheduler
 
 conf_reader = ConfigJsonReader()
 config = conf_reader.get_config_file()
@@ -57,8 +58,7 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         self.stop_removal = stop_removal
         self.names_list = set(names_list)
         self.n_jobs = n_jobs
-        self.logger = logging.getLogger('emails_application.preprocessing.Preprocessing')
-        self.logger.debug('creating an instance of Preprocessing')
+        self.logger = logging.getLogger(__name__)
 
     def __getstate__(self):
         """should return a dict of attributes that will be pickled
@@ -96,9 +96,15 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         pandas.DataFrame
         """
         self.logger.debug('Start transform tokenizing')
-        X['tokens'] = X[[self.input_column]].apply(self.tokenize, axis=1)
-        X['tokens'] = X.apply(lambda x: x['tokens'][0], axis=1)
-        self.logger.info('X shape : %s' % str(X.shape))
+
+        if isinstance(X, dict):
+            apply_func = TransformerScheduler.apply_dict
+        else:
+            apply_func = TransformerScheduler.apply_pandas
+
+        X['tokens'] = apply_func(X, self.tokenize)
+        X['tokens'] = apply_func(X, lambda x: x['tokens'][0])
+
         self.logger.debug('Done.')
         return X
 
