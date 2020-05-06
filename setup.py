@@ -64,6 +64,7 @@ setup(
               'melusine.summarizer', 'melusine.models',
               'melusine.data'],
     data_files=[('config', ['melusine/config/conf.json']),
+                ('config', ['melusine/config/names.csv']),
                 ('data', ['melusine/data/emails.csv'])],
     setup_requires=setup_requirements,
     test_suite='tests',
