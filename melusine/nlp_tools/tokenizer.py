@@ -1,5 +1,6 @@
 import logging
 import re
+from flashtext import KeywordProcessor
 from sklearn.base import BaseEstimator, TransformerMixin
 from melusine.config.config import ConfigJsonReader
 from melusine.utils.transformer_scheduler import TransformerScheduler
@@ -11,6 +12,15 @@ stopwords = config["words_list"]["stopwords"]
 names_list = config["words_list"]["names"]
 regex_tokenize = config["regex"]["tokenizer"]
 
+def _create_flashtext_object():
+    """
+    Instantiates a Flashtext object.
+    Separators are specified to not be considered as word boundaries
+    """
+    keyword_processor = KeywordProcessor()
+    for separator in ['-', '_', '/']:
+        keyword_processor.add_non_word_boundary(separator)
+    return keyword_processor
 
 class Tokenizer(BaseEstimator, TransformerMixin):
     """Class to train and apply tokenizer.
@@ -51,14 +61,15 @@ class Tokenizer(BaseEstimator, TransformerMixin):
     def __init__(self,
                  input_column='clean_text',
                  stopwords=stopwords,
+                 keywords_processor=_create_flashtext_object(),
                  stop_removal=True,
                  n_jobs=20):
         self.input_column = input_column
         self.stopwords = set(stopwords)
         self.stop_removal = stop_removal
-        self.names_list = set(names_list)
         self.n_jobs = n_jobs
         self.logger = logging.getLogger(__name__)
+        self.name_flagger = keywords_processor.add_keywords_from_dict({"flag_name_": set(names_list)})
 
     def __getstate__(self):
         """should return a dict of attributes that will be pickled
@@ -135,8 +146,8 @@ class Tokenizer(BaseEstimator, TransformerMixin):
 
     def _remove_stopwords(self, list):
         """ Removes stopwords from list if stop_removal parameter
-        set to True."""
+        set to True and replaces names by flag_name_"""
         if self.stop_removal:
-            return [tok if tok not in self.names_list else "flag_name_" for tok in list if tok not in self.stopwords]
+            return [self.name_flagger.replace_keywords(tok) for tok in list if tok not in stopwords]
         else:
             return list
