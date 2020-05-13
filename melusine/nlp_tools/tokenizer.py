@@ -2,6 +2,9 @@ import logging
 import re
 from flashtext import KeywordProcessor
 from sklearn.base import BaseEstimator, TransformerMixin
+import os
+import sys
+sys.path.append(os.path.abspath(''))
 from melusine.config.config import ConfigJsonReader
 from melusine.utils.transformer_scheduler import TransformerScheduler
 
@@ -12,6 +15,7 @@ stopwords = config["words_list"]["stopwords"]
 names_list = config["words_list"]["names"]
 regex_tokenize = config["regex"]["tokenizer"]
 
+
 def _create_flashtext_object():
     """
     Instantiates a Flashtext object.
@@ -21,6 +25,7 @@ def _create_flashtext_object():
     for separator in ['-', '_', '/']:
         keyword_processor.add_non_word_boundary(separator)
     return keyword_processor
+
 
 class Tokenizer(BaseEstimator, TransformerMixin):
     """Class to train and apply tokenizer.
@@ -61,7 +66,6 @@ class Tokenizer(BaseEstimator, TransformerMixin):
     def __init__(self,
                  input_column='clean_text',
                  stopwords=stopwords,
-                 keywords_processor=_create_flashtext_object(),
                  stop_removal=True,
                  n_jobs=20):
         self.input_column = input_column
@@ -69,7 +73,8 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         self.stop_removal = stop_removal
         self.n_jobs = n_jobs
         self.logger = logging.getLogger(__name__)
-        self.name_flagger = keywords_processor.add_keywords_from_dict({"flag_name_": set(names_list)})
+        self.name_flagger = _create_flashtext_object()
+        self.name_flagger.add_keywords_from_dict({"flag_name_": names_list})
 
     def __getstate__(self):
         """should return a dict of attributes that will be pickled
