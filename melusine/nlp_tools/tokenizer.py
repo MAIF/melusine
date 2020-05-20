@@ -22,7 +22,7 @@ def _create_flashtext_object():
     Separators are specified to not be considered as word boundaries
     """
     keyword_processor = KeywordProcessor()
-    for separator in ['-', '_', '/']:
+    for separator in ['-', '_', '/','é','è','ê','â','ô','û','ù','ï']: #special characters with accents are included as flashtext library splits words with accents
         keyword_processor.add_non_word_boundary(separator)
     return keyword_processor
 
