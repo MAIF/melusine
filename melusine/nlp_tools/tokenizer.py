@@ -48,7 +48,7 @@ class Tokenizer(BaseEstimator, TransformerMixin):
 
     Attributes
     ----------
-    stopwords, stop_removal, n_jobs
+    stopwords, stop_removal, n_jobs, name_flagger
 
     Examples
     --------
