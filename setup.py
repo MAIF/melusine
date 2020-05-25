@@ -16,10 +16,12 @@ requirements = ['pandas>=0.25.0',
                 'gensim>=3.3.0',
                 'keras>=2.2.0',
                 'tqdm>=4.34',
+                'streamlit>=0.57.3',
                 'tensorflow>=1.10.0,<=1.13.1',
                 'unidecode',
                 'joblib',
-                'flashtext>=2.7'
+                'flashtext>=2.7',
+                'plotly'
                 ]
 
 setup_requirements = ['pytest-runner', ]
@@ -69,6 +71,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/MAIF/melusine',
-    version='1.9.4',
+    version='1.9.5',
     zip_safe=False,
 )
