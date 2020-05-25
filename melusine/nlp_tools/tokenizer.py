@@ -2,9 +2,6 @@ import logging
 import re
 from flashtext import KeywordProcessor
 from sklearn.base import BaseEstimator, TransformerMixin
-import os
-import sys
-sys.path.append(os.path.abspath(''))
 from melusine.config.config import ConfigJsonReader
 from melusine.utils.transformer_scheduler import TransformerScheduler
 
