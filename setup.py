@@ -19,7 +19,7 @@ requirements = ['pandas>=0.25.0',
                 'tensorflow>=1.10.0,<=1.13.1',
                 'unidecode',
                 'joblib',
-                'flashtext'
+                'flashtext>=2.7'
                 ]
 
 setup_requirements = ['pytest-runner', ]
