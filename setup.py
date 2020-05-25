@@ -18,7 +18,8 @@ requirements = ['pandas>=0.25.0',
                 'tqdm>=4.34',
                 'tensorflow>=1.10.0,<=1.13.1',
                 'unidecode',
-                'joblib'
+                'joblib',
+                'flashtext'
                 ]
 
 setup_requirements = ['pytest-runner', ]
@@ -62,6 +63,7 @@ setup(
               'melusine.summarizer', 'melusine.models',
               'melusine.data'],
     data_files=[('config', ['melusine/config/conf.json']),
+                ('config', ['melusine/config/names.csv']),
                 ('data', ['melusine/data/emails.csv'])],
     setup_requires=setup_requirements,
     test_suite='tests',
