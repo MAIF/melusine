@@ -20,6 +20,7 @@ requirements = ['pandas>=0.25.0',
                 'tensorflow>=1.10.0,<=1.13.1',
                 'unidecode',
                 'joblib',
+                'flashtext>=2.7',
                 'plotly'
                 ]
 
@@ -64,11 +65,12 @@ setup(
               'melusine.summarizer', 'melusine.models',
               'melusine.data'],
     data_files=[('config', ['melusine/config/conf.json']),
+                ('config', ['melusine/config/names.csv']),
                 ('data', ['melusine/data/emails.csv'])],
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/MAIF/melusine',
-    version='1.9.3',
+    version='1.9.6',
     zip_safe=False,
 )
