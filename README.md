@@ -14,7 +14,7 @@
 
 **Melusine** is a high-level Python library for email classification and feature extraction,
 written in Python and capable of running on top of Scikit-Learn, Tensorflow 2 and Keras.
-Integrated models runs with Tensorflow 2.2
+Integrated models runs with Tensorflow 2.2.
 It is developed with a focus on emails written in french.
 
 Use **Melusine** if you need a library which :
