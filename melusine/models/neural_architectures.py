@@ -1,17 +1,17 @@
-import keras
-from keras.layers import BatchNormalization
-from keras.layers import LeakyReLU
-from keras.layers import Input
-from keras.layers import concatenate
-from keras.optimizers import Adam
-from keras.models import Model
-from keras.layers import Dense
-from keras.layers import Conv1D
-from keras.layers import Dropout
-from keras.layers import SpatialDropout1D
-from keras.layers import GlobalMaxPooling1D
-from keras.layers import GRU
-from keras.layers import Bidirectional
+from tensorflow import keras
+from tensorflow.keras.layers import BatchNormalization
+from tensorflow.keras.layers import LeakyReLU
+from tensorflow.keras.layers import Input
+from tensorflow.keras.layers import concatenate
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Conv1D
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras.layers import SpatialDropout1D
+from tensorflow.keras.layers import GlobalMaxPooling1D
+from tensorflow.keras.layers import GRU
+from tensorflow.keras.layers import Bidirectional
 
 
 def cnn_model(embedding_matrix_init,
