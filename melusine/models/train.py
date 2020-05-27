@@ -3,12 +3,11 @@ import numpy as np
 import ast
 from collections import Counter
 from sklearn.base import BaseEstimator, ClassifierMixin
-from keras.utils import np_utils
-from keras.models import model_from_json
-from keras.preprocessing.sequence import pad_sequences
-from keras.optimizers import Adam
-from keras.callbacks import TensorBoard
-from melusine.utils.transformer_scheduler import TransformerScheduler
+from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.models import model_from_json
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import TensorBoard
 from melusine.config.config import ConfigJsonReader
 
 conf_reader = ConfigJsonReader()
@@ -170,7 +169,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         self.vocabulary_dict = {word: i for i, word in enumerate(self.vocabulary)}
         X_seq = self._prepare_sequences(X)
         X_meta, nb_meta_features = self._get_meta(X)
-        y_categorical = np_utils.to_categorical(y)
+        y_categorical = to_categorical(y)
         nb_labels = len(np.unique(y))
 
         self.model = self.architecture_function(
@@ -194,7 +193,6 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         else:
 
             histogram_freq = ast.literal_eval(tensorboard_callback_parameters["histogram_freq"])
-            batch_size = ast.literal_eval(tensorboard_callback_parameters["batch_size"])
             write_graph = ast.literal_eval(tensorboard_callback_parameters["write_graph"])
             write_grads = ast.literal_eval(tensorboard_callback_parameters["write_grads"])
             write_images = ast.literal_eval(tensorboard_callback_parameters["write_images"])
@@ -212,7 +210,6 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
 
             tensorboard_callback = TensorBoard(log_dir=tensorboard_log_dir,
                                                histogram_freq=histogram_freq,
-                                               batch_size=batch_size,
                                                write_graph=write_graph,
                                                write_grads=write_grads,
                                                write_images=write_images,
