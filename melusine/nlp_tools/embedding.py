@@ -29,16 +29,13 @@ class Embedding:
     method : str,
         One of the following :
             - "word2vec_sg" : Trains a Word2Vec Embedding using the Skip-Gram method (usually takes a long time).
-            - "word2vec_ns" : Trains a Word2Vec Embedding using the Negative-Sampling method.
             - "word2vec_cbow" : Trains a Word2Vec Embedding using the Continuous Bag-Of-Words method.
             - "lsa_docterm" : Trains an Embedding by using an SVD on a Document-Term Matrix.
             - "lsa_tfidf" : Trains an Embedding by using an SVD on a TF-IDFized Document-Term Matrix.
-            - "glove" : Trains a GloVe Embedding. NOT IMPLEMENTED YET.
     train_params : dict,
         Additional parameters for the embedding training. Check the following documentation :
             - gensim.models.Word2Vec for Word2Vec Embeddings
             - sklearn.decomposition.TruncatedSVD for LSA Embeddings
-            - glove.Glove for GloVe Embeddings
         If left untouched, the default training values will be kept from the aforementioned packages.
     Examples
     --------
@@ -86,7 +83,6 @@ class Embedding:
                 - "word2vec_cbow" : Trains a Word2Vec Embedding using the Continuous Bag-Of-Words method and Negative-Sampling.
                 - "lsa_docterm" : Trains an Embedding by using an SVD on a Document-Term Matrix.
                 - "lsa_tfidf" : Trains an Embedding by using an SVD on a TF-IDFized Document-Term Matrix.
-                - "glove" : Trains a GloVe Embedding. NOT IMPLEMENTED YET.
         min_count : TODO
         """
 
