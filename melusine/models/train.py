@@ -193,7 +193,6 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         else:
 
             histogram_freq = ast.literal_eval(tensorboard_callback_parameters["histogram_freq"])
-            batch_size = ast.literal_eval(tensorboard_callback_parameters["batch_size"])
             write_graph = ast.literal_eval(tensorboard_callback_parameters["write_graph"])
             write_grads = ast.literal_eval(tensorboard_callback_parameters["write_grads"])
             write_images = ast.literal_eval(tensorboard_callback_parameters["write_images"])
@@ -211,7 +210,6 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
 
             tensorboard_callback = TensorBoard(log_dir=tensorboard_log_dir,
                                                histogram_freq=histogram_freq,
-                                               batch_size=batch_size,
                                                write_graph=write_graph,
                                                write_grads=write_grads,
                                                write_images=write_images,
