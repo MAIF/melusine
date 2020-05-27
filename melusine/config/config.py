@@ -90,7 +90,10 @@ class ConfigJsonReader():
         else:
             name_list = self.load_name_file(path=name_file_path)
 
-        config_file['words_list']['names'] = name_list
+        if "words_list" in config_file.keys():
+            config_file['words_list']['names'] = name_list
+        else:
+            config_file['words_list'] = {'names' : name_list}
 
         return config_file
 
