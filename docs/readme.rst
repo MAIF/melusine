@@ -195,6 +195,7 @@ An example of keywords extraction is given below::
 
 Classification
 ^^^^^^^^^^^^^^
+The package includes multiple neural network architectures including CNN, RNN, Attentive and pre-trained BERT Networks.
 An example of classification is given below::
 
     from sklearn.preprocessing import LabelEncoder

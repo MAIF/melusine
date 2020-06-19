@@ -205,6 +205,7 @@ df_email = keywords_generator.fit_transform(df_email)
 
 ### Classification
 
+The package includes multiple neural network architectures including CNN, RNN, Attentive and pre-trained BERT Networks.
 An example of classification is given below:
 ```python
 from sklearn.preprocessing import LabelEncoder
