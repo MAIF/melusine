@@ -141,7 +141,7 @@ class Tokenizer(BaseEstimator, TransformerMixin):
     def _tokenize(self, text, pattern=regex_tokenize):
         """Returns list of tokens from text."""
         if isinstance(text, str):
-            tokens = re.findall(pattern, text, re.M+re.DOTALL)
+            tokens = re.findall(pattern, text, re.M + re.DOTALL)
             tokens = self._remove_stopwords(tokens)
         else:
             tokens = []

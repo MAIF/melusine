@@ -5,7 +5,6 @@ import scipy.sparse as sp
 from collections import Counter
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_extraction.text import TfidfVectorizer
-from melusine.utils.multiprocessing import apply_by_multiprocessing
 from melusine.utils.transformer_scheduler import TransformerScheduler
 from melusine.config.config import ConfigJsonReader
 
@@ -240,7 +239,7 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
         X_['split'] = 0
         for c in X_.label.unique():
             N_c = X_[X_["label"] == c].shape[0]
-            I_c = np.random.randint(0, self.n_docs_in_class+1, N_c)
+            I_c = np.random.randint(0, self.n_docs_in_class + 1, N_c)
             X_.loc[X_["label"] == c, 'split'] = I_c
 
         X_resample = pd.DataFrame(

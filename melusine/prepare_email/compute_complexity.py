@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def structured_score(row):
     """Function to be called after the mail_segmenting function as it requires a "structured_body" column.
     Return a set with the different parts tag (ex : "HELLO", "BODY", etc.) present, or "EMPTY" if any,  in the last
@@ -20,7 +21,8 @@ def structured_score(row):
     for part in row['structured_body'][0]['structured_text']['text']:
         parts_type.append(part['tags'])
     tags_set = set(parts_type)
-    return (tags_set or set(['EMPTY']),len(tags_set))
+    return (tags_set or set(['EMPTY']), len(tags_set))
+
 
 def mean_words_by_sentence(row, tokenizer):
     """Function to be called after the mail_segmenting function as it requires a "structured_body" column.

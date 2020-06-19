@@ -1,4 +1,5 @@
-import re, copy
+import re
+import copy
 import pandas as pd
 from collections import Counter
 from sklearn import preprocessing
@@ -50,7 +51,7 @@ class MetaExtension(BaseEstimator, TransformerMixin):
         x = row['from']
         try:
             extension = re.findall(r'\@([^.]+)', x)[0]
-        except Exception as e:
+        except Exception:
             return ''
         return extension
 
@@ -134,10 +135,10 @@ class MetaDate(BaseEstimator, TransformerMixin):
         x = row['date']
         try:
             e = re.findall(regex_format, x)[0]
-            date = e[0]+'/'+e[1]+'/'+e[2]+' '+e[3]+':'+e[4]
+            date = e[0] + '/' + e[1] + '/' + e[2] + ' ' + e[3] + ':' + e[4]
             for m, m_n in self.month.items():
                 date = date.replace(m, m_n)
-        except Exception as e:
+        except Exception:
             return x
         return date
 
@@ -147,7 +148,7 @@ class MetaDate(BaseEstimator, TransformerMixin):
         x = row['date']
         try:
             return x.hour
-        except Exception as e:
+        except Exception:
             return 0
 
     @staticmethod
@@ -156,7 +157,7 @@ class MetaDate(BaseEstimator, TransformerMixin):
         """Get minutes from date"""
         try:
             return x.minute
-        except Exception as e:
+        except Exception:
             return 0
 
     @staticmethod
@@ -166,7 +167,7 @@ class MetaDate(BaseEstimator, TransformerMixin):
 
         try:
             return x.dayofweek
-        except Exception as e:
+        except Exception:
             return 0
 
 

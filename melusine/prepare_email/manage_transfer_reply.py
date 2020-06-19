@@ -43,7 +43,7 @@ def add_boolean_transfer(row):
     try:
         if re.match(regex_transfer_header, row['header']):
             is_transfer = True
-    except Exception as e:
+    except Exception:
         pass
 
     return is_transfer
@@ -79,7 +79,7 @@ def add_boolean_answer(row):
     try:
         if re.match(regex_answer_header, row['header']):
             is_answer = True
-    except Exception as e:
+    except Exception:
         pass
 
     return is_answer
@@ -117,7 +117,7 @@ def check_mail_begin_by_transfer(row):
             is_begin_by_transfer = True
         if re.search(regex_begin_transfer_cons, row['body']):
             is_begin_by_transfer = True
-    except Exception as e:
+    except Exception:
         pass
 
     return is_begin_by_transfer
@@ -164,7 +164,7 @@ def update_info_for_transfer_mail(row):
             row['body'] = ''.join(row['body'].split(
                 re.findall(regex_extract_header, row['body'])[0])[1:])
 
-    except Exception as E:
+    except Exception:
         pass
 
     return row

@@ -118,7 +118,7 @@ class TransformerScheduler(BaseEstimator, TransformerMixin):
         self.functions_scheduler = functions_scheduler
         self.mode = mode
         self.n_jobs = n_jobs
-        self.progress_bar=True
+        self.progress_bar = True
         self.copy = copy
         self.verbose = verbose
 
