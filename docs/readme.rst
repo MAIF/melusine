@@ -41,6 +41,19 @@ Use **Melusine** if you need a library which :
 
   * **Work with Python :** No separate models configuration files in a declarative format. Models are described in Python code, which is compact, easier to debug, and allows for ease of extensibility.
 
+Release Note 1.11.0
+---------------------
+
+New features:
+    - Attentive Neural Networks are now available. :tada: We propose you an original Transformer architecture as well
+    as pre-trained BERT models (Camembert and Flaubert)
+    - Tutorial 13 will explain you how to get started with these models and attempt to compare them.
+
+Release Note 1.10.0
+---------------------
+
+Updates:
+    - Melusine is now running with Tensorflow 2.2
 
 The Melusine package
 ---------------------
