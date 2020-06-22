@@ -294,7 +294,7 @@ def bert_model(ntargets=18,
                seq_max=100,
                nb_meta=134,
                loss='categorical_crossentropy',
-               bert_model='camembert-base'):
+               bert_model='jplu/tf-camembert-base'):
     """Pre-defined architecture of a pre-trained Bert model.
 
 
@@ -344,7 +344,7 @@ def bert_model(ntargets=18,
                                                          attention_mask=attention_input)[1]
     elif 'flaubert' in bert_model.lower():
         x = TFFlaubertModel.from_pretrained(bert_model)(inputs=text_input,
-                                                        attention_mask=attention_input)[1]
+                                                        attention_mask=attention_input)[0][:, 0, :]
     else:
         raise NotImplementedError('Bert model {} is not implemented.'.format(bert_model))
 

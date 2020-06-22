@@ -611,6 +611,7 @@ Each of the proposed architecture employs a distinct mathematical operation.
 Recurrent Neural Network Classifier (RNN)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 RNN are traditionally used with textual data as they are specifically designed to handle sequentially structured data. Inputs are sequentially computed given a cell operation, generally a LSTM or GRU cell. at each step, the current input as well as the output from the previous step are used to compute the next hidden state. The proposed architecture includes a 2-layers bidirectional GRU networks. The network last hidden state is used as the final sentence embedding.
+
 .. image:: ./_static/rnn-model.png
   :align: center
   :scale: 50%
@@ -618,6 +619,7 @@ RNN are traditionally used with textual data as they are specifically designed t
 Convolutional Neural Network Classifier (CNN)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 CNN uses multiple filters to distinguish patterns in data. Such filters are assembled across the hidden layers to build more complex patterns and structures. The last layer should therefor capture a global and generic representation of the data. In our architecture, we use a two hidden layers CNN with respectively 200 filters for each hidden layer. The last hidden states are aggregated using a max pooling operation.
+
 .. image:: ./_static/cnn-model.png
   :align: center
   :scale: 50%
@@ -625,6 +627,7 @@ CNN uses multiple filters to distinguish patterns in data. Such filters are asse
 Attentive Neural Network Classifier
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Attentive-based neural networks are fairly new in the NLP community but results are extremely promising. They rely on the self-attention operation which computes hidden states as a weighted sum from the inputs. As the multiple filters in the CNN architecture, the multi-branch attention aggregate multiple attention operation to capture various properties from the input. Such operation is easily perform on GPU infrastructure. We propose an architecture inspired from previously introduced RNN and CNN architecture with a two layers multi-branch attention module follow by a max pooling operation.
+
 .. image:: ./_static/transformer-model.png
   :align: center
   :scale: 50%
@@ -634,6 +637,7 @@ BERT Neural Network Classifier
 We also propose a wrap-up for the popular pre-trained bert architecture.
 Bidirectional Encoder Representations from Transformers (BERT) take into account the context for each occurrence of a given word and will provide a contextualized embedding that will be different according to the sentence. However, we only use the first word embedding, usually called the classification token in our classifier model.
 We made available the two trending French models Camembert and Flaubert.
+
 .. image:: ./_static/bert-model.png
   :align: center
   :scale: 50%
