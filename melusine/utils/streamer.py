@@ -5,6 +5,7 @@ from melusine.config.config import ConfigJsonReader
 
 conf_reader = ConfigJsonReader()
 
+
 class Streamer():
     """Class to transform pd.Series into stream.
 
@@ -87,7 +88,6 @@ class Streamer():
         -------
         list of list of strings
         """
-        #text = row[self.column_]
         sentences_list = split_message_to_sentences(text)
         tokenized_sentences_list = [self.tokenizer._tokenize(sentence)
                                     for sentence in sentences_list

@@ -5,6 +5,7 @@ from configparser import ConfigParser
 import pandas as pd
 import unidecode
 
+
 class ConfigJsonReader():
     """Class to initialize a config.json file that contains your own
     parameters used by the package.
@@ -93,7 +94,7 @@ class ConfigJsonReader():
         if "words_list" in config_file.keys():
             config_file['words_list']['names'] = name_list
         else:
-            config_file['words_list'] = {'names' : name_list}
+            config_file['words_list'] = {'names': name_list}
 
         return config_file
 

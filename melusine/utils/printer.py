@@ -24,7 +24,7 @@ def print_color_mail(structured_body):
             tag = sentence.get("tags")
             print_color(text, tag)
 
-       
+
 def print_color(text, part=None):
     """Select according to the tag the right color to use when printing."""
     text = text.replace("\r", "")
@@ -55,6 +55,6 @@ def print_color(text, part=None):
     }
 
     if part in switcher.keys():
-       print("> ", switcher_tag.get(part, text), " : ", switcher.get(part, text), "\n")
+        print("> ", switcher_tag.get(part, text), " : ", switcher.get(part, text), "\n")
     else:
-       print("> BODY : ", switcher.get(part, text), "\n")
+        print("> BODY : ", switcher.get(part, text), "\n")

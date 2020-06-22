@@ -80,7 +80,8 @@ class Embedding:
         method : str,
             One of the following :
                 - "word2vec_sg" : Trains a Word2Vec Embedding using the Skip-Gram method and Negative-Sampling.
-                - "word2vec_cbow" : Trains a Word2Vec Embedding using the Continuous Bag-Of-Words method and Negative-Sampling.
+                - "word2vec_cbow" : Trains a Word2Vec Embedding using the Continuous Bag-Of-Words method
+                                    and Negative-Sampling.
                 - "lsa_docterm" : Trains an Embedding by using an SVD on a Document-Term Matrix.
                 - "lsa_tfidf" : Trains an Embedding by using an SVD on a TF-IDFized Document-Term Matrix.
         min_count : TODO
@@ -102,28 +103,27 @@ class Embedding:
         self.workers = workers
 
         if self.method in ['word2vec_sg', 'word2vec_cbow']:
-            self.train_params = {
-                 "size": size,
-                 "alpha": 0.025,
-                 "min_count": min_count,
-                 "max_vocab_size": None,
-                 "sample": 0.001,
-                 "seed": random_seed,
-                 "workers": workers,
-                 "min_alpha": 0.0001,
-                 "negative" : 5,
-                 "hs": 0,
-                 "ns_exponent": 0.75,
-                 "cbow_mean": 1,
-                 "iter": iter,
-                 "null_word": 0,
-                 "trim_rule": None,
-                 "sorted_vocab": 1,
-                 "batch_words": 10000,
-                 "compute_loss": False,
-                 "callbacks": (),
-                 "max_final_vocab": None
-                 }
+            self.train_params = {"size": size,
+                                 "alpha": 0.025,
+                                 "min_count": min_count,
+                                 "max_vocab_size": None,
+                                 "sample": 0.001,
+                                 "seed": random_seed,
+                                 "workers": workers,
+                                 "min_alpha": 0.0001,
+                                 "negative": 5,
+                                 "hs": 0,
+                                 "ns_exponent": 0.75,
+                                 "cbow_mean": 1,
+                                 "iter": iter,
+                                 "null_word": 0,
+                                 "trim_rule": None,
+                                 "sorted_vocab": 1,
+                                 "batch_words": 10000,
+                                 "compute_loss": False,
+                                 "callbacks": (),
+                                 "max_final_vocab": None}
+
             if self.method == "word2vec_sg":
                 self.train_params["sg"] = 1
                 self.train_params["window"] = 10
@@ -160,28 +160,26 @@ class Embedding:
                 "svd_tol": 0.0
             }
         elif self.method == 'lsa_docterm':
-            self.train_params = {
-                # CountVectorizer Parameters
-                "vectorizer_encoding": 'utf-8',
-                "vectorizer_decode_error": 'strict',
-                "vectorizer_strip_accents": None,
-                "vectorizer_lowercase": False,
-                "vectorizer_stop_words": None,
-                "vectorizer_ngram_range": (1, 1),
-                "vectorizer_analyzer": 'word',
-                "vectorizer_max_df": 1.0,
-                "vectorizer_min_df": 1,
-                "vectorizer_max_features": None,
-                "vectorizer_vocabulary": None,
-                "vectorizer_binary": False,
+            # CountVectorizer Parameters
+            # TruncatedSVD Parameters
+            self.train_params = {"vectorizer_encoding": 'utf-8',
+                                 "vectorizer_decode_error": 'strict',
+                                 "vectorizer_strip_accents": None,
+                                 "vectorizer_lowercase": False,
+                                 "vectorizer_stop_words": None,
+                                 "vectorizer_ngram_range": (1, 1),
+                                 "vectorizer_analyzer": 'word',
+                                 "vectorizer_max_df": 1.0,
+                                 "vectorizer_min_df": 1,
+                                 "vectorizer_max_features": None,
+                                 "vectorizer_vocabulary": None,
+                                 "vectorizer_binary": False,
+                                 "svd_n_components": size,
+                                 "svd_algorithm": 'randomized',
+                                 "svd_n_iter": iter,
+                                 "svd_random_state": random_seed,
+                                 "svd_tol": 0.0}
 
-                # TruncatedSVD Parameters
-                "svd_n_components": size,
-                "svd_algorithm": 'randomized',
-                "svd_n_iter": iter,
-                "svd_random_state": random_seed,
-                "svd_tol": 0.0
-                 }
         else:
             raise ValueError(f"Error: Embedding method {method} not recognized or not implemented yet ;).")
 
@@ -320,11 +318,11 @@ class Embedding:
             Sklearn object on which the TruncatedSVD will be computed.
         """
 
-        svd=TruncatedSVD(n_components=self.train_params["svd_n_components"],
-                        algorithm=self.train_params["svd_algorithm"],
-                        n_iter=self.train_params["svd_n_iter"],
-                        random_state=self.train_params["svd_random_state"],
-                        tol=self.train_params["svd_tol"])
+        svd = TruncatedSVD(n_components=self.train_params["svd_n_components"],
+                           algorithm=self.train_params["svd_algorithm"],
+                           n_iter=self.train_params["svd_n_iter"],
+                           random_state=self.train_params["svd_random_state"],
+                           tol=self.train_params["svd_tol"])
         svd.fit(vectorized_corpus_data)
 
         embedding_matrix = svd.components_.T
@@ -333,7 +331,6 @@ class Embedding:
     def train_word2vec(self):
         """Fits a Word2Vec Embedding on the given documents, and update the embedding attribute.
         """
-
 
         embedding = Word2Vec(size=self.train_params["size"],
                              alpha=self.train_params["alpha"],
@@ -366,9 +363,7 @@ class Embedding:
 
         self.embedding = embedding.wv
 
-
-
-    #def train_glove(self, X, input_column):
+    # def train_glove(self, X, input_column):
     #
     #    corpus = Corpus()
     #
@@ -383,7 +378,9 @@ class Embedding:
 
     def create_keyedvector_from_matrix(self, embedding_matrix, word2id):
         """
-        Imports the necessary attributes for the Embedding object from an embedding matrix and a word2id vocabulary. Can be used for custom pre-trained embeddings.
+        Imports the necessary attributes for the Embedding object from an embedding matrix and a word2id vocabulary.
+        Can be used for custom pre-trained embeddings.
+
         Parameters
         ----------
         embedding_matrix: numpy.ndarray
@@ -392,7 +389,9 @@ class Embedding:
             Word vocabulary (key: word, value: word_index)
         """
 
-        vocab = {word:word2id[word] for word in sorted(word2id, key=word2id.__getitem__, reverse=False)}
+        vocab = {word: word2id[word] for word in sorted(word2id,
+                                                        key=word2id.__getitem__,
+                                                        reverse=False)}
         embedding_matrix = embedding_matrix
         vector_size = embedding_matrix.shape[1]
 

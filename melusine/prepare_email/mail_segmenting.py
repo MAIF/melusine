@@ -73,6 +73,7 @@ regex_split_message_to_sentences_list = REGEX_SEG['split_message_to_sentences_li
 REGEX_CLEAN = config["regex"]['cleaning']
 regex_flags_dict = REGEX_CLEAN["flags_dict"]
 
+
 def structure_email(row):
     """ 1. Splits parts of each messages in historic and tags them.
     For example a tag can be hello, body, greetings etc
@@ -337,7 +338,7 @@ def _merge_parts(list_de_tuple_parts_id):
             tags[i] = tags[j]
             sentences[i] = sentences[j]
             j += 1
-    list_de_tuples_merged = list(zip(sentences[:i+1], tags[:i+1]))
+    list_de_tuples_merged = list(zip(sentences[:i + 1], tags[:i + 1]))
 
     return list_de_tuples_merged
 
@@ -398,7 +399,7 @@ def _tuples_to_dict(meta, header, tagged_parts):
     return structured_message
 
 
-def tag_signature(row, token_threshold = signature_token_threshold):
+def tag_signature(row, token_threshold=signature_token_threshold):
     """
     Function to be called after the mail_segmenting function as it requires a "structured_body" column.
     This function detects parts of a message that qualify as "signature".

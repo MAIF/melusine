@@ -2,7 +2,8 @@
 Cleaning of the body and the header
 """
 
-import unidecode, unicodedata
+import unidecode
+import unicodedata
 import re
 from melusine.config import ConfigJsonReader
 

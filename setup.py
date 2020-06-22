@@ -20,7 +20,9 @@ requirements = ['pandas>=0.25.0',
                 'unidecode',
                 'joblib',
                 'flashtext>=2.7',
-                'plotly'
+                'plotly',
+                'transformers==2.11.0',
+                'numpy>=1.16.0'
                 ]
 
 setup_requirements = ['pytest-runner', ]
@@ -28,7 +30,7 @@ setup_requirements = ['pytest-runner', ]
 test_requirements = ['pytest', ]
 
 setup(
-    author="Sacha Samama, Tom Stringer, Antoine Simoulin, Benoit Lebreton",
+    author="Sacha Samama, Tom Stringer, Antoine Simoulin, Benoit Lebreton, Tiphaine Fabre",
     author_email='ssamama@quantmetry.com',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
@@ -70,6 +72,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/MAIF/melusine',
-    version='1.10.0',
+    version='1.11.0',
     zip_safe=False,
 )

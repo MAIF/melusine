@@ -1,12 +1,10 @@
 import logging
-import re
 import numpy as np
-import pandas as pd
-from multiprocessing import Pool
 
 from sklearn.base import BaseEstimator, TransformerMixin
 from melusine.utils.multiprocessing import apply_by_multiprocessing
 from gensim.models import Word2Vec
+
 
 def aggregation_percentile_60(x):
     """
@@ -55,15 +53,18 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
     extend_seed_word_list : bool,
         Whether to use the seedwords as prefixes.
     seed_dict : dict,
-        Filled if extend_seed_word_list==True. Key : prefix, Value : list of seedwords having this prefix in the vocabulary
+        Filled if extend_seed_word_list==True.
+        Key : prefix, Value : list of seedwords having this prefix in the vocabulary
     tokens_column : str,
-        Name of the column in the Pandas Dataframe on which the polarity scores will be computed. Must be a column of tokens.
+        Name of the column in the Pandas Dataframe on which the polarity scores will be computed.
+        Must be a column of tokens.
     normalize_lexicon_scores : bool,
         Whether or not to normalize the lexicons' scores (so that they are centered around 0 and with a variance of 1)
     lexicon : dict,
         Key : dict Keys : tokens in the vocabulary, Value : token semantic score
     aggregation_function_seed_wise : function,
-        Function to aggregate the scores returned by all the different Lexicons associated to the seedwords, for a specific token (default=np.max)
+        Function to aggregate the scores returned by all the different Lexicons associated to the seedwords,
+        for a specific token (default=np.max)
     aggregation_function_email_wise : function,
         Function to aggregate the scores given to the tokens in a e-mail (default=np.percentile(.,60))
 
@@ -91,7 +92,8 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
         anti_weight : float
             Weight applied to the contribution of anti seed words to the computation of the semantic score
         tokens_column : str,
-            Name of the column in the Pandas Dataframe on which the polarity scores will be computed. Must be a column of tokens.
+            Name of the column in the Pandas Dataframe on which the polarity scores will be computed.
+            Must be a column of tokens.
         n_jobs : int,
             Number of CPUs to use to rate the emails.
         progress_bar : bool,
@@ -101,7 +103,8 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
         normalize_lexicon_scores : bool,
             Whether or not to normalize the lexicons' scores (so that they are centered around 0 and with a variance of 1)
         aggregation_function_seed_wise : function,
-            Function to aggregate the scores returned by all the different Lexicons associated to the seedwords, for a specific token (default=np.max)
+            Function to aggregate the scores returned by all the different Lexicons associated to the seedwords,
+            for a specific token (default=np.max)
         aggregation_function_email_wise : function,
             Function to aggregate the scores given to the tokens in a e-mail (default=np.percentile(.,60))
         """
@@ -164,7 +167,8 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
 
         if self.extend_seed_word_list:
             self.seed_dict, self.seed_list = self.compute_seeds_from_root(embedding, self.base_seed_words)
-            self.anti_seed_dict, self.anti_seed_list = self.compute_seeds_from_root(embedding, self.base_anti_seed_words)
+            self.anti_seed_dict, self.anti_seed_list = self.compute_seeds_from_root(embedding,
+                                                                                    self.base_anti_seed_words)
 
         # self.seed_list = [token for token in self.seed_list if token in embedding.embedding.vocab.keys()]
 
@@ -179,7 +183,8 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
     @staticmethod
     def compute_seeds_from_root(embedding, base_seed_words):
         """
-        Uses the seedwords list provided by the User and treats them as prefixes to find the effective tokens that will be used to compute the Lexicons.
+        Uses the seedwords list provided by the User and treats them as prefixes to find the effective tokens
+        that will be used to compute the Lexicons.
 
         Parameters
         --------
@@ -191,7 +196,8 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
         Returns
         -------
         (seed_dict, seed_list) : (dict, list),
-            Tuple contraining a dict with key:prefixe value : list of seedwords, and a list containing all the seedwords found with the given prefixes
+            Tuple contraining a dict with key:prefixe value : list of seedwords, and a list containing
+            all the seedwords found with the given prefixes
 
         """
         words = list(embedding.embedding.vocab.keys())
@@ -207,7 +213,8 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
 
     def compute_lexicon(self, embedding, seed_list):
         """
-        Computes the Lexicons for the given embedding. Computes the cosine similarity between all the tokens in seed_list and the embedding's vocabulary.
+        Computes the Lexicons for the given embedding. Computes the cosine similarity
+        between all the tokens in seed_list and the embedding's vocabulary.
 
         Parameters
         --------

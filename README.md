@@ -23,6 +23,15 @@ Use **Melusine** if you need a library which :
 
 **Melusine** is compatible with `Python >= 3.5`.
 
+## Release Note 1.11.0
+New features:
+    * Attentive Neural Networks are now available. :tada: We propose you an original Transformer architecture as well 
+    as pre-trained BERT models (Camembert and Flaubert)
+    * Tutorial 13 will explain you how to get started with these models and attempt to compare them.
+   
+## Release Note 1.10.0
+Updates:
+    * Melusine is now running with Tensorflow 2.2
 
 ## The Melusine package
 
@@ -205,6 +214,7 @@ df_email = keywords_generator.fit_transform(df_email)
 
 ### Classification
 
+The package includes multiple neural network architectures including CNN, RNN, Attentive and pre-trained BERT Networks.
 An example of classification is given below:
 ```python
 from sklearn.preprocessing import LabelEncoder
