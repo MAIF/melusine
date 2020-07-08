@@ -56,6 +56,10 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         Loss function for training.
         Default value, 'categorical_crossentropy'.
 
+    activation : str, optional
+        Activation function.
+        Default value, 'softmax'.
+
     batch_size : int, optional
         Size of batches for the training of the neural network model.
         Default value, 4096.
@@ -70,7 +74,8 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         Default value, 'camembert-base'
 
     bert_model : str, optional
-        Model name from HuggingFace library or path to local model
+        Model name from HuggingFace library or path to local modela
+
         Only Camembert and Flaubert supported
         Default value, 'camembert-base'
 
@@ -108,6 +113,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                  seq_size=100,
                  embedding_dim=200,
                  loss='categorical_crossentropy',
+                 activation = 'softmax',
                  batch_size=4096,
                  n_epochs=15,
                  bert_tokenizer='camembert-base',
@@ -129,6 +135,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         self.seq_size = seq_size
         self.embedding_dim = embedding_dim
         self.loss = loss
+        self.activation = activation
         self.batch_size = batch_size
         self.n_epochs = n_epochs
         self.bert_model = bert_model
@@ -148,7 +155,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                                                 'MultiHeadAttention': MultiHeadAttention})
         model.load_weights(filepath + "_model_weights.h5")
         model.compile(optimizer=Adam(),
-                      loss='categorical_crossentropy',
+                      loss=self.loss,
                       metrics=['accuracy'])
         self.model = model
         pass
@@ -168,7 +175,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         model weight and structure instead of standard serialization."""
         self.__dict__ = dict_attr
 
-    def fit(self, X, y, tensorboard_log_dir=None, **kwargs):
+    def fit(self, X_train, y_train, tensorboard_log_dir=None, validation_data=None, **kwargs):
         """Fit the neural network model on X and y.
         If meta_input list is empty list or None the model is used
         without metadata.
@@ -177,39 +184,45 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
 
         Parameters
         ----------
-        X : pd.DataFrame
+        X_train : pd.DataFrame
 
-        y : pd.Series
+        y_train : pd.Series
 
         tensorboard_log_dir : str
             If not None, will be used as path to write logs for tensorboard
             Tensordboard callback parameters can be changed in config file
+
+        validation_data: tuple
+            Tuple of validation data
+            Data on which to evaluate the loss and any model metrics at the end of each epoch. The model will not be
+            trained on this data. This could be a tuple (x_val, y_val). validation_data will override validation_split.
+            Default value, None.
 
         Returns
         -------
         self : object
             Returns the instance
         """
-
-        y_categorical = to_categorical(y)
-        nb_labels = len(np.unique(y))
+        y_categorical_train = to_categorical(y_train)
+        nb_labels = len(np.unique(y_train))
 
         if self.architecture_function.__name__ != 'bert_model':
-            X = self.tokenizer.transform(X)
+            X_train = self.tokenizer.transform(X_train)
             if self.pretrained_embedding:
                 self._get_embedding_matrix()
             else:
-                self._create_vocabulary_from_tokens(X)
+                self._create_vocabulary_from_tokens(X_train)
                 self._generate_random_embedding_matrix()
             self.vocabulary_dict = {word: i for i, word in enumerate(self.vocabulary)}
-            X_seq = self._prepare_sequences(X)
-            X_meta, nb_meta_features = self._get_meta(X)
+            X_seq = self._prepare_sequences(X_train)
+            X_meta, nb_meta_features = self._get_meta(X_train)
             self.model = self.architecture_function(
                 embedding_matrix_init=self.embedding_matrix,
                 ntargets=nb_labels,
                 seq_max=self.seq_size,
                 nb_meta=nb_meta_features,
-                loss=self.loss)
+                loss=self.loss,
+                activation=self.activation)
 
             if nb_meta_features == 0:
                 X_input = X_seq
@@ -217,13 +230,14 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 X_input = [X_seq, X_meta]
 
         else:
-            X_seq, X_attention = self._prepare_bert_sequences(X)
-            X_meta, nb_meta_features = self._get_meta(X)
+            X_seq, X_attention = self._prepare_bert_sequences(X_train)
+            X_meta, nb_meta_features = self._get_meta(X_train)
             self.model = self.architecture_function(
                 ntargets=nb_labels,
                 seq_max=self.seq_size,
                 nb_meta=nb_meta_features,
                 loss=self.loss,
+                activation=self.activation,
                 bert_model=self.bert_model)
 
             if nb_meta_features == 0:
@@ -231,11 +245,46 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             else:
                 X_input = [X_seq, X_attention, X_meta]
 
+        if validation_data:
+            # Init X_val, y_val
+            X_val, y_val = None, None
+
+            try:
+                X_val, y_val = validation_data
+                y_categorical_val = to_categorical(y_val)
+            except Exception as e:
+                validation_data = None
+                print('Validation_data has unexpected format. validation_data is now set to None. Following error:'
+                      + str(e))
+
+            if validation_data:
+                if self.architecture_function.__name__ != 'bert_model':
+                    X_val = self.tokenizer.transform(X_val)
+                    X_seq_val = self._prepare_sequences(X_val)
+                    X_meta_val, nb_meta_features = self._get_meta(X_val)
+
+                    if nb_meta_features == 0:
+                        X_input_val = X_seq_val
+                    else:
+                        X_input_val = [X_seq_val, X_meta_val]
+
+                else:
+                    X_seq_val, X_attention_val = self._prepare_bert_sequences(X_val)
+                    X_meta_val, nb_meta_features = self._get_meta(X_val)
+
+                    if nb_meta_features == 0:
+                        X_input_val = [X_seq_val, X_attention_val]
+                    else:
+                        X_input_val = [X_seq_val, X_attention_val, X_meta_val]
+
+                validation_data = (X_input_val, y_categorical_val)
+
         if tensorboard_log_dir is None:
             self.model.fit(X_input,
-                           y_categorical,
+                           y_categorical_train,
                            batch_size=self.batch_size,
                            epochs=self.n_epochs,
+                           validation_data=validation_data,
                            **kwargs)
         else:
 
@@ -264,10 +313,11 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                                                embeddings_data=embeddings_data,
                                                update_freq=update_freq)
             self.model.fit(X_input,
-                           y_categorical,
+                           y_categorical_train,
                            batch_size=self.batch_size,
                            epochs=self.n_epochs,
                            callbacks=[tensorboard_callback],
+                           validation_data=validation_data,
                            **kwargs)
         pass
 

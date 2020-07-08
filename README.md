@@ -24,12 +24,14 @@ Use **Melusine** if you need a library which :
 **Melusine** is compatible with `Python >= 3.5`.
 
 ## Release Notes
-### 1.11.0
+### 2.0
 New features:
   * Attentive Neural Networks are now available. :tada: We propose you an original Transformer architecture as well 
     as pre-trained BERT models (Camembert and Flaubert)
   * Tutorial 13 will explain you how to get started with these models and attempt to compare them.
-   
+  * Validation data can now be used to train models (See fit function from NeuralModel for usage)
+  * The activation function can now be modified to adapt to your needs (See NeuralModel init for usage)
+
 ### 1.10.0
 Updates:
   * Melusine is now running with Tensorflow 2.2
