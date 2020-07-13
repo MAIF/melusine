@@ -99,30 +99,34 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
 
     """
 
-    def __init__(self,
-                 pretrained_embedding=None,
-                 architecture_function=None,
-                 text_input_column='clean_text',
-                 meta_input_list=['extension', 'dayofweek', 'hour', 'min'],
-                 vocab_size=25000,
-                 seq_size=100,
-                 embedding_dim=200,
-                 loss='categorical_crossentropy',
-                 batch_size=4096,
-                 n_epochs=15,
-                 bert_tokenizer='camembert-base',
-                 bert_model='camembert-base',
-                 **kwargs):
+    def __init__(
+        self,
+        pretrained_embedding=None,
+        architecture_function=None,
+        text_input_column="clean_text",
+        meta_input_list=["extension", "dayofweek", "hour", "min"],
+        vocab_size=25000,
+        seq_size=100,
+        embedding_dim=200,
+        loss="categorical_crossentropy",
+        batch_size=4096,
+        n_epochs=15,
+        bert_tokenizer="camembert-base",
+        bert_model="camembert-base",
+        **kwargs
+    ):
         self.architecture_function = architecture_function
         self.pretrained_embedding = pretrained_embedding
-        if self.architecture_function.__name__ != 'bert_model':
+        if self.architecture_function.__name__ != "bert_model":
             self.tokenizer = Tokenizer(input_column=text_input_column)
         elif "camembert" in bert_tokenizer.lower():
             self.tokenizer = CamembertTokenizer.from_pretrained(bert_tokenizer)
         elif "flaubert" in bert_tokenizer.lower():
             self.tokenizer = XLMTokenizer.from_pretrained(bert_tokenizer)
         else:
-            raise NotImplementedError('Bert tokenizer {} not implemented'.format(bert_tokenizer))
+            raise NotImplementedError(
+                "Bert tokenizer {} not implemented".format(bert_tokenizer)
+            )
         self.text_input_column = text_input_column
         self.meta_input_list = meta_input_list
         self.vocab_size = vocab_size
@@ -136,20 +140,26 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
     def save_nn_model(self, filepath):
         """Save model to pickle, json and save weights to .h5."""
         json_model = self.model.to_json()
-        open(filepath + ".json", 'w').write(json_model)
+        open(filepath + ".json", "w").write(json_model)
         self.model.save_weights(filepath + "_model_weights.h5", overwrite=True)
         pass
 
     def load_nn_model(self, filepath):
         """Save model from json and load weights from .h5."""
-        model = model_from_json(open(filepath + ".json").read(),
-                                custom_objects={'PositionalEncoding': PositionalEncoding,
-                                                'TransformerEncoderLayer': TransformerEncoderLayer,
-                                                'MultiHeadAttention': MultiHeadAttention})
+        model = model_from_json(
+            open(filepath + ".json").read(),
+            custom_objects={
+                "PositionalEncoding": PositionalEncoding,
+                "TransformerEncoderLayer": TransformerEncoderLayer,
+                "MultiHeadAttention": MultiHeadAttention,
+            },
+        )
         model.load_weights(filepath + "_model_weights.h5")
-        model.compile(optimizer=Adam(),
-                      loss='categorical_crossentropy',
-                      metrics=['accuracy'])
+        model.compile(
+            optimizer=Adam(),
+            loss="categorical_crossentropy",
+            metrics=["accuracy"],
+        )
         self.model = model
         pass
 
@@ -157,7 +167,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         """Method called before serialization for a specific treatment to save
         model weight and structure instead of standard serialization."""
         dict_attr = dict(self.__dict__)
-        if 'model' in dict_attr:
+        if "model" in dict_attr:
             del dict_attr["model"]
             del dict_attr["embedding_matrix"]
             del dict_attr["pretrained_embedding"]
@@ -194,14 +204,16 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         y_categorical = to_categorical(y)
         nb_labels = len(np.unique(y))
 
-        if self.architecture_function.__name__ != 'bert_model':
+        if self.architecture_function.__name__ != "bert_model":
             X = self.tokenizer.transform(X)
             if self.pretrained_embedding:
                 self._get_embedding_matrix()
             else:
                 self._create_vocabulary_from_tokens(X)
                 self._generate_random_embedding_matrix()
-            self.vocabulary_dict = {word: i for i, word in enumerate(self.vocabulary)}
+            self.vocabulary_dict = {
+                word: i for i, word in enumerate(self.vocabulary)
+            }
             X_seq = self._prepare_sequences(X)
             X_meta, nb_meta_features = self._get_meta(X)
             self.model = self.architecture_function(
@@ -209,7 +221,8 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 ntargets=nb_labels,
                 seq_max=self.seq_size,
                 nb_meta=nb_meta_features,
-                loss=self.loss)
+                loss=self.loss,
+            )
 
             if nb_meta_features == 0:
                 X_input = X_seq
@@ -224,7 +237,8 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 seq_max=self.seq_size,
                 nb_meta=nb_meta_features,
                 loss=self.loss,
-                bert_model=self.bert_model)
+                bert_model=self.bert_model,
+            )
 
             if nb_meta_features == 0:
                 X_input = [X_seq, X_attention]
@@ -232,43 +246,70 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 X_input = [X_seq, X_attention, X_meta]
 
         if tensorboard_log_dir is None:
-            self.model.fit(X_input,
-                           y_categorical,
-                           batch_size=self.batch_size,
-                           epochs=self.n_epochs,
-                           **kwargs)
+            self.model.fit(
+                X_input,
+                y_categorical,
+                batch_size=self.batch_size,
+                epochs=self.n_epochs,
+                **kwargs
+            )
         else:
 
-            histogram_freq = ast.literal_eval(tensorboard_callback_parameters["histogram_freq"])
-            write_graph = ast.literal_eval(tensorboard_callback_parameters["write_graph"])
-            write_grads = ast.literal_eval(tensorboard_callback_parameters["write_grads"])
-            write_images = ast.literal_eval(tensorboard_callback_parameters["write_images"])
-            embeddings_freq = ast.literal_eval(tensorboard_callback_parameters["embeddings_freq"])
-            embeddings_layer_names = ast.literal_eval(tensorboard_callback_parameters["embeddings_layer_names"])
-            embeddings_metadata = ast.literal_eval(tensorboard_callback_parameters["embeddings_metadata"])
-            embeddings_data = ast.literal_eval(tensorboard_callback_parameters["embeddings_data"])
+            histogram_freq = ast.literal_eval(
+                tensorboard_callback_parameters["histogram_freq"]
+            )
+            write_graph = ast.literal_eval(
+                tensorboard_callback_parameters["write_graph"]
+            )
+            write_grads = ast.literal_eval(
+                tensorboard_callback_parameters["write_grads"]
+            )
+            write_images = ast.literal_eval(
+                tensorboard_callback_parameters["write_images"]
+            )
+            embeddings_freq = ast.literal_eval(
+                tensorboard_callback_parameters["embeddings_freq"]
+            )
+            embeddings_layer_names = ast.literal_eval(
+                tensorboard_callback_parameters["embeddings_layer_names"]
+            )
+            embeddings_metadata = ast.literal_eval(
+                tensorboard_callback_parameters["embeddings_metadata"]
+            )
+            embeddings_data = ast.literal_eval(
+                tensorboard_callback_parameters["embeddings_data"]
+            )
 
-            if tensorboard_callback_parameters["update_freq"] in ['batch', 'epoch']:
+            if tensorboard_callback_parameters["update_freq"] in [
+                "batch",
+                "epoch",
+            ]:
                 update_freq = tensorboard_callback_parameters["update_freq"]
             else:
-                update_freq = ast.literal_eval(tensorboard_callback_parameters["update_freq"])
+                update_freq = ast.literal_eval(
+                    tensorboard_callback_parameters["update_freq"]
+                )
 
-            tensorboard_callback = TensorBoard(log_dir=tensorboard_log_dir,
-                                               histogram_freq=histogram_freq,
-                                               write_graph=write_graph,
-                                               write_grads=write_grads,
-                                               write_images=write_images,
-                                               embeddings_freq=embeddings_freq,
-                                               embeddings_layer_names=embeddings_layer_names,
-                                               embeddings_metadata=embeddings_metadata,
-                                               embeddings_data=embeddings_data,
-                                               update_freq=update_freq)
-            self.model.fit(X_input,
-                           y_categorical,
-                           batch_size=self.batch_size,
-                           epochs=self.n_epochs,
-                           callbacks=[tensorboard_callback],
-                           **kwargs)
+            tensorboard_callback = TensorBoard(
+                log_dir=tensorboard_log_dir,
+                histogram_freq=histogram_freq,
+                write_graph=write_graph,
+                write_grads=write_grads,
+                write_images=write_images,
+                embeddings_freq=embeddings_freq,
+                embeddings_layer_names=embeddings_layer_names,
+                embeddings_metadata=embeddings_metadata,
+                embeddings_data=embeddings_data,
+                update_freq=update_freq,
+            )
+            self.model.fit(
+                X_input,
+                y_categorical,
+                batch_size=self.batch_size,
+                epochs=self.n_epochs,
+                callbacks=[tensorboard_callback],
+                **kwargs
+            )
         pass
 
     def predict(self, X, **kwargs):
@@ -298,7 +339,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         np.array
         """
 
-        if self.architecture_function.__name__ != 'bert_model':
+        if self.architecture_function.__name__ != "bert_model":
             X = self.tokenizer.transform(X)
             X_seq = self._prepare_sequences(X)
             X_meta, nb_meta_features = self._get_meta(X)
@@ -317,8 +358,10 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
 
     def _create_vocabulary_from_tokens(self, X):
         """Create a word indexes dictionary from tokens."""
-        token_series = X['tokens']
-        c = Counter([token for token_list in token_series for token in token_list])
+        token_series = X["tokens"]
+        c = Counter(
+            [token for token_list in token_series for token in token_list]
+        )
         self.vocabulary = [t[0] for t in c.most_common(self.vocab_size)]
         pass
 
@@ -333,12 +376,14 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         vector_dim = pretrained_embedding.embedding.vector_size
         embedding_matrix = np.zeros((vocab_size + 2, vector_dim))
         for index, word in enumerate(self.vocabulary):
-            if word not in ['PAD', 'UNK']:
-                embedding_matrix[index + 2, :] = pretrained_embedding.embedding.wv.get_vector(word)
+            if word not in ["PAD", "UNK"]:
+                embedding_matrix[
+                    index + 2, :
+                ] = pretrained_embedding.embedding.wv.get_vector(word)
         embedding_matrix[1, :] = np.mean(embedding_matrix, axis=0)
 
-        self.vocabulary.insert(0, 'PAD')
-        self.vocabulary.insert(1, 'UNK')
+        self.vocabulary.insert(0, "PAD")
+        self.vocabulary.insert(1, "UNK")
 
         self.embedding_matrix = embedding_matrix
         pass
@@ -350,10 +395,12 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         """
         vocab_size = len(self.vocabulary)
         vector_dim = self.embedding_dim
-        embedding_matrix = np.random.uniform(low=-1, high=1, size=(vocab_size + 2, vector_dim))
+        embedding_matrix = np.random.uniform(
+            low=-1, high=1, size=(vocab_size + 2, vector_dim)
+        )
         embedding_matrix[0:2, :] = np.zeros((2, vector_dim))
-        self.vocabulary.insert(0, 'PAD')
-        self.vocabulary.insert(1, 'UNK')
+        self.vocabulary.insert(0, "PAD")
+        self.vocabulary.insert(1, "UNK")
 
         self.embedding_matrix = embedding_matrix
         pass
@@ -373,9 +420,9 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         one used for the pre-trained embedding."""
 
         if isinstance(X, dict):
-            seqs = [self.tokens_to_indices(X['tokens'])]
+            seqs = [self.tokens_to_indices(X["tokens"])]
         else:
-            seqs = X['tokens'].apply(self.tokens_to_indices)
+            seqs = X["tokens"].apply(self.tokens_to_indices)
 
         X_seq = pad_sequences(seqs, maxlen=self.seq_size)
         return X_seq
@@ -387,14 +434,17 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         """
 
         if isinstance(X, dict):
-            sequence = X['clean_text']
+            sequence = X["clean_text"]
         else:
-            sequence = X['clean_text'].values.tolist()
-        seqs = self.tokenizer.batch_encode_plus(sequence,
-                                                max_length=100,
-                                                pad_to_max_length=True)
+            sequence = X["clean_text"].values.tolist()
+        seqs = self.tokenizer.batch_encode_plus(
+            sequence, max_length=100, pad_to_max_length=True
+        )
 
-        return np.asarray(seqs['input_ids']), np.asarray(seqs['attention_mask'])
+        return (
+            np.asarray(seqs["input_ids"]),
+            np.asarray(seqs["attention_mask"]),
+        )
 
     def _get_meta(self, X):
         """Returns as a pd.DataFrame the metadata from X given the list_meta
@@ -405,18 +455,23 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             nb_meta_features = 0
         else:
             meta_input_list = self.meta_input_list
-            meta_input_list = [col + '__' for col in meta_input_list]
+            meta_input_list = [col + "__" for col in meta_input_list]
 
             if isinstance(X, dict):
                 columns_list = list(X.keys())
             else:
                 columns_list = list(X.columns)
 
-            meta_columns_list = [col for col in columns_list
-                                 if col.startswith(tuple(meta_input_list))]
+            meta_columns_list = [
+                col
+                for col in columns_list
+                if col.startswith(tuple(meta_input_list))
+            ]
 
             if isinstance(X, dict):
-                X_meta = np.array([[X[meta_feature] for meta_feature in meta_columns_list], ])
+                X_meta = np.array(
+                    [[X[meta_feature] for meta_feature in meta_columns_list], ]
+                )
             else:
                 X_meta = X[meta_columns_list]
 

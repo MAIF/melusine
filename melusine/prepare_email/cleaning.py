@@ -9,7 +9,7 @@ from melusine.config import ConfigJsonReader
 
 conf_reader = ConfigJsonReader()
 config = conf_reader.get_config_file()
-REGEX_CLEAN = config["regex"]['cleaning']
+REGEX_CLEAN = config["regex"]["cleaning"]
 regex_flags_dict = REGEX_CLEAN["flags_dict"]
 regex_clean_header_dict = REGEX_CLEAN["clean_header_dict"]
 regex_remove_multiple_spaces_list = REGEX_CLEAN["remove_multiple_spaces_list"]
@@ -106,25 +106,29 @@ def remove_accents(text, use_unidecode=False):
     if use_unidecode:
         return unidecode.unidecode(text)
     else:
-        utf8_str = unicodedata.normalize('NFKD', text).encode('ASCII', 'ignore').decode("utf-8")
+        utf8_str = (
+            unicodedata.normalize("NFKD", text)
+            .encode("ASCII", "ignore")
+            .decode("utf-8")
+        )
         return utf8_str
 
 
 def remove_line_break(text):
     """Remove line breaks from text"""
-    return text.replace('\n', '')
+    return text.replace("\n", "")
 
 
 def remove_superior_symbol(text):
     """Remove superior and inferior symbols from text"""
-    text = text.replace('>', '')
-    text = text.replace('<', '')
+    text = text.replace(">", "")
+    text = text.replace("<", "")
     return text
 
 
 def remove_apostrophe(text):
     """Remove apostrophes from text"""
-    return text.replace('\'', ' ')
+    return text.replace("'", " ")
 
 
 def remove_multiple_spaces_and_strip_text(text):
@@ -141,7 +145,7 @@ def remove_multiple_spaces_and_strip_text(text):
 
     """
     for regex_remove_multiple_spaces in regex_remove_multiple_spaces_list:
-        text = re.sub(regex_remove_multiple_spaces, ' ', text)
+        text = re.sub(regex_remove_multiple_spaces, " ", text)
         text = text.strip()
     return text
 
@@ -166,8 +170,9 @@ def flag_items(text, flags=True):
     """
     if flags:
         for regex, value in regex_flags_dict.items():
-            text = re.sub(pattern=regex, repl=value,
-                          string=text, flags=re.IGNORECASE)
+            text = re.sub(
+                pattern=regex, repl=value, string=text, flags=re.IGNORECASE
+            )
         return text
     else:
         return text
@@ -188,6 +193,7 @@ def remove_transfer_answer_header(text):
 
     """
     for regex, value in regex_clean_header_dict.items():
-        text = re.sub(pattern=regex, repl=value,
-                      string=text, flags=re.IGNORECASE)
+        text = re.sub(
+            pattern=regex, repl=value, string=text, flags=re.IGNORECASE
+        )
     return text
