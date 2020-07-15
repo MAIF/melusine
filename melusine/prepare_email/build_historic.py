@@ -1,9 +1,10 @@
 import re
+
 from melusine.config import ConfigJsonReader
 
 conf_reader = ConfigJsonReader()
 config = conf_reader.get_config_file()
-regex_transition_list = config['regex']['build_historic']['transition_list']
+regex_transition_list = config["regex"]["build_historic"]["transition_list"]
 
 
 def build_historic(row):
@@ -38,12 +39,17 @@ def build_historic(row):
         >>> data.apply(build_historic, axis=1)  # apply to all samples
 
     """
-    email_body = row['body']
+    email_body = row["body"]
     index_messages, nb_messages = _get_index_transitions(email_body)
     structured_historic = [
-        {'text': email_body[index_messages[i][1]:index_messages[i + 1][0]],
-         'meta': email_body[index_messages[i][0]:index_messages[i][1]]
-         } for i in range(nb_messages)]
+        {
+            "text": email_body[
+                index_messages[i][1] : index_messages[i + 1][0]
+            ],
+            "meta": email_body[index_messages[i][0] : index_messages[i][1]],
+        }
+        for i in range(nb_messages)
+    ]
     structured_historic = __remove_empty_mails(structured_historic)
     return structured_historic
 
@@ -75,8 +81,10 @@ def __filter_overlap(index):
     j = i + 1
     while j < len(index):
         if index[i][1] > index[j][0]:
-            index[i] = (min(index[i][0], index[j][1]),
-                        max(index[i][0], index[j][1]))
+            index[i] = (
+                min(index[i][0], index[j][1]),
+                max(index[i][0], index[j][1]),
+            )
             j += 1
         else:
             index_f += [index[i]]
@@ -84,7 +92,7 @@ def __filter_overlap(index):
             j += 1
     index_f += [index[i]]
 
-    return index_f[:i + 1]
+    return index_f[: i + 1]
 
 
 def is_only_typo(text):
@@ -103,7 +111,9 @@ def __remove_empty_mails(structured_historic):
     purged_structured_historic = []
     meta_to_reinclude = None
     for text_meta in structured_historic:
-        if meta_to_reinclude:  # if the precedent piece had meta data to reinclude
+        if (
+            meta_to_reinclude
+        ):  # if the precedent piece had meta data to reinclude
             text_meta["meta"] = meta_to_reinclude + text_meta.get("meta")
             meta_to_reinclude = None
         text, meta = text_meta.get("text"), text_meta.get("meta")
@@ -113,5 +123,5 @@ def __remove_empty_mails(structured_historic):
             if not is_only_typo(meta):
                 meta_to_reinclude = meta
     if len(purged_structured_historic) == 0:
-        purged_structured_historic = [{'text': '', 'meta': meta_to_reinclude}]
+        purged_structured_historic = [{"text": "", "meta": meta_to_reinclude}]
     return purged_structured_historic
