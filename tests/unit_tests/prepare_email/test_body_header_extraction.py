@@ -24,15 +24,14 @@ structured_body = [
      'structured_text': {'header': 'demande document',
                          'text': [{'part': 'Bonjour. ', 'tags': 'HELLO'},
                                   {'part': "Merci de bien vouloir prendre connaissance du document ci-joint",
-                                              'tags': 'BODY'},
+                                   'tags': 'BODY'},
                                   {'part': 'Cordialement,', 'tags': 'GREETINGS'},
                                   {'part': 'Votre mutuelle', 'tags': 'BODY'},
                                   {'part': 'La visualisation des fichiers PDF nécessite Adobe Reader.',
                                    'tags': 'FOOTER'}
                                   ]
                          }
-     }
-    ]
+     }]
 
 
 def test_extract_last_body():
@@ -59,8 +58,7 @@ message_dict = {'meta': {'date': ' mar. 22 mai 2018 à 10:20',
                                              {'part': 'Votre mutuelle',
                                               'tags': 'BODY'},
                                              {'part': 'La visualisation des fichiers PDF nécessite Adobe Reader.',
-                                              'tags': 'FOOTER'}
-                                            ]
+                                              'tags': 'FOOTER'}]
                                     }
                 }
 

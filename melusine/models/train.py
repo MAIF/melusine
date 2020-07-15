@@ -113,7 +113,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                  seq_size=100,
                  embedding_dim=200,
                  loss='categorical_crossentropy',
-                 activation = 'softmax',
+                 activation='softmax',
                  batch_size=4096,
                  n_epochs=15,
                  bert_tokenizer='jplu/tf-camembert-base',

@@ -170,7 +170,7 @@ def discrimination():
 
     # Generate Label Encoder
     le = LabelEncoder()
-    _ = le.fit_transform(y)
+    le.fit_transform(y)
 
     y_res = nn_model.predict(X)
     y_res = le.inverse_transform(y_res)

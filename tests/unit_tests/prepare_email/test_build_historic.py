@@ -27,7 +27,7 @@ La visualisation des fichiers PDF nécessite Adobe Reader. \n  ",
 empty_body = "\n\nA :  societaireimaginaire@boiteemail.fr \nDate :  28/12/2018 14:23:16 \nObjet :  Un objet \n\n"
 empty_output = [
     {'text': '',
-    'meta': '\n\nA :  societaireimaginaire@boiteemail.fr \nDate :  28/12/2018 14:23:16 \nObjet :  Un objet \n\n'}]
+     'meta': '\n\nA :  societaireimaginaire@boiteemail.fr \nDate :  28/12/2018 14:23:16 \nObjet :  Un objet \n\n'}]
 
 
 def test_build_historic():

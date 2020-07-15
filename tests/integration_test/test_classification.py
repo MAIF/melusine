@@ -1,5 +1,6 @@
 import pandas as pd
 import copy
+import os
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder
 
@@ -39,6 +40,9 @@ body = "Bonjour\nThis is Melusine\nCordialement\nDev Team"
 body = "Bonjour\nThis is Melusine\nCordialement\nDev Team"
 
 
+os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID";
+# The GPU id to use, usually either "0" or "1";
+os.environ["CUDA_VISIBLE_DEVICES"]="";
 
 def test_classification():
 
@@ -133,17 +137,17 @@ def test_classification():
     nn_model.fit(X, y)
 
     y_res = nn_model.predict(X)
-    y_res = le.inverse_transform(y_res)
+    le.inverse_transform(y_res)
 
     # ============== Test dict compatibility ==============
     dict_emails = input_df.to_dict(orient='records')[0]
     dict_meta = MetadataPipeline.transform(dict_emails)
-    dict_keywords = keywords_generator.transform(dict_emails)
+    keywords_generator.transform(dict_emails)
 
     dict_input = copy.deepcopy(dict_meta)
     dict_input['clean_body'] = dict_emails['clean_body']
 
-    dict_result = nn_model.predict(dict_input)
+    nn_model.predict(dict_input)
 
     assert True
 
