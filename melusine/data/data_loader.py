@@ -13,6 +13,6 @@ def load_email_data():
     """
 
     data_directory = op.dirname(op.abspath(__file__))
-    email_data_path = op.join(data_directory, 'emails.csv')
+    email_data_path = op.join(data_directory, "emails.csv")
 
-    return pd.read_csv(email_data_path, encoding='utf-8', sep=';')
+    return pd.read_csv(email_data_path, encoding="utf-8", sep=";")

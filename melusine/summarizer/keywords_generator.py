@@ -92,22 +92,25 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
 
     """
 
-    def __init__(self,
-                 max_tfidf_features=10000,
-                 keywords=keywords,
-                 stopwords=stopwords,
-                 resample=False,
-                 n_jobs=20,
-                 progress_bar=True,
-                 copy=True,
-                 n_max_keywords=6,
-                 n_min_keywords=0,
-                 threshold_keywords=0.0,
-                 n_docs_in_class=100,
-                 keywords_coef=10):
+    def __init__(
+        self,
+        max_tfidf_features=10000,
+        keywords=keywords,
+        stopwords=stopwords,
+        resample=False,
+        n_jobs=20,
+        progress_bar=True,
+        copy=True,
+        n_max_keywords=6,
+        n_min_keywords=0,
+        threshold_keywords=0.0,
+        n_docs_in_class=100,
+        keywords_coef=10,
+    ):
         self.max_tfidf_features_ = max_tfidf_features
-        self.tfidf_vectorizer = TfidfVectorizer(max_features=max_tfidf_features
-                                                )
+        self.tfidf_vectorizer = TfidfVectorizer(
+            max_features=max_tfidf_features
+        )
         self.keywords = keywords
         self.stopwords = stopwords
         self.resample = resample
@@ -139,29 +142,36 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
             Returns the instance itself.
         """
         if isinstance(X, dict):
-            raise TypeError('You should not use fit on a dictionary object. Use a DataFrame')
+            raise TypeError(
+                "You should not use fit on a dictionary object. Use a DataFrame"
+            )
 
         if self.resample:
             X_resample = self.resample_docs(X, y)
         else:
             X_resample = X
 
-        X_resample['tokens'] = X_resample['tokens'].apply(self._remove_stopwords)
+        X_resample["tokens"] = X_resample["tokens"].apply(
+            self._remove_stopwords
+        )
 
         # fit tf-idf on resample data set
-        tokens_joined = X_resample['tokens'].apply(lambda x: ' '.join(x))
+        tokens_joined = X_resample["tokens"].apply(lambda x: " ".join(x))
         self.tfidf_vectorizer.fit(tokens_joined)
 
         # modify the idf weights given frequency in the corpus
         idf_weights = self._add_tf_to_idf(X_resample)
-        self.tfidf_vectorizer._tfidf._idf_diag = sp.spdiags(idf_weights,
-                                                            diags=0,
-                                                            m=len(idf_weights),
-                                                            n=len(idf_weights))
+        self.tfidf_vectorizer._tfidf._idf_diag = sp.spdiags(
+            idf_weights, diags=0, m=len(idf_weights), n=len(idf_weights)
+        )
 
         # return vetorizer with binary term frequency atribute
-        self.dict_scores_ = dict(zip(self.tfidf_vectorizer.get_feature_names(),
-                                     self.tfidf_vectorizer.idf_))
+        self.dict_scores_ = dict(
+            zip(
+                self.tfidf_vectorizer.get_feature_names(),
+                self.tfidf_vectorizer.idf_,
+            )
+        )
         self.max_score_ = np.max(self.tfidf_vectorizer.idf_)
 
         return self
@@ -197,12 +207,14 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
 
             apply_func = TransformerScheduler.apply_pandas_multiprocessing
 
-        X_['keywords'] = apply_func(
-            X_, self.get_keywords,
+        X_["keywords"] = apply_func(
+            X_,
+            self.get_keywords,
             args_=None,
             cols_=None,
             n_jobs=self.n_jobs,
-            progress_bar=self.progress_bar)
+            progress_bar=self.progress_bar,
+        )
 
         return X_
 
@@ -218,7 +230,7 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
         -------
         list of strings
         """
-        tokens = self._remove_stopwords(row['tokens'])
+        tokens = self._remove_stopwords(row["tokens"])
         tokens = [x for x in tokens if not x.isdigit()]
         scores = Counter({t: self.dict_scores_.get(t, 0) for t in tokens})
         n = sum(i > self.threshold_keywords for i in list(scores.values()))
@@ -235,16 +247,16 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
         """Method for resampling documents according to class distribution."""
         X_ = X.copy()
         if y is not None:
-            X_['label'] = y
-        X_['split'] = 0
+            X_["label"] = y
+        X_["split"] = 0
         for c in X_.label.unique():
             N_c = X_[X_["label"] == c].shape[0]
             I_c = np.random.randint(0, self.n_docs_in_class + 1, N_c)
-            X_.loc[X_["label"] == c, 'split'] = I_c
+            X_.loc[X_["label"] == c, "split"] = I_c
 
         X_resample = pd.DataFrame(
-            X_[['label', 'split', 'tokens']]
-            .groupby(['label', 'split'], as_index=False)['tokens']
+            X_[["label", "split", "tokens"]]
+            .groupby(["label", "split"], as_index=False)["tokens"]
             .sum()
         )
 
@@ -256,12 +268,12 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
 
     def _add_tf_to_idf(self, X):
         """Returns the tf-idf weights of each tokens"""
-        tokens_joined = X['tokens'].apply(lambda x: ' '.join(x))
+        tokens_joined = X["tokens"].apply(lambda x: " ".join(x))
         X_vec = self.tfidf_vectorizer.transform(tokens_joined)
         feature_names = self.tfidf_vectorizer.get_feature_names()
-        idf_weights = self._get_weights(X_vec.toarray(),
-                                        self.keywords,
-                                        feature_names)
+        idf_weights = self._get_weights(
+            X_vec.toarray(), self.keywords, feature_names
+        )
 
         return idf_weights
 

@@ -20,8 +20,8 @@ class MultiHeadAttention(tf.keras.layers.Layer):
 
     def get_config(self):
         config = {
-            'num_heads': self.num_heads,
-            'd_model': self.d_model,
+            "num_heads": self.num_heads,
+            "d_model": self.d_model,
         }
         base_config = super(MultiHeadAttention, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
@@ -30,7 +30,9 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         """Split the last dimension into (num_heads, depth).
         Transpose the result such that the shape is (batch_size, num_heads, seq_len, depth)
         """
-        x = tf.reshape(x, (batch_size, -1, self.num_heads, self.d_model // self.num_heads))
+        x = tf.reshape(
+            x, (batch_size, -1, self.num_heads, self.d_model // self.num_heads)
+        )
         return tf.transpose(x, perm=[0, 2, 1, 3])
 
     def call(self, v, k, q, mask):
@@ -40,24 +42,34 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         k = self.wk(k)  # (batch_size, seq_len, d_model)
         v = self.wv(v)  # (batch_size, seq_len, d_model)
 
-        q = self.split_heads(q, batch_size)  # (batch_size, num_heads, seq_len_q, depth)
-        k = self.split_heads(k, batch_size)  # (batch_size, num_heads, seq_len_k, depth)
-        v = self.split_heads(v, batch_size)  # (batch_size, num_heads, seq_len_v, depth)
+        q = self.split_heads(
+            q, batch_size
+        )  # (batch_size, num_heads, seq_len_q, depth)
+        k = self.split_heads(
+            k, batch_size
+        )  # (batch_size, num_heads, seq_len_k, depth)
+        v = self.split_heads(
+            v, batch_size
+        )  # (batch_size, num_heads, seq_len_v, depth)
 
         # scaled_attention.shape == (batch_size, num_heads, seq_len_q, depth)
         # attention_weights.shape == (batch_size, num_heads, seq_len_q, seq_len_k)
-        scaled_attention, attention_weights = self.scaled_dot_product_attention(
-            q, k, v, mask)
+        (
+            scaled_attention,
+            attention_weights,
+        ) = self.scaled_dot_product_attention(q, k, v, mask)
 
-        scaled_attention = tf.transpose(scaled_attention,
-                                        perm=[0, 2, 1, 3])
+        scaled_attention = tf.transpose(scaled_attention, perm=[0, 2, 1, 3])
         # (batch_size, seq_len_q, num_heads, depth)
 
-        concat_attention = tf.reshape(scaled_attention,
-                                      (batch_size, -1, self.d_model))
+        concat_attention = tf.reshape(
+            scaled_attention, (batch_size, -1, self.d_model)
+        )
         # (batch_size, seq_len_q, d_model)
 
-        output = self.dense(concat_attention)  # (batch_size, seq_len_q, d_model)
+        output = self.dense(
+            concat_attention
+        )  # (batch_size, seq_len_q, d_model)
 
         return output, attention_weights
 
@@ -80,7 +92,9 @@ class MultiHeadAttention(tf.keras.layers.Layer):
           output, attention_weights
         """
 
-        matmul_qk = tf.matmul(q, k, transpose_b=True)  # (..., seq_len_q, seq_len_k)
+        matmul_qk = tf.matmul(
+            q, k, transpose_b=True
+        )  # (..., seq_len_q, seq_len_k)
 
         # scale matmul_qk
         dk = tf.cast(tf.shape(k)[-1], tf.float32)
@@ -88,11 +102,13 @@ class MultiHeadAttention(tf.keras.layers.Layer):
 
         # add the mask to the scaled tensor.
         if mask is not None:
-            scaled_attention_logits += (mask * -1e9)
+            scaled_attention_logits += mask * -1e9
 
             # softmax is normalized on the last axis (seq_len_k) so that the scores
         # add up to 1.
-        attention_weights = tf.nn.softmax(scaled_attention_logits, axis=-1)  # (..., seq_len_q, seq_len_k)
+        attention_weights = tf.nn.softmax(
+            scaled_attention_logits, axis=-1
+        )  # (..., seq_len_q, seq_len_k)
 
         output = tf.matmul(attention_weights, v)  # (..., seq_len_q, depth_v)
 
@@ -100,7 +116,6 @@ class MultiHeadAttention(tf.keras.layers.Layer):
 
 
 class PositionalEncoding(layers.Layer):
-
     def __init__(self, position, d_model, pad_index, **kwargs):
         super(PositionalEncoding, self).__init__()
         self.position = int(position)
@@ -110,17 +125,19 @@ class PositionalEncoding(layers.Layer):
 
     def get_config(self):
         config = {
-            'position': self.position,
-            'pad_index': self.pad_index,
-            'd_model': self.d_model,
+            "position": self.position,
+            "pad_index": self.pad_index,
+            "d_model": self.d_model,
         }
         base_config = super(PositionalEncoding, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
 
     def get_positional_encoding(self):
-        angle_rads = self.get_angles(np.arange(self.position)[:, np.newaxis],
-                                     np.arange(self.d_model)[np.newaxis, :],
-                                     self.d_model)
+        angle_rads = self.get_angles(
+            np.arange(self.position)[:, np.newaxis],
+            np.arange(self.d_model)[np.newaxis, :],
+            self.d_model,
+        )
 
         # apply sin to even indices in the array; 2i
         angle_rads[:, 0::2] = np.sin(angle_rads[:, 0::2])
@@ -163,7 +180,7 @@ class TransformerEncoderLayer(tf.keras.layers.Layer):
         super(TransformerEncoderLayer, self).__init__(**kwargs)
 
         self.mha = MultiHeadAttention(self.d_model, self.num_heads)
-        self.dense1 = tf.keras.layers.Dense(self.dff, activation='relu')
+        self.dense1 = tf.keras.layers.Dense(self.dff, activation="relu")
         self.dense2 = tf.keras.layers.Dense(self.d_model)
 
         self.layernorm1 = tf.keras.layers.LayerNormalization(epsilon=1e-6)
@@ -174,22 +191,28 @@ class TransformerEncoderLayer(tf.keras.layers.Layer):
 
     def get_config(self):
         config = {
-            'd_model': self.d_model,
-            'dff': self.dff,
-            'num_heads': self.num_heads,
-            'rate': self.rate,
+            "d_model": self.d_model,
+            "dff": self.dff,
+            "num_heads": self.num_heads,
+            "rate": self.rate,
         }
         base_config = super(TransformerEncoderLayer, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
 
     def call(self, x, mask):
-        attn_output, _ = self.mha(x, x, x, mask)  # (batch_size, input_seq_len, d_model)
+        attn_output, _ = self.mha(
+            x, x, x, mask
+        )  # (batch_size, input_seq_len, d_model)
         attn_output = self.dropout1(attn_output)
-        out1 = self.layernorm1(x + attn_output)  # (batch_size, input_seq_len, d_model)
+        out1 = self.layernorm1(
+            x + attn_output
+        )  # (batch_size, input_seq_len, d_model)
 
         out1 = self.dense1(out1)
         ffn_output = self.dense2(out1)  # (batch_size, input_seq_len, d_model)
         ffn_output = self.dropout2(ffn_output)
-        out2 = self.layernorm2(out1 + ffn_output)  # (batch_size, input_seq_len, d_model)
+        out2 = self.layernorm2(
+            out1 + ffn_output
+        )  # (batch_size, input_seq_len, d_model)
 
         return out2

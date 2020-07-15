@@ -35,9 +35,7 @@ structured_body = [
 
 
 def test_extract_last_body():
-    input_df = pd.DataFrame({
-        'structured_body': [structured_body]
-    })
+    input_df = pd.DataFrame({"structured_body": [structured_body]})
 
     output_df = pd.Series(["Je vous remercie pour le document "])
 
@@ -75,7 +73,7 @@ def test_extract_body():
 def test_extract_header():
     input_dict = message_dict
 
-    output = 'demande document'
+    output = "demande document"
 
     result = extract_header(input_dict)
     np.testing.assert_string_equal(result, output)

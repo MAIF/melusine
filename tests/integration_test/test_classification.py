@@ -49,7 +49,7 @@ def test_classification():
     input_df = load_email_data()
 
     # ============== Train Phraser ==============
-    phraser = Phraser(input_column='body',
+    phraser = Phraser(input_column="body",
                       threshold=10,
                       min_count=10)
 
@@ -58,32 +58,32 @@ def test_classification():
     # ============== Define Transformer Schedulers ==============
     ManageTransferReply = TransformerScheduler(
         functions_scheduler=[
-            (check_mail_begin_by_transfer, None, ['is_begin_by_transfer']),
+            (check_mail_begin_by_transfer, None, ["is_begin_by_transfer"]),
             (update_info_for_transfer_mail, None, None),
-            (add_boolean_answer, None, ['is_answer']),
-            (add_boolean_transfer, None, ['is_transfer'])
+            (add_boolean_answer, None, ["is_answer"]),
+            (add_boolean_transfer, None, ["is_transfer"]),
         ]
     )
 
     Segmenting = TransformerScheduler(
         functions_scheduler=[
-            (build_historic, None, ['structured_historic']),
-            (structure_email, None, ['structured_body'])
+            (build_historic, None, ["structured_historic"]),
+            (structure_email, None, ["structured_body"]),
         ]
     )
     LastBodyHeaderCleaning = TransformerScheduler(
         functions_scheduler=[
-            (extract_last_body, None, ['last_body']),
-            (clean_body, None, ['clean_body']),
-            (clean_header, None, ['clean_header'])
+            (extract_last_body, None, ["last_body"]),
+            (clean_body, None, ["clean_body"]),
+            (clean_header, None, ["clean_header"]),
         ]
     )
 
     # ============== Phraser ==============
     PhraserTransformer = TransformerScheduler(
         functions_scheduler=[
-            (phraser_on_body, (phraser,), ['clean_body']),
-            (phraser_on_header, (phraser,), ['clean_header'])
+            (phraser_on_body, (phraser,), ["clean_body"]),
+            (phraser_on_header, (phraser,), ["clean_header"]),
         ]
     )
 
@@ -91,23 +91,27 @@ def test_classification():
     tokenizer = Tokenizer(input_column="clean_body")
 
     # ============== Full Pipeline ==============
-    PreprocessingPipeline = Pipeline([
-        ('ManageTransferReply', ManageTransferReply),
-        ('Segmenting', Segmenting),
-        ('LastBodyHeaderCleaning', LastBodyHeaderCleaning),
-        ('PhraserTransformer', PhraserTransformer),
-        ('tokenizer', tokenizer)
-    ])
+    PreprocessingPipeline = Pipeline(
+        [
+            ("ManageTransferReply", ManageTransferReply),
+            ("Segmenting", Segmenting),
+            ("LastBodyHeaderCleaning", LastBodyHeaderCleaning),
+            ("PhraserTransformer", PhraserTransformer),
+            ("tokenizer", tokenizer),
+        ]
+    )
 
     # ============== Transform input DataFrame ==============
     input_df = PreprocessingPipeline.transform(input_df)
 
     # ============== MetaData Pipeline ==============
-    MetadataPipeline = Pipeline([
-        ('MetaExtension', MetaExtension()),
-        ('MetaDate', MetaDate()),
-        ('Dummifier', Dummifier())
-    ])
+    MetadataPipeline = Pipeline(
+        [
+            ("MetaExtension", MetaExtension()),
+            ("MetaDate", MetaDate()),
+            ("Dummifier", Dummifier()),
+        ]
+    )
 
     # ============== Transform MetaData ==============
     df_meta = MetadataPipeline.fit_transform(input_df)
@@ -117,14 +121,14 @@ def test_classification():
     input_df = keywords_generator.fit_transform(input_df)
 
     # ============== Embeddings ==============
-    pretrained_embedding = Embedding(input_column='clean_body',
+    pretrained_embedding = Embedding(input_column="clean_body",
                                      workers=1,
                                      min_count=5)
     pretrained_embedding.train(input_df)
 
     # ============== CNN Classifier ==============
-    X = pd.concat([input_df['clean_body'], df_meta], axis=1)
-    y = input_df['label']
+    X = pd.concat([input_df["clean_body"], df_meta], axis=1)
+    y = input_df["label"]
     le = LabelEncoder()
     y = le.fit_transform(y)
 
@@ -140,14 +144,13 @@ def test_classification():
     le.inverse_transform(y_res)
 
     # ============== Test dict compatibility ==============
-    dict_emails = input_df.to_dict(orient='records')[0]
+    dict_emails = input_df.to_dict(orient="records")[0]
     dict_meta = MetadataPipeline.transform(dict_emails)
     keywords_generator.transform(dict_emails)
 
     dict_input = copy.deepcopy(dict_meta)
-    dict_input['clean_body'] = dict_emails['clean_body']
+    dict_input["clean_body"] = dict_emails["clean_body"]
 
     nn_model.predict(dict_input)
 
     assert True
-

@@ -15,7 +15,10 @@ from tensorflow.keras.layers import GRU
 from tensorflow.keras.layers import Bidirectional
 from transformers import TFCamembertModel, TFFlaubertModel
 
-from melusine.models.attention_model import PositionalEncoding, TransformerEncoderLayer
+from melusine.models.attention_model import (
+    PositionalEncoding,
+    TransformerEncoderLayer,
+)
 
 
 def cnn_model(embedding_matrix_init,
@@ -56,18 +59,18 @@ def cnn_model(embedding_matrix_init,
     Model instance
     """
 
-    text_input = Input(shape=(seq_max,), dtype='int32')
+    text_input = Input(shape=(seq_max,), dtype="int32")
 
     x = keras.layers.Embedding(input_dim=embedding_matrix_init.shape[0],
                                output_dim=embedding_matrix_init.shape[1],
                                input_length=seq_max,
                                weights=[embedding_matrix_init],
                                trainable=True)(text_input)
-    x = Conv1D(200, 2, padding='same', activation='linear', strides=1)(x)
+    x = Conv1D(200, 2, padding="same", activation="linear", strides=1)(x)
     x = SpatialDropout1D(0.15)(x)
     x = BatchNormalization()(x)
     x = LeakyReLU(alpha=0.05)(x)
-    x = Conv1D(250, 2, padding='same', activation='linear', strides=1)(x)
+    x = Conv1D(250, 2, padding="same", activation="linear", strides=1)(x)
     x = SpatialDropout1D(0.15)(x)
     x = LeakyReLU(alpha=0.05)(x)
     x = Dropout(0.15)(x)
@@ -82,7 +85,7 @@ def cnn_model(embedding_matrix_init,
         inputs = text_input
         concatenate_2 = x
     else:
-        Meta_input = Input(shape=(nb_meta,), dtype='float32')
+        Meta_input = Input(shape=(nb_meta,), dtype="float32")
         inputs = [text_input, Meta_input]
 
         concatenate_1 = Meta_input
@@ -105,8 +108,7 @@ def cnn_model(embedding_matrix_init,
     z = LeakyReLU(alpha=0.05)(z)
     outputs = Dense(ntargets, activation=activation)(z)
 
-    model = Model(inputs=inputs,
-                  outputs=outputs)
+    model = Model(inputs=inputs, outputs=outputs)
 
     model.compile(optimizer=Adam(),
                   loss=loss,
@@ -152,7 +154,7 @@ def rnn_model(embedding_matrix_init,
     -------
     Model instance
     """
-    text_input = Input(shape=(seq_max,), dtype='int32')
+    text_input = Input(shape=(seq_max,), dtype="int32")
 
     x = keras.layers.Embedding(input_dim=embedding_matrix_init.shape[0],
                                output_dim=embedding_matrix_init.shape[1],
@@ -174,7 +176,7 @@ def rnn_model(embedding_matrix_init,
         inputs = text_input
         concatenate_2 = x
     else:
-        Meta_input = Input(shape=(nb_meta,), dtype='float32')
+        Meta_input = Input(shape=(nb_meta,), dtype="float32")
         inputs = [text_input, Meta_input]
 
         concatenate_1 = Meta_input
@@ -197,8 +199,7 @@ def rnn_model(embedding_matrix_init,
     z = LeakyReLU(alpha=0.05)(z)
     output = Dense(ntargets, activation=activation)(z)
 
-    model = Model(inputs=inputs,
-                  outputs=output)
+    model = Model(inputs=inputs, outputs=output)
 
     model.compile(optimizer=Adam(),
                   loss=loss,
@@ -245,7 +246,7 @@ def transformers_model(embedding_matrix_init,
     Model instance
     """
 
-    text_input = Input(shape=(seq_max,), dtype='int32')
+    text_input = Input(shape=(seq_max,), dtype="int32")
 
     x = Embedding(input_dim=embedding_matrix_init.shape[0],
                   output_dim=embedding_matrix_init.shape[1],
@@ -266,7 +267,7 @@ def transformers_model(embedding_matrix_init,
         inputs = text_input
         concatenate_2 = x
     else:
-        Meta_input = Input(shape=(nb_meta,), dtype='float32')
+        Meta_input = Input(shape=(nb_meta,), dtype="float32")
         inputs = [text_input, Meta_input]
 
         concatenate_1 = Meta_input
@@ -289,8 +290,7 @@ def transformers_model(embedding_matrix_init,
     z = LeakyReLU(alpha=0.05)(z)
     output = Dense(ntargets, activation=activation)(z)
 
-    model = Model(inputs=inputs,
-                  outputs=output)
+    model = Model(inputs=inputs, outputs=output)
 
     model.compile(optimizer=Adam(),
                   loss=loss,
@@ -339,22 +339,24 @@ def bert_model(ntargets=18,
     Model instance
     """
 
-    text_input = Input(shape=(seq_max,), dtype='int32')
-    attention_input = Input(shape=(seq_max,), dtype='int32')
-    if 'camembert' in bert_model.lower():
+    text_input = Input(shape=(seq_max,), dtype="int32")
+    attention_input = Input(shape=(seq_max,), dtype="int32")
+    if "camembert" in bert_model.lower():
         x = TFCamembertModel.from_pretrained(bert_model)(inputs=text_input,
                                                          attention_mask=attention_input)[1]
-    elif 'flaubert' in bert_model.lower():
+    elif "flaubert" in bert_model.lower():
         x = TFFlaubertModel.from_pretrained(bert_model)(inputs=text_input,
                                                         attention_mask=attention_input)[0][:, 0, :]
     else:
-        raise NotImplementedError('Bert model {} is not implemented.'.format(bert_model))
+        raise NotImplementedError(
+            "Bert model {} is not implemented.".format(bert_model)
+        )
 
     if nb_meta == 0:
         inputs = [text_input, attention_input]
         concatenate_2 = x
     else:
-        Meta_input = Input(shape=(nb_meta,), dtype='float32')
+        Meta_input = Input(shape=(nb_meta,), dtype="float32")
         inputs = [text_input, attention_input, Meta_input]
 
         concatenate_1 = Meta_input
@@ -377,11 +379,10 @@ def bert_model(ntargets=18,
     z = LeakyReLU(alpha=0.05)(z)
     output = Dense(ntargets, activation=activation)(z)
 
-    model = Model(inputs=inputs,
-                  outputs=output)
+    model = Model(inputs=inputs, outputs=output)
 
     model.compile(optimizer=Adam(learning_rate=5e-5),
                   loss=loss,
-                  metrics=['accuracy'])
+                  metrics=["accuracy"])
 
     return model

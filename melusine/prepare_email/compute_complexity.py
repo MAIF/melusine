@@ -18,10 +18,10 @@ def structured_score(row):
 
     """
     parts_type = []
-    for part in row['structured_body'][0]['structured_text']['text']:
-        parts_type.append(part['tags'])
+    for part in row["structured_body"][0]["structured_text"]["text"]:
+        parts_type.append(part["tags"])
     tags_set = set(parts_type)
-    return (tags_set or set(['EMPTY']), len(tags_set))
+    return (tags_set or set(["EMPTY"]), len(tags_set))
 
 
 def mean_words_by_sentence(row, tokenizer):
@@ -41,9 +41,9 @@ def mean_words_by_sentence(row, tokenizer):
 
     """
     nb_words_per_sentence = []
-    for part in row['structured_body'][0]['structured_text']['text']:
-        if part['tags'] == 'BODY':
-            for sentence in part['part'].split('. '):
+    for part in row["structured_body"][0]["structured_text"]["text"]:
+        if part["tags"] == "BODY":
+            for sentence in part["part"].split(". "):
                 nb_words = len(tokenizer._tokenize(sentence))
                 if nb_words > 1:
                     nb_words_per_sentence.append(nb_words)
