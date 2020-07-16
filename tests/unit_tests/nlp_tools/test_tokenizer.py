@@ -12,14 +12,7 @@ from melusine.nlp_tools.tokenizer import Tokenizer
                 columns=["body"],
             ),
             pd.Series(
-                [
-                    "Bonjour",
-                    "appelle",
-                    "flag_name_",
-                    "nicolas_nom",
-                    "hotmail",
-                    "fr",
-                ]
+                ["Bonjour", "appelle", "flag_name_", "nicolas_nom", "hotmail", "fr",]
             ),
         ),
         (

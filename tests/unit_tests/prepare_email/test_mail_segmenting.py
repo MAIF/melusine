@@ -18,37 +18,50 @@ La visualisation des fichiers PDF nécessite Adobe Reader. \n  ",
     },
 ]
 
-output = [{'meta': {'date': None, 'from': None, 'to': None},
-           'structured_text': {'header': None,
-                               'text': [
-                                   {'part': ' Bonjours, ',
-                                    'tags': 'HELLO'},
-                                   {'part': "    Suite a notre conversation \
+output = [
+    {
+        "meta": {"date": None, "from": None, "to": None},
+        "structured_text": {
+            "header": None,
+            "text": [
+                {"part": " Bonjours, ", "tags": "HELLO"},
+                {
+                    "part": "    Suite a notre conversation \
 téléphonique de Mardi , pourriez vous me dire la   somme que je vous dois \
 afin d'd'être en régularisation . \n  \n ",
-                                    'tags': 'BODY'},
-                                   {'part': 'Merci bonne journée',
-                                    'tags': 'GREETINGS'}]
-                               }
-           },
-          {'meta': {'date': ' mar. 22 mai 2018 à 10:20',
-                    'from': '  <gestionsocietaire@mutuelle.fr> ',
-                    'to': None},
-           'structured_text': {'header': None,
-                               'text': [
-                                   {'part': ' Bonjour. \n  \n ',
-                                    'tags': 'HELLO'},
-                                   {'part': "Merci de bien vouloir prendre \
+                    "tags": "BODY",
+                },
+                {"part": "Merci bonne journée", "tags": "GREETINGS"},
+            ],
+        },
+    },
+    {
+        "meta": {
+            "date": " mar. 22 mai 2018 à 10:20",
+            "from": "  <gestionsocietaire@mutuelle.fr> ",
+            "to": None,
+        },
+        "structured_text": {
+            "header": None,
+            "text": [
+                {"part": " Bonjour. \n  \n ", "tags": "HELLO"},
+                {
+                    "part": "Merci de bien vouloir prendre \
 connaissance du document ci-joint :   1 - Relevé d'identité postal MUTUELLE \
 (contrats)    ",
-                                    'tags': 'BODY'},
-                                   {'part': ' Sentiments mutualistes. ',
-                                    'tags': 'GREETINGS'},
-                                   {'part': '        La Mutuelle    ',
-                                    'tags': 'BODY'},
-                                   {'part': ' La visualisation des fichiers \
-PDF nécessite Adobe Reader. \n',
-                                    'tags': 'FOOTER'}]}}]
+                    "tags": "BODY",
+                },
+                {"part": " Sentiments mutualistes. ", "tags": "GREETINGS"},
+                {"part": "        La Mutuelle    ", "tags": "BODY"},
+                {
+                    "part": " La visualisation des fichiers \
+PDF nécessite Adobe Reader. \n",
+                    "tags": "FOOTER",
+                },
+            ],
+        },
+    },
+]
 
 
 def test_structure_email():
@@ -77,42 +90,54 @@ La visualisation des fichiers PDF nécessite Adobe Reader. \n  ",
     },
 ]
 
-output_signature = [{'meta': {'date': None, 'from': None, 'to': None},
-                     'structured_text': {'header': None,
-                                         'text': [{'part': ' Bonjours, ',
-                                                   'tags': 'HELLO'},
-                                                  {'part': "    Suite a notre conversation \
+output_signature = [
+    {
+        "meta": {"date": None, "from": None, "to": None},
+        "structured_text": {
+            "header": None,
+            "text": [
+                {"part": " Bonjours, ", "tags": "HELLO"},
+                {
+                    "part": "    Suite a notre conversation \
 téléphonique de Mardi , pourriez vous me dire la   somme que je vous dois \
 afin d'd'être en régularisation . \n  \n ",
-                                                   'tags': 'BODY'},
-                                                  {'part': 'Merci bonne journée',
-                                                   'tags': 'GREETINGS'},
-                                                  {'part': 'Jean Dupont',
-                                                   'tags': 'SIGNATURE'}]
-                                         }
-                     },
-                    {'meta': {'date': ' mar. 22 mai 2018 à 10:20',
-                              'from': '  <gestionsocietaire@mutuelle.fr> ',
-                              'to': None},
-                     'structured_text': {'header': None,
-                                         'text': [{'part': ' Bonjour. \n  \n ',
-                                                   'tags': 'HELLO'},
-                                                  {'part': "Merci de bien vouloir prendre \
+                    "tags": "BODY",
+                },
+                {"part": "Merci bonne journée", "tags": "GREETINGS"},
+                {"part": "Jean Dupont", "tags": "SIGNATURE"},
+            ],
+        },
+    },
+    {
+        "meta": {
+            "date": " mar. 22 mai 2018 à 10:20",
+            "from": "  <gestionsocietaire@mutuelle.fr> ",
+            "to": None,
+        },
+        "structured_text": {
+            "header": None,
+            "text": [
+                {"part": " Bonjour. \n  \n ", "tags": "HELLO"},
+                {
+                    "part": "Merci de bien vouloir prendre \
 connaissance du document ci-joint :   1 - Relevé d'identité postal MUTUELLE \
 (contrats)    ",
-                                                   'tags': 'BODY'},
-                                                  {'part': ' Sentiments mutualistes. ',
-                                                   'tags': 'GREETINGS'},
-                                                  {'part': '        La Mutuelle    ',
-                                                   'tags': 'BODY'},
-                                                  {'part': ' La visualisation des fichiers PDF nécessite Adobe Reader. \n',
-                                                   'tags': 'FOOTER'}]}}]
+                    "tags": "BODY",
+                },
+                {"part": " Sentiments mutualistes. ", "tags": "GREETINGS"},
+                {"part": "        La Mutuelle    ", "tags": "BODY"},
+                {
+                    "part": " La visualisation des fichiers PDF nécessite Adobe Reader. \n",
+                    "tags": "FOOTER",
+                },
+            ],
+        },
+    },
+]
 
 
 def test_tag_signature():
-    input_df = pd.DataFrame(
-        {"structured_historic": [structured_historic_signature]}
-    )
+    input_df = pd.DataFrame({"structured_historic": [structured_historic_signature]})
 
     output_df = pd.Series([output_signature])
     input_df["structured_body"] = input_df.apply(structure_email, axis=1)

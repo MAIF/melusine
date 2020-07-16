@@ -49,9 +49,7 @@ def test_classification():
     input_df = load_email_data()
 
     # ============== Train Phraser ==============
-    phraser = Phraser(input_column="body",
-                      threshold=10,
-                      min_count=10)
+    phraser = Phraser(input_column="body", threshold=10, min_count=10)
 
     phraser.train(input_df)
 
@@ -121,9 +119,7 @@ def test_classification():
     input_df = keywords_generator.fit_transform(input_df)
 
     # ============== Embeddings ==============
-    pretrained_embedding = Embedding(input_column="clean_body",
-                                     workers=1,
-                                     min_count=5)
+    pretrained_embedding = Embedding(input_column="clean_body", workers=1, min_count=5)
     pretrained_embedding.train(input_df)
 
     # ============== CNN Classifier ==============
@@ -132,11 +128,13 @@ def test_classification():
     le = LabelEncoder()
     y = le.fit_transform(y)
 
-    nn_model = NeuralModel(architecture_function=cnn_model,
-                           pretrained_embedding=pretrained_embedding,
-                           text_input_column="clean_body",
-                           meta_input_list=['extension', 'dayofweek', 'hour', 'min'],
-                           n_epochs=2)
+    nn_model = NeuralModel(
+        architecture_function=cnn_model,
+        pretrained_embedding=pretrained_embedding,
+        text_input_column="clean_body",
+        meta_input_list=["extension", "dayofweek", "hour", "min"],
+        n_epochs=2,
+    )
 
     nn_model.fit(X, y)
 
