@@ -1,8 +1,5 @@
 import pandas as pd
-from melusine.prepare_email.mail_segmenting import (
-    structure_email,
-    tag_signature,
-)
+from melusine.prepare_email.mail_segmenting import structure_email, tag_signature
 
 structured_historic = [
     {
@@ -130,8 +127,7 @@ connaissance du document ci-joint :   1 - Relevé d'identité postal MUTUELLE \
                 {"part": " Sentiments mutualistes. ", "tags": "GREETINGS"},
                 {"part": "        La Mutuelle    ", "tags": "BODY"},
                 {
-                    "part": " La visualisation des fichiers \
-PDF nécessite Adobe Reader. \n",
+                    "part": " La visualisation des fichiers PDF nécessite Adobe Reader. \n",
                     "tags": "FOOTER",
                 },
             ],
@@ -141,9 +137,7 @@ PDF nécessite Adobe Reader. \n",
 
 
 def test_tag_signature():
-    input_df = pd.DataFrame(
-        {"structured_historic": [structured_historic_signature]}
-    )
+    input_df = pd.DataFrame({"structured_historic": [structured_historic_signature]})
 
     output_df = pd.Series([output_signature])
     input_df["structured_body"] = input_df.apply(structure_email, axis=1)

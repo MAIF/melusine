@@ -21,7 +21,14 @@ from melusine.models.attention_model import (
 )
 
 
-def cnn_model(embedding_matrix_init, ntargets, seq_max, nb_meta, loss):
+def cnn_model(
+    embedding_matrix_init,
+    ntargets,
+    seq_max,
+    nb_meta,
+    loss="categorical_crossentropy",
+    activation="softmax",
+):
     """Pre-defined architecture of a CNN model.
 
     Parameters
@@ -44,6 +51,10 @@ def cnn_model(embedding_matrix_init, ntargets, seq_max, nb_meta, loss):
     loss : str, optional
         Loss function for training.
         Default value, 'categorical_crossentropy'.
+
+    activation : str, optional
+        Activation function.
+        Default value, 'softmax'.
 
     Returns
     -------
@@ -99,7 +110,7 @@ def cnn_model(embedding_matrix_init, ntargets, seq_max, nb_meta, loss):
     z = Dense(100, activation="linear")(z)
     z = Dropout(0.2)(z)
     z = LeakyReLU(alpha=0.05)(z)
-    outputs = Dense(ntargets, activation="softmax")(z)
+    outputs = Dense(ntargets, activation=activation)(z)
 
     model = Model(inputs=inputs, outputs=outputs)
 
@@ -114,24 +125,35 @@ def rnn_model(
     seq_max=100,
     nb_meta=252,
     loss="categorical_crossentropy",
+    activation="softmax",
 ):
     """Pre-defined architecture of a RNN model.
+
     Parameters
     ----------
     embedding_matrix_init : np.array,
         Pretrained embedding matrix.
+
     ntargets : int, optional
         Dimension of model output.
         Default value, 18.
+
     seq_max : int, optional
         Maximum input length.
         Default value, 100.
+
     nb_meta : int, optional
         Dimension of meta data input.
         Default value, 252.
+
     loss : str, optional
         Loss function for training.
         Default value, 'categorical_crossentropy'.
+
+    activation : str, optional
+        Activation function.
+        Default value, 'softmax'.
+
     Returns
     -------
     Model instance
@@ -181,7 +203,7 @@ def rnn_model(
     z = Dense(100, activation="linear")(z)
     z = Dropout(0.2)(z)
     z = LeakyReLU(alpha=0.05)(z)
-    output = Dense(ntargets, activation="softmax")(z)
+    output = Dense(ntargets, activation=activation)(z)
 
     model = Model(inputs=inputs, outputs=output)
 
@@ -196,41 +218,34 @@ def transformers_model(
     seq_max=100,
     nb_meta=134,
     loss="categorical_crossentropy",
+    activation="softmax",
 ):
     """Pre-defined architecture of a Transformer model.
-
-
 
     Parameters
     ----------
     embedding_matrix_init : np.array,
        Pretrained embedding matrix.
 
-
-
     ntargets : int, optional
        Dimension of model output.
        Default value, 18.
-
-
 
     seq_max : int, optional
        Maximum input length.
        Default value, 100.
 
-
-
     nb_meta : int, optional
        Dimension of meta data input.
        Default value, 252.
-
-
 
     loss : str, optional
        Loss function for training.
        Default value, 'categorical_crossentropy'.
 
-
+    activation : str, optional
+        Activation function.
+        Default value, 'softmax'.
 
     Returns
     -------
@@ -247,15 +262,15 @@ def transformers_model(
         trainable=False,
     )(text_input)
 
-    x, mask = PositionalEncoding(
-        position=seq_max, d_model=x.shape[2], pad_index=0
-    )(inputs=x, seq=text_input)
-    x = TransformerEncoderLayer(
-        num_heads=10, d_model=x.shape[2], dff=x.shape[2]
-    )(x, mask)
-    x = TransformerEncoderLayer(
-        num_heads=10, d_model=x.shape[2], dff=x.shape[2]
-    )(x, None)
+    x, mask = PositionalEncoding(position=seq_max, d_model=x.shape[2], pad_index=0)(
+        inputs=x, seq=text_input
+    )
+    x = TransformerEncoderLayer(num_heads=10, d_model=x.shape[2], dff=x.shape[2])(
+        x, mask
+    )
+    x = TransformerEncoderLayer(num_heads=10, d_model=x.shape[2], dff=x.shape[2])(
+        x, None
+    )
     x = Dense(150, activation="linear")(x)
     x = LeakyReLU(alpha=0.05)(x)
     x = GlobalMaxPooling1D()(x)
@@ -285,7 +300,7 @@ def transformers_model(
     z = Dense(100, activation="linear")(z)
     z = Dropout(0.2)(z)
     z = LeakyReLU(alpha=0.05)(z)
-    output = Dense(ntargets, activation="softmax")(z)
+    output = Dense(ntargets, activation=activation)(z)
 
     model = Model(inputs=inputs, outputs=output)
 
@@ -299,11 +314,10 @@ def bert_model(
     seq_max=100,
     nb_meta=134,
     loss="categorical_crossentropy",
+    activation="softmax",
     bert_model="jplu/tf-camembert-base",
 ):
     """Pre-defined architecture of a pre-trained Bert model.
-
-
 
     Parameters
     ----------
@@ -311,32 +325,26 @@ def bert_model(
        Dimension of model output.
        Default value, 18.
 
-
-
     seq_max : int, optional
        Maximum input length.
        Default value, 100.
-
-
 
     nb_meta : int, optional
        Dimension of meta data input.
        Default value, 252.
 
-
-
     loss : str, optional
        Loss function for training.
        Default value, 'categorical_crossentropy'.
 
-
+    activation : str, optional
+        Activation function.
+        Default value, 'softmax'.
 
     bert_model : str, optional
         Model name from HuggingFace library or path to local model
         Only Camembert and Flaubert supported
         Default value, 'camembert-base'
-
-
 
     Returns
     -------
@@ -383,12 +391,10 @@ def bert_model(
     z = Dense(100, activation="linear")(z)
     z = Dropout(0.2)(z)
     z = LeakyReLU(alpha=0.05)(z)
-    output = Dense(ntargets, activation="softmax")(z)
+    output = Dense(ntargets, activation=activation)(z)
 
     model = Model(inputs=inputs, outputs=output)
 
-    model.compile(
-        optimizer=Adam(learning_rate=5e-5), loss=loss, metrics=["accuracy"]
-    )
+    model.compile(optimizer=Adam(learning_rate=5e-5), loss=loss, metrics=["accuracy"])
 
     return model

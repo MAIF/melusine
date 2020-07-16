@@ -12,8 +12,7 @@ from melusine.utils.streamer import Streamer
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 formatter = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    datefmt="%d/%m %I:%M",
+    "%(asctime)s - %(name)s - %(levelname)s - %(message)s", datefmt="%d/%m %I:%M",
 )
 
 
@@ -100,9 +99,7 @@ class Embedding:
         self.input_column = input_column
         self.tokens_column = tokens_column
         self.input_data = None
-        self.streamer = Streamer(
-            column=self.input_column, stop_removal=stop_removal
-        )
+        self.streamer = Streamer(column=self.input_column, stop_removal=stop_removal)
         self.word2id = {}
         self.embedding = None
         self.method = method
@@ -422,8 +419,7 @@ class Embedding:
         kv.index2word = list(vocab.keys())
 
         kv.vocab = {
-            word: Vocab(index=word_id, count=0)
-            for word, word_id in vocab.items()
+            word: Vocab(index=word_id, count=0) for word, word_id in vocab.items()
         }
 
         self.embedding = kv

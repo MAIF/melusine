@@ -56,6 +56,10 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         Loss function for training.
         Default value, 'categorical_crossentropy'.
 
+    activation : str, optional
+        Activation function.
+        Default value, 'softmax'.
+
     batch_size : int, optional
         Size of batches for the training of the neural network model.
         Default value, 4096.
@@ -71,6 +75,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
 
     bert_model : str, optional
         Model name from HuggingFace library or path to local model
+
         Only Camembert and Flaubert supported
         Default value, 'camembert-base'
 
@@ -109,11 +114,12 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         seq_size=100,
         embedding_dim=200,
         loss="categorical_crossentropy",
+        activation="softmax",
         batch_size=4096,
         n_epochs=15,
-        bert_tokenizer="camembert-base",
-        bert_model="camembert-base",
-        **kwargs
+        bert_tokenizer="jplu/tf-camembert-base",
+        bert_model="jplu/tf-camembert-base",
+        **kwargs,
     ):
         self.architecture_function = architecture_function
         self.pretrained_embedding = pretrained_embedding
@@ -133,6 +139,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         self.seq_size = seq_size
         self.embedding_dim = embedding_dim
         self.loss = loss
+        self.activation = activation
         self.batch_size = batch_size
         self.n_epochs = n_epochs
         self.bert_model = bert_model
@@ -155,11 +162,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             },
         )
         model.load_weights(filepath + "_model_weights.h5")
-        model.compile(
-            optimizer=Adam(),
-            loss="categorical_crossentropy",
-            metrics=["accuracy"],
-        )
+        model.compile(optimizer=Adam(), loss=self.loss, metrics=["accuracy"])
         self.model = model
         pass
 
@@ -178,7 +181,9 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         model weight and structure instead of standard serialization."""
         self.__dict__ = dict_attr
 
-    def fit(self, X, y, tensorboard_log_dir=None, **kwargs):
+    def fit(
+        self, X_train, y_train, tensorboard_log_dir=None, validation_data=None, **kwargs
+    ):
         """Fit the neural network model on X and y.
         If meta_input list is empty list or None the model is used
         without metadata.
@@ -187,71 +192,54 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
 
         Parameters
         ----------
-        X : pd.DataFrame
+        X_train : pd.DataFrame
 
-        y : pd.Series
+        y_train : pd.Series
 
         tensorboard_log_dir : str
             If not None, will be used as path to write logs for tensorboard
             Tensordboard callback parameters can be changed in config file
+
+        validation_data: tuple
+            Tuple of validation data
+            Data on which to evaluate the loss and any model metrics at the end of each epoch. The model will not be
+            trained on this data. This could be a tuple (x_val, y_val). validation_data will override validation_split.
+            Default value, None.
 
         Returns
         -------
         self : object
             Returns the instance
         """
+        X_input_train, y_categorical_train = self._prepare_data(X_train, y_train)
 
-        y_categorical = to_categorical(y)
-        nb_labels = len(np.unique(y))
+        if validation_data:
+            # Init X_val, y_val
+            X_val, y_val = None, None
 
-        if self.architecture_function.__name__ != "bert_model":
-            X = self.tokenizer.transform(X)
-            if self.pretrained_embedding:
-                self._get_embedding_matrix()
-            else:
-                self._create_vocabulary_from_tokens(X)
-                self._generate_random_embedding_matrix()
-            self.vocabulary_dict = {
-                word: i for i, word in enumerate(self.vocabulary)
-            }
-            X_seq = self._prepare_sequences(X)
-            X_meta, nb_meta_features = self._get_meta(X)
-            self.model = self.architecture_function(
-                embedding_matrix_init=self.embedding_matrix,
-                ntargets=nb_labels,
-                seq_max=self.seq_size,
-                nb_meta=nb_meta_features,
-                loss=self.loss,
-            )
+            try:
+                X_val, y_val = validation_data
+            except Exception as e:
+                validation_data = None
+                print(
+                    "Validation_data has unexpected format. validation_data is now set to None. Following error:"
+                    + str(e)
+                )
 
-            if nb_meta_features == 0:
-                X_input = X_seq
-            else:
-                X_input = [X_seq, X_meta]
-
-        else:
-            X_seq, X_attention = self._prepare_bert_sequences(X)
-            X_meta, nb_meta_features = self._get_meta(X)
-            self.model = self.architecture_function(
-                ntargets=nb_labels,
-                seq_max=self.seq_size,
-                nb_meta=nb_meta_features,
-                loss=self.loss,
-                bert_model=self.bert_model,
-            )
-
-            if nb_meta_features == 0:
-                X_input = [X_seq, X_attention]
-            else:
-                X_input = [X_seq, X_attention, X_meta]
+            if validation_data:
+                X_input_val, y_categorical_val = self._prepare_data(
+                    X_val, y_val, validation_data=validation_data
+                )
+                validation_data = (X_input_val, y_categorical_val)
 
         if tensorboard_log_dir is None:
             self.model.fit(
-                X_input,
-                y_categorical,
+                X_input_train,
+                y_categorical_train,
                 batch_size=self.batch_size,
                 epochs=self.n_epochs,
-                **kwargs
+                validation_data=validation_data,
+                **kwargs,
             )
         else:
 
@@ -280,10 +268,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 tensorboard_callback_parameters["embeddings_data"]
             )
 
-            if tensorboard_callback_parameters["update_freq"] in [
-                "batch",
-                "epoch",
-            ]:
+            if tensorboard_callback_parameters["update_freq"] in ["batch", "epoch"]:
                 update_freq = tensorboard_callback_parameters["update_freq"]
             else:
                 update_freq = ast.literal_eval(
@@ -303,12 +288,13 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 update_freq=update_freq,
             )
             self.model.fit(
-                X_input,
-                y_categorical,
+                X_input_train,
+                y_categorical_train,
                 batch_size=self.batch_size,
                 epochs=self.n_epochs,
                 callbacks=[tensorboard_callback],
-                **kwargs
+                validation_data=validation_data,
+                **kwargs,
             )
         pass
 
@@ -359,9 +345,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
     def _create_vocabulary_from_tokens(self, X):
         """Create a word indexes dictionary from tokens."""
         token_series = X["tokens"]
-        c = Counter(
-            [token for token_list in token_series for token in token_list]
-        )
+        c = Counter([token for token_list in token_series for token in token_list])
         self.vocabulary = [t[0] for t in c.most_common(self.vocab_size)]
         pass
 
@@ -446,6 +430,83 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             np.asarray(seqs["attention_mask"]),
         )
 
+    def _prepare_data(self, X, y, validation_data=None):
+        """Prepares the data for training and validation.
+        1- Encodes y to categorical
+        2- Differentiates data preparation for bert models and non-bert models
+        3- Creates embedding matrix and init model for training data only (validation_data=None)
+
+        Parameters
+        ----------
+        X : pd.DataFrame
+
+        y : pd.Series
+
+        validation_data : None or tuple
+            Tuple of validation data
+            Data on which to evaluate the loss and any model metrics at the end of each epoch. The model will not be
+            trained on this data. This could be a tuple (x_val, y_val). validation_data will override validation_split.
+            Default value, None.
+
+        Returns
+        -------
+        X_input : pd.DataFrame
+
+        y_categorical : pd.Series
+        """
+        y_categorical = to_categorical(y)
+        if not validation_data:
+            nb_labels = len(np.unique(y))
+
+        if self.architecture_function.__name__ != "bert_model":
+            X = self.tokenizer.transform(X)
+            X_meta, nb_meta_features = self._get_meta(X)
+
+            if not validation_data:
+                if self.pretrained_embedding:
+                    self._get_embedding_matrix()
+                else:
+                    self._create_vocabulary_from_tokens(X)
+                    self._generate_random_embedding_matrix()
+                self.vocabulary_dict = {
+                    word: i for i, word in enumerate(self.vocabulary)
+                }
+                self.model = self.architecture_function(
+                    embedding_matrix_init=self.embedding_matrix,
+                    ntargets=nb_labels,
+                    seq_max=self.seq_size,
+                    nb_meta=nb_meta_features,
+                    loss=self.loss,
+                    activation=self.activation,
+                )
+
+            X_seq = self._prepare_sequences(X)
+
+            if nb_meta_features == 0:
+                X_input = X_seq
+            else:
+                X_input = [X_seq, X_meta]
+
+        else:
+            X_seq, X_attention = self._prepare_bert_sequences(X)
+            X_meta, nb_meta_features = self._get_meta(X)
+            if not validation_data:
+                self.model = self.architecture_function(
+                    ntargets=nb_labels,
+                    seq_max=self.seq_size,
+                    nb_meta=nb_meta_features,
+                    loss=self.loss,
+                    activation=self.activation,
+                    bert_model=self.bert_model,
+                )
+
+            if nb_meta_features == 0:
+                X_input = [X_seq, X_attention]
+            else:
+                X_input = [X_seq, X_attention, X_meta]
+
+        return X_input, y_categorical
+
     def _get_meta(self, X):
         """Returns as a pd.DataFrame the metadata from X given the list_meta
         defined, and returns the number of columns. If meta_input_list is
@@ -463,9 +524,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 columns_list = list(X.columns)
 
             meta_columns_list = [
-                col
-                for col in columns_list
-                if col.startswith(tuple(meta_input_list))
+                col for col in columns_list if col.startswith(tuple(meta_input_list))
             ]
 
             if isinstance(X, dict):

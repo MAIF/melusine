@@ -170,9 +170,7 @@ def flag_items(text, flags=True):
     """
     if flags:
         for regex, value in regex_flags_dict.items():
-            text = re.sub(
-                pattern=regex, repl=value, string=text, flags=re.IGNORECASE
-            )
+            text = re.sub(pattern=regex, repl=value, string=text, flags=re.IGNORECASE)
         return text
     else:
         return text
@@ -193,7 +191,5 @@ def remove_transfer_answer_header(text):
 
     """
     for regex, value in regex_clean_header_dict.items():
-        text = re.sub(
-            pattern=regex, repl=value, string=text, flags=re.IGNORECASE
-        )
+        text = re.sub(pattern=regex, repl=value, string=text, flags=re.IGNORECASE)
     return text

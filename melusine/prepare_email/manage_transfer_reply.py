@@ -3,22 +3,16 @@ from melusine.config.config import ConfigJsonReader
 
 conf_reader = ConfigJsonReader()
 config = conf_reader.get_config_file()
-regex_transfer_header = config["regex"]["manage_transfer_reply"][
-    "transfer_header"
-]
+regex_transfer_header = config["regex"]["manage_transfer_reply"]["transfer_header"]
 regex_answer_header = config["regex"]["manage_transfer_reply"]["answer_header"]
-regex_begin_transfer = config["regex"]["manage_transfer_reply"][
-    "begin_transfer"
-]
+regex_begin_transfer = config["regex"]["manage_transfer_reply"]["begin_transfer"]
 regex_begin_transfer_cons = config["regex"]["manage_transfer_reply"][
     "begin_transfer_cons"
 ]
 regex_extract_from = config["regex"]["manage_transfer_reply"]["extract_from"]
 regex_extract_to = config["regex"]["manage_transfer_reply"]["extract_to"]
 regex_extract_date = config["regex"]["manage_transfer_reply"]["extract_date"]
-regex_extract_header = config["regex"]["manage_transfer_reply"][
-    "extract_header"
-]
+regex_extract_header = config["regex"]["manage_transfer_reply"]["extract_header"]
 
 
 def add_boolean_transfer(row):
@@ -170,9 +164,7 @@ def update_info_for_transfer_mail(row):
             row["date"] = re.split(regex_extract_date, row["body"])[1]
             row["header"] = re.split(regex_extract_header, row["body"])[1]
             row["body"] = "".join(
-                row["body"].split(
-                    re.findall(regex_extract_header, row["body"])[0]
-                )[1:]
+                row["body"].split(re.findall(regex_extract_header, row["body"])[0])[1:]
             )
 
     except Exception:

@@ -1,16 +1,13 @@
 import pandas as pd
 import copy
+import os
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder
 
 from melusine.utils.transformer_scheduler import TransformerScheduler
 
-from melusine.prepare_email.manage_transfer_reply import (
-    check_mail_begin_by_transfer,
-)
-from melusine.prepare_email.manage_transfer_reply import (
-    update_info_for_transfer_mail,
-)
+from melusine.prepare_email.manage_transfer_reply import check_mail_begin_by_transfer
+from melusine.prepare_email.manage_transfer_reply import update_info_for_transfer_mail
 from melusine.prepare_email.manage_transfer_reply import add_boolean_transfer
 from melusine.prepare_email.manage_transfer_reply import add_boolean_answer
 
@@ -41,6 +38,10 @@ header = "Test integration Melusine"
 body = "Bonjour\nThis is Melusine\nCordialement\nDev Team"
 body = "Bonjour\nThis is Melusine\nCordialement\nDev Team"
 body = "Bonjour\nThis is Melusine\nCordialement\nDev Team"
+
+
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 
 def test_classification():
@@ -118,9 +119,7 @@ def test_classification():
     input_df = keywords_generator.fit_transform(input_df)
 
     # ============== Embeddings ==============
-    pretrained_embedding = Embedding(
-        input_column="clean_body", workers=1, min_count=5
-    )
+    pretrained_embedding = Embedding(input_column="clean_body", workers=1, min_count=5)
     pretrained_embedding.train(input_df)
 
     # ============== CNN Classifier ==============
@@ -140,16 +139,16 @@ def test_classification():
     nn_model.fit(X, y)
 
     y_res = nn_model.predict(X)
-    y_res = le.inverse_transform(y_res)
+    le.inverse_transform(y_res)
 
     # ============== Test dict compatibility ==============
     dict_emails = input_df.to_dict(orient="records")[0]
     dict_meta = MetadataPipeline.transform(dict_emails)
-    dict_keywords = keywords_generator.transform(dict_emails)  # NOQA
+    keywords_generator.transform(dict_emails)
 
     dict_input = copy.deepcopy(dict_meta)
     dict_input["clean_body"] = dict_emails["clean_body"]
 
-    dict_result = nn_model.predict(dict_input)  # NOQA
+    nn_model.predict(dict_input)
 
     assert True

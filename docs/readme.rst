@@ -44,26 +44,28 @@ Use **Melusine** if you need a library which :
 Release Notes
 -------------
 
-1.11.0
+Release 2.0
 ^^^^^^
 
 New features:
     - Attentive Neural Networks are now available. :tada: We propose you an original Transformer architecture as well as pre-trained BERT models (Camembert and Flaubert)
     - Tutorial 13 will explain you how to get started with these models and attempt to compare them.
+    - Validation data can now be used to train models (See fit function from NeuralModel for usage)
+    - The activation function can now be modified to adapt to your needs (See NeuralModel init for usage)
 
-1.10.0
+Release 1.10.0
 ^^^^^^
 
 Updates:
     - Melusine is now running with Tensorflow 2.2
 
-1.9.6
+Release 1.9.6
 ^^^^^
 
 New features:
     - Flashtext library is now used to flag names instead of regex. It allows a faster computation.
 
-1.9.5
+Release 1.9.5
 ^^^^^
 
 New features:

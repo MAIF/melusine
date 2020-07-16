@@ -695,12 +695,12 @@ Use a custom name file
 
 While working with text data, names might undergo specific processing:
 
-- stopword processing : if names are irrelevant, they may be discarded during the text processing
-- flagging : if the information that the text contains a name is relevant but the name itself is irrelevant, names may be replaced with a name_flag (bob -> flag_name)
+- stopword processing : if names don't need to be identified, they may be discarded during the text processing
+- flagging : if names need to be identified but not specifically, names may be replaced with a name_flag (bob -> flag_name)
 
 By default, Melusine identifies names using an explicit list of names available in a file ('melusine/config/names.csv').
-The default name list comes from a name dataset publicly available on the french government `website <https://https://www.data.gouv.fr/fr/datasets/ficher-des-prenoms-de-1900-a-2017>`_.
-This list contains first names given to children (french or not) born in France between 1900 and 2017.
+The default name list was adapted from a name dataset publicly available on the french government `website <https://www.data.gouv.fr/fr/datasets/ficher-des-prenoms-de-1900-a-2018/>`_.
+This list contains first names given to children (french or not) born in France between 1900 and 2018.
 
 Melusine users may specify a **custom name list** using a **custom 'names.csv' file**.
 

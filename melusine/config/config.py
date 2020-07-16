@@ -45,9 +45,7 @@ class ConfigJsonReader:
         self.path_default_names_csv_ = op.join(config_directory, "names.csv")
 
         if not op.exists(self.path_ini_file_):
-            logging.info(
-                "Create an path.ini file to configure your own config.json"
-            )
+            logging.info("Create an path.ini file to configure your own config.json")
             ini_file = open(self.path_ini_file_, "w")
             conf = ConfigParser()
             conf.add_section("PATH")

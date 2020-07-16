@@ -173,10 +173,7 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
             self.seed_dict, self.seed_list = self.compute_seeds_from_root(
                 embedding, self.base_seed_words
             )
-            (
-                self.anti_seed_dict,
-                self.anti_seed_list,
-            ) = self.compute_seeds_from_root(
+            (self.anti_seed_dict, self.anti_seed_list,) = self.compute_seeds_from_root(
                 embedding, self.base_anti_seed_words
             )
 
@@ -187,9 +184,7 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
                 "None of the seed words are in the vocabulary associated with the Embedding"
             )
 
-        self.lexicon, self.lexicon_mat = self.compute_lexicon(
-            embedding, self.seed_list
-        )
+        self.lexicon, self.lexicon_mat = self.compute_lexicon(embedding, self.seed_list)
 
         if self.anti_seed_list:
             self.anti_lexicon, self.anti_lexicon_mat = self.compute_lexicon(
@@ -221,9 +216,7 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
         seed_list = []
 
         for seed in base_seed_words:
-            extended_seed_words = [
-                token for token in words if token.startswith(seed)
-            ]
+            extended_seed_words = [token for token in words if token.startswith(seed)]
             seed_dict[seed] = extended_seed_words
             seed_list.extend(extended_seed_words)
 
@@ -286,10 +279,7 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
 
         """
         X[return_column] = apply_by_multiprocessing(
-            X,
-            self.rate_email,
-            workers=self.n_jobs,
-            progress_bar=self.progress_bar,
+            X, self.rate_email, workers=self.n_jobs, progress_bar=self.progress_bar,
         )
 
         return X
@@ -315,9 +305,7 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
         ]
 
         if effective_tokens_list:
-            token_score_list = [
-                self.lexicon[token] for token in effective_tokens_list
-            ]
+            token_score_list = [self.lexicon[token] for token in effective_tokens_list]
 
             # Negative contribution
             if self.anti_seed_list:

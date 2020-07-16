@@ -43,9 +43,7 @@ def build_historic(row):
     index_messages, nb_messages = _get_index_transitions(email_body)
     structured_historic = [
         {
-            "text": email_body[
-                index_messages[i][1] : index_messages[i + 1][0]
-            ],
+            "text": email_body[index_messages[i][1] : index_messages[i + 1][0]],
             "meta": email_body[index_messages[i][0] : index_messages[i][1]],
         }
         for i in range(nb_messages)
@@ -111,9 +109,7 @@ def __remove_empty_mails(structured_historic):
     purged_structured_historic = []
     meta_to_reinclude = None
     for text_meta in structured_historic:
-        if (
-            meta_to_reinclude
-        ):  # if the precedent piece had meta data to reinclude
+        if meta_to_reinclude:  # if the precedent piece had meta data to reinclude
             text_meta["meta"] = meta_to_reinclude + text_meta.get("meta")
             meta_to_reinclude = None
         text, meta = text_meta.get("text"), text_meta.get("meta")

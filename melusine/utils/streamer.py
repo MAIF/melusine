@@ -32,9 +32,7 @@ class Streamer:
         self.column_ = column
         self.n_jobs = n_jobs
         config = conf_reader.get_config_file()
-        stopwords = (
-            config["words_list"]["stopwords"] + config["words_list"]["names"]
-        )
+        stopwords = config["words_list"]["stopwords"] + config["words_list"]["names"]
         self.tokenizer = Tokenizer(stopwords, stop_removal=stop_removal)
 
     def to_stream(self, X):
@@ -70,16 +68,12 @@ class Streamer:
         """
         tokenized_sentences_list = apply_by_multiprocessing(
             df=X[[self.column_]],
-            func=lambda x: self.to_list_of_tokenized_sentences(
-                x[self.column_]
-            ),
+            func=lambda x: self.to_list_of_tokenized_sentences(x[self.column_]),
             args=None,
             workers=self.n_jobs,
             progress_bar=False,
         )
-        flattoks = [
-            item for sublist in tokenized_sentences_list for item in sublist
-        ]
+        flattoks = [item for sublist in tokenized_sentences_list for item in sublist]
         return flattoks
 
     def to_list_of_tokenized_sentences(self, text):

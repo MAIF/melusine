@@ -23,9 +23,7 @@ def test_add_boolean_answer():
         }
     )
 
-    output_df = pd.Series(
-        [False, True, True, False, False, True, False, False]
-    )
+    output_df = pd.Series([False, True, True, False, False, True, False, False])
 
     result = input_df.apply(add_boolean_answer, axis=1)
     pd.testing.assert_series_equal(result, output_df)

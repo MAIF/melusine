@@ -8,9 +8,7 @@ from melusine.config.config import ConfigJsonReader
 
 conf_reader = ConfigJsonReader()
 config = conf_reader.get_config_file()
-common_terms = (
-    config["words_list"]["stopwords"] + config["words_list"]["names"]
-)
+common_terms = config["words_list"]["stopwords"] + config["words_list"]["names"]
 
 regex_tokenize_with_punctuations = r"(.*?[\s'])"
 tokenize_without_punctuations = r"(.*?)[\s']"
@@ -107,11 +105,7 @@ def phraser_on_text(text, phraser):
     """
     if not re.search(pattern=r"\W*\b\w+\b\W*", string=text):
         return text
-    (
-        pre_typos_list,
-        words_list,
-        separators_list,
-    ) = _split_typos_words_separators(text)
+    (pre_typos_list, words_list, separators_list,) = _split_typos_words_separators(text)
     phrased_words_list = phraser.phraser[words_list]
     phrased_text = _rebuild_phrased_text_with_punctuation(
         pre_typos_list, words_list, separators_list, phrased_words_list
@@ -125,9 +119,7 @@ def _rebuild_phrased_text_with_punctuation(
 ):
     """Rebuilds the initial text with phrased words."""
     i = 0
-    for pre_typo, word, separator in zip(
-        pre_typos_list, words_list, separators_list
-    ):
+    for pre_typo, word, separator in zip(pre_typos_list, words_list, separators_list):
         phrased_word = re.sub("\W", "", phrased_words_list[i])
         word = re.sub("\W", "", word)
         if len(phrased_word) > len(word):
@@ -152,9 +144,7 @@ def _check_last_word_phrased(phrased_word, word):
 def _split_typos_words_separators(text, pattern=r"(\W*)\b(\w+)\b(\W*)"):
     """Split text according to typos."""
     tuple_word_separator_list = re.findall(pattern, text, flags=re.M | re.I)
-    pre_typos_list, words_list, separators_list = zip(
-        *tuple_word_separator_list
-    )
+    pre_typos_list, words_list, separators_list = zip(*tuple_word_separator_list)
 
     return pre_typos_list, words_list, separators_list
 
