@@ -77,9 +77,7 @@ regex_pattern = (
 
 compiled_regex_typo = re.compile(REGEX_SEG["tag_typo"], re.I)
 regex_tag_subsentence = REGEX_SEG["tag_subsentence"]
-regex_split_message_to_sentences_list = REGEX_SEG[
-    "split_message_to_sentences_list"
-]
+regex_split_message_to_sentences_list = REGEX_SEG["split_message_to_sentences_list"]
 
 REGEX_CLEAN = config["regex"]["cleaning"]
 regex_flags_dict = REGEX_CLEAN["flags_dict"]
@@ -145,9 +143,7 @@ def structure_message(message):
     structured_meta, header = structure_meta(meta)
     text = str(message.get("text"))
     tagged_parts_list = tag_parts_message(text)
-    structured_message = _tuples_to_dict(
-        structured_meta, header, tagged_parts_list
-    )
+    structured_message = _tuples_to_dict(structured_meta, header, tagged_parts_list)
 
     return structured_message
 
@@ -361,9 +357,7 @@ def _merge_parts(list_de_tuple_parts_id):
 
 def _remove_empty_parts(tagged_parts_list):
     """ Remove all the empty parts in the list of tagged parts """
-    tagged_parts_list = [
-        part for part in tagged_parts_list if len(part[0]) > 0
-    ]
+    tagged_parts_list = [part for part in tagged_parts_list if len(part[0]) > 0]
 
     return tagged_parts_list
 
@@ -372,8 +366,7 @@ def _update_typo_parts(tagged_parts_list):
     """ Update the tagging for all the typo parts in the list of
     tagged parts """
     tagged_parts_list = [
-        _update_typo_part(part_tag_tuple)
-        for part_tag_tuple in tagged_parts_list
+        _update_typo_part(part_tag_tuple) for part_tag_tuple in tagged_parts_list
     ]
 
     return tagged_parts_list

@@ -61,8 +61,7 @@ def exploration():
         for index, row in df_emails_preprocessed.iterrows()
     ]
     df_emails_preprocessed["parts_tags"] = [
-        structured_score(row)
-        for index, row in df_emails_preprocessed.iterrows()
+        structured_score(row) for index, row in df_emails_preprocessed.iterrows()
     ]
     df_emails_preprocessed[["parts_tags_set", "nb_parts_tags"]] = pd.DataFrame(
         df_emails_preprocessed["parts_tags"].tolist(),
@@ -147,8 +146,7 @@ def discrimination():
         for index, row in df_emails_preprocessed.iterrows()
     ]
     df_emails_preprocessed["parts_tags"] = [
-        structured_score(row)
-        for index, row in df_emails_preprocessed.iterrows()
+        structured_score(row) for index, row in df_emails_preprocessed.iterrows()
     ]
     df_emails_preprocessed[["parts_tags_set", "nb_parts_tags"]] = pd.DataFrame(
         df_emails_preprocessed["parts_tags"].tolist(),
@@ -172,9 +170,7 @@ def discrimination():
     status_text.text("Load Metadata")
     st.write("## Load Metadata 📥 ")
     st.write("Loading Metadata from :")
-    metadata_path = st.text_input(
-        "Metadata path", "../../tutorial/data/metadata.csv"
-    )
+    metadata_path = st.text_input("Metadata path", "../../tutorial/data/metadata.csv")
     df_meta = pd.read_csv(metadata_path, encoding="utf-8", sep=";")
 
     st.write(
@@ -192,16 +188,12 @@ def discrimination():
     status_text.text("Load Model")
     st.write("## Load Neural Network 🔮 ")
     st.write("Loading model pickel from :")
-    nn_model_path = st.text_input(
-        "Model path", "../../tutorial/data/nn_model.pickle"
-    )
+    nn_model_path = st.text_input("Model path", "../../tutorial/data/nn_model.pickle")
     # The NeuralModel saved as a pickle file has to be loaded first
     nn_model = joblib.load(nn_model_path)
     # Then the Keras model and its weights can be loaded
     st.write("Loading weights  from :")
-    weights_path = st.text_input(
-        "Weights path", "../../tutorial/data/nn_model"
-    )
+    weights_path = st.text_input("Weights path", "../../tutorial/data/nn_model")
     nn_model.load_nn_model(weights_path)
 
     # Generate Label Encoder
@@ -231,8 +223,7 @@ def discrimination():
     label_counter = Counter()
     error_counter = Counter()
     for label, error in zip(
-        df_emails_preprocessed["label"],
-        df_emails_preprocessed["prediction_error"],
+        df_emails_preprocessed["label"], df_emails_preprocessed["prediction_error"],
     ):
         label_counter.update([label])
         if error == 1:
@@ -258,8 +249,7 @@ def discrimination():
     error_counter = Counter()
     sex_counter = Counter()
     for sex, error in zip(
-        df_emails_preprocessed["sexe"],
-        df_emails_preprocessed["prediction_error"],
+        df_emails_preprocessed["sexe"], df_emails_preprocessed["prediction_error"],
     ):
         sex_counter.update([sex])
         if error == 1:
@@ -282,9 +272,7 @@ def discrimination():
     i += 1
     status_text.text("Build graphs %i" % i)
     st.write("### Error rate in regards of variable Age")
-    fig_age = px.histogram(
-        df_emails_preprocessed, x="age", color="prediction_error"
-    )
+    fig_age = px.histogram(df_emails_preprocessed, x="age", color="prediction_error")
     fig_age.update_layout(barmode="group")
     st.plotly_chart(fig_age)
 
@@ -303,9 +291,7 @@ def discrimination():
     status_text.text("Build graphs %i" % i)
     st.write("### Error rate in regards of the complexity of body sentences")
     fig_mw = px.histogram(
-        df_emails_preprocessed,
-        x="mean_words_per_sentence",
-        color="prediction_error",
+        df_emails_preprocessed, x="mean_words_per_sentence", color="prediction_error",
     )
     fig_mw.update_layout(barmode="group")
     st.plotly_chart(fig_mw)
@@ -344,9 +330,7 @@ Graphs studying the discrimination relationships of the previous variables and t
 
 
 def run():
-    db_name = st.sidebar.selectbox(
-        "Choose a dashboard", list(DASHBOARDS.keys()), 0
-    )
+    db_name = st.sidebar.selectbox("Choose a dashboard", list(DASHBOARDS.keys()), 0)
     dashboard = DASHBOARDS[db_name][0]
 
     if db_name == "—":

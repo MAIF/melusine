@@ -21,12 +21,14 @@ from melusine.models.attention_model import (
 )
 
 
-def cnn_model(embedding_matrix_init,
-              ntargets,
-              seq_max,
-              nb_meta,
-              loss="categorical_crossentropy",
-              activation='softmax'):
+def cnn_model(
+    embedding_matrix_init,
+    ntargets,
+    seq_max,
+    nb_meta,
+    loss="categorical_crossentropy",
+    activation="softmax",
+):
     """Pre-defined architecture of a CNN model.
 
     Parameters
@@ -61,11 +63,13 @@ def cnn_model(embedding_matrix_init,
 
     text_input = Input(shape=(seq_max,), dtype="int32")
 
-    x = keras.layers.Embedding(input_dim=embedding_matrix_init.shape[0],
-                               output_dim=embedding_matrix_init.shape[1],
-                               input_length=seq_max,
-                               weights=[embedding_matrix_init],
-                               trainable=True)(text_input)
+    x = keras.layers.Embedding(
+        input_dim=embedding_matrix_init.shape[0],
+        output_dim=embedding_matrix_init.shape[1],
+        input_length=seq_max,
+        weights=[embedding_matrix_init],
+        trainable=True,
+    )(text_input)
     x = Conv1D(200, 2, padding="same", activation="linear", strides=1)(x)
     x = SpatialDropout1D(0.15)(x)
     x = BatchNormalization()(x)
@@ -110,19 +114,19 @@ def cnn_model(embedding_matrix_init,
 
     model = Model(inputs=inputs, outputs=outputs)
 
-    model.compile(optimizer=Adam(),
-                  loss=loss,
-                  metrics=['accuracy'])
+    model.compile(optimizer=Adam(), loss=loss, metrics=["accuracy"])
 
     return model
 
 
-def rnn_model(embedding_matrix_init,
-              ntargets=18,
-              seq_max=100,
-              nb_meta=252,
-              loss='categorical_crossentropy',
-              activation='softmax'):
+def rnn_model(
+    embedding_matrix_init,
+    ntargets=18,
+    seq_max=100,
+    nb_meta=252,
+    loss="categorical_crossentropy",
+    activation="softmax",
+):
     """Pre-defined architecture of a RNN model.
 
     Parameters
@@ -156,11 +160,13 @@ def rnn_model(embedding_matrix_init,
     """
     text_input = Input(shape=(seq_max,), dtype="int32")
 
-    x = keras.layers.Embedding(input_dim=embedding_matrix_init.shape[0],
-                               output_dim=embedding_matrix_init.shape[1],
-                               input_length=seq_max,
-                               weights=[embedding_matrix_init],
-                               trainable=True)(text_input)
+    x = keras.layers.Embedding(
+        input_dim=embedding_matrix_init.shape[0],
+        output_dim=embedding_matrix_init.shape[1],
+        input_length=seq_max,
+        weights=[embedding_matrix_init],
+        trainable=True,
+    )(text_input)
     x = Bidirectional(GRU(80, return_sequences=True))(x)
     x = SpatialDropout1D(0.15)(x)
     x = Bidirectional(GRU(40, return_sequences=True))(x)
@@ -201,19 +207,19 @@ def rnn_model(embedding_matrix_init,
 
     model = Model(inputs=inputs, outputs=output)
 
-    model.compile(optimizer=Adam(),
-                  loss=loss,
-                  metrics=['accuracy'])
+    model.compile(optimizer=Adam(), loss=loss, metrics=["accuracy"])
 
     return model
 
 
-def transformers_model(embedding_matrix_init,
-                       ntargets=18,
-                       seq_max=100,
-                       nb_meta=134,
-                       loss='categorical_crossentropy',
-                       activation='softmax'):
+def transformers_model(
+    embedding_matrix_init,
+    ntargets=18,
+    seq_max=100,
+    nb_meta=134,
+    loss="categorical_crossentropy",
+    activation="softmax",
+):
     """Pre-defined architecture of a Transformer model.
 
     Parameters
@@ -248,17 +254,23 @@ def transformers_model(embedding_matrix_init,
 
     text_input = Input(shape=(seq_max,), dtype="int32")
 
-    x = Embedding(input_dim=embedding_matrix_init.shape[0],
-                  output_dim=embedding_matrix_init.shape[1],
-                  input_length=seq_max,
-                  weights=[embedding_matrix_init],
-                  trainable=False)(text_input)
+    x = Embedding(
+        input_dim=embedding_matrix_init.shape[0],
+        output_dim=embedding_matrix_init.shape[1],
+        input_length=seq_max,
+        weights=[embedding_matrix_init],
+        trainable=False,
+    )(text_input)
 
-    x, mask = PositionalEncoding(position=seq_max,
-                                 d_model=x.shape[2],
-                                 pad_index=0)(inputs=x, seq=text_input)
-    x = TransformerEncoderLayer(num_heads=10, d_model=x.shape[2], dff=x.shape[2])(x, mask)
-    x = TransformerEncoderLayer(num_heads=10, d_model=x.shape[2], dff=x.shape[2])(x, None)
+    x, mask = PositionalEncoding(position=seq_max, d_model=x.shape[2], pad_index=0)(
+        inputs=x, seq=text_input
+    )
+    x = TransformerEncoderLayer(num_heads=10, d_model=x.shape[2], dff=x.shape[2])(
+        x, mask
+    )
+    x = TransformerEncoderLayer(num_heads=10, d_model=x.shape[2], dff=x.shape[2])(
+        x, None
+    )
     x = Dense(150, activation="linear")(x)
     x = LeakyReLU(alpha=0.05)(x)
     x = GlobalMaxPooling1D()(x)
@@ -292,19 +304,19 @@ def transformers_model(embedding_matrix_init,
 
     model = Model(inputs=inputs, outputs=output)
 
-    model.compile(optimizer=Adam(),
-                  loss=loss,
-                  metrics=['accuracy'])
+    model.compile(optimizer=Adam(), loss=loss, metrics=["accuracy"])
 
     return model
 
 
-def bert_model(ntargets=18,
-               seq_max=100,
-               nb_meta=134,
-               loss='categorical_crossentropy',
-               activation='softmax',
-               bert_model='jplu/tf-camembert-base'):
+def bert_model(
+    ntargets=18,
+    seq_max=100,
+    nb_meta=134,
+    loss="categorical_crossentropy",
+    activation="softmax",
+    bert_model="jplu/tf-camembert-base",
+):
     """Pre-defined architecture of a pre-trained Bert model.
 
     Parameters
@@ -342,11 +354,13 @@ def bert_model(ntargets=18,
     text_input = Input(shape=(seq_max,), dtype="int32")
     attention_input = Input(shape=(seq_max,), dtype="int32")
     if "camembert" in bert_model.lower():
-        x = TFCamembertModel.from_pretrained(bert_model)(inputs=text_input,
-                                                         attention_mask=attention_input)[1]
+        x = TFCamembertModel.from_pretrained(bert_model)(
+            inputs=text_input, attention_mask=attention_input
+        )[1]
     elif "flaubert" in bert_model.lower():
-        x = TFFlaubertModel.from_pretrained(bert_model)(inputs=text_input,
-                                                        attention_mask=attention_input)[0][:, 0, :]
+        x = TFFlaubertModel.from_pretrained(bert_model)(
+            inputs=text_input, attention_mask=attention_input
+        )[0][:, 0, :]
     else:
         raise NotImplementedError(
             "Bert model {} is not implemented.".format(bert_model)
@@ -381,8 +395,6 @@ def bert_model(ntargets=18,
 
     model = Model(inputs=inputs, outputs=output)
 
-    model.compile(optimizer=Adam(learning_rate=5e-5),
-                  loss=loss,
-                  metrics=["accuracy"])
+    model.compile(optimizer=Adam(learning_rate=5e-5), loss=loss, metrics=["accuracy"])
 
     return model

@@ -131,9 +131,7 @@ class MetaDate(BaseEstimator, TransformerMixin):
             apply_func = TransformerScheduler.apply_pandas
 
         """Transform date to hour, min, day features."""
-        X["date"] = apply_func(
-            X, self.date_formatting, args_=(self.regex_date_format,)
-        )
+        X["date"] = apply_func(X, self.date_formatting, args_=(self.regex_date_format,))
         X["date"] = pd.to_datetime(
             X["date"],
             format=self.date_format,
@@ -192,9 +190,7 @@ class Dummifier(BaseEstimator, TransformerMixin):
     """
 
     def __init__(
-        self,
-        columns_to_dummify=["extension", "dayofweek", "hour", "min"],
-        copy=True,
+        self, columns_to_dummify=["extension", "dayofweek", "hour", "min"], copy=True,
     ):
         self.columns_to_dummify = columns_to_dummify
         self.copy = copy
@@ -215,9 +211,7 @@ class Dummifier(BaseEstimator, TransformerMixin):
         )
 
         dummies_ = tuple([col + "__" for col in self.columns_to_dummify])
-        self.dummy_features = [
-            c for c in self.X_.columns if c.startswith(dummies_)
-        ]
+        self.dummy_features = [c for c in self.X_.columns if c.startswith(dummies_)]
 
         return self
 
@@ -245,10 +239,7 @@ class Dummifier(BaseEstimator, TransformerMixin):
                 X_ = X
 
         X_ = pd.get_dummies(
-            X_,
-            columns=self.columns_to_dummify,
-            prefix_sep="__",
-            dummy_na=False,
+            X_, columns=self.columns_to_dummify, prefix_sep="__", dummy_na=False,
         )
 
         if return_dict:

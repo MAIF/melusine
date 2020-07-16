@@ -108,9 +108,7 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
         keywords_coef=10,
     ):
         self.max_tfidf_features_ = max_tfidf_features
-        self.tfidf_vectorizer = TfidfVectorizer(
-            max_features=max_tfidf_features
-        )
+        self.tfidf_vectorizer = TfidfVectorizer(max_features=max_tfidf_features)
         self.keywords = keywords
         self.stopwords = stopwords
         self.resample = resample
@@ -151,9 +149,7 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
         else:
             X_resample = X
 
-        X_resample["tokens"] = X_resample["tokens"].apply(
-            self._remove_stopwords
-        )
+        X_resample["tokens"] = X_resample["tokens"].apply(self._remove_stopwords)
 
         # fit tf-idf on resample data set
         tokens_joined = X_resample["tokens"].apply(lambda x: " ".join(x))
@@ -167,10 +163,7 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
 
         # return vetorizer with binary term frequency atribute
         self.dict_scores_ = dict(
-            zip(
-                self.tfidf_vectorizer.get_feature_names(),
-                self.tfidf_vectorizer.idf_,
-            )
+            zip(self.tfidf_vectorizer.get_feature_names(), self.tfidf_vectorizer.idf_,)
         )
         self.max_score_ = np.max(self.tfidf_vectorizer.idf_)
 
@@ -271,9 +264,7 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
         tokens_joined = X["tokens"].apply(lambda x: " ".join(x))
         X_vec = self.tfidf_vectorizer.transform(tokens_joined)
         feature_names = self.tfidf_vectorizer.get_feature_names()
-        idf_weights = self._get_weights(
-            X_vec.toarray(), self.keywords, feature_names
-        )
+        idf_weights = self._get_weights(X_vec.toarray(), self.keywords, feature_names)
 
         return idf_weights
 

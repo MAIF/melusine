@@ -28,11 +28,7 @@ def __check_args_type(args):
     """Check if it is a tuple-like object."""
     if args is None or args == ():
         return None
-    elif (
-        isinstance(args, int)
-        or isinstance(args, str)
-        or isinstance(args, list)
-    ):
+    elif isinstance(args, int) or isinstance(args, str) or isinstance(args, list):
         # manage the case of 1 element in tuple (example: args=(4))
         return (args,)
     elif not isinstance(args, tuple):
@@ -228,13 +224,7 @@ class TransformerScheduler(BaseEstimator, TransformerMixin):
 
     @staticmethod
     def apply_pandas_multiprocessing(
-        X_,
-        func_,
-        args_=None,
-        cols_=None,
-        n_jobs=1,
-        progress_bar=False,
-        **kwargs
+        X_, func_, args_=None, cols_=None, n_jobs=1, progress_bar=False, **kwargs
     ):
         if cols_ is None:
             X_ = apply_by_multiprocessing(
