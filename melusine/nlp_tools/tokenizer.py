@@ -20,7 +20,23 @@ def _create_flashtext_object():
     """
     keyword_processor = KeywordProcessor()
     # special characters are included as natively flashtext library does not handle them correctly
-    for separator in ['-', '_', '/', 'é', 'è', 'ê', 'â', 'ô', 'ö', 'ü', 'û', 'ù', 'ï', 'î', 'æ']:
+    for separator in [
+        "-",
+        "_",
+        "/",
+        "é",
+        "è",
+        "ê",
+        "â",
+        "ô",
+        "ö",
+        "ü",
+        "û",
+        "ù",
+        "ï",
+        "î",
+        "æ",
+    ]:
         keyword_processor.add_non_word_boundary(separator)
     return keyword_processor
 
@@ -61,11 +77,13 @@ class Tokenizer(BaseEstimator, TransformerMixin):
 
     """
 
-    def __init__(self,
-                 input_column='clean_text',
-                 stopwords=stopwords,
-                 stop_removal=True,
-                 n_jobs=20):
+    def __init__(
+        self,
+        input_column="clean_text",
+        stopwords=stopwords,
+        stop_removal=True,
+        n_jobs=20,
+    ):
         self.input_column = input_column
         self.stopwords = set(stopwords)
         self.stop_removal = stop_removal
@@ -80,16 +98,16 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         avoid the pickling of the logger
         """
         d = self.__dict__.copy()
-        d['n_jobs'] = 1
-        if 'logger' in d:
-            d['logger'] = d['logger'].name
+        d["n_jobs"] = 1
+        if "logger" in d:
+            d["logger"] = d["logger"].name
         return d
 
     def __setstate__(self, d):
         """To override the default pickling behavior and
         avoid the pickling of the logger"""
-        if 'logger' in d:
-            d['logger'] = logging.getLogger(d['logger'])
+        if "logger" in d:
+            d["logger"] = logging.getLogger(d["logger"])
         self.__dict__.update(d)
 
     def fit(self, X, y=None):
@@ -109,17 +127,17 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         -------
         pandas.DataFrame
         """
-        self.logger.debug('Start transform tokenizing')
+        self.logger.debug("Start transform tokenizing")
 
         if isinstance(X, dict):
             apply_func = TransformerScheduler.apply_dict
         else:
             apply_func = TransformerScheduler.apply_pandas
 
-        X['tokens'] = apply_func(X, self.tokenize)
-        X['tokens'] = apply_func(X, lambda x: x['tokens'][0])
+        X["tokens"] = apply_func(X, self.tokenize)
+        X["tokens"] = apply_func(X, lambda x: x["tokens"][0])
 
-        self.logger.debug('Done.')
+        self.logger.debug("Done.")
         return X
 
     def tokenize(self, row):
@@ -141,7 +159,7 @@ class Tokenizer(BaseEstimator, TransformerMixin):
     def _tokenize(self, text, pattern=regex_tokenize):
         """Returns list of tokens from text."""
         if isinstance(text, str):
-            tokens = re.findall(pattern, text, re.M+re.DOTALL)
+            tokens = re.findall(pattern, text, re.M + re.DOTALL)
             tokens = self._remove_stopwords(tokens)
         else:
             tokens = []
@@ -151,6 +169,10 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         """ Removes stopwords from list if stop_removal parameter
         set to True and replaces names by flag_name_"""
         if self.stop_removal:
-            return [self.name_flagger.replace_keywords(tok) for tok in list if tok not in stopwords]
+            return [
+                self.name_flagger.replace_keywords(tok)
+                for tok in list
+                if tok not in stopwords
+            ]
         else:
             return list

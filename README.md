@@ -23,6 +23,29 @@ Use **Melusine** if you need a library which :
 
 **Melusine** is compatible with `Python >= 3.5`.
 
+## Release Notes
+### 2.0
+New features:
+  * Attentive Neural Networks are now available. :tada: We propose you an original Transformer architecture as well 
+    as pre-trained BERT models (Camembert and Flaubert)
+  * Tutorial 13 will explain you how to get started with these models and attempt to compare them.
+  * Validation data can now be used to train models (See fit function from NeuralModel for usage)
+  * The activation function can now be modified to adapt to your needs (See NeuralModel init for usage)
+
+### 1.10.0
+Updates:
+  * Melusine is now running with Tensorflow 2.2
+    
+### 1.9.6
+
+New features:
+  * Flashtext library is now used to flag names instead of regex. It allows a faster computation.
+
+### 1.9.5
+
+New features:
+  * An Ethics Guide is now available to evaluate AI projects, with guidelines and questionnaire. The questionnaire is based on criteria derived in particular from the work of the European Commission and grouped by categories.
+  * Melusine also offers an easy and nice dashboard app with StreamLit. The App contains exploratory dashboard on the email dataset and a more specific study on discrimination between the dataset and a neural model classification.
 
 ## The Melusine package
 
@@ -205,6 +228,7 @@ df_email = keywords_generator.fit_transform(df_email)
 
 ### Classification
 
+The package includes multiple neural network architectures including CNN, RNN, Attentive and pre-trained BERT Networks.
 An example of classification is given below:
 ```python
 from sklearn.preprocessing import LabelEncoder

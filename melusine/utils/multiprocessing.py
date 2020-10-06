@@ -4,22 +4,30 @@ import pandas as pd
 from tqdm import tqdm
 from joblib import Parallel, delayed
 
+
 def apply_df(input_args):
     df, func, kwargs = input_args
     if "progress_bar" in kwargs:
-        progress_bar = kwargs.pop('progress_bar')
+        progress_bar = kwargs.pop("progress_bar")
     else:
         progress_bar = False
     if "args" in kwargs:
-        args_ = kwargs.pop('args')
+        args_ = kwargs.pop("args")
     else:
         args_ = None
     if progress_bar:
-        tqdm.pandas(leave=False, desc=func.__name__, unit='emails', dynamic_ncols=True, mininterval=2.0)
+        tqdm.pandas(
+            leave=False,
+            desc=func.__name__,
+            unit="emails",
+            dynamic_ncols=True,
+            mininterval=2.0,
+        )
         df = df.progress_apply(func, axis=1, args=args_)
     else:
         df = df.apply(func, axis=1, args=args_)
     return df
+
 
 def apply_by_multiprocessing(df, func, **kwargs):
     """Apply a function along an axis of the DataFrame using multiprocessing.
@@ -36,11 +44,13 @@ def apply_by_multiprocessing(df, func, **kwargs):
     pd.DataFrame
         Returns the DataFrame with the function applied.
     """
-    workers = kwargs.pop('workers')
-    workers = min(workers, int(df.shape[0]/2))
+    workers = kwargs.pop("workers")
+    workers = min(workers, int(df.shape[0] / 2))
     workers = max(workers, 1)
-    if (df.shape[0]==1) or (workers==1):
+    if (df.shape[0] == 1) or (workers == 1):
         return apply_df((df, func, kwargs))
-    retLst = Parallel(n_jobs=workers)(delayed(apply_df)(input_args=(d, func, kwargs)) for d in np.array_split(df, workers))
+    retLst = Parallel(n_jobs=workers)(
+        delayed(apply_df)(input_args=(d, func, kwargs))
+        for d in np.array_split(df, workers)
+    )
     return pd.concat(retLst)
-

@@ -14,8 +14,12 @@ from melusine.utils.multiprocessing import apply_by_multiprocessing
 def __check_function_type(func):
     """Check if it is a function-like object."""
     if not callable(func):
-        raise TypeError("First item of the tuple (func, args, cols) must be a function-like \
-object not a {} object".format(type(func)))
+        raise TypeError(
+            "First item of the tuple (func, args, cols) must be a function-like \
+object not a {} object".format(
+                type(func)
+            )
+        )
     else:
         return func
 
@@ -26,10 +30,14 @@ def __check_args_type(args):
         return None
     elif isinstance(args, int) or isinstance(args, str) or isinstance(args, list):
         # manage the case of 1 element in tuple (example: args=(4))
-        return (args, )
+        return (args,)
     elif not isinstance(args, tuple):
-        raise TypeError("Second item of the tuple (func, args, cols) must be tuple-like \
-object not a {} object".format(type(args)))
+        raise TypeError(
+            "Second item of the tuple (func, args, cols) must be tuple-like \
+object not a {} object".format(
+                type(args)
+            )
+        )
     else:
         return args
 
@@ -39,8 +47,12 @@ def __check_colnames_type(cols):
     if cols is None or cols == []:
         return None
     elif not isinstance(cols, list):
-        raise TypeError("Third item of the tuple (func, args, cols) must be list-like \
-object not a {} object".format(type(cols)))
+        raise TypeError(
+            "Third item of the tuple (func, args, cols) must be list-like \
+object not a {} object".format(
+                type(cols)
+            )
+        )
     else:
         return cols
 
@@ -108,17 +120,19 @@ class TransformerScheduler(BaseEstimator, TransformerMixin):
 
     """
 
-    def __init__(self,
-                 functions_scheduler,
-                 mode='apply',
-                 n_jobs=1,
-                 progress_bar=True,
-                 copy=True,
-                 verbose=0):
+    def __init__(
+        self,
+        functions_scheduler,
+        mode="apply",
+        n_jobs=1,
+        progress_bar=True,
+        copy=True,
+        verbose=0,
+    ):
         self.functions_scheduler = functions_scheduler
         self.mode = mode
         self.n_jobs = n_jobs
-        self.progress_bar=True
+        self.progress_bar = True
         self.copy = copy
         self.verbose = verbose
 
@@ -160,7 +174,7 @@ class TransformerScheduler(BaseEstimator, TransformerMixin):
                 X_ = X
 
             # Multiprocessing (or progress bar or both)
-            if self.mode == 'apply_by_multiprocessing':
+            if self.mode == "apply_by_multiprocessing":
                 apply_func = self.apply_pandas_multiprocessing
 
             # Single process (no progress bar)
@@ -170,7 +184,14 @@ class TransformerScheduler(BaseEstimator, TransformerMixin):
         for tuple_ in self.functions_scheduler:
             func_, args_, cols_ = _check_tuple(*tuple_)
 
-            X_ = apply_func(X_, func_, args_, cols_, n_jobs=self.n_jobs, progress_bar=self.progress_bar)
+            X_ = apply_func(
+                X_,
+                func_,
+                args_,
+                cols_,
+                n_jobs=self.n_jobs,
+                progress_bar=self.progress_bar,
+            )
 
         return X_
 
@@ -202,28 +223,36 @@ class TransformerScheduler(BaseEstimator, TransformerMixin):
         return X_
 
     @staticmethod
-    def apply_pandas_multiprocessing(X_, func_, args_=None, cols_=None, n_jobs=1, progress_bar=False, **kwargs):
+    def apply_pandas_multiprocessing(
+        X_, func_, args_=None, cols_=None, n_jobs=1, progress_bar=False, **kwargs
+    ):
         if cols_ is None:
-            X_ = apply_by_multiprocessing(df=X_,
-                                          func=func_,
-                                          args=args_,
-                                          axis=1,
-                                          workers=n_jobs,
-                                          progress_bar=progress_bar)
+            X_ = apply_by_multiprocessing(
+                df=X_,
+                func=func_,
+                args=args_,
+                axis=1,
+                workers=n_jobs,
+                progress_bar=progress_bar,
+            )
         elif len(cols_) == 1:
-            X_[cols_[0]] = apply_by_multiprocessing(df=X_,
-                                                    func=func_,
-                                                    args=args_,
-                                                    axis=1,
-                                                    workers=n_jobs,
-                                                    progress_bar=progress_bar)
+            X_[cols_[0]] = apply_by_multiprocessing(
+                df=X_,
+                func=func_,
+                args=args_,
+                axis=1,
+                workers=n_jobs,
+                progress_bar=progress_bar,
+            )
         else:
-            X_[cols_] = apply_by_multiprocessing(df=X_,
-                                                 func=func_,
-                                                 args=args_,
-                                                 axis=1,
-                                                 workers=n_jobs,
-                                                 progress_bar=progress_bar).apply(pd.Series)
+            X_[cols_] = apply_by_multiprocessing(
+                df=X_,
+                func=func_,
+                args=args_,
+                axis=1,
+                workers=n_jobs,
+                progress_bar=progress_bar,
+            ).apply(pd.Series)
         return X_
 
     @staticmethod

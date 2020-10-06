@@ -5,7 +5,8 @@ from melusine.config.config import ConfigJsonReader
 
 conf_reader = ConfigJsonReader()
 
-class Streamer():
+
+class Streamer:
     """Class to transform pd.Series into stream.
 
     Used to prepare the data for the training of the phraser and embeddings.
@@ -27,7 +28,7 @@ class Streamer():
 
     """
 
-    def __init__(self, stop_removal=False, column='clean_body', n_jobs=1):
+    def __init__(self, stop_removal=False, column="clean_body", n_jobs=1):
         self.column_ = column
         self.n_jobs = n_jobs
         config = conf_reader.get_config_file()
@@ -65,14 +66,14 @@ class Streamer():
         -------
         list of lists of strings
         """
-        tokenized_sentences_list = apply_by_multiprocessing(df=X[[self.column_]],
-                                                            func=lambda x: self.to_list_of_tokenized_sentences(x[self.column_]),
-                                                            args=None,
-                                                            workers=self.n_jobs,
-                                                            progress_bar=False
-                                                            )
-        flattoks = [item for sublist in tokenized_sentences_list
-                    for item in sublist]
+        tokenized_sentences_list = apply_by_multiprocessing(
+            df=X[[self.column_]],
+            func=lambda x: self.to_list_of_tokenized_sentences(x[self.column_]),
+            args=None,
+            workers=self.n_jobs,
+            progress_bar=False,
+        )
+        flattoks = [item for sublist in tokenized_sentences_list for item in sublist]
         return flattoks
 
     def to_list_of_tokenized_sentences(self, text):
@@ -87,15 +88,16 @@ class Streamer():
         -------
         list of list of strings
         """
-        #text = row[self.column_]
         sentences_list = split_message_to_sentences(text)
-        tokenized_sentences_list = [self.tokenizer._tokenize(sentence)
-                                    for sentence in sentences_list
-                                    if sentence != ""]
+        tokenized_sentences_list = [
+            self.tokenizer._tokenize(sentence)
+            for sentence in sentences_list
+            if sentence != ""
+        ]
         return tokenized_sentences_list
 
 
-class MailIterator():
+class MailIterator:
     """Class to transform stream of tokens into iterators."""
 
     def __init__(self, tok_stream):

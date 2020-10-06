@@ -605,6 +605,43 @@ The specific parameters of the :ref:`NeuralModel <train>` class are:
     - ``batch_size`` : size of batches for the training of the neural network model
     - ``n_epochs`` : number of epochs for the training of the neural network model
 
+We integrate 3 main classifier neural networks, respectively recurrent, convolutional and attentive.
+Each of the proposed architecture employs a distinct mathematical operation.
+
+Recurrent Neural Network Classifier (RNN)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RNN are traditionally used with textual data as they are specifically designed to handle sequentially structured data. Inputs are sequentially computed given a cell operation, generally a LSTM or GRU cell. at each step, the current input as well as the output from the previous step are used to compute the next hidden state. The proposed architecture includes a 2-layers bidirectional GRU networks. The network last hidden state is used as the final sentence embedding.
+
+.. image:: ./_static/rnn-model.png
+  :align: center
+  :scale: 50%
+
+Convolutional Neural Network Classifier (CNN)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+CNN uses multiple filters to distinguish patterns in data. Such filters are assembled across the hidden layers to build more complex patterns and structures. The last layer should therefor capture a global and generic representation of the data. In our architecture, we use a two hidden layers CNN with respectively 200 filters for each hidden layer. The last hidden states are aggregated using a max pooling operation.
+
+.. image:: ./_static/cnn-model.png
+  :align: center
+  :scale: 50%
+
+Attentive Neural Network Classifier
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Attentive-based neural networks are fairly new in the NLP community but results are extremely promising. They rely on the self-attention operation which computes hidden states as a weighted sum from the inputs. As the multiple filters in the CNN architecture, the multi-branch attention aggregate multiple attention operation to capture various properties from the input. Such operation is easily perform on GPU infrastructure. We propose an architecture inspired from previously introduced RNN and CNN architecture with a two layers multi-branch attention module follow by a max pooling operation.
+
+.. image:: ./_static/transformer-model.png
+  :align: center
+  :scale: 50%
+
+BERT Neural Network Classifier
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+We also propose a wrap-up for the popular pre-trained bert architecture.
+Bidirectional Encoder Representations from Transformers (BERT) take into account the context for each occurrence of a given word and will provide a contextualized embedding that will be different according to the sentence. However, we only use the first word embedding, usually called the classification token in our classifier model.
+We made available the two trending French models Camembert and Flaubert.
+
+.. image:: ./_static/bert-model.png
+  :align: center
+  :scale: 50%
+
 Use a custom config file
 ------------------------
 
@@ -658,12 +695,12 @@ Use a custom name file
 
 While working with text data, names might undergo specific processing:
 
-- stopword processing : if names are irrelevant, they may be discarded during the text processing
-- flagging : if the information that the text contains a name is relevant but the name itself is irrelevant, names may be replaced with a name_flag (bob -> flag_name)
+- stopword processing : if names don't need to be identified, they may be discarded during the text processing
+- flagging : if names need to be identified but not specifically, names may be replaced with a name_flag (bob -> flag_name)
 
 By default, Melusine identifies names using an explicit list of names available in a file ('melusine/config/names.csv').
-The default name list comes from a name dataset publicly available on the french government `website <https://https://www.data.gouv.fr/fr/datasets/ficher-des-prenoms-de-1900-a-2017>`_.
-This list contains first names given to children (french or not) born in France between 1900 and 2017.
+The default name list was adapted from a name dataset publicly available on the french government `website <https://www.data.gouv.fr/fr/datasets/ficher-des-prenoms-de-1900-a-2018/>`_.
+This list contains first names given to children (french or not) born in France between 1900 and 2018.
 
 Melusine users may specify a **custom name list** using a **custom 'names.csv' file**.
 
