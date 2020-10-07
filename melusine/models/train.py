@@ -422,7 +422,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         else:
             sequence = X["clean_text"].values.tolist()
         seqs = self.tokenizer.batch_encode_plus(
-            sequence, max_length=100, pad_to_max_length=True
+            sequence, max_length=self.seq_size, pad_to_max_length=True
         )
 
         return (

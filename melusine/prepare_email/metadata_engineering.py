@@ -246,4 +246,5 @@ class Dummifier(BaseEstimator, TransformerMixin):
             X_ = X_.T.reindex(self.dummy_features).T.fillna(0)
             return X_[self.dummy_features].to_dict(orient="records")[0]
         else:
+            X_ = X_.T.reindex(self.dummy_features).T.fillna(0)
             return X_[self.dummy_features]
