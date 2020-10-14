@@ -418,9 +418,9 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         """
 
         if isinstance(X, dict):
-            sequence = X["clean_text"]
+            sequence = X[self.text_input_column]
         else:
-            sequence = X["clean_text"].values.tolist()
+            sequence = X[self.text_input_column].values.tolist()
         seqs = self.tokenizer.batch_encode_plus(
             sequence, max_length=self.seq_size, pad_to_max_length=True
         )
