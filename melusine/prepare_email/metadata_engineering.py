@@ -207,16 +207,18 @@ class Dummifier(BaseEstimator, TransformerMixin):
                 "You should not use fit on a dictionary object. Use a DataFrame"
             )
         
-        if ("attachment_type" in self.columns_to_dummify):
-            self.X_attachment = pd.get_dummies(X["attachment_type"].apply(pd.Series).stack().astype(int)).sum(level=0)
-            self.X_attachment = self.X_attachment.add_prefix('attachment_type__')
-
         self.X_ = pd.get_dummies(
             X, columns=[col for col in self.columns_to_dummify if col!="attachment_type"], prefix_sep="__", dummy_na=False
         )
 
         dummies_ = tuple([col + "__" for col in self.columns_to_dummify])
-        self.dummy_features = [c for c in pd.concat([X_,X_attachment],axis=1) if c.startswith(dummies_)]
+
+        if ("attachment_type" in self.columns_to_dummify):
+            self.X_attachment = pd.get_dummies(X["attachment_type"].apply(pd.Series).stack().astype(int)).sum(level=0)
+            self.X_attachment = self.X_attachment.add_prefix('attachment_type__')
+            self.dummy_features = [c for c in pd.concat([self.X_,self.X_attachment],axis=1) if c.startswith(dummies_)]
+        else:
+            self.dummy_features = [c for c in self.X_ if c.startswith(dummies_)]
 
         return self
 
