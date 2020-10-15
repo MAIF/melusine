@@ -207,18 +207,18 @@ class Dummifier(BaseEstimator, TransformerMixin):
                 "You should not use fit on a dictionary object. Use a DataFrame"
             )
         
-        self.X_ = pd.get_dummies(
+        X_ = pd.get_dummies(
             X, columns=[col for col in self.columns_to_dummify if col!="attachment_type"], prefix_sep="__", dummy_na=False
         )
 
         dummies_ = tuple([col + "__" for col in self.columns_to_dummify])
 
         if ("attachment_type" in self.columns_to_dummify):
-            self.X_attachment = pd.get_dummies(X["attachment_type"].apply(pd.Series).stack().astype(int)).sum(level=0)
-            self.X_attachment = self.X_attachment.add_prefix('attachment_type__')
-            self.dummy_features = [c for c in pd.concat([self.X_,self.X_attachment],axis=1) if c.startswith(dummies_)]
+            X_attachment = pd.get_dummies(X["attachment_type"].apply(pd.Series).stack().astype(int)).sum(level=0)
+            X_attachment = X_attachment.add_prefix('attachment_type__')
+            self.dummy_features = [c for c in pd.concat([X_,X_attachment],axis=1) if c.startswith(dummies_)]
         else:
-            self.dummy_features = [c for c in self.X_ if c.startswith(dummies_)]
+            self.dummy_features = [c for c in X_ if c.startswith(dummies_)]
 
         return self
 
@@ -246,8 +246,14 @@ class Dummifier(BaseEstimator, TransformerMixin):
                 X_ = X
 
         X_ = pd.get_dummies(
-            X_, columns=self.columns_to_dummify, prefix_sep="__", dummy_na=False,
+            X, columns=[col for col in self.columns_to_dummify if col!="attachment_type"], prefix_sep="__", dummy_na=False
         )
+
+        if ("attachment_type" in self.columns_to_dummify):
+            X_attachment = pd.get_dummies(X["attachment_type"].apply(pd.Series).stack().astype(int)).sum(level=0)
+            X_attachment = X_attachment.add_prefix('attachment_type__')
+            X_ = pd.concat([X_,X_attachment],axis=1)
+
 
         if return_dict:
             X_ = X_.T.reindex(self.dummy_features).T.fillna(0)
@@ -343,5 +349,8 @@ class MetaAttachmentType(BaseEstimator, TransformerMixin):
 
 X = pd.Series([["test1.pdf","test2.xlsx"],[],["test.txt"],["test.txt","test.pdf"]])
 X = pd.DataFrame(X, columns=['attachment'])
+X["extension"]=[0,1,0,2]
 p = MetaAttachmentType()
 X = p.fit_transform(X)
+d = Dummifier(columns_to_dummify=['extension','attachment_type'])
+X_meta = d.fit_transform(X)
