@@ -246,11 +246,11 @@ class Dummifier(BaseEstimator, TransformerMixin):
                 X_ = X
 
         X_ = pd.get_dummies(
-            X, columns=[col for col in self.columns_to_dummify if col!="attachment_type"], prefix_sep="__", dummy_na=False
+            X_, columns=[col for col in self.columns_to_dummify if col!="attachment_type"], prefix_sep="__", dummy_na=False
         )
 
         if ("attachment_type" in self.columns_to_dummify):
-            X_attachment = pd.get_dummies(X["attachment_type"].apply(pd.Series).stack().astype(int)).sum(level=0)
+            X_attachment = pd.get_dummies(X_["attachment_type"].apply(pd.Series).stack().astype(int)).sum(level=0)
             X_attachment = X_attachment.add_prefix('attachment_type__')
             X_ = pd.concat([X_,X_attachment],axis=1)
 
@@ -344,13 +344,3 @@ class MetaAttachmentType(BaseEstimator, TransformerMixin):
         else : #No attachments
             encode.append("none") 
         return encode
-
-
-
-X = pd.Series([["test1.pdf","test2.xlsx"],[],["test.txt"],["test.txt","test.pdf"]])
-X = pd.DataFrame(X, columns=['attachment'])
-X["extension"]=[0,1,0,2]
-p = MetaAttachmentType()
-X = p.fit_transform(X)
-d = Dummifier(columns_to_dummify=['extension','attachment_type'])
-X_meta = d.fit_transform(X)
