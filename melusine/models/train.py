@@ -148,7 +148,9 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         """Save model to pickle, json and save weights to .h5."""
         json_model = self.model.to_json()
         open(filepath + ".json", "w").write(json_model)
-        self.model.save_weights(filepath + "_model_weights.h5", overwrite=True)
+        # tf 2.3
+        self.model.save(filepath + "_model_weights.h5", save_format="h5")
+        #self.model.save_weights(filepath + "_model_weights.h5", overwrite=True)
         pass
 
     def load_nn_model(self, filepath):
