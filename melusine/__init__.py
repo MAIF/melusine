@@ -2,4 +2,4 @@
 
 __author__ = """Sacha Samama & Tom Stringer & Hugo Perrier"""
 __email__ = "ssamama@quantmetry.com, tstringer@quantmetry.com, hperrier@quantmetry.com"
-__version__ = "2.0.4"
+__version__ = "2.1.0"
