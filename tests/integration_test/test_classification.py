@@ -1,6 +1,7 @@
 import pandas as pd
 import copy
 import os
+import ast
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder
 
@@ -26,6 +27,7 @@ from melusine.summarizer.keywords_generator import KeywordsGenerator
 
 from melusine.prepare_email.metadata_engineering import MetaExtension
 from melusine.prepare_email.metadata_engineering import MetaDate
+from melusine.prepare_email.metadata_engineering import MetaAttachmentType
 from melusine.prepare_email.metadata_engineering import Dummifier
 
 from melusine.models.neural_architectures import cnn_model
@@ -107,11 +109,13 @@ def test_classification():
         [
             ("MetaExtension", MetaExtension()),
             ("MetaDate", MetaDate()),
+            ("MetaAttachmentType", MetaAttachmentType()),
             ("Dummifier", Dummifier()),
         ]
     )
 
     # ============== Transform MetaData ==============
+    input_df['attachment'] = input_df['attachment'].apply(ast.literal_eval)
     df_meta = MetadataPipeline.fit_transform(input_df)
 
     # ============== Keywords Generator ==============
@@ -132,7 +136,7 @@ def test_classification():
         architecture_function=cnn_model,
         pretrained_embedding=pretrained_embedding,
         text_input_column="clean_body",
-        meta_input_list=["extension", "dayofweek", "hour", "min"],
+        meta_input_list=["extension", "dayofweek", "hour", "min", "attachment_type"],
         n_epochs=2,
     )
 
