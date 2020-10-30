@@ -217,7 +217,7 @@ def tag_parts_message(text):
     sentence_list = split_message_to_sentences(text)
     tagged_sentence_list = []
     for sentence in sentence_list:
-        tagged_sentence = tag_sentence(sentence)
+        tagged_sentence = tag_sentence(sentence.strip())
         tagged_sentence_list.extend(tagged_sentence)
     tagged_parts_list = _merge_parts(tagged_sentence_list)
     tagged_parts_list = _remove_empty_parts(tagged_parts_list)
