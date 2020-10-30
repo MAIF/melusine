@@ -237,7 +237,7 @@ def split_message_to_sentences(text, sep_=r"(.*?[;.,?!])"):
     text = re.sub(regex3, regex4, text)  # remove double punctuation
     sentence_list = re.findall(regex_pattern, text, flags=re.M)
     sentence_list = [
-        r for s in sentence_list for r in re.split(regex_piece_jointe, s) if r
+        r.strip() for s in sentence_list for r in re.split(regex_piece_jointe, s) if r
     ]
 
     return sentence_list

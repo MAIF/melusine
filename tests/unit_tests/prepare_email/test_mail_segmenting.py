@@ -24,11 +24,11 @@ output = [
         "structured_text": {
             "header": None,
             "text": [
-                {"part": " Bonjours, ", "tags": "HELLO"},
+                {"part": "Bonjours,", "tags": "HELLO"},
                 {
-                    "part": "    Suite a notre conversation \
-téléphonique de Mardi , pourriez vous me dire la   somme que je vous dois \
-afin d'd'être en régularisation . \n  \n ",
+                    "part": " Suite a notre conversation \
+téléphonique de Mardi , pourriez vous me dire la somme que je vous dois \
+afin d'd'être en régularisation .",
                     "tags": "BODY",
                 },
                 {"part": "Merci bonne journée", "tags": "GREETINGS"},
@@ -44,18 +44,18 @@ afin d'd'être en régularisation . \n  \n ",
         "structured_text": {
             "header": None,
             "text": [
-                {"part": " Bonjour. \n  \n ", "tags": "HELLO"},
+                {"part": "Bonjour.", "tags": "HELLO"},
                 {
                     "part": "Merci de bien vouloir prendre \
-connaissance du document ci-joint :   1 - Relevé d'identité postal MUTUELLE \
-(contrats)    ",
+connaissance du document ci-joint : 1 - Relevé d'identité postal MUTUELLE \
+(contrats) ",
                     "tags": "BODY",
                 },
-                {"part": " Sentiments mutualistes. ", "tags": "GREETINGS"},
-                {"part": "        La Mutuelle    ", "tags": "BODY"},
+                {"part": "Sentiments mutualistes.", "tags": "GREETINGS"},
+                {"part": "La Mutuelle ", "tags": "BODY"},
                 {
-                    "part": " La visualisation des fichiers \
-PDF nécessite Adobe Reader. \n",
+                    "part": "La visualisation des fichiers \
+PDF nécessite Adobe Reader.",
                     "tags": "FOOTER",
                 },
             ],
@@ -96,11 +96,11 @@ output_signature = [
         "structured_text": {
             "header": None,
             "text": [
-                {"part": " Bonjours, ", "tags": "HELLO"},
+                {"part": "Bonjours,", "tags": "HELLO"},
                 {
-                    "part": "    Suite a notre conversation \
-téléphonique de Mardi , pourriez vous me dire la   somme que je vous dois \
-afin d'd'être en régularisation . \n  \n ",
+                    "part": " Suite a notre conversation \
+téléphonique de Mardi , pourriez vous me dire la somme que je vous dois \
+afin d'd'être en régularisation .",
                     "tags": "BODY",
                 },
                 {"part": "Merci bonne journée", "tags": "GREETINGS"},
@@ -117,17 +117,17 @@ afin d'd'être en régularisation . \n  \n ",
         "structured_text": {
             "header": None,
             "text": [
-                {"part": " Bonjour. \n  \n ", "tags": "HELLO"},
+                {"part": "Bonjour.", "tags": "HELLO"},
                 {
                     "part": "Merci de bien vouloir prendre \
-connaissance du document ci-joint :   1 - Relevé d'identité postal MUTUELLE \
-(contrats)    ",
+connaissance du document ci-joint : 1 - Relevé d'identité postal MUTUELLE \
+(contrats) ",
                     "tags": "BODY",
                 },
-                {"part": " Sentiments mutualistes. ", "tags": "GREETINGS"},
-                {"part": "        La Mutuelle    ", "tags": "BODY"},
+                {"part": "Sentiments mutualistes.", "tags": "GREETINGS"},
+                {"part": "La Mutuelle ", "tags": "BODY"},
                 {
-                    "part": " La visualisation des fichiers PDF nécessite Adobe Reader. \n",
+                    "part": "La visualisation des fichiers PDF nécessite Adobe Reader.",
                     "tags": "FOOTER",
                 },
             ],
