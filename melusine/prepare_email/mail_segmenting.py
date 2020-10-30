@@ -217,7 +217,7 @@ def tag_parts_message(text):
     sentence_list = split_message_to_sentences(text)
     tagged_sentence_list = []
     for sentence in sentence_list:
-        tagged_sentence = tag_sentence(sentence.strip())
+        tagged_sentence = tag_sentence(sentence)
         tagged_sentence_list.extend(tagged_sentence)
     tagged_parts_list = _merge_parts(tagged_sentence_list)
     tagged_parts_list = _remove_empty_parts(tagged_parts_list)
@@ -237,7 +237,7 @@ def split_message_to_sentences(text, sep_=r"(.*?[;.,?!])"):
     text = re.sub(regex3, regex4, text)  # remove double punctuation
     sentence_list = re.findall(regex_pattern, text, flags=re.M)
     sentence_list = [
-        r for s in sentence_list for r in re.split(regex_piece_jointe, s) if r
+        r.strip() for s in sentence_list for r in re.split(regex_piece_jointe, s) if r
     ]
 
     return sentence_list
