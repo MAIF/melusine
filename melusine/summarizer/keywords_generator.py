@@ -163,7 +163,10 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
 
         # return vetorizer with binary term frequency atribute
         self.dict_scores_ = dict(
-            zip(self.tfidf_vectorizer.get_feature_names(), self.tfidf_vectorizer.idf_,)
+            zip(
+                self.tfidf_vectorizer.get_feature_names(),
+                self.tfidf_vectorizer.idf_,
+            )
         )
         self.max_score_ = np.max(self.tfidf_vectorizer.idf_)
 

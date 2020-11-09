@@ -115,7 +115,7 @@ def test_classification():
     )
 
     # ============== Transform MetaData ==============
-    input_df['attachment'] = input_df['attachment'].apply(ast.literal_eval)
+    input_df["attachment"] = input_df["attachment"].apply(ast.literal_eval)
     df_meta = MetadataPipeline.fit_transform(input_df)
 
     # ============== Keywords Generator ==============

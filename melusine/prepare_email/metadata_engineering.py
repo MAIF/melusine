@@ -2,7 +2,7 @@ import re
 import copy
 import pandas as pd
 from collections import Counter
-from  itertools import chain
+from itertools import chain
 from sklearn import preprocessing
 from sklearn.base import BaseEstimator, TransformerMixin
 from melusine.utils.transformer_scheduler import TransformerScheduler
@@ -120,8 +120,7 @@ class MetaDate(BaseEstimator, TransformerMixin):
         }
 
     def fit(self, X, y=None):
-        """Unused method. Defined only for compatibility with scikit-learn API.
-        """
+        """Unused method. Defined only for compatibility with scikit-learn API."""
         return self
 
     def transform(self, X):
@@ -191,7 +190,9 @@ class Dummifier(BaseEstimator, TransformerMixin):
     """
 
     def __init__(
-        self, columns_to_dummify=["extension", "dayofweek", "hour", "min", "attachment_type"], copy=True,
+        self,
+        columns_to_dummify=["extension", "dayofweek", "hour", "min", "attachment_type"],
+        copy=True,
     ):
         self.columns_to_dummify = columns_to_dummify
         self.copy = copy
@@ -206,25 +207,35 @@ class Dummifier(BaseEstimator, TransformerMixin):
             raise TypeError(
                 "You should not use fit on a dictionary object. Use a DataFrame"
             )
-        
+
         X_ = pd.get_dummies(
-            X, columns=[col for col in self.columns_to_dummify if col!="attachment_type"], prefix_sep="__", dummy_na=False
+            X,
+            columns=[
+                col for col in self.columns_to_dummify if col != "attachment_type"
+            ],
+            prefix_sep="__",
+            dummy_na=False,
         )
 
         dummies_ = tuple([col + "__" for col in self.columns_to_dummify])
 
-        if ("attachment_type" in self.columns_to_dummify):
-            X_attachment = pd.get_dummies(X["attachment_type"].apply(pd.Series).stack().astype(int)).sum(level=0)
-            X_attachment = X_attachment.add_prefix('attachment_type__')
-            self.dummy_features = [c for c in pd.concat([X_,X_attachment],axis=1) if c.startswith(dummies_)]
+        if "attachment_type" in self.columns_to_dummify:
+            X_attachment = pd.get_dummies(
+                X["attachment_type"].apply(pd.Series).stack().astype(int)
+            ).sum(level=0)
+            X_attachment = X_attachment.add_prefix("attachment_type__")
+            self.dummy_features = [
+                c
+                for c in pd.concat([X_, X_attachment], axis=1)
+                if c.startswith(dummies_)
+            ]
         else:
             self.dummy_features = [c for c in X_ if c.startswith(dummies_)]
 
         return self
 
     def transform(self, X, y=None):
-        """Dummify features and keep only common labels with pretrained data.
-        """
+        """Dummify features and keep only common labels with pretrained data."""
         return_dict = False
 
         # Case input is a dict
@@ -246,14 +257,20 @@ class Dummifier(BaseEstimator, TransformerMixin):
                 X_ = X
 
         X_ = pd.get_dummies(
-            X_, columns=[col for col in self.columns_to_dummify if col!="attachment_type"], prefix_sep="__", dummy_na=False
+            X_,
+            columns=[
+                col for col in self.columns_to_dummify if col != "attachment_type"
+            ],
+            prefix_sep="__",
+            dummy_na=False,
         )
 
-        if ("attachment_type" in self.columns_to_dummify):
-            X_attachment = pd.get_dummies(X_["attachment_type"].apply(pd.Series).stack().astype(int)).sum(level=0)
-            X_attachment = X_attachment.add_prefix('attachment_type__')
-            X_ = pd.concat([X_,X_attachment],axis=1)
-
+        if "attachment_type" in self.columns_to_dummify:
+            X_attachment = pd.get_dummies(
+                X_["attachment_type"].apply(pd.Series).stack().astype(int)
+            ).sum(level=0)
+            X_attachment = X_attachment.add_prefix("attachment_type__")
+            X_ = pd.concat([X_, X_attachment], axis=1)
 
         if return_dict:
             X_ = X_.T.reindex(self.dummy_features).T.fillna(0)
@@ -261,6 +278,7 @@ class Dummifier(BaseEstimator, TransformerMixin):
         else:
             X_ = X_.T.reindex(self.dummy_features).T.fillna(0)
             return X_[self.dummy_features]
+
 
 class MetaAttachmentType(BaseEstimator, TransformerMixin):
     """Transformer which creates 'type' feature extracted
@@ -301,9 +319,13 @@ class MetaAttachmentType(BaseEstimator, TransformerMixin):
             X, self.encode_type, args_=(self.top_attachment_type,)
         )
         if isinstance(X["attachment_type"], list):
-            X["attachment_type"] = self.le_extension.transform([X["attachment_type"]])[0]
+            X["attachment_type"] = self.le_extension.transform([X["attachment_type"]])[
+                0
+            ]
         else:
-            X["attachment_type"] = [self.le_extension.transform(t) for t in X["attachment_type"]]
+            X["attachment_type"] = [
+                self.le_extension.transform(t) for t in X["attachment_type"]
+            ]
         return X
 
     @staticmethod
@@ -341,6 +363,6 @@ class MetaAttachmentType(BaseEstimator, TransformerMixin):
                     encode.append(attachment)
                 else:
                     encode.append("other")
-        else : #No attachments
-            encode.append("none") 
+        else:  # No attachments
+            encode.append("none")
         return encode

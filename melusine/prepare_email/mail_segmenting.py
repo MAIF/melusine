@@ -84,7 +84,7 @@ regex_flags_dict = REGEX_CLEAN["flags_dict"]
 
 
 def structure_email(row):
-    """ 1. Splits parts of each messages in historic and tags them.
+    """1. Splits parts of each messages in historic and tags them.
     For example a tag can be hello, body, greetings etc
     2. Extracts the meta informations of each messages
 
@@ -124,7 +124,7 @@ def structure_email(row):
 
 
 def structure_message(message):
-    """ Splits parts of a message and tags them.
+    """Splits parts of a message and tags them.
     For example a tag can be hello, body, greetings etc
     Extracts the meta informations of the message
 
@@ -149,7 +149,7 @@ def structure_message(message):
 
 
 def structure_meta(meta):
-    """ Extract meta informations (date, from, to, header) from string meta
+    """Extract meta informations (date, from, to, header) from string meta
 
     Parameters
     ----------
@@ -199,7 +199,7 @@ def _find_meta(regex, message):
 
 
 def tag_parts_message(text):
-    """ Splits message into sentences, tags them and merges two sentences in a
+    """Splits message into sentences, tags them and merges two sentences in a
     row having the same tag.
 
     Parameters
@@ -244,7 +244,7 @@ def split_message_to_sentences(text, sep_=r"(.*?[;.,?!])"):
 
 
 def tag_sentence(sentence, default="BODY"):
-    """ Tag a sentence.
+    """Tag a sentence.
     If the sentence cannot be tagged it will tag the subsentences
 
     Parameters
@@ -267,7 +267,7 @@ def tag_sentence(sentence, default="BODY"):
 
 
 def _tag_subsentence(sentence, default="BODY"):
-    """ Tags the subsentences in a sentence.
+    """Tags the subsentences in a sentence.
     If the subsentences cannot be tagged it will return the whole sentence with
     a default tag.
 
@@ -300,7 +300,7 @@ def _tag_subsentence(sentence, default="BODY"):
 
 
 def tag(string):
-    """ Tags a string.
+    """Tags a string.
 
     Parameters
     ----------
@@ -363,8 +363,8 @@ def _remove_empty_parts(tagged_parts_list):
 
 
 def _update_typo_parts(tagged_parts_list):
-    """ Update the tagging for all the typo parts in the list of
-    tagged parts """
+    """Update the tagging for all the typo parts in the list of
+    tagged parts"""
     tagged_parts_list = [
         _update_typo_part(part_tag_tuple) for part_tag_tuple in tagged_parts_list
     ]
