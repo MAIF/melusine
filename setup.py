@@ -19,11 +19,12 @@ requirements = [
     "streamlit>=0.57.3",
     "tensorflow>=2.0.0",
     "unidecode",
-    "joblib",
     "flashtext>=2.7",
     "plotly",
-    "transformers==2.11.0",
-    "numpy>=1.16.0",
+    "transformers==3.4.0",
+    "h5py==2.10.0",
+    "numpy>=1.16.4,<1.19.0",
+    "joblib",
 ]
 
 setup_requirements = [

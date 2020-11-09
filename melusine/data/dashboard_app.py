@@ -223,7 +223,8 @@ def discrimination():
     label_counter = Counter()
     error_counter = Counter()
     for label, error in zip(
-        df_emails_preprocessed["label"], df_emails_preprocessed["prediction_error"],
+        df_emails_preprocessed["label"],
+        df_emails_preprocessed["prediction_error"],
     ):
         label_counter.update([label])
         if error == 1:
@@ -249,7 +250,8 @@ def discrimination():
     error_counter = Counter()
     sex_counter = Counter()
     for sex, error in zip(
-        df_emails_preprocessed["sexe"], df_emails_preprocessed["prediction_error"],
+        df_emails_preprocessed["sexe"],
+        df_emails_preprocessed["prediction_error"],
     ):
         sex_counter.update([sex])
         if error == 1:
@@ -291,7 +293,9 @@ def discrimination():
     status_text.text("Build graphs %i" % i)
     st.write("### Error rate in regards of the complexity of body sentences")
     fig_mw = px.histogram(
-        df_emails_preprocessed, x="mean_words_per_sentence", color="prediction_error",
+        df_emails_preprocessed,
+        x="mean_words_per_sentence",
+        color="prediction_error",
     )
     fig_mw.update_layout(barmode="group")
     st.plotly_chart(fig_mw)

@@ -55,7 +55,11 @@ def print_color(text, part=None):
 
     if part in switcher.keys():
         print(
-            "> ", switcher_tag.get(part, text), " : ", switcher.get(part, text), "\n",
+            "> ",
+            switcher_tag.get(part, text),
+            " : ",
+            switcher.get(part, text),
+            "\n",
         )
     else:
         print("> BODY : ", switcher.get(part, text), "\n")

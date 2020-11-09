@@ -173,9 +173,10 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
             self.seed_dict, self.seed_list = self.compute_seeds_from_root(
                 embedding, self.base_seed_words
             )
-            (self.anti_seed_dict, self.anti_seed_list,) = self.compute_seeds_from_root(
-                embedding, self.base_anti_seed_words
-            )
+            (
+                self.anti_seed_dict,
+                self.anti_seed_list,
+            ) = self.compute_seeds_from_root(embedding, self.base_anti_seed_words)
 
         # self.seed_list = [token for token in self.seed_list if token in embedding.embedding.vocab.keys()]
 
@@ -279,7 +280,10 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
 
         """
         X[return_column] = apply_by_multiprocessing(
-            X, self.rate_email, workers=self.n_jobs, progress_bar=self.progress_bar,
+            X,
+            self.rate_email,
+            workers=self.n_jobs,
+            progress_bar=self.progress_bar,
         )
 
         return X

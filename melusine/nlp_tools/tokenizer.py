@@ -111,8 +111,7 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         self.__dict__.update(d)
 
     def fit(self, X, y=None):
-        """Unused method. Defined only for compatibility with scikit-learn API.
-        """
+        """Unused method. Defined only for compatibility with scikit-learn API."""
         return self
 
     def transform(self, X):
@@ -166,7 +165,7 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         return tokens
 
     def _remove_stopwords(self, list):
-        """ Removes stopwords from list if stop_removal parameter
+        """Removes stopwords from list if stop_removal parameter
         set to True and replaces names by flag_name_"""
         if self.stop_removal:
             return [

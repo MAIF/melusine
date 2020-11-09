@@ -1,5 +1,6 @@
 import ast
 import numpy as np
+import pickle
 
 from collections import Counter
 from sklearn.base import BaseEstimator, ClassifierMixin
@@ -9,6 +10,7 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import TensorBoard
 from transformers import CamembertTokenizer, XLMTokenizer
+from transformers import TFCamembertModel, TFFlaubertModel
 
 from melusine.config.config import ConfigJsonReader
 from melusine.nlp_tools.tokenizer import Tokenizer
@@ -143,26 +145,51 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         self.batch_size = batch_size
         self.n_epochs = n_epochs
         self.bert_model = bert_model
+        self.nb_labels = 0
+        self.nb_meta_features = 0
+        self.vocabulary = []
+        self.vocabulary_dict = {}
 
     def save_nn_model(self, filepath):
         """Save model to pickle, json and save weights to .h5."""
-        json_model = self.model.to_json()
-        open(filepath + ".json", "w").write(json_model)
-        self.model.save_weights(filepath + "_model_weights.h5", overwrite=True)
+
+        if self.architecture_function.__name__ != "bert_model":
+            json_model = self.model.to_json()
+            open(filepath + ".json", "w").write(json_model)
+            self.model.save_weights(filepath + "_model_weights.h5", overwrite=True)
+        else:
+            with open(filepath + "bert_params.pkl", "wb") as f:
+                pickle.dump([self.nb_labels, self.nb_meta_features], f)
+            self.model.save_weights(filepath + "_model_weights", overwrite=True)
         pass
 
     def load_nn_model(self, filepath):
         """Save model from json and load weights from .h5."""
-        model = model_from_json(
-            open(filepath + ".json").read(),
-            custom_objects={
-                "PositionalEncoding": PositionalEncoding,
-                "TransformerEncoderLayer": TransformerEncoderLayer,
-                "MultiHeadAttention": MultiHeadAttention,
-            },
-        )
-        model.load_weights(filepath + "_model_weights.h5")
-        model.compile(optimizer=Adam(), loss=self.loss, metrics=["accuracy"])
+
+        if self.architecture_function.__name__ != "bert_model":
+            model = model_from_json(
+                open(filepath + ".json").read(),
+                custom_objects={
+                    "PositionalEncoding": PositionalEncoding,
+                    "TransformerEncoderLayer": TransformerEncoderLayer,
+                    "MultiHeadAttention": MultiHeadAttention,
+                },
+            )
+            model.load_weights(filepath + "_model_weights.h5")
+            model.compile(optimizer=Adam(), loss=self.loss, metrics=["accuracy"])
+        else:
+            with open(filepath + "bert_params.pkl", "rb") as f:
+                nb_labels, nb_meta_features = pickle.load(f)
+            model = self.architecture_function(
+                ntargets=nb_labels,
+                seq_max=self.seq_size,
+                nb_meta=nb_meta_features,
+                loss=self.loss,
+                activation=self.activation,
+                bert_model=self.bert_model,
+            )
+            model.load_weights(filepath + "_model_weights")
+
         self.model = model
         pass
 
@@ -422,7 +449,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         else:
             sequence = X[self.text_input_column].values.tolist()
         seqs = self.tokenizer.batch_encode_plus(
-            sequence, max_length=self.seq_size, pad_to_max_length=True
+            sequence, max_length=self.seq_size, padding="max_length"
         )
 
         return (
@@ -490,6 +517,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         else:
             X_seq, X_attention = self._prepare_bert_sequences(X)
             X_meta, nb_meta_features = self._get_meta(X)
+            self.nb_labels, self.nb_meta_features = nb_labels, nb_meta_features
             if not validation_data:
                 self.model = self.architecture_function(
                     ntargets=nb_labels,
@@ -529,7 +557,9 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
 
             if isinstance(X, dict):
                 X_meta = np.array(
-                    [[X[meta_feature] for meta_feature in meta_columns_list], ]
+                    [
+                        [X[meta_feature] for meta_feature in meta_columns_list],
+                    ]
                 )
             else:
                 X_meta = X[meta_columns_list]

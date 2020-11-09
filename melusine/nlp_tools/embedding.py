@@ -12,7 +12,8 @@ from melusine.utils.streamer import Streamer
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 formatter = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s", datefmt="%d/%m %I:%M",
+    "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    datefmt="%d/%m %I:%M",
 )
 
 
@@ -341,8 +342,7 @@ class Embedding:
         return embedding_matrix
 
     def train_word2vec(self):
-        """Fits a Word2Vec Embedding on the given documents, and update the embedding attribute.
-        """
+        """Fits a Word2Vec Embedding on the given documents, and update the embedding attribute."""
 
         embedding = Word2Vec(
             size=self.train_params["size"],

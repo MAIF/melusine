@@ -77,7 +77,7 @@ class ConfigJsonReader:
 
     def get_config_file(self):
         """Load a config json file from the given path.
-           Load the list of names from the names.csv file.
+        Load the list of names from the names.csv file.
         """
         path = self.config["PATH"]["template_config"]
         if path == self.path_default_conf_json_:

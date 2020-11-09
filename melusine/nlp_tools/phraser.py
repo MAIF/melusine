@@ -105,7 +105,11 @@ def phraser_on_text(text, phraser):
     """
     if not re.search(pattern=r"\W*\b\w+\b\W*", string=text):
         return text
-    (pre_typos_list, words_list, separators_list,) = _split_typos_words_separators(text)
+    (
+        pre_typos_list,
+        words_list,
+        separators_list,
+    ) = _split_typos_words_separators(text)
     phrased_words_list = phraser.phraser[words_list]
     phrased_text = _rebuild_phrased_text_with_punctuation(
         pre_typos_list, words_list, separators_list, phrased_words_list

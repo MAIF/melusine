@@ -141,8 +141,7 @@ class TransformerScheduler(BaseEstimator, TransformerMixin):
             func, args, cols = _check_tuple(*tuple_)
 
     def fit(self, X, y=None):
-        """Unused method. Defined only for compatibility with scikit-learn API.
-        """
+        """Unused method. Defined only for compatibility with scikit-learn API."""
         return self
 
     def transform(self, X):
