@@ -26,7 +26,7 @@ requirements = [
     "numpy>=1.16.4,<1.19.0",
     "joblib",
 ]
-#"numpy>=1.16.0,<1.19.0"
+
 setup_requirements = [
     "pytest-runner",
 ]
