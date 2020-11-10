@@ -6,7 +6,7 @@ numpydoc==0.8.0
 Sphinx==3.0.4
 sphinx-bootstrap-theme==0.6.5
 tox==3.5.2
-twine==1.12.1
+twine==3.2.0
 importlib-metadata>=1
 psutil>=5.7.0
 pytest==3.8.2
