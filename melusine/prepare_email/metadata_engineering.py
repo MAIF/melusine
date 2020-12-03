@@ -15,8 +15,9 @@ class MetaExtension(BaseEstimator, TransformerMixin):
     Compatible with scikit-learn API.
     """
 
-    def __init__(self):
+    def __init__(self, topn_extension=100):
         self.le_extension = preprocessing.LabelEncoder()
+        self.topn_extension = topn_extension
 
     def fit(self, X, y=None):
 
@@ -27,7 +28,7 @@ class MetaExtension(BaseEstimator, TransformerMixin):
 
         """ Fit LabelEncoder on encoded extensions."""
         X["extension"] = X.apply(self.get_extension, axis=1)
-        self.top_extension = self.get_top_extension(X, n=100)
+        self.top_extension = self.get_top_extension(X, n=self.topn_extension)
         X["extension"] = X.apply(
             self.encode_extension, args=(self.top_extension,), axis=1
         )
@@ -287,8 +288,9 @@ class MetaAttachmentType(BaseEstimator, TransformerMixin):
     Compatible with scikit-learn API.
     """
 
-    def __init__(self):
+    def __init__(self, topn_extension=100):
         self.le_extension = preprocessing.LabelEncoder()
+        self.topn_extension = topn_extension
 
     def fit(self, X, y=None):
 
@@ -299,7 +301,7 @@ class MetaAttachmentType(BaseEstimator, TransformerMixin):
 
         """ Fit LabelEncoder on encoded extensions."""
         X["attachment_type"] = X.apply(self.get_attachment_type, axis=1)
-        self.top_attachment_type = self.get_top_attachment_type(X, n=100)
+        self.top_attachment_type = self.get_top_attachment_type(X, n=self.topn_extension)
         X["attachment_type"] = X.apply(
             self.encode_type, args=(self.top_attachment_type,), axis=1
         )
