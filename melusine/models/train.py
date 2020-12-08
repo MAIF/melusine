@@ -158,7 +158,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             open(filepath + ".json", "w").write(json_model)
             self.model.save_weights(filepath + "_model_weights.h5", overwrite=True)
         else:
-            with open(filepath + "bert_params.pkl", "wb") as f:
+            with open(filepath + "_bert_params.pkl", "wb") as f:
                 pickle.dump([self.nb_labels, self.nb_meta_features], f)
             self.model.save_weights(filepath + "_model_weights", overwrite=True)
         pass
@@ -178,7 +178,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             model.load_weights(filepath + "_model_weights.h5")
             model.compile(optimizer=Adam(), loss=self.loss, metrics=["accuracy"])
         else:
-            with open(filepath + "bert_params.pkl", "rb") as f:
+            with open(filepath + "_bert_params.pkl", "rb") as f:
                 nb_labels, nb_meta_features = pickle.load(f)
             model = self.architecture_function(
                 ntargets=nb_labels,
