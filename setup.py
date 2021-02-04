@@ -17,7 +17,7 @@ requirements = [
     "gensim>=3.3.0",
     "tqdm>=4.34",
     "streamlit>=0.57.3",
-    "tensorflow>=2.0.0",
+    "tensorflow>=2.4.1",
     "unidecode",
     "joblib",
     "flashtext>=2.7",
