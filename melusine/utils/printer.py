@@ -1,4 +1,3 @@
-
 def print_color_mail(structured_body):
     """Highlight the tagged sentences.
 
@@ -24,7 +23,7 @@ def print_color_mail(structured_body):
             tag = sentence.get("tags")
             print_color(text, tag)
 
-       
+
 def print_color(text, part=None):
     """Select according to the tag the right color to use when printing."""
     text = text.replace("\r", "")
@@ -38,7 +37,7 @@ def print_color(text, part=None):
         "FOOTER": "\33[41m" + "FOOTER" + "\033[0m",
         "DISCLAIMER": "\33[41m" + "DISCLAIMER" + "\033[0m",
         "TYPO": "\33[47m" + "TYPO" + "\033[0m",
-        "HEADER": "\033[0;37;41m" + "HEADER" + "\033[0m"
+        "HEADER": "\033[0;37;41m" + "HEADER" + "\033[0m",
     }
 
     switcher = {
@@ -48,13 +47,19 @@ def print_color(text, part=None):
         "THANKS": "\033[0;31;46m" + text + "\033[0m",
         "PJ": "\033[0;37;42m" + text + "\033[0m",
         "META": "\33[43m" + text + "\033[0m",
-        'FOOTER': "\33[41m" + text + "\033[0m",
-        'DISCLAIMER': "\33[41m" + text + "\033[0m",
-        'TYPO': "\33[47m" + text + "\033[0m",
-        "HEADER": "\033[0;37;41m" + text + "\033[0m"
+        "FOOTER": "\33[41m" + text + "\033[0m",
+        "DISCLAIMER": "\33[41m" + text + "\033[0m",
+        "TYPO": "\33[47m" + text + "\033[0m",
+        "HEADER": "\033[0;37;41m" + text + "\033[0m",
     }
 
     if part in switcher.keys():
-       print("> ", switcher_tag.get(part, text), " : ", switcher.get(part, text), "\n")
+        print(
+            "> ",
+            switcher_tag.get(part, text),
+            " : ",
+            switcher.get(part, text),
+            "\n",
+        )
     else:
-       print("> BODY : ", switcher.get(part, text), "\n")
+        print("> BODY : ", switcher.get(part, text), "\n")

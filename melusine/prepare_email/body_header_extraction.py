@@ -37,9 +37,9 @@ def extract_body(message_dict):
     for part_tag_dict in tagged_parts_list:
         part = part_tag_dict["part"]
         tag = part_tag_dict["tags"]
-        if tag == 'BODY':
+        if tag == "BODY":
             body += part + " "
-        elif tag == 'GREETINGS':
+        elif tag == "GREETINGS":
             break
 
     return body

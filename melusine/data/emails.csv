@@ -1,4 +1,4 @@
-body;header;date;from;to;label
+body;header;date;from;to;attachment;sexe;age;label
 " 
   
   
@@ -19,7 +19,7 @@ body;header;date;from;to;label
  louer l’appartement suivant : 
  25 rue du rueimaginaire 77000 
  Merci 
- Envoyé de mon iPhone";Tr : Devis habitation;jeudi 24 mai 2018 11 h 49 CEST;conseiller1@societeimaginaire.fr;demandes@societeimaginaire.fr;habitation
+ Envoyé de mon iPhone";Tr : Devis habitation;jeudi 24 mai 2018 11 h 49 CEST;conseiller1@societeimaginaire.fr;demandes@societeimaginaire.fr;[];F;35;habitation
 " 
   
   
@@ -42,7 +42,7 @@ body;header;date;from;to;label
  nécessaires concernant l’assurance. 
  Je vous remercie encore pour tout. 
  Cordialement, 
- Monsieur Dupont (See attached file: pj.pdf)";Tr : Immatriculation voiture;vendredi 25 mai 2018 06 h 21 CEST;conseiller1@societeimaginaire.fr;demandes@societeimaginaire.fr;vehicule
+ Monsieur Dupont (See attached file: pj.pdf)";Tr : Immatriculation voiture;vendredi 25 mai 2018 06 h 21 CEST;conseiller1@societeimaginaire.fr;demandes@societeimaginaire.fr;"[""pj.pdf""]";M;32;vehicule
 " 
   
   
@@ -64,7 +64,7 @@ body;header;date;from;to;label
  La Mututelle Imaginaire 
   
  La visualisation des fichiers PDF nécessite Adobe Reader. 
-  ";Re: Envoi d'un document de la Société Imaginaire;vendredi 25 mai 2018 06 h 45 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;compte
+  ";Re: Envoi d'un document de la Société Imaginaire;vendredi 25 mai 2018 06 h 45 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;[];M;66;compte
 " 
   
   
@@ -101,7 +101,7 @@ body;header;date;from;to;label
  |------------------------+---------------------------------------| 
   
   
-  ";Re: Votre adhésion à la Société Imaginaire;vendredi 25 mai 2018 10 h 15 CEST;Monsieur Dupont <monsieurdupont@extensiond.com>;demandes@societeimaginaire.fr;adhesion
+  ";Re: Votre adhésion à la Société Imaginaire;vendredi 25 mai 2018 10 h 15 CEST;Monsieur Dupont <monsieurdupont@extensiond.com>;demandes@societeimaginaire.fr;"[""fichedepaie.png""]";M;50;adhesion
 " 
   
   
@@ -121,7 +121,7 @@ body;header;date;from;to;label
  Il peut s’agir de votre dernier bulletin de paye ou d’une attestation de 
  votre employeur. 
   
- Votre conseiller Societe Imaginaire  (See attached file: pj.jpg)";Bulletin de salaire;vendredi 25 mai 2018 17 h 30 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;adhesion
+ Votre conseiller Societe Imaginaire  (See attached file: pj.jpg)";Bulletin de salaire;vendredi 25 mai 2018 17 h 30 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;"[""pj.pdf""]";M;15;adhesion
 " Madame, Monsieur, 
  
  Je vous avais contactés car j'avais pour 
@@ -136,7 +136,7 @@ body;header;date;from;to;label
   
  Sincères salutations 
  Monsieur Dupont 
-  ";Modification et extension de ma maison;jeudi 31 mai 2018 10 h 28 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;habitation
+  ";Modification et extension de ma maison;jeudi 31 mai 2018 10 h 28 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;[];F;22;habitation
 " 
   
   
@@ -173,7 +173,7 @@ body;header;date;from;to;label
   
   
  Mail : monsieurdupont@extensiona.com (See attached file: pj.pdf) 
-  ";Tr : Assurance d'un nouveau logement;jeudi 31 mai 2018 12 h 24 CEST;Conseiller <conseiller1@societeimaginaire.fr>;demandes@societeimaginaire.fr;resiliation
+  ";Tr : Assurance d'un nouveau logement;jeudi 31 mai 2018 12 h 24 CEST;Conseiller <conseiller1@societeimaginaire.fr>;demandes@societeimaginaire.fr;"[""pj.pdf""]";F;28;resiliation
 " 
   
   
@@ -203,7 +203,7 @@ body;header;date;from;to;label
   
  Monsieur Dupont 
   
-  (See attached file: image001.png)(See attached file: Assurances véhicules2018.pdf)";Assurance véhicules;jeudi 31 mai 2018 14 h 02 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;vehicule
+  (See attached file: image001.png)(See attached file: Assurances véhicules2018.pdf)";Assurance véhicules;jeudi 31 mai 2018 14 h 02 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;"[""image001.png""]";M;39;vehicule
 " 
   
   
@@ -233,7 +233,7 @@ body;header;date;from;to;label
  > Meilleures salutations, 
  > 
  > Conseiller. 
- > <pj.pdf> ";Re: Virement;jeudi 31 mai 2018 17 h 10 CEST;Monsieur Dupont <monsieurdupont@extensione.com>;demandes@societeimaginaire.fr;autres
+ > <pj.pdf> ";Re: Virement;jeudi 31 mai 2018 17 h 10 CEST;Monsieur Dupont <monsieurdupont@extensione.com>;demandes@societeimaginaire.fr;"[""pj.pdf""]";M;38;autres
 " 
   
   
@@ -263,7 +263,7 @@ body;header;date;from;to;label
  > Copie à : 
  > Objet : Attached Image 
  > 
- >(See attached file: pj.pdf)";Prêt véhicule;jeudi 31 mai 2018 08 h 54 CEST;Monsieur Dupont <monsieurdupont@extensionb.com>;demandes@societeimaginaire.fr;vehicule
+ >(See attached file: pj.pdf)";Prêt véhicule;jeudi 31 mai 2018 08 h 54 CEST;Monsieur Dupont <monsieurdupont@extensionb.com>;demandes@societeimaginaire.fr;"[""pj.pdf""]";M;30;vehicule
 " 
   
   
@@ -297,7 +297,7 @@ body;header;date;from;to;label
        Conseiller. 
        conseiller@Societeimaginaire.fr 
        Conseiller Societe Imaginaire. 
-  ";Bilan général contrats;jeudi 31 mai 2018 12 h 00 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;bilan
+  ";Bilan général contrats;jeudi 31 mai 2018 12 h 00 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;[];F;63;bilan
 " 
   
   
@@ -312,7 +312,7 @@ body;header;date;from;to;label
  Monsieur Dupont 
   
  Cordialement 
-  ";Numéro de téléphone;jeudi 31 mai 2018 12 h 44 CEST;monsieurdupont@extensionf.net;demandes@societeimaginaire.fr;modification
+  ";Numéro de téléphone;jeudi 31 mai 2018 12 h 44 CEST;monsieurdupont@extensionf.net;demandes@societeimaginaire.fr;[];M;23;modification
 " 
   
   
@@ -372,7 +372,7 @@ body;header;date;from;to;label
  >> 
  >> La SocSociete Imaginaire. 
  >> <Doc.pdf> 
- >> <pj.pdf> ";Tr : Re: Vos documents demandés;lundi 4 juin 2018 09 h 56 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;vehicule
+ >> <pj.pdf> ";Tr : Re: Vos documents demandés;lundi 4 juin 2018 09 h 56 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;"[""image1.jpeg"",""image2.jpeg"",""image3.jpeg""]";F;28;vehicule
 " 
   
   
@@ -381,7 +381,7 @@ body;header;date;from;to;label
   
   
  -- 
- Monsieur Dupont (See attached file: Relevé d'informations.pdf)";Demande;lundi 4 juin 2018 14 h 09 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;vehicule
+ Monsieur Dupont (See attached file: Relevé d'informations.pdf)";Demande;lundi 4 juin 2018 14 h 09 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;"[""Relevé d'informations.pdf""]";M;86;vehicule
 " 
   
   
@@ -411,7 +411,7 @@ body;header;date;from;to;label
  Association LOI 1901. 
  Tél. perso : 06.00.00.00.00 
   
-  ";Tr : attestation;lundi 4 juin 2018 09 h 20 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;habitation
+  ";Tr : attestation;lundi 4 juin 2018 09 h 20 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;[];M;36;habitation
 " 
   
   
@@ -454,7 +454,7 @@ body;header;date;from;to;label
  La Societe Imaginaire 
   
  La visualisation des fichiers PDF nécessite Adobe Reader.(See attached 
- file: pj.pdf)";demande attestation - Envoi d'un document de la Mutuelle Imaginaire;lundi 4 juin 2018 10 h 22 CEST;Monsieur Dupont <monsieurdupont@extensionc.com>;demandes@societeimaginaire.fr;resiliation
+ file: pj.pdf)";demande attestation - Envoi d'un document de la Mutuelle Imaginaire;lundi 4 juin 2018 10 h 22 CEST;Monsieur Dupont <monsieurdupont@extensionc.com>;demandes@societeimaginaire.fr;[];F;88;resiliation
 " 
   
   
@@ -466,7 +466,7 @@ body;header;date;from;to;label
  disposition. 
  Bien à  vous 
  Monsieur Dupont(See attached file: Numériser.pdf) 
- ";certificat de cession de véhicule;lundi 4 juin 2018 15 h 39 CEST;Monsieur Dupont <monsieurdupont@extensionb.com>;demandes@societeimaginaire.fr;resiliation
+ ";certificat de cession de véhicule;lundi 4 juin 2018 15 h 39 CEST;Monsieur Dupont <monsieurdupont@extensionb.com>;demandes@societeimaginaire.fr;"[""Numériser.pdf""]";M;57;resiliation
 " 
   
   
@@ -476,7 +476,7 @@ body;header;date;from;to;label
  véhicule pour résilier l'assurance. 
   
  Cordialement 
- Monsieur Dupont(See attached file: pj.jpg)";certificat de cession ;lundi 4 juin 2018 15 h 49 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;vehicule
+ Monsieur Dupont(See attached file: pj.jpg)";certificat de cession ;lundi 4 juin 2018 15 h 49 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;"[""pj.jpg""]";M;82;vehicule
 " 
   
   
@@ -486,7 +486,7 @@ body;header;date;from;to;label
  Mon Adresse complète est là suivante : 00 rue imaginaire 33000 Villeimaginaire 
   (See attached file: Screenshot.png)(See attached 
  file: Screenshot2.png)(See attached file: 
- Screenshot3.png)";Assurance auto;lundi 4 juin 2018 18 h 04 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;adhesion
+ Screenshot3.png)";Assurance auto;lundi 4 juin 2018 18 h 04 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;"[""Screenshot.png"",""Screenshot2.png"",""Screenshot3.png""]";F;60;adhesion
 " 
   
   
@@ -516,7 +516,7 @@ body;header;date;from;to;label
   
   
   
- (See attached file: ACTE VENTE 1.pdf)(See attached file: ACTE VENTE 2.pdf)";Re: Suppression assurance logement;lundi 4 juin 2018 20 h 45 CEST;Monsieur Dupont <monsieurdupont@extensiong.fr>;demandes@societeimaginaire.fr;succession
+ (See attached file: ACTE VENTE 1.pdf)(See attached file: ACTE VENTE 2.pdf)";Re: Suppression assurance logement;lundi 4 juin 2018 20 h 45 CEST;Monsieur Dupont <monsieurdupont@extensiong.fr>;demandes@societeimaginaire.fr;"[""ACTE VENTE 1.pdf"",""ACTE VENTE 2.pdf""]";M;21;succession
 " 
   
   
@@ -534,7 +534,7 @@ body;header;date;from;to;label
  Bien à vous, 
   
  Monsieur Dupont 
-  ";changement d'adresse;lundi 4 juin 2018 22 h 28 CEST;Monsieur Dupont <monsieurdupont@extensiong.fr>;demandes@societeimaginaire.fr;habitation
+  ";changement d'adresse;lundi 4 juin 2018 22 h 28 CEST;Monsieur Dupont <monsieurdupont@extensiong.fr>;demandes@societeimaginaire.fr;[];M;58;habitation
 " 
   
   
@@ -574,7 +574,7 @@ body;header;date;from;to;label
  le 22 mai 2017 
   
  Cordialement 
- (See attached file: Facture.jpg)";Tr : Fwd: Changement de Scooter  !;lundi 4 juin 2018 10 h 29 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;vehicule
+ (See attached file: Facture.jpg)";Tr : Fwd: Changement de Scooter  !;lundi 4 juin 2018 10 h 29 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;[];M;64;vehicule
 " 
   
   
@@ -597,7 +597,7 @@ body;header;date;from;to;label
  Bonjour, j'aurais besoin de l'attestation 
  pour ma declaration de revenus 2018. 
  Merci d'avance 
- ";Tr : Réclamations  ;lundi 4 juin 2018 10 h 38 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;habitation
+ ";Tr : Réclamations  ;lundi 4 juin 2018 10 h 38 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;[];F;20;habitation
 " 
   
   
@@ -617,7 +617,7 @@ body;header;date;from;to;label
  (Embedded image moved to file: pic.jpg) 
   
   
- Envoyé de mon iPad";Résiliation contrat voiture ;lundi 4 juin 2018 11 h 19 CEST;Monsieur Dupont <monsieurdupont@extensiong.fr>;demandes@societeimaginaire.fr;resiliation
+ Envoyé de mon iPad";Résiliation contrat voiture ;lundi 4 juin 2018 11 h 19 CEST;Monsieur Dupont <monsieurdupont@extensiong.fr>;demandes@societeimaginaire.fr;"[""pic.jpg""]";F;51;resiliation
 " 
   
   
@@ -630,7 +630,7 @@ body;header;date;from;to;label
  02 chemin imaginaire 
  84000 
  monsieurdupont@extensiona.com 
- 06.00.00.00.00(See attached file: Relevé d'informations.pdf)";Demande;lundi 4 juin 2018 10 h 58 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;vehicule
+ 06.00.00.00.00(See attached file: Relevé d'informations.pdf)";Demande;lundi 4 juin 2018 10 h 58 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;"[""Relevé d'informations.pdf""]";M;77;vehicule
 " 
   
   
@@ -650,7 +650,7 @@ body;header;date;from;to;label
  La visualisation des fichiers PDF nécessite Adobe Reader. 
  Cordialement. 
  La Societe Imaginaire 
-  ";Tr : Re: Interrogations;lundi 4 juin 2018 15 h 37 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;vehicule
+  ";Tr : Re: Interrogations;lundi 4 juin 2018 15 h 37 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;[];F;40;vehicule
 " 
   
   
@@ -688,7 +688,7 @@ body;header;date;from;to;label
  La Societe Imaginaire 
   
  La visualisation des fichiers PDF nécessite Adobe Reader.(See attached 
- file: RIB.pdf)";RIB;mardi 5 juin 2018 09 h 04 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;regularisation
+ file: RIB.pdf)";RIB;mardi 5 juin 2018 09 h 04 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;"[""RIB.pdf""]";F;86;regularisation
 " 
   
   
@@ -750,7 +750,7 @@ body;header;date;from;to;label
   
  logo Societe Imaginaire 
  
- (See attached file: image-a7c10.png)(See attached file: Releve_Information.pdf)(See attached file: Releve_Information.pdf)(See attached file: Releve_Information.pdf)";Re: Confirmation de votre assurance véhicule;mardi 5 juin 2018 10 h 56 CEST;Conseiller <conseiller1@societeimaginaire.fr>;demandes@societeimaginaire.fr;resiliation
+ (See attached file: image-a7c10.png)(See attached file: Releve_Information.pdf)(See attached file: Releve_Information.pdf)(See attached file: Releve_Information.pdf)";Re: Confirmation de votre assurance véhicule;mardi 5 juin 2018 10 h 56 CEST;Conseiller <conseiller1@societeimaginaire.fr>;demandes@societeimaginaire.fr;"[""image-a7c10.png"",""Releve_Information.pdf""]";F;52;resiliation
 " 
   
   
@@ -766,7 +766,7 @@ body;header;date;from;to;label
  Monsieur Dupont 
  32 avenue Imaginaire 
  Tél: +33 (0)600 00 00 00 
-  ";RIB;mardi 5 juin 2018 11 h 12 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;compte
+  ";RIB;mardi 5 juin 2018 11 h 12 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;"[""rib.pdf""]";M;72;compte
 " 
   
   
@@ -796,7 +796,7 @@ body;header;date;from;to;label
   
  (Embedded image moved to file: pic.jpg) 
   
- (Embedded image moved to file: pic.jpg)";sinistres;mardi 5 juin 2018 17 h 37 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;sinistres
+ (Embedded image moved to file: pic.jpg)";sinistres;mardi 5 juin 2018 17 h 37 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;"[""pic.jpg""]";M;39;sinistres
 " 
   
   
@@ -831,7 +831,7 @@ body;header;date;from;to;label
  Cordialement 
   
  Monsieur Dupont 
-  ";contrat vehicule;mardi 5 juin 2018 10 h 06 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;vehicule
+  ";contrat vehicule;mardi 5 juin 2018 10 h 06 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;[];M;63;vehicule
 " 
   
   
@@ -865,7 +865,7 @@ body;header;date;from;to;label
   
   
   
- (See attached file: cession.pdf)";Tr : résiliation couverture véhicule suite cession;mardi 5 juin 2018 12 h 33 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;vehicule
+ (See attached file: cession.pdf)";Tr : résiliation couverture véhicule suite cession;mardi 5 juin 2018 12 h 33 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;"[""cession.pdf""]";M;79;vehicule
 " 
   
   
@@ -895,7 +895,7 @@ body;header;date;from;to;label
  E-mail: conseiller@societeimaginaire.fr 
   
   
-";dossier de prêt ;mardi 5 juin 2018 14 h 11 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;vehicule
+";dossier de prêt ;mardi 5 juin 2018 14 h 11 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;[];F;18;vehicule
 " 
   
   
@@ -917,7 +917,7 @@ body;header;date;from;to;label
   
  (Embedded image moved to file: pic.jpg) 
   
-  (See attached file: doc.pdf)";déclarations de sinistre corporel et matériel;mardi 5 juin 2018 16 h 06 CEST;Monsieur Dupont <monsieurdupont@extensionb.com>;demandes@societeimaginaire.fr;habitation
+  (See attached file: doc.pdf)";déclarations de sinistre corporel et matériel;mardi 5 juin 2018 16 h 06 CEST;Monsieur Dupont <monsieurdupont@extensionb.com>;demandes@societeimaginaire.fr;"[""doc.pdf""]";M;45;habitation
 " 
   
   
@@ -931,7 +931,7 @@ body;header;date;from;to;label
   
  Monsieur Dupont 
  (See attached file: Attestationemployeur.pdf)
-(See attached file: Relevé_d'information.pdf)";Demande d'assurance auto;jeudi 7 juin 2018 12 h 38 CEST;Monsieur Dupont <monsieurdupont@extensiong.fr>;demandes@societeimaginaire.fr;resiliation
+(See attached file: Relevé_d'information.pdf)";Demande d'assurance auto;jeudi 7 juin 2018 12 h 38 CEST;Monsieur Dupont <monsieurdupont@extensiong.fr>;demandes@societeimaginaire.fr;"[""Attestationemployeur.pdf"",""Relevé_d'information.pdf""]";F;48;resiliation
 " 
   
   
@@ -956,7 +956,7 @@ body;header;date;from;to;label
  [IMAGE] 
   
   
- Envoyé de mon iPhone(See attached file: IMG.PNG)";preuve réglement ;jeudi 7 juin 2018 18 h 22 CEST;Monsieur Dupont <monsieurdupont@extensionh.fr>;demandes@societeimaginaire.fr;compte
+ Envoyé de mon iPhone(See attached file: IMG.PNG)";preuve réglement ;jeudi 7 juin 2018 18 h 22 CEST;Monsieur Dupont <monsieurdupont@extensionh.fr>;demandes@societeimaginaire.fr;"[""IMG.PNG""]";F;63;compte
 " 
   
   
@@ -974,7 +974,7 @@ body;header;date;from;to;label
   
  En vous remerciant par avance de votre réponse par retour de mail. 
  Bien cordialement 
- Monsieur Dupont";prélèvements bancaires;jeudi 7 juin 2018 15 h 16 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;modification
+ Monsieur Dupont";prélèvements bancaires;jeudi 7 juin 2018 15 h 16 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;[];F;19;modification
 " 
   
   
@@ -986,7 +986,7 @@ body;header;date;from;to;label
  Bien à vous, 
  Monsieur Dupont(See attached file: Liste.docx)(See attached file: 
  PV.pdf)(See attached file: statuts.pdf)(See attached file: 
- RIB.jpeg)";documents ;jeudi 7 juin 2018 10 h 45 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;habitation
+ RIB.jpeg)";documents ;jeudi 7 juin 2018 10 h 45 CEST;Monsieur Dupont <monsieurdupont@extensiona.com>;demandes@societeimaginaire.fr;"[""Liste.docx"",""PV.pdf"",""statuts.pdf"",""RIB.jpeg""]";F;39;habitation
 " 
   
   
@@ -1013,7 +1013,7 @@ body;header;date;from;to;label
   
  Monsieur Dupont 
   
-  ";demande d'attestation d'asurance;jeudi 7 juin 2018 11 h 40 CEST;Monsieur Dupont <monsieurdupont@extensionb.com>;demandes@societeimaginaire.fr;habitation
+  ";demande d'attestation d'asurance;jeudi 7 juin 2018 11 h 40 CEST;Monsieur Dupont <monsieurdupont@extensionb.com>;demandes@societeimaginaire.fr;[];F;31;habitation
 " 
   
   
@@ -1065,4 +1065,4 @@ body;header;date;from;to;label
  Délégation Conseil 
  conseillerh@Societeimaginaire.fr 
   
-  ";Tr : Message de votre conseillère personnelle;jeudi 7 juin 2018 16 h 32 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;vehicule
+  ";Tr : Message de votre conseillère personnelle;jeudi 7 juin 2018 16 h 32 CEST;conseiller@societeimaginaire.fr;demandes@societeimaginaire.fr;[];F;18;vehicule

@@ -12,14 +12,17 @@ common_terms = config["words_list"]["stopwords"] + config["words_list"]["names"]
 
 regex_tokenize_with_punctuations = r"(.*?[\s'])"
 tokenize_without_punctuations = r"(.*?)[\s']"
-regex_process = "\w+(?:[\?\-\'\"_]\w+)*"
+regex_process = "\w+(?:[\?\-'\"_]\w+)*"
 regex_split_parts = r"(.*?[;.,?!])"
 
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s \
-                              - %(message)s', datefmt='%d/%m %I:%M')
+formatter = logging.Formatter(
+    "%(asctime)s - %(name)s - %(levelname)s \
+                              - %(message)s",
+    datefmt="%d/%m %I:%M",
+)
 
 
 def phraser_on_body(row, phraser):
@@ -102,25 +105,25 @@ def phraser_on_text(text, phraser):
     """
     if not re.search(pattern=r"\W*\b\w+\b\W*", string=text):
         return text
-    pre_typos_list, words_list, separators_list = _split_typos_words_separators(text)
+    (
+        pre_typos_list,
+        words_list,
+        separators_list,
+    ) = _split_typos_words_separators(text)
     phrased_words_list = phraser.phraser[words_list]
-    phrased_text = _rebuild_phrased_text_with_punctuation(pre_typos_list,
-                                                          words_list,
-                                                          separators_list,
-                                                          phrased_words_list)
+    phrased_text = _rebuild_phrased_text_with_punctuation(
+        pre_typos_list, words_list, separators_list, phrased_words_list
+    )
 
     return phrased_text
 
 
-def _rebuild_phrased_text_with_punctuation(pre_typos_list,
-                                           words_list,
-                                           separators_list,
-                                           phrased_words_list):
+def _rebuild_phrased_text_with_punctuation(
+    pre_typos_list, words_list, separators_list, phrased_words_list
+):
     """Rebuilds the initial text with phrased words."""
     i = 0
-    for pre_typo, word, separator in zip(pre_typos_list,
-                                         words_list,
-                                         separators_list):
+    for pre_typo, word, separator in zip(pre_typos_list, words_list, separators_list):
         phrased_word = re.sub("\W", "", phrased_words_list[i])
         word = re.sub("\W", "", word)
         if len(phrased_word) > len(word):
@@ -150,7 +153,7 @@ def _split_typos_words_separators(text, pattern=r"(\W*)\b(\w+)\b(\W*)"):
     return pre_typos_list, words_list, separators_list
 
 
-class Phraser():
+class Phraser:
     """Class to train a phraser.
 
     Parameters
@@ -189,13 +192,15 @@ class Phraser():
 
     """
 
-    def __init__(self,
-                 input_column='clean_body',
-                 common_terms=common_terms,
-                 threshold=350,
-                 min_count=200):
-        self.logger = logging.getLogger('NLUtils.Phraser')
-        self.logger.debug('creating a Phraser instance')
+    def __init__(
+        self,
+        input_column="clean_body",
+        common_terms=common_terms,
+        threshold=350,
+        min_count=200,
+    ):
+        self.logger = logging.getLogger("NLUtils.Phraser")
+        self.logger.debug("creating a Phraser instance")
         self.common_terms = common_terms
         self.threshold = threshold
         self.min_count = min_count
@@ -212,25 +217,25 @@ class Phraser():
         avoid the pickling of the logger
         """
         d = self.__dict__.copy()
-        if 'logger' in d:
-            d['logger'] = d['logger'].name
+        if "logger" in d:
+            d["logger"] = d["logger"].name
         return d
 
     def __setstate__(self, d):
         """To override the default pickling behavior and
         avoid the pickling of the logger"""
-        if 'logger' in d:
-            d['logger'] = logging.getLogger(d['logger'])
+        if "logger" in d:
+            d["logger"] = logging.getLogger(d["logger"])
         self.__dict__.update(d)
 
     def save(self, filepath):
         """Method to save Phraser object"""
-        with open(filepath, 'wb') as f:
+        with open(filepath, "wb") as f:
             pickle.dump(self.phraser, f)
 
     def load(self, filepath):
         """Method to load Phraser object"""
-        with open(filepath, 'rb') as f:
+        with open(filepath, "rb") as f:
             self.phraser = pickle.load(f)
         return self
 
@@ -246,12 +251,14 @@ class Phraser():
         self : object
             Returns the instance
         """
-        self.logger.info('Start training for colocation detector')
+        self.logger.info("Start training for colocation detector")
         self.streamer.to_stream(X)
-        phrases = gensim.models.Phrases(self.streamer.stream,
-                                        common_terms=self.common_terms,
-                                        threshold=self.threshold,
-                                        min_count=self.min_count)
+        phrases = gensim.models.Phrases(
+            self.streamer.stream,
+            common_terms=self.common_terms,
+            threshold=self.threshold,
+            min_count=self.min_count,
+        )
         self.phraser = gensim.models.phrases.Phraser(phrases)
-        self.logger.info('Done.')
+        self.logger.info("Done.")
         pass

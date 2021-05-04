@@ -13,7 +13,8 @@
 # Overview
 
 **Melusine** is a high-level Python library for email classification and feature extraction,
-written in Python and capable of running on top of Scikit-Learn, Keras or Tensorflow.
+written in Python and capable of running on top of Scikit-Learn, Tensorflow 2 and Keras.
+Integrated models runs with Tensorflow 2.2.
 It is developed with a focus on emails written in french.
 
 Use **Melusine** if you need a library which :
@@ -22,6 +23,29 @@ Use **Melusine** if you need a library which :
 
 **Melusine** is compatible with `Python >= 3.5`.
 
+## Release Notes
+### 2.0
+New features:
+  * Attentive Neural Networks are now available. :tada: We propose you an original Transformer architecture as well 
+    as pre-trained BERT models (Camembert and Flaubert)
+  * Tutorial 13 will explain you how to get started with these models and attempt to compare them.
+  * Validation data can now be used to train models (See fit function from NeuralModel for usage)
+  * The activation function can now be modified to adapt to your needs (See NeuralModel init for usage)
+
+### 1.10.0
+Updates:
+  * Melusine is now running with Tensorflow 2.2
+    
+### 1.9.6
+
+New features:
+  * Flashtext library is now used to flag names instead of regex. It allows a faster computation.
+
+### 1.9.5
+
+New features:
+  * An Ethics Guide is now available to evaluate AI projects, with guidelines and questionnaire. The questionnaire is based on criteria derived in particular from the work of the European Commission and grouped by categories.
+  * Melusine also offers an easy and nice dashboard app with StreamLit. The App contains exploratory dashboard on the email dataset and a more specific study on discrimination between the dataset and a neural model classification.
 
 ## The Melusine package
 
@@ -34,7 +58,7 @@ This package is designed for the preprocessing, classification and automatic sum
 
 * ``prepare_email`` : to preprocess and clean emails.
 * ``summarizer`` : to extract keywords from an email.
-* ``models`` : to classify e-mails according to categories pre-defined by the user.
+* ``models`` : to classify e-mails according to categories pre-defined by the user or compute sentiment score based on sentiment described by the user with seed words.
 
 **2 other subpackages are offered as building blocks :**
 
@@ -45,6 +69,11 @@ This package is designed for the preprocessing, classification and automatic sum
 
 * ``config`` : contains *`ConfigJsonReader`* class to setup and handle a *conf.json* file. This JSON file is the core of this package since it's used by different submodules to preprocess the data.
 
+**2 other subpackages are offered to provide a dashboard app and ethics guidelines for AI project :**
+
+* ``data`` : contains a classic data loader and provide a *StreamLit application* with exploratory dashboards on input data and models.
+
+* ``ethics_guidelines`` : to provide an Ethics Guide to evaluate AI project, with guidelines and questionnaire. The questionnaire is based on criteria derived in particular from the work of the European Commission and grouped by categories.
 
 ## Getting started: 30 seconds to Melusine
 
@@ -199,6 +228,7 @@ df_email = keywords_generator.fit_transform(df_email)
 
 ### Classification
 
+The package includes multiple neural network architectures including CNN, RNN, Attentive and pre-trained BERT Networks.
 An example of classification is given below:
 ```python
 from sklearn.preprocessing import LabelEncoder
@@ -217,9 +247,12 @@ pretrained_embedding = embedding
 nn_model = NeuralModel(architecture_function=cnn_model,
                        pretrained_embedding=pretrained_embedding,
                        text_input_column='clean_body')
-nn_model.fit(X, y)
+nn_model.fit(X, y, tensorboard_log_dir="./data")
 y_res = nn_model.predict(X)
 ```
+
+Training with tensorflow 2 can be monitored using tensorboard :
+![](docs/_static/tensorboard.png)
 
 ## Glossary
 
@@ -278,3 +311,27 @@ Each messages of an email are segmented in the **structured_body** columns and e
 * `HELLO` : any salutations such as `Bonjour,`.
 * `THANKS` : any thanks such as `Avec mes remerciements`
 * `BODY` : the core of the the message which contains the valuable information.
+
+### Dashboard App
+
+Melusine also offered an easy and nice dashboard app with StreamLit.
+The App contains exploratory dasboard on the email dataset and more specific study on discrimination between the dataset 
+and a neural model classification.
+
+To run the app, run the following command in your terminal in the melusine/data directory :
+
+```python
+streamlit run dashboard_app.py
+```
+
+![](docs/_static/demo_dashboard.gif)
+
+### Ethics Guidelines
+
+Melusine also contains Ethics Guidelines to evaluate AI project.
+The document and criteria are derived in particular from the work of the European Commission.
+
+
+The pdf file is located in the melusine/ethics_guidelines directory :
+
+![](docs/_static/demo_ethics_guide.gif)

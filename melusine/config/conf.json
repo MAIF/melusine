@@ -29,7 +29,7 @@
         "begin_transfer": "^[;\\s]*[-\\s]*Transf[ée]r[ée] par",
         "begin_transfer_cons": "^[;\\s]*[-\\s]*De\\s*:\\s*[^<]*?<?[a-zA-Z0-9._%+-\/=]+\\@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?\\s(?:[;AÀ:]|(?:Envoy[ée]))",
         "transfer_other": "^Le.*,.*a ecrit(?:\\xa0|\\s|\\t):",
-        "extract_from": "(?:Message de\\b|\\bDe\\b||Exp[ée]diteur|\\bFrom\\b)\\s*:\\s*(.{,120}?)\\s*(?:\n|A|À|:|Envoy[ée])",
+        "extract_from": "(?:Message de\\b|\\bDe\\b|Exp[ée]diteur|\\bFrom\\b)\\s*:\\s*(.{,120}?)\\s*(?:\n|A|À|:|Envoy[ée])",
         "extract_to": "(?:Destinataire|\\b[ÀA]\\b|\\bTo\\b)\\s*:\\s*(.{,120}?)\\s(?:\n|Date|Objet)",
         "extract_date": "(?:Envoy[ée]|\\bDate\\b|\\bSent\\b)\\s*:\\s*(.{,120}?)\\s(?:\n|Objet|A|À)",
         "extract_header": "(?:Subject|\\bObjet\\b)\\s*:\\s*(.{,120}?)\\s[;|\n]",
@@ -38,7 +38,7 @@
       },
       "build_historic": {
         "transition_list": [
-          "De\\s*:\\s*[^<]*?<?[a-zA-Z0-9._%+-\/=]+\\@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?\\s[;\nAÀ:](?:.{,80}\n){,3}Objet.+\\n",
+          "De\\s*:\\s*[^<]*?<?[a-zA-Z0-9._%+-\/=]+\\@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?\\s[;\nAÀ:](?:.{,80}\n){,3}Objet.+\n",
           "[- ]*?Mail transf[ée]r[ée].*?[;|\n]",
           "[- ]*?gestionsocietaire@maif.fr a [ée]crit.*?[;|\n]",
           "Courriel original.+?Objet\\s*:.+?[;|\n]",
@@ -67,15 +67,15 @@
         "flags_dict": {
           "\\w+ \\w+\/\\w+\/maif": " flag_cons_ ",
           "<?[a-zA-Z0-9._%+-\/=]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?": " flag_mail_ ",
-          "(?:^| )(?:https?:\/\/)?(?:www\\.)?[-a-zA-Z0-9:%._\\+~#=]{2,256}\\.[a-zA-Z]{2,4}(?:[-a-zA-Z0-9:%_\\+.~#?&\/=]*) ": " flag_url_ ",
-          "(?:0|0033|\\+33 ?|.?33 ?|\\(0\\))+[1-9].??(?:\\d{2}[ |\\.|-]??){4}": " flag_phone_ ",
+          "(?i)\\b((?:https?:(?:/{1,3}|[a-z0-9%])|[a-z0-9.\\-]+[.](?:com|net|org|edu|gov|fr|eu|de|ie|us|uk|ch|in|ru|ai)/)(?:[^\\s()<>{}\\[\\]]+|\\([^\\s()]*?\\([^\\s()]+\\)[^\\s()]*?\\)|\\([^\\s]+?\\))+(?:\\([^\\s()]*?\\([^\\s()]+\\)[^\\s()]*?\\)|\\([^\\s]+?\\)|[^\\s`!()\\[\\]{};:'\".,<>?«»“”‘’])|(?:(?<!@)[a-z0-9]+(?:[.\\-][a-z0-9]+)*[.](?:com|net|org|edu|gov|fr|eu|de|ie|us|uk|ch|in|ru|ai)\\b/?(?!@)))": " flag_url_ ",
+          "(?:0|0033|\\+33\\s?|.?33\\s?|\\(0\\)\\s?)+[1-9](?:\\s|\\.|-)??(?:\\d{2}(?:\\s|\\.|-)??){4}": " flag_phone_ ",
           " [A-Z]{2}[- ]?\\d{3}[- ]?[A-Z]{2}\\b|\\d{3,4}[- ]?[A-Z]{2,3}[- ]?\\d{2,3} ": " flag_immat_ ",
-          "[\\d \\.\\,]+ ?(?:€|EUR|eur|dollars?|\\$)(?:os)?": " flag_amount_ ",
-          "(?:^| )\\d{5}(?! flag_amount_|\\d)": " flag_cp_ ",
-          "\\d{2}[:|H|h]\\d{2}(?::\\d{2})?": " flag_time_ ",
-          "(?:(?:19|20)?\\d{2}[\\/\\-\\.][01]\\d[\\/\\-\\.][0123]\\d|[0123]\\d[\\/\\-\\.][01]\\d[\\/\\-\\.](?:19|20)?\\d{2}|[0123]\\d[\\/\\-][01]\\d) ?(?!€|eur|dollar)": " flag_date_ ",
-          "\\d{1,2} (?:janvier|fevrier|f[ée]vrier|mars|avril|mai|juin|juillet|ao[ûu]t?|septembre|octobre|novembre|d[ée]cembre|janv?\\.?|f[ée]vr?\\.?|avr\\.?|juil\\.?|sept?\\.?|oct\\.?|nov\\.?|d[ée]c\\.?) ?(?:\\d{2,4})?": " flag_date_ "
-        },
+          "(?:\\d\\s|(?:,|\\.|\\d))+\\s?(?:par\\svirements?|euro?s?|€|centimes|\\$|dollars?|EUR)": " flag_amount_ ",
+          "\\b\\d{5}(?!(?:par\\svirements?|euro?s?|€|centimes|\\$|dollars?|EUR)|\\d)": " flag_cp_ ",
+          "\\d{1,2}\\s?(?::|h|H|heure)\\s?(?:\\d{2})?(?::\\d{2})?": " flag_time_ ",
+          "(?<![\\d\\.])(?<!\\d\\s)(?:\\d{4}|\\d{2}|\\d)[\\/\\-\\.\\s]\\d{2}(?:[\\/\\-\\.\\s](?:\\d{4}|\\d{2}|\\d))?(?!(?:\\d|.\\d))(?!\\s?(?:par\\svirements?|euro?s?|€|centimes|\\$|dollars?|EUR)|\\d)": " flag_date_ ",
+          "(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)(?:\\s\\d{1,2}\\b)?(?:\\s(?:\\b(?:janvier|fevrier|mars|avril|mai|juin|juillet|aout?|septembre|octobre|novembre|decembre|janv?\\.?|fevr?\\.?|avr\\.?|juil\\.?|sept?\\.?|oct\\.?|nov\\.?|dec\\.?)\\b)(?:\\s\\d{4}|\\d{2})?)?": " flag_date_ ",
+          "(?:\\b\\d{1,2}\\s?)?\\b(?:janvier|f[eé]vrier|mars|avril|mai|juin|juillet|ao[uû]t?|septembre|octobre|novembre|d[ée]cembre|janv?\\.?|f[ée]vr?\\.?|avr\\.?|juil\\.?|sept?\\.?|oct\\.?|nov\\.?|d[ée]c\\.?)[\\b\\s](?:\\d{2,4})?": " flag_date_ "},
         "clean_header_dict": {
           "^re\\s*:": "",
           "^fw\\s*:": "",
@@ -89,6 +89,7 @@
         "newline_character": "\n"
       },
       "mail_segmenting": {
+        "segmenting_order":["DISCLAIMER", "PJ", "FOOTER", "RE/TR", "HELLO", "GREETINGS", "THANKS"],
         "segmenting_dict": {
           "RE/TR": [],
           "DISCLAIMER": [
@@ -128,14 +129,14 @@
             "^.{0,10}Si vous recevez ce message par erreur",
             "^.{0,10}Retrouvez-nous sur www\\.maif-\\w+\\.fr",
             "afin de contribuer au respect de l'environnement, merci de n'imprimer ce courriel qu'en cas de n[ée]cessit[ée]",
-            "^.{0,10}(?:Envoy[ée]|Num[ée]ris[ée]|Partag[ée]) de(?:puis)?\\s*(?:mon)?\\s*(?:mobile|smartphone|appareil|iP.|Galaxy|Yahoo|(?:l\\'application))"
+            "^.{0,10}(?:Envoy[ée]|Num[ée]ris[ée]|Partag[ée]) de(?:puis)?\\s*(?:mon)?\\s*(?:mobile|smartphone|appareil|iP.|Galaxy|Yahoo|(?:l'application))"
           ],
           "HELLO": [
             "^.{0,16}(?:(?:bonjour)|(?:bonsoir)|(?:madame)|(?:monsieur)|(?:mesdames)|(?:messieurs)).{0,20}(?!.)",
-            "^\\s*cher[()es]{0,6}\\s*(?:\b\\w+\b.{0,4}){1,3}$"
+            "^\\s*cher[()es]{0,6}\\s*(?:\\b\\w+\\b.{0,4}){1,3}$"
           ],
           "THANKS": [
-            "^.{0,20}\\b(?:re)?(?:merci(?: d'avance)?)(?!.{0,5}(?:\\s*de\\s*|d'|mais|cependant|par contre|toutefois|pourtant)).{0,35}(?!.)"
+            "^.{0,20}\\b(?:re)?(?:merci(?:\\s(?:d'|par\\s)avance)?)(?!.{0,5}(?:\\s*de\\s*|d'|mais|cependant|par\\scontre|toutefois|pourtant)).{0,40}(?!.)"
           ]
         },
         "meta_from1": "De\\s*:\\s*(.*?)\\s\n",

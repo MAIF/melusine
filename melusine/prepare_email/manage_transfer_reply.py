@@ -3,14 +3,16 @@ from melusine.config.config import ConfigJsonReader
 
 conf_reader = ConfigJsonReader()
 config = conf_reader.get_config_file()
-regex_transfer_header = config['regex']['manage_transfer_reply']['transfer_header']
-regex_answer_header = config['regex']['manage_transfer_reply']['answer_header']
-regex_begin_transfer = config['regex']['manage_transfer_reply']['begin_transfer']
-regex_begin_transfer_cons = config['regex']['manage_transfer_reply']['begin_transfer_cons']
-regex_extract_from = config['regex']['manage_transfer_reply']['extract_from']
-regex_extract_to = config['regex']['manage_transfer_reply']['extract_to']
-regex_extract_date = config['regex']['manage_transfer_reply']['extract_date']
-regex_extract_header = config['regex']['manage_transfer_reply']['extract_header']
+regex_transfer_header = config["regex"]["manage_transfer_reply"]["transfer_header"]
+regex_answer_header = config["regex"]["manage_transfer_reply"]["answer_header"]
+regex_begin_transfer = config["regex"]["manage_transfer_reply"]["begin_transfer"]
+regex_begin_transfer_cons = config["regex"]["manage_transfer_reply"][
+    "begin_transfer_cons"
+]
+regex_extract_from = config["regex"]["manage_transfer_reply"]["extract_from"]
+regex_extract_to = config["regex"]["manage_transfer_reply"]["extract_to"]
+regex_extract_date = config["regex"]["manage_transfer_reply"]["extract_date"]
+regex_extract_header = config["regex"]["manage_transfer_reply"]["extract_header"]
 
 
 def add_boolean_transfer(row):
@@ -41,9 +43,9 @@ def add_boolean_transfer(row):
     """
     is_transfer = False
     try:
-        if re.match(regex_transfer_header, row['header']):
+        if re.match(regex_transfer_header, row["header"]):
             is_transfer = True
-    except Exception as e:
+    except Exception:
         pass
 
     return is_transfer
@@ -77,9 +79,9 @@ def add_boolean_answer(row):
     """
     is_answer = False
     try:
-        if re.match(regex_answer_header, row['header']):
+        if re.match(regex_answer_header, row["header"]):
             is_answer = True
-    except Exception as e:
+    except Exception:
         pass
 
     return is_answer
@@ -113,11 +115,11 @@ def check_mail_begin_by_transfer(row):
     """
     is_begin_by_transfer = False
     try:
-        if re.search(regex_begin_transfer, row['body']):
+        if re.search(regex_begin_transfer, row["body"]):
             is_begin_by_transfer = True
-        if re.search(regex_begin_transfer_cons, row['body']):
+        if re.search(regex_begin_transfer_cons, row["body"]):
             is_begin_by_transfer = True
-    except Exception as e:
+    except Exception:
         pass
 
     return is_begin_by_transfer
@@ -156,15 +158,16 @@ def update_info_for_transfer_mail(row):
 
     """
     try:
-        if row['is_begin_by_transfer']:
-            row['from'] = re.split(regex_extract_from, row['body'])[1]
-            row['to'] = re.split(regex_extract_to, row['body'])[1]
-            row['date'] = re.split(regex_extract_date, row['body'])[1]
-            row['header'] = re.split(regex_extract_header, row['body'])[1]
-            row['body'] = ''.join(row['body'].split(
-                re.findall(regex_extract_header, row['body'])[0])[1:])
+        if row["is_begin_by_transfer"]:
+            row["from"] = re.split(regex_extract_from, row["body"])[1]
+            row["to"] = re.split(regex_extract_to, row["body"])[1]
+            row["date"] = re.split(regex_extract_date, row["body"])[1]
+            row["header"] = re.split(regex_extract_header, row["body"])[1]
+            row["body"] = "".join(
+                row["body"].split(re.findall(regex_extract_header, row["body"])[0])[1:]
+            )
 
-    except Exception as E:
+    except Exception:
         pass
 
     return row
