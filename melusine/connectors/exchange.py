@@ -17,14 +17,15 @@ try:
     )  # noqa
     from exchangelib.errors import ErrorFolderNotFound  # noqa
 except ModuleNotFoundError:
-    logger.error(
+    logger.exception(
         "To use the Melusine ExchangeConnector, you need to install the exchangelib package"
     )
+    raise
 
 
 class ExchangeConnector:
     """
-    Connector to Outlook Exchange Mailbox.
+    Connector to Outlook Exchange Mailboxs.
     This class contains methods suited for automated emails routing.
     """
 
@@ -111,6 +112,7 @@ class ExchangeConnector:
         sender_address: str
         sender_password: str
         max_wait: int
+            Maximum time (in s) to wait when connecting to mailbox
         """
         credentials = Credentials(sender_address, sender_password)
         exchangelib_config = Configuration(
@@ -386,6 +388,25 @@ class ExchangeConnector:
         print([f.name for f in folder.children])
 
     def send_email(self, to, header, body, attachments):
+        """
+        This method sends an email using the class attribute "sender_address" as sender.
+
+        Parameters
+        ----------
+        to: str or list
+            Address or list of addresses of email recipients
+        header: str
+            Email header
+        body: str
+             Email body
+        attachments: dict
+            Dict containing attachment names as key and attachment file contents as values.
+            Currently, the code is tested for DataFrame attachments only.
+        """
+        if isinstance(to, str):
+            to = [to]
+
+        # Prepare Message object
         m = Message(
             account=self.sender_account,
             subject=header,
