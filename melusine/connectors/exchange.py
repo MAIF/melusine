@@ -1,8 +1,9 @@
 import logging
 import pandas as pd
+from typing import List, Union
 
 logger = logging.getLogger(__name__)
-logging.getLogger('exchangelib').setLevel(logging.WARNING)
+logging.getLogger("exchangelib").setLevel(logging.WARNING)
 
 try:
     from exchangelib import (
@@ -19,6 +20,7 @@ try:
 except ModuleNotFoundError:
     logger.exception(
         "To use the Melusine ExchangeConnector, you need to install the exchangelib package"
+        "pip install exchangelib"
     )
     raise
 
@@ -31,11 +33,11 @@ class ExchangeConnector:
 
     def __init__(
         self,
-        mailbox_address,
-        password,
-        max_wait=60,
-        correction_folder_name=None,
-        done_folder_name=None,
+        mailbox_address: str,
+        password: str,
+        max_wait: int = 60,
+        correction_folder_name: str = None,
+        done_folder_name: str = None,
     ):
         """
         Parameters
@@ -81,7 +83,7 @@ class ExchangeConnector:
         return self._done_folder_name
 
     @done_folder_name.setter
-    def done_folder_name(self, done_folder_name):
+    def done_folder_name(self, done_folder_name: str):
         if not done_folder_name:
             self._done_folder_name = None
             self.done_folder = None
@@ -94,7 +96,7 @@ class ExchangeConnector:
         return self._correction_folder_name
 
     @correction_folder_name.setter
-    def correction_folder_name(self, correction_folder_name):
+    def correction_folder_name(self, correction_folder_name: str):
         if not correction_folder_name:
             self._correction_folder_name = None
             self.correction_folder = None
@@ -102,7 +104,9 @@ class ExchangeConnector:
             self._correction_folder_name = correction_folder_name
             self.correction_folder = self.mailbox_account.inbox / correction_folder_name
 
-    def set_sender_address(self, sender_address, sender_password, max_wait=60):
+    def set_sender_address(
+        self, sender_address: str, sender_password: str, max_wait: int = 60
+    ):
         """
         Email address to use when sending emails.
         This may differ from the mailbox address.
@@ -126,7 +130,7 @@ class ExchangeConnector:
         )
         self.sender = sender_address
 
-    def create_folders(self, folder_list, base_folder_name=None):
+    def create_folders(self, folder_list: List[str], base_folder_name: str = None):
         """Create folders in the mailbox.
 
         Parameters
@@ -156,7 +160,9 @@ class ExchangeConnector:
                     f"Created subfolder {folder_name} in folder {base_folder_name}"
                 )
 
-    def get_emails(self, max_emails=100, base_folder=None):
+    def get_emails(
+        self, max_emails: int = 100, base_folder: str = None
+    ) -> pd.DataFrame:
         """
         Load emails in the inbox.
 
@@ -201,7 +207,7 @@ class ExchangeConnector:
         return df_new_emails
 
     @staticmethod
-    def _extract_email_attributes(email_item):
+    def _extract_email_attributes(email_item: Message) -> dict:
         """
         Load email attributes of interest such as:
         - `message_id` field
@@ -245,10 +251,10 @@ class ExchangeConnector:
 
     def route_emails(
         self,
-        classified_emails,
-        raise_missing_folder_error=False,
-        id_column="message_id",
-        target_column="target",
+        classified_emails: pd.DataFrame,
+        raise_missing_folder_error: bool = False,
+        id_column: str = "message_id",
+        target_column: str = "target",
     ):
         """
         Function to route emails to mailbox folders.
@@ -287,9 +293,9 @@ class ExchangeConnector:
 
     def get_corrections(
         self,
-        max_emails=100,
-        ignore_list=tuple(),
-    ):
+        max_emails: int = 100,
+        ignore_list: List[str] = tuple(),
+    ) -> pd.DataFrame:
         """
         When mailbox users find misclassified emails, they should move them to correction folders.
         This method collects the emails placed in the correction folders.
@@ -351,7 +357,7 @@ class ExchangeConnector:
 
         return df_corrected_emails
 
-    def move_to_done(self, emails_id):
+    def move_to_done(self, emails_id: List[str]):
         """
         Once the corrected emails have been processed, they can be moved to a "Done" folder.
 
@@ -379,7 +385,7 @@ class ExchangeConnector:
             f"Moved {n_items} corrected emails to the folder {self.done_folder_name}"
         )
 
-    def list_subfolders(self, base_folder=None):
+    def list_subfolders(self, base_folder: str = None):
         if base_folder:
             folder = self.mailbox_account.inbox / base_folder
         else:
@@ -387,7 +393,9 @@ class ExchangeConnector:
 
         print([f.name for f in folder.children])
 
-    def send_email(self, to, header, body, attachments):
+    def send_email(
+        self, to: Union[str, List[str]], header: str, body: str, attachments: dict
+    ):
         """
         This method sends an email using the class attribute "sender_address" as sender.
 
@@ -411,14 +419,12 @@ class ExchangeConnector:
             account=self.sender_account,
             subject=header,
             body=HTMLBody(body),
-            to_recipients=to
+            to_recipients=to,
         )
         if attachments:
             for key, value in attachments.items():
-                m.attach(FileAttachment(name=key, content=bytes(value, 'utf-8')))
+                m.attach(FileAttachment(name=key, content=bytes(value, "utf-8")))
 
         # Send email
         m.send()
-        logger.info(
-            f"Email sent from account '{self.sender}'"
-        )
+        logger.info(f"Email sent from account '{self.sender}'")
