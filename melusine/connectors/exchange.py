@@ -98,7 +98,23 @@ class ExchangeConnector:
             f"Connected to mailbox {self.mailbox_address} as user {self.login_address}"
         )
 
-    def _get_mailbox_path(self, path):
+    def _get_mailbox_path(self, path: str) -> Folder:
+        """
+        Utils function to get a mailbox Folder from a path string.
+        Ex:
+        - input string : ROUTING
+        - output Folder : Folder at root/Haut de la banque d'informations/Boîte de réception/ROUTING
+
+        Parameters
+        ----------
+        path : str
+            String describing the desired path to a mailbox folder
+
+        Returns
+        -------
+        mailbox_path: Folder
+            Mailbox Folder corresponding to the input path
+        """
         # Default to inbox
         if not path:
             return self.mailbox_account.inbox
@@ -123,7 +139,22 @@ class ExchangeConnector:
         return mailbox_path
 
     @staticmethod
-    def _get_folder_path(folder):
+    def _get_folder_path(folder: Folder) -> Union[str, None]:
+        """
+        Utils function to get the full mailbox path of a folder.
+        - input Folder : Folder("Routing")
+        - output string : root/Haut de la banque d'informations/Boîte de réception/ROUTING
+
+        Parameters
+        ----------
+        folder : Folder
+            Mailbox folder
+
+        Returns
+        -------
+        path: str
+            Full mailbox path of the input Folder
+        """
         if not isinstance(folder, Folder):
             return None
 
@@ -136,22 +167,34 @@ class ExchangeConnector:
 
     @property
     def routing_folder_path(self):
+        """
+        Path to the routing folder.
+        """
         path = self._get_folder_path(self.routing_folder)
         return path
 
     @routing_folder_path.setter
     def routing_folder_path(self, routing_folder_path: str):
+        """
+        Setter for the routing folder.
+        """
         self.routing_folder = self._get_mailbox_path(routing_folder_path)
         folder_path = self._get_folder_path(self.routing_folder)
         logger.info(f"Routing folder path set to '{folder_path}'")
 
     @property
     def done_folder_path(self):
+        """
+        Path to the done folder.
+        """
         path = self._get_folder_path(self.done_folder)
         return path
 
     @done_folder_path.setter
     def done_folder_path(self, done_folder_path: str):
+        """
+        Setter for the done folder.
+        """
         if not done_folder_path:
             self.done_folder = None
             logger.info(f"Done folder path not set")
@@ -162,11 +205,17 @@ class ExchangeConnector:
 
     @property
     def correction_folder_path(self):
+        """
+        Path to the correction folder.
+        """
         path = self._get_folder_path(self.correction_folder)
         return path
 
     @correction_folder_path.setter
     def correction_folder_path(self, correction_folder_path: str):
+        """
+        Setter for the correction folder.
+        """
         if not correction_folder_path:
             self.correction_folder = None
             logger.info(f"Correction folder path not set")
@@ -204,7 +253,10 @@ class ExchangeConnector:
                 )
 
     def get_emails(
-        self, max_emails: int = 100, base_folder_path: str = None, ascending=True
+        self,
+        max_emails: int = 100,
+        base_folder_path: str = None,
+        ascending: bool = True,
     ) -> pd.DataFrame:
         """
         Load emails in the inbox.
@@ -215,6 +267,8 @@ class ExchangeConnector:
              Maximum number of emails to load
         base_folder_path: str
             Path to folder to fetch
+        ascending: bool
+            Whether emails should be returned in ascending reception date order
 
         Returns
         -------
