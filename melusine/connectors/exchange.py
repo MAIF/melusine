@@ -506,7 +506,7 @@ class ExchangeConnector:
         self, to: Union[str, List[str]], header: str, body: str, attachments: dict
     ):
         """
-        This method sends an email using the class attribute "sender_address" as sender.
+        This method sends an email from the login address (attribute login_address).
 
         Parameters
         ----------
