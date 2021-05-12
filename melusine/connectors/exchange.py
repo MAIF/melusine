@@ -35,22 +35,24 @@ class ExchangeConnector:
 
     def __init__(
         self,
-        mailbox_address: str,
+        login_address: str,
         password: str,
+        mailbox_address: str = None,
         max_wait: int = 60,
         routing_folder_path: str = None,
         correction_folder_path: str = None,
         done_folder_path: str = None,
-        user_address=None,
         target_column="target",
     ):
         """
         Parameters
         ----------
-        mailbox_address: str
-            Mailbox you need to connect to.
+        login_address: str
+            Email address used to login and send emails.
         password: str
             Password to login to the Exchange mailbox
+        mailbox_address: str
+            Email address of the mailbox. By default, the login address is used
         max_wait: int
             Maximum time (in s) to wait when connecting to mailbox
         routing_folder_path: str
@@ -62,18 +64,26 @@ class ExchangeConnector:
         target_column: str
             Name of the DataFrame column containing target folder names
         """
-        self.mailbox_address = mailbox_address
+        self.login_address = login_address
+        self.mailbox_address = mailbox_address or login_address
         self.folder_list = None
         self.target_column = target_column
-        self.user_address = user_address or mailbox_address
 
         # Connect to mailbox
-        self.credentials = Credentials(self.user_address, password)
+        self.credentials = Credentials(self.login_address, password)
         self.exchangelib_config = Configuration(
             retry_policy=FaultTolerance(max_wait=max_wait), credentials=self.credentials
         )
+        # Mailbox account (Routing, Corrections, etc)
         self.mailbox_account = Account(
             self.mailbox_address,
+            credentials=self.credentials,
+            autodiscover=True,
+            config=self.exchangelib_config,
+        )
+        # Sender accounts (send emails)
+        self.sender_account = Account(
+            self.login_address,
             credentials=self.credentials,
             autodiscover=True,
             config=self.exchangelib_config,
@@ -85,7 +95,7 @@ class ExchangeConnector:
         self.done_folder_path = done_folder_path
 
         logger.info(
-            f"Connected to mailbox {self.mailbox_address} as user {self.user_address}"
+            f"Connected to mailbox {self.mailbox_address} as user {self.login_address}"
         )
 
     def _get_mailbox_path(self, path):
@@ -94,8 +104,8 @@ class ExchangeConnector:
             return self.mailbox_account.inbox
 
         # Start mailbox path from root folder
-        if re.match("/?root", path, flags=re.I):
-            path = re.split("/?root/?", path, flags=re.I)[1]
+        if re.match("/?root/", path, flags=re.I):
+            path = re.split("/?root/", path, flags=re.I)[1]
             mailbox_path = self.mailbox_account.root
 
         # Start mailbox path from inbox folder
@@ -112,58 +122,58 @@ class ExchangeConnector:
 
         return mailbox_path
 
+    @staticmethod
+    def _get_folder_path(folder):
+        if not isinstance(folder, Folder):
+            return None
+
+        path = folder.name
+        while folder.name != "root":
+            folder = folder.parent
+            path = folder.name + "/" + path
+
+        return path
+
     @property
     def routing_folder_path(self):
-        return self._routing_folder_path
+        path = self._get_folder_path(self.routing_folder)
+        return path
 
     @routing_folder_path.setter
     def routing_folder_path(self, routing_folder_path: str):
-        if not routing_folder_path:
-            self._routing_folder_path = None
-            self.routing_folder = None
-        else:
-            self._routing_folder_path = routing_folder_path
-            self.routing_folder = self._get_mailbox_path(routing_folder_path)
+        self.routing_folder = self._get_mailbox_path(routing_folder_path)
+        folder_path = self._get_folder_path(self.routing_folder)
+        logger.info(f"Routing folder path set to '{folder_path}'")
 
     @property
     def done_folder_path(self):
-        return self._done_folder_path
+        path = self._get_folder_path(self.done_folder)
+        return path
 
     @done_folder_path.setter
     def done_folder_path(self, done_folder_path: str):
         if not done_folder_path:
-            self._done_folder_path = None
             self.done_folder = None
+            logger.info(f"Done folder path not set")
         else:
-            self._done_folder_path = done_folder_path
             self.done_folder = self._get_mailbox_path(done_folder_path)
+            folder_path = self._get_folder_path(self.done_folder)
+            logger.info(f"Done folder path set to '{folder_path}'")
 
     @property
     def correction_folder_path(self):
-        return self._correction_folder_path
+        path = self._get_folder_path(self.correction_folder)
+        return path
 
     @correction_folder_path.setter
     def correction_folder_path(self, correction_folder_path: str):
         if not correction_folder_path:
-            self._correction_folder_path = None
             self.correction_folder = None
+            logger.info(f"Correction folder path not set")
         else:
-            self._correction_folder_path = correction_folder_path
             self.correction_folder = self._get_mailbox_path(correction_folder_path)
-
-    @property
-    def sender_account(self):
-        if not self.user_address:
-            raise AttributeError(
-                f"You need to set the attribute user_address to send emails"
-            )
-
-        return Account(
-            self.user_address,
-            credentials=self.credentials,
-            autodiscover=True,
-            config=self.exchangelib_config,
-        )
+            folder_path = self._get_folder_path(self.correction_folder)
+            logger.info(f"Correction folder path set to '{folder_path}'")
 
     def create_folders(self, folder_list: List[str], base_folder_path: str = None):
         """Create folders in the mailbox.
@@ -184,16 +194,17 @@ class ExchangeConnector:
         existing_folders = [f.name for f in base_folder.children]
 
         # Create new folders
+        base_folder_name = base_folder_path or "Inbox"
         for folder_name in folder_list:
             if folder_name not in existing_folders:
                 f = Folder(parent=base_folder, name=folder_name)
                 f.save()
                 logger.info(
-                    f"Created subfolder {folder_name} in folder {base_folder_path}"
+                    f"Created subfolder {folder_name} in folder {base_folder_name}"
                 )
 
     def get_emails(
-        self, max_emails: int = 100, base_folder_path: str = None
+        self, max_emails: int = 100, base_folder_path: str = None, ascending=True
     ) -> pd.DataFrame:
         """
         Load emails in the inbox.
@@ -212,6 +223,10 @@ class ExchangeConnector:
         """
         logger.info(f"Reading new emails for mailbox '{self.mailbox_address}'")
         base_folder = self._get_mailbox_path(base_folder_path)
+        if ascending:
+            order = "datetime_received"
+        else:
+            order = "-datetime_received"
 
         all_new_data = (
             base_folder.all()
@@ -224,7 +239,7 @@ class ExchangeConnector:
                 "text_body",
                 "attachments",
             )
-            .order_by("datetime_received")[:max_emails]
+            .order_by(order)[:max_emails]
         )
 
         new_emails = [
@@ -344,9 +359,9 @@ class ExchangeConnector:
         df_corrected_emails: pandas.DataFrame
             DataFrame containing the misclassified emails ids and associated correction folder
         """
-        if not self.correction_folder_path:
+        if self.correction_folder is None:
             raise AttributeError(
-                "You need to specify a correction_folder_name when instantiating the ExchangeConnector class."
+                "You need to set the class attribute `correction_folder_path` to use `get_corrections`."
             )
 
         logger.info(
@@ -402,10 +417,10 @@ class ExchangeConnector:
         emails_id: list
             List of emails IDs to be moved to the done folder.
         """
-        if (not self.done_folder_path) or (not self.correction_folder_path):
+        if (self.correction_folder is None) or (self.done_folder is None):
             raise AttributeError(
-                "You need to specify a done_folder_name and a correction_folder_name"
-                "when instantiating the ExchangeConnector class."
+                "You need to set the class attribute `done_folder_path` "
+                "and the class attribute `correction_folder_path` to use `move_to_done`."
             )
         # Collect corrected emails
         items = self.correction_folder.children.filter(message_id__in=emails_id).only(
@@ -467,4 +482,4 @@ class ExchangeConnector:
 
         # Send email
         m.send()
-        logger.info(f"Email sent from address '{self.user_address}'")
+        logger.info(f"Email sent from address '{self.login_address}'")
