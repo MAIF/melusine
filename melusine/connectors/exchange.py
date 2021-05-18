@@ -5,7 +5,6 @@ import pandas as pd
 from typing import List, Union
 
 logger = logging.getLogger(__name__)
-logging.getLogger("exchangelib").setLevel(logging.WARNING)
 
 try:
     from exchangelib import (
