@@ -395,6 +395,7 @@ class ExchangeConnector:
         self,
         max_emails: int = 100,
         ignore_list: List[str] = tuple(),
+        correction_column_name: str = "correction",
     ) -> pd.DataFrame:
         """
         When mailbox users find misclassified emails, they should move them to correction folders.
@@ -406,6 +407,8 @@ class ExchangeConnector:
              Maximum number of emails to fetch at once
         ignore_list: list
              List of folders that should be ignored when fetching emails
+        correction_column_name: str
+            Name of the column containing the correction folder in the returned DataFrame
 
         Returns
         -------
@@ -451,7 +454,7 @@ class ExchangeConnector:
 
             # Add correction folder to email attributes
             for item in emails:
-                item.update({"correction": folder_name})
+                item.update({correction_column_name: folder_name})
 
             all_corrected_emails.extend(emails)
             logger.info(f"Found {len(emails)} corrected emails in folder {folder}")
