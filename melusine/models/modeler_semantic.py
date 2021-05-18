@@ -75,9 +75,9 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
 
     def __init__(
         self,
-        base_seed_words,
-        tokens_column,
-        n_jobs=1,
+        base_seed_words: list,
+        tokens_column: str,
+        n_jobs: int = 1,
         base_anti_seed_words=(),
         progress_bar=False,
         extend_seed_word_list=False,
