@@ -8,11 +8,11 @@ from melusine.config.config import ConfigJsonReader
 
 conf_reader = ConfigJsonReader()
 config = conf_reader.get_config_file()
-common_terms = config["words_list"]["stopwords"] + config["words_list"]["names"]
+_common_terms = config["words_list"]["stopwords"] + config["words_list"]["names"]
 
 regex_tokenize_with_punctuations = r"(.*?[\s'])"
 tokenize_without_punctuations = r"(.*?)[\s']"
-regex_process = "\w+(?:[\?\-'\"_]\w+)*"
+regex_process = r"\w+(?:[\?\-'\"_]\w+)*"
 regex_split_parts = r"(.*?[;.,?!])"
 
 
@@ -124,8 +124,8 @@ def _rebuild_phrased_text_with_punctuation(
     """Rebuilds the initial text with phrased words."""
     i = 0
     for pre_typo, word, separator in zip(pre_typos_list, words_list, separators_list):
-        phrased_word = re.sub("\W", "", phrased_words_list[i])
-        word = re.sub("\W", "", word)
+        phrased_word = re.sub(r"\W", "", phrased_words_list[i])
+        word = re.sub(r"\W", "", word)
         if len(phrased_word) > len(word):
             if _check_last_word_phrased(phrased_word, word):
                 phrased_words_list[i] = pre_typo + phrased_word + separator
@@ -177,9 +177,6 @@ class Phraser:
     ----------
     common_terms, threshold, min_count,
 
-    stream : Streamer object,
-        Builds a stream a tokens from a pd.Dataframe to train the embeddings.
-
     phraser : Phraser object from Gensim
 
     Examples
@@ -195,11 +192,11 @@ class Phraser:
     def __init__(
         self,
         input_column="clean_body",
-        common_terms=common_terms,
+        common_terms=_common_terms,
         threshold=350,
         min_count=200,
     ):
-        self.logger = logging.getLogger("NLUtils.Phraser")
+        self.logger = logging.getLogger(__name__)
         self.logger.debug("creating a Phraser instance")
         self.common_terms = common_terms
         self.threshold = threshold
@@ -210,6 +207,7 @@ class Phraser:
         ch.setLevel(logging.INFO)
         ch.setFormatter(formatter)
         self.logger.addHandler(ch)
+        self.phraser = None
 
     def __getstate__(self):
         """should return a dict of attributes that will be pickled
@@ -255,7 +253,7 @@ class Phraser:
         self.streamer.to_stream(X)
         phrases = gensim.models.Phrases(
             self.streamer.stream,
-            common_terms=self.common_terms,
+            connector_words=self.common_terms,
             threshold=self.threshold,
             min_count=self.min_count,
         )
