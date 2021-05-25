@@ -165,9 +165,14 @@ class ExchangeConnector:
         return path
 
     @property
-    def routing_folder_path(self):
+    def routing_folder_path(self) -> Union[str, None]:
         """
-        Path to the routing folder.
+        Get the path to the Routing folder.
+
+        Returns
+        -------
+        path: str
+            Path to the Routing folder
         """
         path = self._get_folder_path(self.routing_folder)
         return path
@@ -182,9 +187,14 @@ class ExchangeConnector:
         logger.info(f"Routing folder path set to '{folder_path}'")
 
     @property
-    def done_folder_path(self):
+    def done_folder_path(self) -> Union[str, None]:
         """
-        Path to the done folder.
+        Get the path to the Done folder.
+
+        Returns
+        -------
+        path: str
+            Path to the Done folder
         """
         path = self._get_folder_path(self.done_folder)
         return path
@@ -203,9 +213,14 @@ class ExchangeConnector:
             logger.info(f"Done folder path set to '{folder_path}'")
 
     @property
-    def correction_folder_path(self):
+    def correction_folder_path(self) -> Union[str, None]:
         """
-        Path to the correction folder.
+        Get the path to the Correction folder.
+
+        Returns
+        -------
+        path: str
+            Path to the Correction folder
         """
         path = self._get_folder_path(self.correction_folder)
         return path
