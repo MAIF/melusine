@@ -212,7 +212,7 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
             all the seedwords found with the given prefixes
 
         """
-        words = list(embedding.embedding.vocab.keys())
+        words = list(embedding.embedding.key_to_index.keys())
         seed_dict = dict()
         seed_list = []
 
@@ -246,7 +246,7 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
         if type(embedding) == Word2Vec:
             embedding = embedding.wv
 
-        words = list(embedding.embedding.vocab.keys())
+        words = list(embedding.embedding.key_to_index.keys())
 
         lexicon_mat = np.zeros((len(seed_list), len(words)))
 

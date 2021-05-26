@@ -14,7 +14,7 @@ with open("HISTORY.rst") as history_file:
 requirements = [
     "pandas>=0.25.0",
     "scikit-learn>=0.19.0",
-    "gensim>=3.3.0",
+    "gensim>=4.0.0",
     "tqdm>=4.34",
     "streamlit>=0.57.3",
     "tensorflow>=2.2.0",
