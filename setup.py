@@ -18,13 +18,12 @@ requirements = [
     "tqdm>=4.34",
     "streamlit>=0.57.3",
     "tensorflow>=2.2.0",
-    "unidecode",
+    "unidecode>=1.0",
     "flashtext>=2.7",
     "plotly",
-    "transformers==3.4.0",
     "h5py==2.10.0",
     "numpy>=1.16.4,<1.19.0",
-    "joblib",
+    "joblib>=1.0",
 ]
 
 setup_requirements = [
@@ -34,6 +33,16 @@ setup_requirements = [
 test_requirements = [
     "pytest",
 ]
+
+exchange_requirements = ["exchangelib>=4.2.0"]
+transformers_requirements = ["transformers==3.4.0"]
+
+extras_require = {
+    "exchange": exchange_requirements,
+    "transformers": transformers_requirements
+}
+all_requirements = [y for x in extras_require.values() for y in x]
+extras_require["all"] = all_requirements
 
 setup(
     author="Sacha Samama, Tom Stringer, Antoine Simoulin, Benoit Lebreton, Tiphaine Fabre",
@@ -85,6 +94,7 @@ setup(
     setup_requires=setup_requirements,
     test_suite="tests",
     tests_require=test_requirements,
+    extras_require=extras_require,
     url="https://github.com/MAIF/melusine",
     version="2.2.6",
     zip_safe=False,
