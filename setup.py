@@ -18,6 +18,7 @@ requirements = [
     "tqdm>=4.34",
     "streamlit>=0.57.3",
     "tensorflow>=2.2.0",
+    "transformers==3.4.0",
     "unidecode>=1.0",
     "flashtext>=2.7",
     "plotly",
@@ -35,11 +36,12 @@ test_requirements = [
 ]
 
 exchange_requirements = ["exchangelib>=4.2.0"]
+# Paving the way towards making transformers optional
 transformers_requirements = ["transformers==3.4.0"]
 
 extras_require = {
     "exchange": exchange_requirements,
-    "transformers": transformers_requirements
+    "transformers": transformers_requirements,
 }
 all_requirements = [y for x in extras_require.values() for y in x]
 extras_require["all"] = all_requirements
