@@ -283,13 +283,8 @@ class Embedding:
         self.create_keyedvector_from_matrix(embedding_matrix, self.word2id)
 
     def train_docterm(self):
-        """Train a Count Vectorizer to compute a Doc-Term Matrix relative to a corpus.
-        Parameters
-        ----------
-        X : pd.Dataframe
-            Containing a column with tokenized documents
-        input_column: str
-            Name of the input column containing tokens
+        """
+        Train a Count Vectorizer to compute a Doc-Term Matrix relative to a corpus.
         """
 
         def dummy_function(doc):
@@ -345,7 +340,7 @@ class Embedding:
         """Fits a Word2Vec Embedding on the given documents, and update the embedding attribute."""
 
         embedding = Word2Vec(
-            size=self.train_params["size"],
+            vector_size=self.train_params["size"],
             alpha=self.train_params["alpha"],
             window=self.train_params["window"],
             min_count=self.train_params["min_count"],
@@ -359,7 +354,7 @@ class Embedding:
             negative=self.train_params["negative"],
             ns_exponent=self.train_params["ns_exponent"],
             cbow_mean=self.train_params["cbow_mean"],
-            iter=self.train_params["iter"],
+            epochs=self.train_params["iter"],
             null_word=self.train_params["null_word"],
             trim_rule=self.train_params["trim_rule"],
             sorted_vocab=self.train_params["sorted_vocab"],
@@ -416,9 +411,9 @@ class Embedding:
         kv.vector_size = vector_size
         kv.vectors = embedding_matrix
 
-        kv.index2word = list(vocab.keys())
+        kv.index_to_key = list(vocab.keys())
 
-        kv.vocab = {
+        kv.key_to_index = {
             word: Vocab(index=word_id, count=0) for word, word_id in vocab.items()
         }
 

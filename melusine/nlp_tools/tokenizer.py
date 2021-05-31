@@ -164,14 +164,26 @@ class Tokenizer(BaseEstimator, TransformerMixin):
             tokens = []
         return tokens
 
-    def _remove_stopwords(self, list):
-        """Removes stopwords from list if stop_removal parameter
-        set to True and replaces names by flag_name_"""
+    def _remove_stopwords(self, token_list):
+        """
+        Removes stopwords from list if stop_removal parameter
+        set to True and replaces names by flag_name_.
+
+        Parameters
+        ----------
+        token_list: list
+            List of tokens
+
+        Returns
+        -------
+        token_list: list
+            List of tokens without stopwords
+        """
         if self.stop_removal:
             return [
                 self.name_flagger.replace_keywords(tok)
-                for tok in list
+                for tok in token_list
                 if tok not in stopwords
             ]
         else:
-            return list
+            return token_list

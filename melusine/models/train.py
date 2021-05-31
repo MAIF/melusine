@@ -382,7 +382,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         The vocabulary of the NN is those of the pretrained embedding
         """
         pretrained_embedding = self.pretrained_embedding
-        self.vocabulary = pretrained_embedding.embedding.wv.index2word
+        self.vocabulary = pretrained_embedding.embedding.index_to_key
         vocab_size = len(self.vocabulary)
         vector_dim = pretrained_embedding.embedding.vector_size
         embedding_matrix = np.zeros((vocab_size + 2, vector_dim))
@@ -390,7 +390,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             if word not in ["PAD", "UNK"]:
                 embedding_matrix[
                     index + 2, :
-                ] = pretrained_embedding.embedding.wv.get_vector(word)
+                ] = pretrained_embedding.embedding[word]
         embedding_matrix[1, :] = np.mean(embedding_matrix, axis=0)
 
         self.vocabulary.insert(0, "PAD")
