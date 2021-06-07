@@ -77,6 +77,7 @@ setup(
         "melusine.summarizer": "melusine/summarizer",
         "melusine.models": "melusine/models",
         "melusine.data": "melusine/data",
+        "melusine.connectors": "melusine/connectors",
     },
     packages=[
         "melusine",
@@ -87,6 +88,7 @@ setup(
         "melusine.summarizer",
         "melusine.models",
         "melusine.data",
+        "melusine.connectors",
     ],
     data_files=[
         ("config", ["melusine/config/conf.json"]),
