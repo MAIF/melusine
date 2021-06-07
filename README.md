@@ -24,6 +24,16 @@ Use **Melusine** if you need a library which :
 **Melusine** is compatible with `Python >= 3.5`.
 
 ## Release Notes
+### 2.3
+New features:
+  * Added a class `ExchangeConnector` to interact with an Exchange Mailbox
+  * Added new tutorial `tutorial14_exchange_connector` to demonstrate the usage of the `ExchangeConnector` class
+
+Updates:
+  * Gensim upgrade (4.0.0)
+  * Propagate modifications stemming from the Gensim upgrade (code and tutorials)
+  * Package deployment : switch from Travis CI to Github actions
+
 ### 2.0
 New features:
   * Attentive Neural Networks are now available. :tada: We propose you an original Transformer architecture as well 
