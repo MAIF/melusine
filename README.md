@@ -1,3 +1,6 @@
+🎉 **We just released Melusine 2.3.1 including a new ExchangeConnector class to interact with Outlook mailboxes. 
+Implement email routing on your own mailbox by following the new [tutorial](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial14_exchange_connector.ipynb)** 🎉
+
 # Melusine
 
 <!-- <img src=`docs/_static/melusine.png` width=`200`/> -->
@@ -330,7 +333,7 @@ and a neural model classification.
 
 To run the app, run the following command in your terminal in the melusine/data directory :
 
-```python
+```bash
 streamlit run dashboard_app.py
 ```
 
