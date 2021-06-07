@@ -107,7 +107,7 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
         n_docs_in_class=100,
         keywords_coef=10,
     ):
-        self.max_tfidf_features_ = max_tfidf_features
+        self.max_tfidf_features = max_tfidf_features
         self.tfidf_vectorizer = TfidfVectorizer(max_features=max_tfidf_features)
         self.keywords = keywords
         self.stopwords = stopwords
