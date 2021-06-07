@@ -30,7 +30,7 @@ New features:
   * Added new tutorial `tutorial14_exchange_connector` to demonstrate the usage of the `ExchangeConnector` class
 
 Updates:
-  * Gensim upgrade (4.0.0)
+  * Gensim upgrade ([4.0.0](https://github.com/RaRe-Technologies/gensim/releases))
   * Propagate modifications stemming from the Gensim upgrade (code and tutorials)
   * Package deployment : switch from Travis CI to Github actions
 
