@@ -4,8 +4,8 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
 
-🎉 **We just released Melusine 2.3.1 including a new ExchangeConnector class to interact with Outlook mailboxes. 
-Implement email routing on your own mailbox by following the new [tutorial](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial14_exchange_connector.ipynb)** 🎉
+🎉 We just released **Melusine 2.3.1** including a new `ExchangeConnector` class to interact with **Outlook mailboxes**. 
+Implement email routing on your own mailbox by following the **new [tutorial](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial14_exchange_connector.ipynb)**. 🎉
 
 # Melusine
 
