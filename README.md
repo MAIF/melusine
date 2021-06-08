@@ -1,11 +1,16 @@
+[![pypi badge](https://img.shields.io/pypi/v/melusine.svg)](https://pypi.python.org/pypi/melusine)
+[![Build Status](https://travis-ci.org/MAIF/melusine.svg?branch=master)](https://travis-ci.org/MAIF/melusine)
+[![documentation badge](https://readthedocs.org/projects/melusine/badge/?version=latest)](https://readthedocs.org/projects/melusine/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
+
+🎉 We just released **Melusine 2.3.1** including a new `ExchangeConnector` class to interact with **Outlook mailboxes**. 
+Implement email routing on your own mailbox by following the **new [tutorial](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial14_exchange_connector.ipynb)**. 🎉
+
 # Melusine
 
 <!-- <img src=`docs/_static/melusine.png` width=`200`/> -->
 ![](docs/_static/melusine.png)
-
-[![pypi badge](https://img.shields.io/pypi/v/melusine.svg)](https://pypi.python.org/pypi/melusine)
-[![Build Status](https://travis-ci.org/MAIF/melusine.svg?branch=master)](https://travis-ci.org/MAIF/melusine)
-[![documentation badge](https://readthedocs.org/projects/melusine/badge/?version=latest)](https://readthedocs.org/projects/melusine/)
 
 - Free software: Apache Software License 2.0
 - Documentation: [https://melusine.readthedocs.io](https://melusine.readthedocs.io).
@@ -15,15 +20,25 @@
 **Melusine** is a high-level Python library for email classification and feature extraction,
 written in Python and capable of running on top of Scikit-Learn, Tensorflow 2 and Keras.
 Integrated models runs with Tensorflow 2.2.
-It is developed with a focus on emails written in french.
+It is developed with a focus on emails written in French.
 
-Use **Melusine** if you need a library which :
-  * Supports both convolutional networks and recurrent networks, as well as combinations of the two.
+Use **Melusine** if you need a library which:
+  * Supports transformers, CNN and RNN models.
   * Runs seamlessly on CPU and GPU.
 
-**Melusine** is compatible with `Python >= 3.5`.
+**Melusine** is compatible with `Python >= 3.6`.
 
 ## Release Notes
+### 2.3
+New features:
+  * Added a class `ExchangeConnector` to interact with an Exchange Mailbox
+  * Added new tutorial `tutorial14_exchange_connector` to demonstrate the usage of the `ExchangeConnector` class
+
+Updates:
+  * Gensim upgrade ([4.0.0](https://github.com/RaRe-Technologies/gensim/releases))
+  * Propagate modifications stemming from the Gensim upgrade (code and tutorials)
+  * Package deployment : switch from Travis CI to Github actions
+
 ### 2.0
 New features:
   * Attentive Neural Networks are now available. :tada: We propose you an original Transformer architecture as well 
@@ -320,7 +335,7 @@ and a neural model classification.
 
 To run the app, run the following command in your terminal in the melusine/data directory :
 
-```python
+```bash
 streamlit run dashboard_app.py
 ```
 

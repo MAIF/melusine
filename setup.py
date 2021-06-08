@@ -8,9 +8,6 @@ from setuptools import setup
 with open("README.md") as readme_file:
     readme = readme_file.read()
 
-with open("HISTORY.rst") as history_file:
-    history = history_file.read()
-
 requirements = [
     "pandas>=0.25.0",
     "scikit-learn>=0.19.0",
