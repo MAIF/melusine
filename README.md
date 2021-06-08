@@ -20,13 +20,13 @@ Implement email routing on your own mailbox by following the **new [tutorial](ht
 **Melusine** is a high-level Python library for email classification and feature extraction,
 written in Python and capable of running on top of Scikit-Learn, Tensorflow 2 and Keras.
 Integrated models runs with Tensorflow 2.2.
-It is developed with a focus on emails written in french.
+It is developed with a focus on emails written in French.
 
-Use **Melusine** if you need a library which :
-  * Supports both convolutional networks and recurrent networks, as well as combinations of the two.
+Use **Melusine** if you need a library which:
+  * Supports transformers, CNN and RNN models.
   * Runs seamlessly on CPU and GPU.
 
-**Melusine** is compatible with `Python >= 3.5`.
+**Melusine** is compatible with `Python >= 3.6`.
 
 ## Release Notes
 ### 2.3
