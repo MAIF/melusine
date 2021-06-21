@@ -1,5 +1,6 @@
 import logging
 import re
+from flashtext import KeywordProcessor
 from sklearn.base import BaseEstimator, TransformerMixin
 from melusine.config.config import ConfigJsonReader
 from melusine.utils.transformer_scheduler import TransformerScheduler
@@ -10,6 +11,34 @@ config = conf_reader.get_config_file()
 stopwords = config["words_list"]["stopwords"]
 names_list = config["words_list"]["names"]
 regex_tokenize = config["regex"]["tokenizer"]
+
+
+def _create_flashtext_object():
+    """
+    Instantiates a Flashtext object.
+    Separators are specified to not be considered as word boundaries
+    """
+    keyword_processor = KeywordProcessor()
+    # special characters are included as natively flashtext library does not handle them correctly
+    for separator in [
+        "-",
+        "_",
+        "/",
+        "é",
+        "è",
+        "ê",
+        "â",
+        "ô",
+        "ö",
+        "ü",
+        "û",
+        "ù",
+        "ï",
+        "î",
+        "æ",
+    ]:
+        keyword_processor.add_non_word_boundary(separator)
+    return keyword_processor
 
 
 class Tokenizer(BaseEstimator, TransformerMixin):
@@ -36,7 +65,7 @@ class Tokenizer(BaseEstimator, TransformerMixin):
 
     Attributes
     ----------
-    stopwords, stop_removal, n_jobs
+    stopwords, stop_removal, n_jobs, name_flagger
 
     Examples
     --------
@@ -48,17 +77,20 @@ class Tokenizer(BaseEstimator, TransformerMixin):
 
     """
 
-    def __init__(self,
-                 input_column='clean_text',
-                 stopwords=stopwords,
-                 stop_removal=True,
-                 n_jobs=20):
+    def __init__(
+        self,
+        input_column="clean_text",
+        stopwords=stopwords,
+        stop_removal=True,
+        n_jobs=20,
+    ):
         self.input_column = input_column
         self.stopwords = set(stopwords)
         self.stop_removal = stop_removal
-        self.names_list = set(names_list)
         self.n_jobs = n_jobs
         self.logger = logging.getLogger(__name__)
+        self.name_flagger = _create_flashtext_object()
+        self.name_flagger.add_keywords_from_dict({"flag_name_": names_list})
 
     def __getstate__(self):
         """should return a dict of attributes that will be pickled
@@ -66,21 +98,20 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         avoid the pickling of the logger
         """
         d = self.__dict__.copy()
-        d['n_jobs'] = 1
-        if 'logger' in d:
-            d['logger'] = d['logger'].name
+        d["n_jobs"] = 1
+        if "logger" in d:
+            d["logger"] = d["logger"].name
         return d
 
     def __setstate__(self, d):
         """To override the default pickling behavior and
         avoid the pickling of the logger"""
-        if 'logger' in d:
-            d['logger'] = logging.getLogger(d['logger'])
+        if "logger" in d:
+            d["logger"] = logging.getLogger(d["logger"])
         self.__dict__.update(d)
 
     def fit(self, X, y=None):
-        """Unused method. Defined only for compatibility with scikit-learn API.
-        """
+        """Unused method. Defined only for compatibility with scikit-learn API."""
         return self
 
     def transform(self, X):
@@ -95,17 +126,17 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         -------
         pandas.DataFrame
         """
-        self.logger.debug('Start transform tokenizing')
+        self.logger.debug("Start transform tokenizing")
 
         if isinstance(X, dict):
             apply_func = TransformerScheduler.apply_dict
         else:
             apply_func = TransformerScheduler.apply_pandas
 
-        X['tokens'] = apply_func(X, self.tokenize)
-        X['tokens'] = apply_func(X, lambda x: x['tokens'][0])
+        X["tokens"] = apply_func(X, self.tokenize)
+        X["tokens"] = apply_func(X, lambda x: x["tokens"][0])
 
-        self.logger.debug('Done.')
+        self.logger.debug("Done.")
         return X
 
     def tokenize(self, row):
@@ -127,16 +158,32 @@ class Tokenizer(BaseEstimator, TransformerMixin):
     def _tokenize(self, text, pattern=regex_tokenize):
         """Returns list of tokens from text."""
         if isinstance(text, str):
-            tokens = re.findall(pattern, text, re.M+re.DOTALL)
+            tokens = re.findall(pattern, text, re.M + re.DOTALL)
             tokens = self._remove_stopwords(tokens)
         else:
             tokens = []
         return tokens
 
-    def _remove_stopwords(self, list):
-        """ Removes stopwords from list if stop_removal parameter
-        set to True."""
+    def _remove_stopwords(self, token_list):
+        """
+        Removes stopwords from list if stop_removal parameter
+        set to True and replaces names by flag_name_.
+
+        Parameters
+        ----------
+        token_list: list
+            List of tokens
+
+        Returns
+        -------
+        token_list: list
+            List of tokens without stopwords
+        """
         if self.stop_removal:
-            return [tok if tok not in self.names_list else "flag_name_" for tok in list if tok not in self.stopwords]
+            return [
+                self.name_flagger.replace_keywords(tok)
+                for tok in token_list
+                if tok not in stopwords
+            ]
         else:
-            return list
+            return token_list

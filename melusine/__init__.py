@@ -1,5 +1,5 @@
-"""Top-level package for Melusine."""
+"""Top-level package for melusine."""
 
 __author__ = """Sacha Samama & Tom Stringer & Hugo Perrier"""
-__email__ = 'ssamama@quantmetry.com, tstringer@quantmetry.com, hperrier@quantmetry.com'
-__version__ = '1.9.5'
+__email__ = "ssamama@quantmetry.com, tstringer@quantmetry.com, hperrier@quantmetry.com"
+__version__ = "2.3.1"

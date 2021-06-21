@@ -1,11 +1,16 @@
+[![pypi badge](https://img.shields.io/pypi/v/melusine.svg)](https://pypi.python.org/pypi/melusine)
+[![Build Status](https://travis-ci.org/MAIF/melusine.svg?branch=master)](https://travis-ci.org/MAIF/melusine)
+[![documentation badge](https://readthedocs.org/projects/melusine/badge/?version=latest)](https://readthedocs.org/projects/melusine/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
+
+🎉 We just released **Melusine 2.3.1** including a new `ExchangeConnector` class to interact with **Outlook mailboxes**. 
+Implement email routing on your own mailbox by following the **new [tutorial](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial14_exchange_connector.ipynb)**. 🎉
+
 # Melusine
 
 <!-- <img src=`docs/_static/melusine.png` width=`200`/> -->
 ![](docs/_static/melusine.png)
-
-[![pypi badge](https://img.shields.io/pypi/v/melusine.svg)](https://pypi.python.org/pypi/melusine)
-[![Build Status](https://travis-ci.org/MAIF/melusine.svg?branch=master)](https://travis-ci.org/MAIF/melusine)
-[![documentation badge](https://readthedocs.org/projects/melusine/badge/?version=latest)](https://readthedocs.org/projects/melusine/)
 
 - Free software: Apache Software License 2.0
 - Documentation: [https://melusine.readthedocs.io](https://melusine.readthedocs.io).
@@ -13,15 +18,49 @@
 # Overview
 
 **Melusine** is a high-level Python library for email classification and feature extraction,
-written in Python and capable of running on top of Scikit-Learn, Keras or Tensorflow.
-It is developed with a focus on emails written in french.
+written in Python and capable of running on top of Scikit-Learn, Tensorflow 2 and Keras.
+Integrated models runs with Tensorflow 2.2.
+It is developed with a focus on emails written in French.
 
-Use **Melusine** if you need a library which :
-  * Supports both convolutional networks and recurrent networks, as well as combinations of the two.
+Use **Melusine** if you need a library which:
+  * Supports transformers, CNN and RNN models.
   * Runs seamlessly on CPU and GPU.
 
-**Melusine** is compatible with `Python >= 3.5`.
+**Melusine** is compatible with `Python >= 3.6`.
 
+## Release Notes
+### 2.3
+New features:
+  * Added a class `ExchangeConnector` to interact with an Exchange Mailbox
+  * Added new tutorial `tutorial14_exchange_connector` to demonstrate the usage of the `ExchangeConnector` class
+
+Updates:
+  * Gensim upgrade ([4.0.0](https://github.com/RaRe-Technologies/gensim/releases))
+  * Propagate modifications stemming from the Gensim upgrade (code and tutorials)
+  * Package deployment : switch from Travis CI to Github actions
+
+### 2.0
+New features:
+  * Attentive Neural Networks are now available. :tada: We propose you an original Transformer architecture as well 
+    as pre-trained BERT models (Camembert and Flaubert)
+  * Tutorial 13 will explain you how to get started with these models and attempt to compare them.
+  * Validation data can now be used to train models (See fit function from NeuralModel for usage)
+  * The activation function can now be modified to adapt to your needs (See NeuralModel init for usage)
+
+### 1.10.0
+Updates:
+  * Melusine is now running with Tensorflow 2.2
+    
+### 1.9.6
+
+New features:
+  * Flashtext library is now used to flag names instead of regex. It allows a faster computation.
+
+### 1.9.5
+
+New features:
+  * An Ethics Guide is now available to evaluate AI projects, with guidelines and questionnaire. The questionnaire is based on criteria derived in particular from the work of the European Commission and grouped by categories.
+  * Melusine also offers an easy and nice dashboard app with StreamLit. The App contains exploratory dashboard on the email dataset and a more specific study on discrimination between the dataset and a neural model classification.
 
 ## The Melusine package
 
@@ -204,6 +243,7 @@ df_email = keywords_generator.fit_transform(df_email)
 
 ### Classification
 
+The package includes multiple neural network architectures including CNN, RNN, Attentive and pre-trained BERT Networks.
 An example of classification is given below:
 ```python
 from sklearn.preprocessing import LabelEncoder
@@ -222,9 +262,12 @@ pretrained_embedding = embedding
 nn_model = NeuralModel(architecture_function=cnn_model,
                        pretrained_embedding=pretrained_embedding,
                        text_input_column='clean_body')
-nn_model.fit(X, y)
+nn_model.fit(X, y, tensorboard_log_dir="./data")
 y_res = nn_model.predict(X)
 ```
+
+Training with tensorflow 2 can be monitored using tensorboard :
+![](docs/_static/tensorboard.png)
 
 ## Glossary
 
@@ -292,7 +335,7 @@ and a neural model classification.
 
 To run the app, run the following command in your terminal in the melusine/data directory :
 
-```python
+```bash
 streamlit run dashboard_app.py
 ```
 
