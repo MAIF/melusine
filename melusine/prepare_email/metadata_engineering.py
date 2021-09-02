@@ -146,7 +146,8 @@ class MetaDate(BaseEstimator, TransformerMixin):
             date = e[0] + "/" + e[1] + "/" + e[2] + " " + e[3] + ":" + e[4]
             for m, m_n in self.month.items():
                 date = date.replace(m, m_n)
-            date = pd.to_datetime(date,
+            date = pd.to_datetime(
+                date,
                 format=self.date_format,
                 infer_datetime_format=False,
                 errors="coerce",
@@ -300,7 +301,9 @@ class MetaAttachmentType(BaseEstimator, TransformerMixin):
 
         """ Fit LabelEncoder on encoded extensions."""
         X["attachment_type"] = X.apply(self.get_attachment_type, axis=1)
-        self.top_attachment_type = self.get_top_attachment_type(X, n=self.topn_extension)
+        self.top_attachment_type = self.get_top_attachment_type(
+            X, n=self.topn_extension
+        )
         X["attachment_type"] = X.apply(
             self.encode_type, args=(self.top_attachment_type,), axis=1
         )
