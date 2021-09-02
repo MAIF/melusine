@@ -6,7 +6,6 @@ from itertools import chain
 from sklearn import preprocessing
 from sklearn.base import BaseEstimator, TransformerMixin
 from melusine.utils.transformer_scheduler import TransformerScheduler
-from datetime import datetime
 
 
 class MetaExtension(BaseEstimator, TransformerMixin):
@@ -19,7 +18,6 @@ class MetaExtension(BaseEstimator, TransformerMixin):
     def __init__(self, topn_extension=100):
         self.le_extension = preprocessing.LabelEncoder()
         self.topn_extension = topn_extension
-        self.top_extension = None
 
     def fit(self, X, y=None):
 
@@ -34,12 +32,6 @@ class MetaExtension(BaseEstimator, TransformerMixin):
         X["extension"] = X.apply(
             self.encode_extension, args=(self.top_extension,), axis=1
         )
-        extensions_list = X["extension"].to_list()
-
-        # Add dummy extension to ensure the "other" category is created
-        extensions_list.append("dummy_extension")
-
-        # Fit label encoder
         self.le_extension.fit(X["extension"])
         return self
 
@@ -65,16 +57,15 @@ class MetaExtension(BaseEstimator, TransformerMixin):
     def get_extension(row):
         """Gets extension from email address."""
         x = row["from"]
-        match_list = re.findall(r"\@([^.]+)", x)
-        if match_list:
-            extension = match_list[0]
-        else:
-            extension = ""
+        try:
+            extension = re.findall(r"\@([^.]+)", x)[0]
+        except Exception:
+            return ""
         return extension
 
     @staticmethod
     def get_top_extension(X, n=100):
-        """Returns list of most common extensions."""
+        "Returns list of most common extensions."
         a = Counter(X["extension"].values)
         a = a.most_common(n)
         a = [x[0] for x in a]
@@ -111,17 +102,9 @@ class MetaDate(BaseEstimator, TransformerMixin):
         self,
         regex_date_format=r"\w+ (\d+) (\w+) (\d{4}) (\d{2}) h (\d{2})",
         date_format="%d/%m/%Y %H:%M",
-        default_date="01/01/1900 00:00",
-        custom_date_format_func=None,
     ):
         self.regex_date_format = regex_date_format
         self.date_format = date_format
-        self.default_date = default_date
-        if custom_date_format_func is not None:
-            self.date_format_func = custom_date_format_func
-        else:
-            self.date_format_func = self.default_date_format_func
-
         self.month = {
             "janvier": "1",
             "février": "2",
@@ -149,62 +132,46 @@ class MetaDate(BaseEstimator, TransformerMixin):
             apply_func = TransformerScheduler.apply_pandas
 
         """Transform date to hour, min, day features."""
-        X["date"] = X["date"].fillna(self.default_date)
-        X["date"] = apply_func(X, self.date_format_func)
+        X["date"] = apply_func(X, self.date_formatting, args_=(self.regex_date_format,))
         X["hour"] = apply_func(X, self.get_hour)
         X["min"] = apply_func(X, self.get_min)
         X["dayofweek"] = apply_func(X, self.get_dayofweek)
         return X
 
-    def default_date_format_func(self, row):
+    def date_formatting(self, row, regex_format):
         """Set a date in the right format"""
         x = row["date"]
-
-        if isinstance(x, datetime):
-            date = x
-        elif not isinstance(x, str):
-            date = datetime.strptime(self.default_date, self.date_format)
-        else:
-            # Find date elements (month, year, etc)
-            match_list = re.findall(self.regex_date_format, x)
-            if match_list:
-                e = match_list[0]
-                # Format date
-                date = e[0] + "/" + e[1] + "/" + e[2] + " " + e[3] + ":" + e[4]
-
-                # Replace month name with number
-                for month_name, month_number in self.month.items():
-                    date = date.replace(month_name, month_number)
-
-                # Convert to datetime
-                date = pd.to_datetime(
-                    date,
-                    format=self.date_format,
-                    infer_datetime_format=False,
-                    errors="coerce",
-                )
-            else:
-                date = datetime.strptime(self.default_date, self.date_format)
-
+        try:
+            e = re.findall(regex_format, x)[0]
+            date = e[0] + "/" + e[1] + "/" + e[2] + " " + e[3] + ":" + e[4]
+            for m, m_n in self.month.items():
+                date = date.replace(m, m_n)
+            date = pd.to_datetime(
+                date,
+                format=self.date_format,
+                infer_datetime_format=False,
+                errors="coerce",
+            )
+        except Exception:
+            return pd.to_datetime(x)
         return date
 
     @staticmethod
     def get_hour(row):
         """Get hour from date"""
         x = row["date"]
-
-        if hasattr(x, "hour"):
+        try:
             return x.hour
-        else:
+        except Exception:
             return 0
 
     @staticmethod
     def get_min(row):
         x = row["date"]
         """Get minutes from date"""
-        if hasattr(x, "minute"):
+        try:
             return x.minute
-        else:
+        except Exception:
             return 0
 
     @staticmethod
@@ -212,9 +179,9 @@ class MetaDate(BaseEstimator, TransformerMixin):
         """Get day of the week from date"""
         x = row["date"]
 
-        if hasattr(x, "dayofweek"):
+        try:
             return x.dayofweek
-        else:
+        except Exception:
             return 0
 
 
@@ -225,12 +192,12 @@ class Dummifier(BaseEstimator, TransformerMixin):
 
     def __init__(
         self,
-        columns_to_dummify=("extension", "dayofweek", "hour", "min", "attachment_type"),
+        columns_to_dummify=["extension", "dayofweek", "hour", "min", "attachment_type"],
         copy=True,
     ):
         self.columns_to_dummify = columns_to_dummify
         self.copy = copy
-        self.dummy_features = None
+        pass
 
     def fit(self, X, y=None):
         """Store dummified features to avoid inconsistance of
@@ -382,7 +349,7 @@ class MetaAttachmentType(BaseEstimator, TransformerMixin):
 
     @staticmethod
     def get_top_attachment_type(X, n=100):
-        """Returns list of most common types of attachment."""
+        "Returns list of most common types of attachment."
 
         type_counter = Counter(chain(*X["attachment_type"]))
         type_counter = type_counter.most_common(n)
