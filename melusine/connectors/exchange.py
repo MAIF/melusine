@@ -2,7 +2,7 @@ import logging
 import re
 
 import pandas as pd
-from typing import List, Union
+from typing import Any, Dict, List, Union
 
 logger = logging.getLogger(__name__)
 
@@ -34,26 +34,25 @@ class ExchangeConnector:
 
     def __init__(
         self,
-        login_address: str,
-        password: str,
-        mailbox_address: str = None,
-        max_wait: int = 60,
+        mailbox_address: str,
+        credentials: Credentials,
+        config: Configuration,
         routing_folder_path: str = None,
         correction_folder_path: str = None,
         done_folder_path: str = None,
-        target_column="target",
+        target_column: str = "target",
+        account_args: Dict[str, Any] = None,
+        sender_address: str = None,
     ):
         """
         Parameters
         ----------
-        login_address: str
-            Email address used to login and send emails.
-        password: str
-            Password to login to the Exchange mailbox
         mailbox_address: str
             Email address of the mailbox. By default, the login address is used
-        max_wait: int
-            Maximum time (in s) to wait when connecting to mailbox
+        credentials: Credentials
+            Exchangelib credentials to connect to an Exchange mailbox
+        config: Configuration
+            Exchangelib configuration object
         routing_folder_path: str
             Path of the base routing folder
         correction_folder_path: str
@@ -62,40 +61,53 @@ class ExchangeConnector:
             Path of the Done folder
         target_column: str
             Name of the DataFrame column containing target folder names
+        account_args: dict
+            Dict containing arguments to instantiate an exchangelib "Account" object.
+        sender_address: str
+            Email address used to send emails.
         """
-        self.login_address = login_address
-        self.mailbox_address = mailbox_address or login_address
+
+        self.sender_address = sender_address
+        self.mailbox_address = mailbox_address
         self.folder_list = None
         self.target_column = target_column
+        # Default Account parameters
+        if not account_args:
+            account_args = {"autodiscover": True}
 
         # Connect to mailbox
-        self.credentials = Credentials(self.login_address, password)
-        self.exchangelib_config = Configuration(
-            retry_policy=FaultTolerance(max_wait=max_wait), credentials=self.credentials
-        )
+        self.credentials = credentials
+        self.exchangelib_config = config
         # Mailbox account (Routing, Corrections, etc)
         self.mailbox_account = Account(
             self.mailbox_address,
             credentials=self.credentials,
-            autodiscover=True,
             config=self.exchangelib_config,
+            **account_args,
         )
         # Sender accounts (send emails)
-        self.sender_account = Account(
-            self.login_address,
-            credentials=self.credentials,
-            autodiscover=True,
-            config=self.exchangelib_config,
-        )
+        if sender_address:
+            self.sender_account = Account(
+                self.sender_address,
+                credentials=self.credentials,
+                config=self.exchangelib_config,
+                **account_args,
+            )
+            logger.info(
+                f"Address {self.sender_address} is set up to send emails."
+            )
+        else:
+            self.sender_account = None
+            logger.info(
+                f"Sender address not specified, email sending is disabled."
+            )
 
         # Setup correction folder and done folder
         self.routing_folder_path = routing_folder_path
         self.correction_folder_path = correction_folder_path
         self.done_folder_path = done_folder_path
 
-        logger.info(
-            f"Connected to mailbox {self.mailbox_address} as user {self.login_address}"
-        )
+        logger.info(f"Connected to mailbox {self.mailbox_address}.")
 
     def _get_mailbox_path(self, path: str) -> Folder:
         """
@@ -537,6 +549,12 @@ class ExchangeConnector:
             Dict containing attachment names as key and attachment file contents as values.
             Currently, the code is tested for DataFrame attachments only.
         """
+        if self.sender_account is None:
+            raise AttributeError(
+                "To send emails, you need to specify a `sender_address` when initializing "
+                "the ExchangeConnector class."
+            )
+
         if isinstance(to, str):
             to = [to]
 
@@ -553,4 +571,4 @@ class ExchangeConnector:
 
         # Send email
         m.send()
-        logger.info(f"Email sent from address '{self.login_address}'")
+        logger.info(f"Email sent from address '{self.sender_address}'")
