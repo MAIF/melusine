@@ -21,7 +21,6 @@ requirements = [
 ]
 
 # Optional dependencies
-# Install with ``pip install``
 exchange_requirements = ["exchangelib>=4.2.0"]
 transformers_requirements = ["transformers==3.4.0"]
 viz_requirements = ["plotly", "streamlit>=0.57.3"]
@@ -31,6 +30,7 @@ setup_requirements = ["pytest-runner"]
 test_requirements = transformers_requirements + ["pytest"]
 
 
+# Ex: Install test dependencies with ``pip install melusine[test]`
 extras_require = {
     "test": test_requirements,
     "exchange": exchange_requirements,
