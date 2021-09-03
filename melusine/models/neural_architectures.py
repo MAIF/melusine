@@ -13,7 +13,6 @@ from tensorflow.keras.layers import SpatialDropout1D
 from tensorflow.keras.layers import GlobalMaxPooling1D
 from tensorflow.keras.layers import GRU
 from tensorflow.keras.layers import Bidirectional
-from transformers import TFCamembertModel, TFFlaubertModel
 
 from melusine.models.attention_model import (
     PositionalEncoding,
@@ -350,6 +349,14 @@ def bert_model(
     -------
     Model instance
     """
+    # Prevent the HuggingFace dependency
+    try:
+        from transformers import TFCamembertModel, TFFlaubertModel
+    except ModuleNotFoundError:
+        raise (
+            """Please install transformers 3.4.0 (only version currently supported)
+            pip install melusine[transformers]"""
+        )
 
     text_input = Input(shape=(seq_max,), dtype="int32")
     attention_input = Input(shape=(seq_max,), dtype="int32")
