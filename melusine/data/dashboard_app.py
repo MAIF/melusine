@@ -2,9 +2,13 @@ import ast
 import inspect
 import joblib
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
+
 import textwrap
+
+from collections import Counter
+from collections import OrderedDict
+
+from sklearn.preprocessing import LabelEncoder
 
 from melusine.prepare_email.compute_complexity import (
     mean_words_by_sentence,
@@ -12,13 +16,26 @@ from melusine.prepare_email.compute_complexity import (
 )
 from melusine.nlp_tools.tokenizer import Tokenizer
 
-from collections import Counter
-from collections import OrderedDict
+try:
+    import streamlit as st
+    from streamlit.logger import get_logger
+except ModuleNotFoundError:
+    raise (
+        """Please install streamlit
+        pip install melusine[viz]
+        (or pip install streamlit)"""
+    )
 
-import streamlit as st
-from streamlit.logger import get_logger
+try:
+    import plotly.express as px
+    import plotly.graph_objects as go
+except ModuleNotFoundError:
+    raise (
+        """Please install plotly
+        pip install melusine[viz]
+        (or pip install plotly)"""
+    )
 
-from sklearn.preprocessing import LabelEncoder
 
 tokenizer = Tokenizer(stop_removal=False)
 
