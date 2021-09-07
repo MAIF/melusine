@@ -54,7 +54,10 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
     ],
-    description="Melusine is a high-level package for french emails preprocessing, classification and feature extraction, written in Python.",
+    description=(
+        """Melusine is a high-level package for french emails preprocessing, """
+        """classification and feature extraction, written in Python."""
+    ),
     entry_points={},
     install_requires=requirements,
     license="Apache Software License 2.0",
