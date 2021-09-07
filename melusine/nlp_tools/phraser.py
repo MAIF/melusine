@@ -4,10 +4,8 @@ import gensim
 import pickle
 import re
 from melusine.utils.streamer import Streamer
-from melusine.config.config import ConfigJsonReader
+from melusine import config
 
-conf_reader = ConfigJsonReader()
-config = conf_reader.get_config_file()
 _common_terms = config["words_list"]["stopwords"] + config["words_list"]["names"]
 
 regex_tokenize_with_punctuations = r"(.*?[\s'])"

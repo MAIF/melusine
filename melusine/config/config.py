@@ -1,156 +1,105 @@
 import json
+import os
 import os.path as op
 import logging
-from configparser import ConfigParser
-import pandas as pd
-import unidecode
+import glob
+import yaml
+import collections.abc
+
+try:
+    from yaml import CLoader as Loader, CDumper as Dumper
+except ImportError:
+    from yaml import Loader, Dumper
 
 
-class ConfigJsonReader:
-    """Class to initialize a config.json file that contains your own
-    parameters used by the package.
+logger = logging.getLogger(__name__)
 
-    In fact, the module `prepare_email` contains a set of functions which use "parameters"
-    pre-defined in the conf.json.
 
-    The json file contains parameters, such as:
-        - general or specific regular expressions
-        - footers, greetings or other mail keywords/tags
-
-    Attributes
-    ----------
-    path_ini_file_ : str,
-        Path to the path.ini file (file used only to check,
-        set or get path of conf.json).
-
-    path_default_conf_json_ : str,
-        Path to the default conf.json (define by the contributors).
-
-    Examples
-    --------
-    >>> conf = ConfigJsonReader()
-    >>> conf.path_ini_file_   # will return path to the created .ini file
-
-    >>> # I defined my own path otherwise it uses a default conf.json
-    >>> conf.set_config_path(file_path='path/to/my/conf.json')
-    >>> conf_dict = conf.get_config_file()
-    >>> print(conf_dict)  # will print the json.
-
+def update_nested_dict(d, u):
     """
-
-    def __init__(self):
-        config_directory = op.dirname(op.abspath(__file__))
-        self.path_ini_file_ = op.join(config_directory, "path.ini")
-        self.path_default_conf_json_ = op.join(config_directory, "conf.json")
-        self.path_default_names_csv_ = op.join(config_directory, "names.csv")
-
-        if not op.exists(self.path_ini_file_):
-            logging.info("Create an path.ini file to configure your own config.json")
-            ini_file = open(self.path_ini_file_, "w")
-            conf = ConfigParser()
-            conf.add_section("PATH")
-            conf.set("PATH", "template_config", self.path_default_conf_json_)
-            conf.set("PATH", "default_name_file", self.path_default_names_csv_)
-            conf.write(ini_file)
-            ini_file.close()
-
-        self.config = ConfigParser()
-        self.config.read(self.path_ini_file_)
-
-        pass
-
-    def set_config_path(self, file_path=None):
-        """Set a path for your own `config.json`.
-
-        Parameters
-        ----------
-        file_path: str, optional
-            Path to the json file. If set to None (default), it will use the default
-            json located in the built-in package `melusine/config/conf.json`.
-        """
-        if file_path is not None:
-            # if file_path is specified, it writes new path in the .ini file.
-            self.config["PATH"]["template_config"] = file_path
-            with open(self.path_ini_file_, "w") as configfile:
-                self.config.write(configfile)
-        pass
-
-    def get_config_file(self):
-        """Load a config json file from the given path.
-        Load the list of names from the names.csv file.
-        """
-        path = self.config["PATH"]["template_config"]
-        if path == self.path_default_conf_json_:
-            config_file = self.load_config_file(path=None)
+    Update a (possibly) nested dictionary using another (possibly) nested dictionary.
+    Ex:
+        d = {"A": {"a": "0"}}
+        u = {"A": {"b": "42"}}
+        d = update_nested_dict(d, u)
+        # Output : {"A": {"a": "0", "b": "42"}}
+    Parameters
+    ----------
+    d: Mapping
+        Base dict to be updated
+    u: Mapping
+        Update dict to merge into d
+    Returns
+    -------
+    d: Mapping
+        Updated dict
+    """
+    for key, value in u.items():
+        if isinstance(value, collections.abc.Mapping):
+            d[key] = update_nested_dict(d.get(key, {}), value)
         else:
-            config_file = self.load_config_file(path=path)
-        name_file_path = self.config["PATH"]["default_name_file"]
+            d[key] = value
+    return d
 
-        if name_file_path == self.path_default_names_csv_:
-            name_list = self.load_name_file(path=None)
-        else:
-            name_list = self.load_name_file(path=name_file_path)
 
-        if "words_list" in config_file.keys():
-            config_file["words_list"]["names"] = name_list
-        else:
-            config_file["words_list"] = {"names": name_list}
+def load_conf_from_path(config_dir_path):
+    """
+    Given a directory path
+    Parameters
+    ----------
+    config_dir_path: str
+        Path to a directory containing YML or JSON conf files
+    Returns
+    -------
+    conf: dict
+        Loaded config dict
+    """
+    conf = dict()
 
-        return config_file
+    for name in glob.glob(f"{config_dir_path}/*"):
 
-    def reset_config_path(self):
-        self.config["PATH"]["template_config"] = self.path_default_conf_json_
-        with open(self.path_ini_file_, "w") as configfile:
-            self.config.write(configfile)
+        # Load YAML files
+        if name.endswith(".yml"):
+            logger.info(f"Loading data from file {name}")
+            with open(name, "r") as f:
+                tmp_conf = yaml.load(f, Loader=Loader)
+                conf = update_nested_dict(conf, tmp_conf)
 
-        pass
+        # Load JSON files
+        elif name.endswith(".json"):
+            logger.info(f"Loading data from file {name}")
+            with open(file=name, mode="r", encoding="utf-8") as f:
+                tmp_conf = json.load(f)
+                conf = update_nested_dict(conf, tmp_conf)
 
-    def load_config_file(self, path=None):
-        """Load Json."""
-        # by default it takes native the config.json
-        if path is None:
-            path = self.path_default_conf_json_
+    return conf
 
-        with open(file=path, mode="r", encoding="utf-8") as file:
-            config_file = json.load(file)
 
-        return config_file
+def load_melusine_conf():
+    """
+    Load the melusine configurations.
+    The default configurations are loaded first (the one present in the melusine package).
+    Custom configurations may overwrite the default ones.
+    Custom configuration should be specified in YML and JSON files and placed in a directory.
+    The directory path should be set as the value of the MELUSINE_CONFIG_DIR environment variable.
+    Returns
+    -------
+    conf: dict
+        Loaded config dict
+    """
+    conf = dict()
 
-        logging.info("Load config from path: {}.".format(path))
+    # Load default Melusine conf
+    default_config_directory = op.dirname(op.abspath(__file__))
+    conf = update_nested_dict(conf, load_conf_from_path(default_config_directory))
 
-    def set_name_file_path(self, file_path=None):
-        """Set a path for your own `names.csv`.
+    # Load custom Melusine conf
+    custom_config_directory = os.getenv("MELUSINE_CONFIG_DIR")
+    if custom_config_directory:
+        conf = update_nested_dict(conf, load_conf_from_path(custom_config_directory))
 
-        Parameters
-        ----------
-        file_path: str, optional
-            Path to the csv file. If set to None (default), it will use the default
-            csv located in the built-in package `melusine/config/names.csv`.
-        """
-        if file_path is not None:
-            # if file_path is specified, it writes new path in the .ini file.
-            self.config["PATH"]["default_name_file"] = file_path
-            with open(self.path_ini_file_, "w") as configfile:
-                self.config.write(configfile)
-        pass
+    return conf
 
-    def reset_name_file_path(self):
-        self.config["PATH"]["default_name_file"] = self.path_default_names_csv_
-        with open(self.path_ini_file_, "w") as configfile:
-            self.config.write(configfile)
-        pass
 
-    def load_name_file(self, path):
-        """Load csv."""
-        # by default it takes native the names.csv
-        if path is None:
-            path = self.path_default_names_csv_
-
-        try:
-            df_names = pd.read_csv(path, encoding="utf-8", sep=";")
-            name_list = df_names["Name"].values
-            name_list = [unidecode.unidecode(p).lower() for p in name_list]
-        except FileNotFoundError:
-            name_list = []
-
-        return name_list
+# Load Melusine configurations
+config = load_melusine_conf()

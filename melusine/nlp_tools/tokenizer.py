@@ -2,11 +2,8 @@ import logging
 import re
 from flashtext import KeywordProcessor
 from sklearn.base import BaseEstimator, TransformerMixin
-from melusine.config.config import ConfigJsonReader
+from melusine import config
 from melusine.utils.transformer_scheduler import TransformerScheduler
-
-conf_reader = ConfigJsonReader()
-config = conf_reader.get_config_file()
 
 stopwords = config["words_list"]["stopwords"]
 names_list = config["words_list"]["names"]

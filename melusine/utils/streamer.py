@@ -1,9 +1,7 @@
 from melusine.prepare_email.mail_segmenting import split_message_to_sentences
 from melusine.utils.multiprocessing import apply_by_multiprocessing
 from melusine.nlp_tools.tokenizer import Tokenizer
-from melusine.config.config import ConfigJsonReader
-
-conf_reader = ConfigJsonReader()
+from melusine import config
 
 
 class Streamer:
@@ -23,7 +21,7 @@ class Streamer:
     --------
     >>> streamer = Streamer()
     >>> streamer.to_stream(X) # will build the stream attribute
-    >>> tokens_stream =  = streamer.stream
+    >>> tokens_stream = streamer.stream
     >>> print(tokens_stream)
 
     """
@@ -31,7 +29,6 @@ class Streamer:
     def __init__(self, stop_removal=False, column="clean_body", n_jobs=1):
         self.column_ = column
         self.n_jobs = n_jobs
-        config = conf_reader.get_config_file()
         stopwords = config["words_list"]["stopwords"] + config["words_list"]["names"]
         self.tokenizer = Tokenizer(stopwords, stop_removal=stop_removal)
 
