@@ -26,7 +26,7 @@ Use **Melusine** if you need a library which:
   * Supports transformers, CNN and RNN models.
   * Runs seamlessly on CPU and GPU.
 
-**Melusine** is compatible with `Python >= 3.6`.
+**Melusine** is compatible with `Python 3.6`.
 
 ## Release Notes
 ### 2.3
@@ -82,7 +82,7 @@ This package is designed for the preprocessing, classification and automatic sum
 
 **An other subpackage is also provided** to manage, modify or add parameters such as : regular expressions, keywords, stopwords, etc.
 
-* ``config`` : contains *`ConfigJsonReader`* class to setup and handle a *conf.json* file. This JSON file is the core of this package since it's used by different submodules to preprocess the data.
+* ``config`` : This modules loads a configuration dict which is essential to the Melusine package. By customizing the configurations, users may adapt the text preprocessing to their needs.
 
 **2 other subpackages are offered to provide a dashboard app and ethics guidelines for AI project :**
 
