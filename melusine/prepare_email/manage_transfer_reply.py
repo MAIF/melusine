@@ -1,8 +1,6 @@
 import re
-from melusine.config.config import ConfigJsonReader
+from melusine import config
 
-conf_reader = ConfigJsonReader()
-config = conf_reader.get_config_file()
 regex_transfer_header = config["regex"]["manage_transfer_reply"]["transfer_header"]
 regex_answer_header = config["regex"]["manage_transfer_reply"]["answer_header"]
 regex_begin_transfer = config["regex"]["manage_transfer_reply"]["begin_transfer"]
