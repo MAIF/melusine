@@ -1,6 +1,7 @@
 import ast
 import numpy as np
 import pickle
+import gensim
 
 from collections import Counter
 from sklearn.base import BaseEstimator, ClassifierMixin
@@ -96,9 +97,9 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
     >>> from melusine.nlp_tools.embedding import Embedding
     >>> pretrained_embedding = Embedding.load()
     >>> list_meta = ['extension', 'dayofweek', 'hour']
-    >>> nn_model = NeuralModel(cnn_model, pretrained_embedding, list_meta)
-    >>> nn_model.fit(X_train, y_train)
-    >>> y_res = nn_model.predict(X_test)
+    >>> nn_model = NeuralModel(cnn_model, pretrained_embedding, list_meta)  #noqa
+    >>> nn_model.fit(X_train, y_train)  #noqa
+    >>> y_res = nn_model.predict(X_test)  #noqa
 
     """
 
@@ -107,7 +108,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         pretrained_embedding=None,
         architecture_function=None,
         text_input_column="clean_text",
-        meta_input_list=["extension", "dayofweek", "hour", "min"],
+        meta_input_list=("extension", "dayofweek", "hour", "min"),
         vocab_size=25000,
         seq_size=100,
         embedding_dim=200,
@@ -396,14 +397,26 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         The vocabulary of the NN is those of the pretrained embedding
         """
         pretrained_embedding = self.pretrained_embedding
-        self.vocabulary = pretrained_embedding.embedding.index_to_key
+        # Hack to solve the Gensim 4.0 / Tensorflow 2.6 conflict
+        if gensim.__version__.startswith("3"):
+            self.vocabulary = pretrained_embedding.embedding.wv.index2word
+        else:
+            self.vocabulary = pretrained_embedding.embedding.index_to_key
         vocab_size = len(self.vocabulary)
         vector_dim = pretrained_embedding.embedding.vector_size
         embedding_matrix = np.zeros((vocab_size + 2, vector_dim))
         for index, word in enumerate(self.vocabulary):
             if word not in ["PAD", "UNK"]:
-                embedding_matrix[index + 2, :] = pretrained_embedding.embedding[word]
-        embedding_matrix[1, :] = np.mean(embedding_matrix, axis=0)
+                # Hack to solve the Gensim 4.0 / Tensorflow 2.6 conflict
+                if gensim.__version__.startswith("3"):
+                    embedding_matrix[
+                        index + 2, :
+                    ] = pretrained_embedding.embedding.wv.get_vector(word)
+                else:
+                    embedding_matrix[index + 2, :] = pretrained_embedding.embedding[
+                        word
+                    ]
+                    embedding_matrix[1, :] = np.mean(embedding_matrix, axis=0)
 
         self.vocabulary.insert(0, "PAD")
         self.vocabulary.insert(1, "UNK")

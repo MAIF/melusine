@@ -46,7 +46,7 @@ def phraser_on_body(row, phraser):
         >>> from melusine.nlp_tools.phraser import phraser_on_body
         >>> from melusine.nlp_tools.phraser import Phraser
         >>> # data contains a 'clean_body' column
-        >>> phraser = Phraser(columns='clean_body').load(filepath)
+        >>> phraser = Phraser(columns='clean_body').load(filepath)  # noqa
         >>> data.apply(phraser_on_body, axis=1)  # apply to all samples
 
     """
@@ -78,7 +78,7 @@ def phraser_on_header(row, phraser):
         >>> from melusine.nlp_tools.phraser import phraser_on_header
         >>> from melusine.nlp_tools.phraser import Phraser
         >>> # data contains a 'clean_header' column
-        >>> phraser = Phraser(columns='clean_header').load(filepath)
+        >>> phraser = Phraser(columns='clean_header').load(filepath)  # noqa
         >>> data.apply(phraser_on_header, axis=1)  # apply to all samples
 
     """
@@ -181,9 +181,9 @@ class Phraser:
     --------
     >>> from melusine.nlp_tools.phraser import Phraser
     >>> phraser = Phraser()
-    >>> phraser.train(X)
-    >>> phraser.save(filepath)
-    >>> phraser = phraser().load(filepath)
+    >>> phraser.train(X)  # noqa
+    >>> phraser.save(filepath)  # noqa
+    >>> phraser = phraser().load(filepath)  # noqa
 
     """
 
@@ -249,12 +249,21 @@ class Phraser:
         """
         self.logger.info("Start training for colocation detector")
         self.streamer.to_stream(X)
-        phrases = gensim.models.Phrases(
-            self.streamer.stream,
-            connector_words=self.common_terms,
-            threshold=self.threshold,
-            min_count=self.min_count,
-        )
+        # Hack to solve the Gensim 4.0 / Tensorflow 2.6 conflict
+        if gensim.__version__.startswith("3"):
+            phrases = gensim.models.Phrases(
+                self.streamer.stream,
+                common_terms=self.common_terms,  # noqa
+                threshold=self.threshold,
+                min_count=self.min_count,
+            )
+        else:
+            phrases = gensim.models.Phrases(
+                self.streamer.stream,
+                connector_words=self.common_terms,  # noqa
+                threshold=self.threshold,
+                min_count=self.min_count,
+            )
         self.phraser = gensim.models.phrases.Phraser(phrases)
         self.logger.info("Done.")
         pass

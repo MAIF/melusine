@@ -1,4 +1,5 @@
 import logging
+import gensim
 from gensim.models import Word2Vec
 from gensim.models.keyedvectors import Vocab, KeyedVectors
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -44,9 +45,9 @@ class Embedding:
     --------
     >>> from melusine.nlp_tools.embedding import Embedding
     >>> embedding = Embedding()
-    >>> embedding.train(X)
-    >>> embedding.save(filepath)
-    >>> embedding = Embedding().load(filepath)
+    >>> embedding.train(X)  # noqa
+    >>> embedding.save(filepath)  # noqa
+    >>> embedding = Embedding().load(filepath)  # noqa
     """
 
     def __init__(
@@ -411,10 +412,18 @@ class Embedding:
         kv.vector_size = vector_size
         kv.vectors = embedding_matrix
 
-        kv.index_to_key = list(vocab.keys())
+        # Hack to solve the Gensim 4.0 / Tensorflow 2.6 conflict
+        if gensim.__version__.startswith("3"):
+            kv.index2word = list(vocab.keys())
 
-        kv.key_to_index = {
-            word: Vocab(index=word_id, count=0) for word, word_id in vocab.items()
-        }
+            kv.vocab = {
+                word: Vocab(index=word_id, count=0) for word, word_id in vocab.items()
+            }
+        else:
+            kv.index_to_key = list(vocab.keys())
+
+            kv.key_to_index = {
+                word: Vocab(index=word_id, count=0) for word, word_id in vocab.items()
+            }
 
         self.embedding = kv

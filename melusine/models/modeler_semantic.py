@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+import gensim
 
 from sklearn.base import BaseEstimator, TransformerMixin
 from melusine.utils.multiprocessing import apply_by_multiprocessing
@@ -212,7 +213,12 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
             all the seedwords found with the given prefixes
 
         """
-        words = list(embedding.embedding.key_to_index.keys())
+        # Hack to solve the Gensim 4.0 / Tensorflow 2.6 conflict
+        if gensim.__version__.startswith("3"):
+            words = list(embedding.embedding.vocab.keys())
+        else:
+            words = list(embedding.embedding.key_to_index.keys())
+
         seed_dict = dict()
         seed_list = []
 
@@ -246,8 +252,11 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
         if type(embedding) == Word2Vec:
             embedding = embedding.wv
 
-        words = list(embedding.embedding.key_to_index.keys())
-
+        # Hack to solve the Gensim 4.0 / Tensorflow 2.6 conflict
+        if gensim.__version__.startswith("3"):
+            words = list(embedding.embedding.vocab.keys())
+        else:
+            words = list(embedding.embedding.key_to_index.keys())
         lexicon_mat = np.zeros((len(seed_list), len(words)))
 
         for i, seed in enumerate(seed_list):
