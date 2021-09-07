@@ -10,14 +10,12 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import TensorBoard
 
-from melusine.config.config import ConfigJsonReader
+from melusine import config
 from melusine.nlp_tools.tokenizer import Tokenizer
 from melusine.models.attention_model import PositionalEncoding
 from melusine.models.attention_model import TransformerEncoderLayer
 from melusine.models.attention_model import MultiHeadAttention
 
-conf_reader = ConfigJsonReader()
-config = conf_reader.get_config_file()
 tensorboard_callback_parameters = config["tensorboard_callback"]
 
 
