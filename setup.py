@@ -12,7 +12,7 @@ requirements = [
     "tensorflow>=2.5.0",
     "pandas>=1.0",
     "scikit-learn>=0.23",
-    "gensim>=4.0.0",
+    "gensim<4.0.0",  # Gensim 4 requires numpy 1.20 (TF 2.5 requires numpy 1.19)
     "tqdm>=4.34",
     "unidecode>=1.0",
     "flashtext>=2.7",
@@ -23,7 +23,7 @@ requirements = [
 
 # Optional dependencies
 exchange_requirements = ["exchangelib>=4.2.0"]
-transformers_requirements = ["transformers==3.4.0"]
+transformers_requirements = ["transformers==3.4.0"]  # This needs to be changed !
 viz_requirements = ["plotly", "streamlit>=0.57.3"]
 
 # Test dependencies
