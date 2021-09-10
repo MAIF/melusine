@@ -1,6 +1,7 @@
 import ast
 import numpy as np
 import pickle
+import scipy.stats as st
 
 from collections import Counter
 from sklearn.base import BaseEstimator, ClassifierMixin
@@ -346,12 +347,54 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         Parameters
         ----------
         X : pd.DataFrame
+        confidence_interval : float, optional
+            between [0,1], the confidence level of the interval.
+            Only available with tensorflow-probability models.
+        Returns
+        -------
+        score : np.array
+            The estimation of probability for each category.
+        inf : np.array, optional
+            The upper bound of the estimation of probability.
+            Only provided if `confidence_interval` exists.
+        sup : np.array, optional
+            The lower bound of the estimation of probability.
+            Only provided if `confidence_interval` exists.
+        """
+
+        X_input = self.prepare_email_to_predict(X)
+        if self.model.layers[-1].get_config().get('convert_to_tensor_fn') == 'mode':
+            # tensorflow_probabilty model : the output is a distribution so we return the mean of the distribution
+            score = self.model(X_input).mean().numpy()
+            if "confidence_interval" in kwargs:
+                confidence_level = kwargs["confidence_interval"]
+                std = self.model(X_input).stddev()
+                two_sided_mult = st.norm.ppf((1+confidence_level)/2) # 1.96 for 0.95
+                inf = score-two_sided_mult*std.numpy()
+                sup = score+two_sided_mult*std.numpy()
+                return score, inf, sup
+            return score
+        else:
+            score = self.model.predict(X_input, **kwargs)
+            return score
+    
+    def prepare_email_to_predict(self, X):
+        """Returns the email as a compatible shape
+        wich depends on the type of neural model
+
+        Parameters
+        ----------
+        X : pd.DataFrame
 
         Returns
         -------
-        np.array
+        list
+            List of the inputs to the neural model
+            Either [X_seq] if no metadata
+            Or [X_seq, X_meta] if metadata
+            Or [X_seq, X_attention, X_meta] if Bert model
         """
-
+        
         if self.architecture_function.__name__ != "bert_model":
             X = self.tokenizer.transform(X)
             X_seq = self._prepare_sequences(X)
@@ -359,15 +402,15 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             if nb_meta_features == 0:
                 X_input = X_seq
             else:
-                X_input = [X_seq, X_meta]
+                X_input = [X_seq, X_meta.to_numpy()]
         else:
             X_seq, X_attention = self._prepare_bert_sequences(X)
             X_meta, nb_meta_features = self._get_meta(X)
             if nb_meta_features == 0:
-                X_input = [X_seq, X_meta]
+                X_input = [X_seq, X_meta.to_numpy()]
             else:
-                X_input = [X_seq, X_attention, X_meta]
-        return self.model.predict(X_input, **kwargs)
+                X_input = [X_seq, X_attention, X_meta.to_numpy()]
+        return X_input
 
     def _create_vocabulary_from_tokens(self, X):
         """Create a word indexes dictionary from tokens."""
