@@ -1,15 +1,20 @@
 import numpy as np
 import pandas as pd
-from typing import List
+from typing import List, Callable
 
 from transformers import TFAutoModel
 from transformers import AutoTokenizer
 from tensorflow.keras.layers import Input
 from tensorflow.keras.models import Model
 from melusine.models.models_v2.base_model import BaseMelusineModel
+from melusine.models.models_v2.default_nn_architectures import (
+    default_meta_archi,
+    default_dense_archi,
+    default_multiclass_archi,
+)
 
 
-class TransformerMelusineModel(BaseMelusineModel):
+class TransformersMelusineModel(BaseMelusineModel):
     """
     Class to train (or fine-tune) transformer models.
     Just like all Melusine model classes, the `TransformerMelusineModel` class let's you include meta features.
@@ -25,8 +30,17 @@ class TransformerMelusineModel(BaseMelusineModel):
         text_column: str,
         model_name_or_path: str,
         seq_max: int = 128,
+        meta_input_list=None,
+        meta_archi: Callable = default_meta_archi,
+        dense_archi: Callable = default_dense_archi,
+        output_archi: Callable = default_multiclass_archi,
     ):
-        super().__init__()
+        super().__init__(
+            meta_input_list=meta_input_list,
+            meta_archi=meta_archi,
+            dense_archi=dense_archi,
+            output_archi=output_archi,
+        )
         self.model_name_or_path = model_name_or_path
         self.text_column = text_column
         self.seq_max = seq_max
@@ -44,6 +58,7 @@ class TransformerMelusineModel(BaseMelusineModel):
         y: pd.Series
             Input labels
         """
+        super().fit(x, y)
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name_or_path)
         self.create_network()
 
@@ -101,7 +116,9 @@ class TransformerMelusineModel(BaseMelusineModel):
         inputs.append(attention_input)
 
         # Transformer Net
-        base_transformer = TFAutoModel.from_pretrained(self.model_name_or_path)
+        base_transformer = TFAutoModel.from_pretrained(
+            self.model_name_or_path, output_attentions=True
+        )
         net = base_transformer(text_input, attention_input)[1]
 
         # Meta features net

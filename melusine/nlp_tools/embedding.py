@@ -6,16 +6,9 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_extraction.text import CountVectorizer
 
-# from glove import Corpus, Glove
+from melusine.nlp_tools.tokenizer import WordLevelTokenizer
 
-from melusine.utils.streamer import Streamer
-
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-formatter = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    datefmt="%d/%m %I:%M",
-)
+logger = logging.getLogger(__name__)
 
 
 class Embedding:
@@ -59,8 +52,8 @@ class Embedding:
         iter=15,
         size=300,
         method="word2vec_cbow",
-        stop_removal=True,
         min_count=100,
+        tokenizer=None,
     ):
         """
         Parameters :
@@ -92,20 +85,19 @@ class Embedding:
         min_count : TODO
         """
 
-        self.logger = logging.getLogger(__name__)
-        ch = logging.StreamHandler()
-        ch.setLevel(logging.INFO)
-        ch.setFormatter(formatter)
-        self.logger.addHandler(ch)
-        self.logger.debug("Create an Embedding instance.")
+        logger.debug("Create an Embedding instance.")
         self.input_column = input_column
         self.tokens_column = tokens_column
         self.input_data = None
-        self.streamer = Streamer(column=self.input_column, stop_removal=stop_removal)
         self.word2id = {}
         self.embedding = None
         self.method = method
         self.workers = workers
+
+        if not tokenizer:
+            self.tokenizer = WordLevelTokenizer()
+        else:
+            self.tokenizer = tokenizer
 
         if self.method in ["word2vec_sg", "word2vec_cbow"]:
             self.train_params = {
@@ -210,7 +202,7 @@ class Embedding:
             Containing a clean body column.
         """
 
-        self.logger.info("Start training for embedding")
+        logger.info("Start training for embedding")
 
         if (not self.input_column) and (not self.tokens_column):
             raise ValueError(
@@ -220,19 +212,8 @@ class Embedding:
             - tokens_column argument (containing) list of tokens"""
             )
 
-        # If tokens column is provided: use it. Otherwise, use input column
-        if self.tokens_column:
-            self.input_data = X[self.tokens_column].tolist()
-        elif self.input_column:
-            self.streamer.to_stream(X)
-            self.input_data = self.streamer.stream
-        else:
-            raise ValueError(
-                """
-            Please specify one of the following keyword argument when instanciating an Embedding class object:
-            - input_column argument (containing raw text)
-            - tokens_column argument (containing) list of tokens"""
-            )
+        if not self.tokens_column:
+            self.input_data = X[self.input_column].apply(self.tokenizer.tokenize)
 
         if self.method in ["word2vec_sg", "word2vec_cbow"]:
             self.train_word2vec()
@@ -243,7 +224,7 @@ class Embedding:
         # elif embedding_type == 'glove':
         #    self.train_glove(X, self.input_column)
 
-        self.logger.info("Done.")
+        logger.info("Done.")
 
     def train_tfidf(self):
         """Train a TF-IDF Vectorizer to compute a TF-IDFized Doc-Term Matrix relative to a corpus.
@@ -401,19 +382,6 @@ class Embedding:
         )
 
         self.embedding = embedding.wv
-
-    # def train_glove(self, X, input_column):
-    #
-    #    corpus = Corpus()
-    #
-    #    corpus.fit(X[input_column], window=self.window)
-    #
-    #    self.word2id = corpus.dictionary
-    #
-    #    glove=Glove(no_components=self.size)
-    #    glove.fit(corpus.matrix, epochs=self.iter, no_threads=self.workers, )
-    #
-    #    self.create_keyedvector_from_matrix(glove.word_vectors, self.word2id)
 
     def create_keyedvector_from_matrix(self, embedding_matrix, word2id):
         """

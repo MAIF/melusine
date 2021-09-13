@@ -2,14 +2,19 @@ import os
 import logging
 import numpy as np
 import pandas as pd
-from typing import List, Dict
+from typing import List, Dict, Callable
 from tensorflow.keras.layers import Input
 from tensorflow.keras.models import Model
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 from melusine.models.models_v2.base_model import BaseMelusineModel
-from melusine.models.models_v2.default_nn_architectures import default_cnn_archi
 from melusine.nlp_tools.tokenizer import WordLevelTokenizer
+from melusine.models.models_v2.default_nn_architectures import (
+    default_cnn_archi,
+    default_meta_archi,
+    default_dense_archi,
+    default_multiclass_archi,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -42,8 +47,10 @@ class CnnMelusineModel(BaseMelusineModel):
         unk_token="[UNK]",
         pad_token="[PAD]",
         trainable=False,
-        cnn_archi=default_cnn_archi,
-        **kwargs,
+        cnn_archi: Callable = default_cnn_archi,
+        meta_archi: Callable = default_meta_archi,
+        dense_archi: Callable = default_dense_archi,
+        output_archi: Callable = default_multiclass_archi,
     ):
         """
 
@@ -68,7 +75,12 @@ class CnnMelusineModel(BaseMelusineModel):
         cnn_archi: Callable
             Function that defines a CNN architecture
         """
-        super().__init__(meta_input_list=meta_input_list)
+        super().__init__(
+            meta_input_list=meta_input_list,
+            meta_archi=meta_archi,
+            dense_archi=dense_archi,
+            output_archi=output_archi,
+        )
 
         self.seq_max = seq_max
         self.text_column = text_column
@@ -157,19 +169,17 @@ class CnnMelusineModel(BaseMelusineModel):
         vocab: Dict[str, int]
         """
         pretrained_embedding = self.pretrained_embedding
-        embedding_dim = pretrained_embedding.embedding.vector_size
+        embedding_dim = pretrained_embedding.vector_size
 
-        if self.pad_token not in pretrained_embedding.embedding.index2word:
-            pretrained_embedding.embedding[self.pad_token] = np.zeros(embedding_dim)
-        if self.unk_token not in pretrained_embedding.embedding.index2word:
-            pretrained_embedding.embedding[self.unk_token] = np.zeros(embedding_dim)
+        if self.pad_token not in pretrained_embedding.index2word:
+            pretrained_embedding[self.pad_token] = np.zeros(embedding_dim)
+        if self.unk_token not in pretrained_embedding.index2word:
+            pretrained_embedding[self.unk_token] = np.zeros(embedding_dim)
 
-        self.unk_id = pretrained_embedding.embedding.index2word.index(self.unk_token)
-        self.pad_id = pretrained_embedding.embedding.index2word.index(self.pad_token)
+        self.unk_id = pretrained_embedding.index2word.index(self.unk_token)
+        self.pad_id = pretrained_embedding.index2word.index(self.pad_token)
 
-        vocab = {
-            tok: i for i, tok in enumerate(pretrained_embedding.embedding.wv.index2word)
-        }
+        vocab = {tok: i for i, tok in enumerate(pretrained_embedding.wv.index2word)}
         logger.info(f"Finished building vocabulary ({len(vocab)} tokens in vocab)")
 
         return vocab
@@ -196,7 +206,7 @@ class CnnMelusineModel(BaseMelusineModel):
         inputs.append(text_input)
 
         # Embedding layer
-        embedding_net = self.pretrained_embedding.embedding.get_keras_embedding(
+        embedding_net = self.pretrained_embedding.get_keras_embedding(
             train_embeddings=self.trainable
         )(text_input)
 

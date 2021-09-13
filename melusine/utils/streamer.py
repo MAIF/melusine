@@ -1,7 +1,7 @@
 from melusine.prepare_email.mail_segmenting import split_message_to_sentences
 from melusine.utils.multiprocessing import apply_by_multiprocessing
-from melusine.nlp_tools.tokenizer import Tokenizer
 from melusine import config
+from melusine.nlp_tools.tokenizer import WordLevelTokenizer
 
 
 class Streamer:
@@ -30,7 +30,7 @@ class Streamer:
         self.column_ = column
         self.n_jobs = n_jobs
         stopwords = config["words_list"]["stopwords"] + config["words_list"]["names"]
-        self.tokenizer = Tokenizer(stopwords, stop_removal=stop_removal)
+        self.tokenizer = WordLevelTokenizer(stopwords, stop_removal=stop_removal)
 
     def to_stream(self, X):
         """Build a MailIterator object containing a stream of tokens from
@@ -87,7 +87,7 @@ class Streamer:
         """
         sentences_list = split_message_to_sentences(text)
         tokenized_sentences_list = [
-            self.tokenizer._tokenize(sentence)
+            self.tokenizer.tokenize(sentence)
             for sentence in sentences_list
             if sentence != ""
         ]

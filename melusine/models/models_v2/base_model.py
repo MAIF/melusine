@@ -34,7 +34,7 @@ class BaseMelusineModel(ABC):
 
     def __init__(
         self,
-        meta_input_list: List[str] = None,
+        meta_input_list: List[str],
         meta_archi: Callable = default_meta_archi,
         dense_archi: Callable = default_dense_archi,
         output_archi: Callable = default_multiclass_archi,

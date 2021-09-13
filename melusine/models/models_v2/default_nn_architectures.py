@@ -11,17 +11,17 @@ from tensorflow.keras.layers import GlobalMaxPooling1D
 def default_meta_archi(nb_meta):
     meta_input = Input(shape=(nb_meta,), dtype="float32")
 
-    y = Dense(150, activation="linear")(meta_input)
-    y = Dropout(0.2)(y)
-    y = LeakyReLU(alpha=0.05)(y)
-    y = Dense(100, activation="linear")(y)
-    y = Dropout(0.2)(y)
-    y = LeakyReLU(alpha=0.05)(y)
-    y = Dense(80, activation="linear")(y)
-    y = Dropout(0.2)(y)
-    y = LeakyReLU(alpha=0.05)(y)
+    meta_net = Dense(150, activation="linear")(meta_input)
+    meta_net = Dropout(0.2)(meta_net)
+    meta_net = LeakyReLU(alpha=0.05)(meta_net)
+    meta_net = Dense(100, activation="linear")(meta_net)
+    meta_net = Dropout(0.2)(meta_net)
+    meta_net = LeakyReLU(alpha=0.05)(meta_net)
+    meta_net = Dense(80, activation="linear")(meta_net)
+    meta_net = Dropout(0.2)(meta_net)
+    meta_net = LeakyReLU(alpha=0.05)(meta_net)
 
-    return meta_input, y
+    return meta_input, meta_net
 
 
 def default_dense_archi(input_net):

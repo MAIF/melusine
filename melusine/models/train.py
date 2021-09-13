@@ -12,7 +12,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import TensorBoard
 
 from melusine import config
-from melusine.nlp_tools.tokenizer import Tokenizer
+from melusine.nlp_tools.tokenizer import WordLevelTokenizer
 from melusine.models.attention_model import PositionalEncoding
 from melusine.models.attention_model import TransformerEncoderLayer
 from melusine.models.attention_model import MultiHeadAttention
@@ -123,7 +123,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         self.architecture_function = architecture_function
         self.pretrained_embedding = pretrained_embedding
         if self.architecture_function.__name__ != "bert_model":
-            self.tokenizer = Tokenizer(input_column=text_input_column)
+            self.tokenizer = WordLevelTokenizer()
         elif "camembert" in bert_tokenizer.lower():
             # Prevent the HuggingFace dependency
             try:
@@ -368,7 +368,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         """
 
         if self.architecture_function.__name__ != "bert_model":
-            X = self.tokenizer.transform(X)
+            X["tokens"] = X[self.text_input_column].apply(self.tokenizer.tokenize)
             X_seq = self._prepare_sequences(X)
             X_meta, nb_meta_features = self._get_meta(X)
             if nb_meta_features == 0:
@@ -511,7 +511,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             nb_labels = len(np.unique(y))
 
         if self.architecture_function.__name__ != "bert_model":
-            X = self.tokenizer.transform(X)
+            X[self.text_input_column] = self.tokenizer.transform(X)
             X_meta, nb_meta_features = self._get_meta(X)
 
             if not validation_data:
