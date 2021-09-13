@@ -1,186 +1,108 @@
 import logging
 import re
+import json
 from flashtext import KeywordProcessor
 from sklearn.base import BaseEstimator, TransformerMixin
 from melusine import config
-from melusine.utils.transformer_scheduler import TransformerScheduler
 
-stopwords = config["words_list"]["stopwords"]
-names_list = config["words_list"]["names"]
-regex_tokenize = config["regex"]["tokenizer"]
+logger = logging.getLogger(__name__)
 
 
-def _create_flashtext_object():
-    """
-    Instantiates a Flashtext object.
-    Separators are specified to not be considered as word boundaries
-    """
-    keyword_processor = KeywordProcessor()
-    # special characters are included as natively flashtext library does not handle them correctly
-    for separator in [
-        "-",
-        "_",
-        "/",
-        "é",
-        "è",
-        "ê",
-        "â",
-        "ô",
-        "ö",
-        "ü",
-        "û",
-        "ù",
-        "ï",
-        "î",
-        "æ",
-    ]:
-        keyword_processor.add_non_word_boundary(separator)
-    return keyword_processor
+class WordLevelTokenizer(BaseEstimator, TransformerMixin):
 
-
-class Tokenizer(BaseEstimator, TransformerMixin):
-    """Class to train and apply tokenizer.
-
-    Compatible with scikit-learn API (i.e. contains fit, transform methods).
-
-    Parameters
-    ----------
-    input_column : str,
-        Input text column to consider for the tokenizer.
-
-    stopwords : list of strings, optional
-        List of words to remove from list of tokens.
-        Default value, list defined in conf file
-
-    stop_removal : boolean, optional
-        True if stopwords to be removed, else False.
-        Default value, False.
-
-    n_jobs : int, optional
-        Number of cores used for computation.
-        Default value, 20.
-
-    Attributes
-    ----------
-    stopwords, stop_removal, n_jobs, name_flagger
-
-    Examples
-    --------
-    >>> from melusine.nlp_tools.tokenizer import Tokenizer
-    >>> tokenizer = Tokenizer()
-    >>> X = tokenizer.fit_transform(X)
-    >>> tokenizer.save(filepath)
-    >>> tokenizer = Tokenizer().load(filepath)
-
-    """
+    # Attributes excluded from the default save methods
+    # Ex: pickle.dump or json.dump
+    EXCLUDE_LIST = ["keyword_processor"]
 
     def __init__(
         self,
-        input_column="clean_text",
-        stopwords=stopwords,
-        stop_removal=True,
-        n_jobs=20,
+        tokenizer_regex=config["tokenizer"]["tokenizer_regex"],
+        stopwords=config["tokenizer"]["stopwords"],
+        remove_stopwords=config["tokenizer"]["remove_stopwords"],
+        flag_dict=config["tokenizer"]["flag_dict"],
+        flashtext_separators=config["tokenizer"]["flashtext_separators"],
+        flashtext_names=config["tokenizer"]["flashtext_names"],
+        name_flag=config["tokenizer"]["name_flag"],
+        **kwargs
     ):
-        self.input_column = input_column
-        self.stopwords = set(stopwords)
-        self.stop_removal = stop_removal
-        self.n_jobs = n_jobs
-        self.logger = logging.getLogger(__name__)
-        self.name_flagger = _create_flashtext_object()
-        self.name_flagger.add_keywords_from_dict({"flag_name_": names_list})
 
-    def __getstate__(self):
-        """should return a dict of attributes that will be pickled
-        To override the default pickling behavior and
-        avoid the pickling of the logger
-        """
-        d = self.__dict__.copy()
-        d["n_jobs"] = 1
-        if "logger" in d:
-            d["logger"] = d["logger"].name
-        return d
+        # Text splitting
+        self.tokenizer_regex = tokenizer_regex
 
-    def __setstate__(self, d):
-        """To override the default pickling behavior and
-        avoid the pickling of the logger"""
-        if "logger" in d:
-            d["logger"] = logging.getLogger(d["logger"])
-        self.__dict__.update(d)
+        # Stopwords
+        self.stopwords = set(stopwords) or None
+        self.remove_stopwords = remove_stopwords
+        self.flag_dict = flag_dict
+        self.flashtext_separators = flashtext_separators
+        self.flashtext_names = flashtext_names
+        self.name_flag = name_flag
 
-    def fit(self, X, y=None):
-        """Unused method. Defined only for compatibility with scikit-learn API."""
-        return self
+        self.keyword_processor = None
+        self.init_flashtext()
 
-    def transform(self, X):
-        """Applies tokenize method on pd.Dataframe.
+    def init_flashtext(self):
+        self.keyword_processor = KeywordProcessor()
 
-        Parameters
-        ----------
-        X : pandas.DataFrame,
-            Data on which transformations are applied.
+        for x in self.flashtext_separators:
+            self.keyword_processor.add_non_word_boundary(x)
+            self.keyword_processor.add_keywords_from_dict(
+                {"flag_name_": self.flashtext_names}
+            )
 
-        Returns
-        -------
-        pandas.DataFrame
-        """
-        self.logger.debug("Start transform tokenizing")
+    @staticmethod
+    def _flag_text(flag_dict, text):
+        for key, value in flag_dict.items():
+            if isinstance(value, dict):
+                text = WordLevelTokenizer._flag_text(value, text)
+            else:
+                text = re.sub(key, value, text, flags=re.I)
 
-        if isinstance(X, dict):
-            apply_func = TransformerScheduler.apply_dict
-        else:
-            apply_func = TransformerScheduler.apply_pandas
+        return text
 
-        X["tokens"] = apply_func(X, self.tokenize)
-        X["tokens"] = apply_func(X, lambda x: x["tokens"][0])
-
-        self.logger.debug("Done.")
-        return X
-
-    def tokenize(self, row):
-        """Returns list of tokens.
-
-        Parameters
-        ----------
-        row : row of pd.Dataframe
-
-        Returns
-        -------
-        pd.Series
-
-        """
-        text = row[self.input_column]
-        tokens = self._tokenize(text)
-        return [tokens]
-
-    def _tokenize(self, text, pattern=regex_tokenize):
-        """Returns list of tokens from text."""
+    def _text_to_tokens(self, text):
         if isinstance(text, str):
-            tokens = re.findall(pattern, text, re.M + re.DOTALL)
-            tokens = self._remove_stopwords(tokens)
+            tokens = re.findall(self.tokenizer_regex, text, re.M + re.DOTALL)
         else:
             tokens = []
         return tokens
 
-    def _remove_stopwords(self, token_list):
-        """
-        Removes stopwords from list if stop_removal parameter
-        set to True and replaces names by flag_name_.
+    def _remove_stopwords(self, tokens):
+        return [token for token in tokens if token not in self.stopwords]
 
-        Parameters
-        ----------
-        token_list: list
-            List of tokens
+    def _flag_names(self, tokens):
+        return [self.keyword_processor.replace_keywords(token) for token in tokens]
 
-        Returns
-        -------
-        token_list: list
-            List of tokens without stopwords
-        """
-        if self.stop_removal:
-            return [
-                self.name_flagger.replace_keywords(tok)
-                for tok in token_list
-                if tok not in stopwords
-            ]
-        else:
-            return token_list
+    def tokenize(self, text):
+        # Text flagging
+        text = self._flag_text(self.flag_dict, text)
+
+        # Text splitting
+        tokens = self._text_to_tokens(text)
+
+        # Stopwords removal
+        tokens = self._remove_stopwords(tokens)
+
+        # Flagging
+        tokens = self._flag_names(tokens)
+
+        return tokens
+
+    def save(self, path):
+        d = self.__dict__.copy()
+        for key in self.EXCLUDE_LIST:
+            _ = d.pop(key, None)
+
+        # Convert sets to lists
+        for key, val in d.items():
+            if isinstance(val, set):
+                d[key] = list(val)
+
+        with open(path, "w") as f:
+            json.dump(d, f)
+
+    @classmethod
+    def load(cls, path):
+        with open(path, "r") as f:
+            params = json.load(f)
+
+        return cls(**params)
