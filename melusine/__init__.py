@@ -1,7 +1,7 @@
 """Top-level package for melusine."""
 
 __author__ = """Sacha Samama & Tom Stringer & Hugo Perrier"""
-__email__ = ["tiphaine.fabre@maif.fr", "hperrier@quantmetry.com"]
+__email__ = "ssamama@quantmetry.com, tstringer@quantmetry.com, hperrier@quantmetry.com"
 __version__ = "2.3.1"
 
 from .data.data_loader import load_email_data
