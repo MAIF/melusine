@@ -86,6 +86,8 @@ class CnnMelusineModel(BaseMelusineModel):
         self.text_column = text_column
         self.tokenizer = tokenizer
         self.trainable = trainable
+        if hasattr(pretrained_embedding, "wv"):
+            pretrained_embedding = pretrained_embedding.wv
         self.pretrained_embedding = pretrained_embedding
         self.vocab = None
         self.unk_token = unk_token
