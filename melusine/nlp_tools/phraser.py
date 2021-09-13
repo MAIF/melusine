@@ -3,7 +3,8 @@ import logging
 import gensim
 import pickle
 import re
-from melusine.utils.streamer import Streamer
+
+from melusine.nlp_tools.tokenizer import WordLevelTokenizer
 from melusine import config
 
 _common_terms = config["words_list"]["stopwords"] + config["words_list"]["names"]
@@ -14,13 +15,7 @@ regex_process = r"\w+(?:[\?\-'\"_]\w+)*"
 regex_split_parts = r"(.*?[;.,?!])"
 
 
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-formatter = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s \
-                              - %(message)s",
-    datefmt="%d/%m %I:%M",
-)
+logger = logging.getLogger(__name__)
 
 
 def phraser_on_body(row, phraser):
@@ -193,36 +188,18 @@ class Phraser:
         common_terms=_common_terms,
         threshold=350,
         min_count=200,
+        tokenizer=None,
     ):
-        self.logger = logging.getLogger(__name__)
-        self.logger.debug("creating a Phraser instance")
+        if not tokenizer:
+            self.tokenizer = WordLevelTokenizer()
+        else:
+            self.tokenizer = tokenizer
+
         self.common_terms = common_terms
         self.threshold = threshold
         self.min_count = min_count
         self.input_column = input_column
-        self.streamer = Streamer(column=self.input_column, stop_removal=False)
-        ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(logging.INFO)
-        ch.setFormatter(formatter)
-        self.logger.addHandler(ch)
         self.phraser = None
-
-    def __getstate__(self):
-        """should return a dict of attributes that will be pickled
-        To override the default pickling behavior and
-        avoid the pickling of the logger
-        """
-        d = self.__dict__.copy()
-        if "logger" in d:
-            d["logger"] = d["logger"].name
-        return d
-
-    def __setstate__(self, d):
-        """To override the default pickling behavior and
-        avoid the pickling of the logger"""
-        if "logger" in d:
-            d["logger"] = logging.getLogger(d["logger"])
-        self.__dict__.update(d)
 
     def save(self, filepath):
         """Method to save Phraser object"""
@@ -247,23 +224,23 @@ class Phraser:
         self : object
             Returns the instance
         """
-        self.logger.info("Start training for colocation detector")
-        self.streamer.to_stream(X)
+        logger.info("Start training for colocation detector")
+        input_data = X[self.input_column].apply(self.tokenizer.tokenize)
+
         # Hack to solve the Gensim 4.0 / Tensorflow 2.6 conflict
         if gensim.__version__.startswith("3"):
             phrases = gensim.models.Phrases(
-                self.streamer.stream,
+                input_data,
                 common_terms=self.common_terms,  # noqa
                 threshold=self.threshold,
                 min_count=self.min_count,
             )
         else:
             phrases = gensim.models.Phrases(
-                self.streamer.stream,
+                input_data,
                 connector_words=self.common_terms,  # noqa
                 threshold=self.threshold,
                 min_count=self.min_count,
             )
         self.phraser = gensim.models.phrases.Phraser(phrases)
-        self.logger.info("Done.")
-        pass
+        logger.info("Done.")

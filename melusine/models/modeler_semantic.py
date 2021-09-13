@@ -215,9 +215,9 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
         """
         # Hack to solve the Gensim 4.0 / Tensorflow 2.6 conflict
         if gensim.__version__.startswith("3"):
-            words = list(embedding.embedding.vocab.keys())
+            words = list(embedding.vocab.keys())
         else:
-            words = list(embedding.embedding.key_to_index.keys())
+            words = list(embedding.key_to_index.keys())
 
         seed_dict = dict()
         seed_list = []
@@ -254,14 +254,14 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
 
         # Hack to solve the Gensim 4.0 / Tensorflow 2.6 conflict
         if gensim.__version__.startswith("3"):
-            words = list(embedding.embedding.vocab.keys())
+            words = list(embedding.vocab.keys())
         else:
-            words = list(embedding.embedding.key_to_index.keys())
+            words = list(embedding.key_to_index.keys())
         lexicon_mat = np.zeros((len(seed_list), len(words)))
 
         for i, seed in enumerate(seed_list):
             for j, word in enumerate(words):
-                similarity_value = embedding.embedding.similarity(seed, word)
+                similarity_value = embedding.similarity(seed, word)
                 lexicon_mat[i, j] = similarity_value
 
         lexicon_values = self.aggregation_function_seed_wise(lexicon_mat)

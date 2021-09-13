@@ -208,7 +208,6 @@ df_email = phraser_tokenizer_pipeline.fit_transform(df_email)
 An example of embedding training is given below:
 
 ```python
-from melusine.nlp_tools.embedding import Embedding
 
 embedding = Embedding(input_column='clean_body', min_count=10)
 embedding.train(df_email)
@@ -247,9 +246,6 @@ The package includes multiple neural network architectures including CNN, RNN, A
 An example of classification is given below:
 ```python
 from sklearn.preprocessing import LabelEncoder
-from melusine.nlp_tools.embedding import Embedding
-from melusine.models.neural_architectures import cnn_model
-from melusine.models.train import NeuralModel
 
 X = df_email.drop(['label'], axis=1)
 y = df_email.label
