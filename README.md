@@ -179,13 +179,12 @@ In this example, the pre-processing functions applied are:
 - ``build_historic`` : When email is a conversation, reconstructs the individual message history
 - ``structure_email`` : Splits each messages into parts and tags them (tags: Hello, Body, Greetings, etc)
 
-### Phraser and Tokenizer pipeline
+### Phraser pipeline
 
-A pipeline to train and apply the phraser end tokenizer is given below:
+A pipeline to train and apply the phraser is given below:
 
 ```python
 from melusine.nlp_tools.phraser import Phraser, phraser_on_body
-from melusine.nlp_tools.tokenizer import Tokenizer
 
 phraser = Phraser(input_column='clean_body')
 phraser.train(df_email)
@@ -195,23 +194,37 @@ functions_scheduler=[
     (phraser_on_body, (phraser,), ['clean_body'])
 ])
 
-phraser_tokenizer_pipeline = Pipeline([
+phraser_pipeline = Pipeline([
   ('PhraserTransformer', PhraserTransformer),
-  ('Tokenizer', Tokenizer(input_column='clean_body'))
 ])
 
-df_email = phraser_tokenizer_pipeline.fit_transform(df_email)
+df_email = phraser_pipeline.fit_transform(df_email)
 ```
+
+### Tokenization
+
+Melusine provides a WordLevelTokenizer object to split texts into tokens:
+
+```python
+from melusine.nlp_tools.tokenizer import WordLevelTokenizer
+
+# ============== Tokenizer ==============
+tokenizer = WordLevelTokenizer()
+
+df_email["tokens"] = df_email["clean_body"].apply(tokenizer.tokenize)
+```
+
 
 ### Embeddings training
 
 An example of embedding training is given below:
 
 ```python
-from melusine.nlp_tools.embedding import Embedding
+from melusine.nlp_tools.embedding import Word2VecTrainer
 
-embedding = Embedding(input_column='clean_body', min_count=10)
-embedding.train(df_email)
+embedding_trainer = Word2VecTrainer(input_column="clean_body", min_count=10)
+embedding_trainer.train(df_email)
+pretrained_embedding = embedding_trainer.embedding
 ```
 
 ### Metadata pipeline
@@ -247,7 +260,6 @@ The package includes multiple neural network architectures including CNN, RNN, A
 An example of classification is given below:
 ```python
 from sklearn.preprocessing import LabelEncoder
-from melusine.nlp_tools.embedding import Embedding
 from melusine.models.neural_architectures import cnn_model
 from melusine.models.train import NeuralModel
 
@@ -256,8 +268,6 @@ y = df_email.label
 
 le = LabelEncoder()
 y = le.fit_transform(y)
-
-pretrained_embedding = embedding
 
 nn_model = NeuralModel(architecture_function=cnn_model,
                        pretrained_embedding=pretrained_embedding,
