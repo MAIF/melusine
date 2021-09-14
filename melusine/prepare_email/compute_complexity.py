@@ -33,7 +33,8 @@ def mean_words_by_sentence(row, tokenizer):
     row : pd.Series
         Row of an email DataFrame
 
-    tokenizer : an object from the Tokenizer melusine class (nlp_tools.tokenizer.Tokenizer)
+    tokenizer : WordLevelTokenizer
+        Tokenizer to split text into tokens
 
     Returns
     -------
@@ -44,7 +45,7 @@ def mean_words_by_sentence(row, tokenizer):
     for part in row["structured_body"][0]["structured_text"]["text"]:
         if part["tags"] == "BODY":
             for sentence in part["part"].split(". "):
-                nb_words = len(tokenizer._tokenize(sentence))
+                nb_words = len(tokenizer.tokenize(sentence))
                 if nb_words > 1:
                     nb_words_per_sentence.append(nb_words)
     average_word_by_sentence = np.round(np.mean(nb_words_per_sentence))
