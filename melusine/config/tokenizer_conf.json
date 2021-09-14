@@ -190,6 +190,8 @@
       "æ"
     ],
     "name_flag": "flag_name_",
-    "collocations_dict": {"rendez vous": "rendez_vous"}
+    "collocations_dict": {"rendez vous": "rendez_vous"},
+    "normalization": "NFKD",
+    "lowercase": true
   }
 }

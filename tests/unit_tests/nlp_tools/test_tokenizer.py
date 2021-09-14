@@ -5,15 +5,15 @@ from melusine.nlp_tools.tokenizer import WordLevelTokenizer
 @pytest.mark.parametrize(
     "input_text, expected_tokens",
     [
-        ("hello,   world!", ["hello", "world"]),
+        ("Hello,   world!", ["hello", "world"]),
         ("\n   hello world    ", ["hello", "world"]),
         ("hello(world)", ["hello", "world"]),
         ("----- hello\tworld *****", ["hello", "world"]),
         ("hello.world", ["hello", "world"]),
-        ("hello!world", ["hello", "world"]),
+        ("hello!World", ["hello", "world"]),
         ("hello\nworld", ["hello", "world"]),
         (
-            "bonjour! je m'appelle roger, mon numero est 0600000000",
+            "bonjour! je m'appelle roger, mon numéro est 0600000000",
             ["bonjour", "appelle", "flag_name_", "numero", "flag_phone_"],
         ),
         (
@@ -108,3 +108,28 @@ def test_tokenizer_join_collocations(input_text, expected_text):
     text = tokenizer._flag_text(input_text, tokenizer.collocations_dict)
 
     assert text == expected_text
+
+
+@pytest.mark.parametrize(
+    "input_text, expected_text",
+    [("éàèùöï", "eaeuoi")],
+)
+def test_tokenizer_normalize_text(input_text, expected_text):
+    tokenizer = WordLevelTokenizer()
+    text = tokenizer._normalize_text(input_text)
+
+    assert text == expected_text
+
+
+@pytest.mark.parametrize(
+    "input_text, lowercase, expected_tokens",
+    [
+        ("Hello WORLD", True, ["hello", "world"]),
+        ("Hello WORLD", False, ["Hello", "WORLD"]),
+    ],
+)
+def test_tokenizer_normalize_text(input_text, lowercase, expected_tokens):
+    tokenizer = WordLevelTokenizer(lowercase=lowercase)
+    tokens = tokenizer.tokenize(input_text)
+
+    assert tokens == expected_tokens
