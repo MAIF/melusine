@@ -1,9 +1,11 @@
 import logging
 import re
 import json
+import unicodedata
+
 from flashtext import KeywordProcessor
 from melusine import config
-from typing import List, Dict, Sequence
+from typing import List, Dict, Sequence, Union
 from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)
@@ -45,6 +47,8 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
     def __init__(
         self,
         tokenizer_regex: str = config["tokenizer"]["tokenizer_regex"],
+        normalization: Union[str, None] = config["tokenizer"]["normalization"],
+        lowercase: bool = config["tokenizer"]["lowercase"],
         stopwords: Sequence[str] = config["tokenizer"]["stopwords"],
         remove_stopwords: bool = config["tokenizer"]["remove_stopwords"],
         flag_dict: Dict[str, str] = config["tokenizer"]["flag_dict"],
@@ -60,6 +64,10 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         ----------
         tokenizer_regex: str
             Regex used to split the text into tokens
+        normalization: Union[str, None]
+            Type of normalization to apply to the text
+        lowercase: bool
+            If True, lowercase the text
         stopwords: Sequence[str]
             List of words to be removed
         remove_stopwords: bool
@@ -77,10 +85,9 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         """
         super().__init__()
 
-        # Text splitting
         self.tokenizer_regex = tokenizer_regex
-
-        # Stopwords
+        self.normalization = normalization
+        self.lowercase = lowercase
         self.stopwords = set(stopwords) or None
         self.remove_stopwords = remove_stopwords
         self.flag_dict = flag_dict
@@ -103,6 +110,15 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
             self.keyword_processor.add_keywords_from_dict(
                 {"flag_name_": self.flashtext_names}
             )
+
+    def _normalize_text(self, text):
+        if self.normalization:
+            text = (
+                unicodedata.normalize(self.normalization, text)
+                .encode("ASCII", "ignore")
+                .decode("utf-8")
+            )
+        return text
 
     def _flag_text(self, text: str, flag_dict: Dict[str, str] = None) -> str:
         """
@@ -187,6 +203,12 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         tokens: Sequence[str]
             List of tokens
         """
+        # Normalize text
+        text = self._normalize_text(text)
+
+        if self.lowercase:
+            text = text.lower()
+
         # Text flagging
         text = self._flag_text(text, self.flag_dict)
 

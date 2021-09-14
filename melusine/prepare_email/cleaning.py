@@ -12,7 +12,7 @@ regex_clean_header_dict = REGEX_CLEAN["clean_header_dict"]
 regex_remove_multiple_spaces_list = REGEX_CLEAN["remove_multiple_spaces_list"]
 
 
-def clean_body(row, flags=True):
+def clean_body(row):
     """Clean body column. The cleaning involves the following operations:
         - Cleaning the text
         - Removing the multiple spaces
@@ -23,20 +23,16 @@ def clean_body(row, flags=True):
     row : row of pandas.Dataframe object,
         Data contains 'last_body' column.
 
-    flags : boolean, optional
-        True if you want to flag relevant info, False if not.
-        Default value, True.
-
     Returns
     -------
     row of pandas.DataFrame object or pandas.Series if apply to all DF.
     """
     text = str(row["last_body"])
-    clean_body = clean_text(text)
-    return clean_body
+    clean_body_ = clean_text(text)
+    return clean_body_
 
 
-def clean_header(row, flags=True):
+def clean_header(row):
     """Clean the header column. The cleaning involves the following operations:
         - Removing the transfers and answers indicators
         - Cleaning the text
@@ -47,18 +43,14 @@ def clean_header(row, flags=True):
     row : row of pandas.Dataframe object,
         Data contains 'header' column.
 
-    flags : boolean, optional
-        True if you want to flag relevant info, False if not.
-        Default value, True.
-
     Returns
     -------
     row of pd.DataFrame object or pandas.Series if apply to all DF.
     """
     text = str(row["header"])
-    clean_header = remove_transfer_answer_header(text)
-    clean_header = clean_text(clean_header)
-    return clean_header
+    clean_header_ = remove_transfer_answer_header(text)
+    clean_header_ = clean_text(clean_header_)
+    return clean_header_
 
 
 def clean_text(text):
