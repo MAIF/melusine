@@ -90,6 +90,7 @@ setup(
         "melusine.connectors",
     ],
     data_files=[
+        ("config", ["melusine/config/tokenizer_conf.json"]),
         ("config", ["melusine/config/conf.json"]),
         ("config", ["melusine/config/names.json"]),
         ("data", ["melusine/data/emails.csv"]),

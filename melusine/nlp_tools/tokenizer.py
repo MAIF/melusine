@@ -216,7 +216,7 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
             json.dump(d, f, sort_keys=self.SORT_KEYS, indent=self.INDENT)
 
     @classmethod
-    def load(cls, path: str) -> None:
+    def load(cls, path: str):
         """
         Load the tokenizer from a json file
         Parameters
