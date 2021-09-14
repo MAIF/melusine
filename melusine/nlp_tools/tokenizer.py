@@ -3,7 +3,7 @@ import re
 import json
 from flashtext import KeywordProcessor
 from melusine import config
-from typing import List, Dict
+from typing import List, Dict, Sequence
 from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)
@@ -45,11 +45,13 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
     def __init__(
         self,
         tokenizer_regex: str = config["tokenizer"]["tokenizer_regex"],
-        stopwords: List[str] = config["tokenizer"]["stopwords"],
+        stopwords: Sequence[str] = config["tokenizer"]["stopwords"],
         remove_stopwords: bool = config["tokenizer"]["remove_stopwords"],
         flag_dict: Dict[str, str] = config["tokenizer"]["flag_dict"],
-        flashtext_separators: List[str] = config["tokenizer"]["flashtext_separators"],
-        flashtext_names: List[str] = config["tokenizer"]["names"],
+        flashtext_separators: Sequence[str] = config["tokenizer"][
+            "flashtext_separators"
+        ],
+        flashtext_names: Sequence[str] = config["tokenizer"]["names"],
         name_flag: str = config["tokenizer"]["name_flag"],
     ):
         """
@@ -57,15 +59,15 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         ----------
         tokenizer_regex: str
             Regex used to split the text into tokkens
-        stopwords: List[str]
+        stopwords: Sequence[str]
             List of words to be removed
         remove_stopwords: bool
             If True, stopwords removal is enabled
         flag_dict: Dict[str, str]
             Flagging dict with regex as key and replace_text as value
-        flashtext_separators: List[Str]
+        flashtext_separators: Sequence[Str]
             List of separator words for FlashText
-        flashtext_names: List[Str]
+        flashtext_names: Sequence[Str]
             List of names to be flagged
         name_flag: str
             Replace value for names
@@ -118,13 +120,13 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
 
         for key, value in flag_dict.items():
             if isinstance(value, dict):
-                text = WordLevelTokenizer._flag_text(value, text)
+                text = self._flag_text(text, value)
             else:
                 text = re.sub(key, value, text, flags=re.I)
 
         return text
 
-    def _text_to_tokens(self, text: str) -> List[str]:
+    def _text_to_tokens(self, text: str) -> Sequence[str]:
         """
         Split a text into values
         Parameters
@@ -132,7 +134,7 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         text: Text to be split
         Returns
         -------
-        tokens: List[str]
+        tokens: Sequence[str]
             List of tokens
         """
         if isinstance(text, str):
@@ -141,35 +143,35 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
             tokens = []
         return tokens
 
-    def _remove_stopwords(self, tokens: List[str]) -> List[str]:
+    def _remove_stopwords(self, tokens: Sequence[str]) -> Sequence[str]:
         """
         Remove stopwords from tokens.
         Parameters
         ----------
-        tokens: List[str]
+        tokens: Sequence[str]
             List of tokens
         Returns
         -------
-        tokens: List[str]
+        tokens: Sequence[str]
             List of tokens without stopwords
         """
         return [token for token in tokens if token not in self.stopwords]
 
-    def _flag_names(self, tokens: List[str]) -> List[str]:
+    def _flag_names(self, tokens: Sequence[str]) -> Sequence[str]:
         """
         Replace name tokens with a flag
         Parameters
         ----------
-        tokens: List[str]
+        tokens: Sequence[str]
             List of tokens
         Returns
         -------
-        tokens: List[str]
+        tokens: Sequence[str]
             List of tokens with names flagged
         """
         return [self.keyword_processor.replace_keywords(token) for token in tokens]
 
-    def tokenize(self, text: str) -> List[str]:
+    def tokenize(self, text: str) -> Sequence[str]:
         """
         Apply the full tokenization pipeline on a text.
         Parameters
@@ -178,7 +180,7 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
             Input text to be tokenized
         Returns
         -------
-        tokens: List[str]
+        tokens: Sequence[str]
             List of tokens
         """
         # Text flagging
