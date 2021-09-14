@@ -8,7 +8,6 @@ import re
 from melusine import config
 
 REGEX_CLEAN = config["regex"]["cleaning"]
-regex_flags_dict = REGEX_CLEAN["flags_dict"]
 regex_clean_header_dict = REGEX_CLEAN["clean_header_dict"]
 regex_remove_multiple_spaces_list = REGEX_CLEAN["remove_multiple_spaces_list"]
 
@@ -34,7 +33,6 @@ def clean_body(row, flags=True):
     """
     text = str(row["last_body"])
     clean_body = clean_text(text)
-    clean_body = flag_items(clean_body, flags=flags)
     return clean_body
 
 
@@ -60,7 +58,6 @@ def clean_header(row, flags=True):
     text = str(row["header"])
     clean_header = remove_transfer_answer_header(text)
     clean_header = clean_text(clean_header)
-    clean_header = flag_items(clean_header, flags=flags)
     return clean_header
 
 
@@ -146,32 +143,6 @@ def remove_multiple_spaces_and_strip_text(text):
         text = re.sub(regex_remove_multiple_spaces, " ", text)
         text = text.strip()
     return text
-
-
-def flag_items(text, flags=True):
-    """Flag relevant information
-        ex : amount, phone number, email address, postal code (5 digits)..
-
-    Parameters
-    ----------
-    text : str,
-        Body content.
-
-    flags : boolean, optional
-        True if you want to flag relevant info, False if not.
-        Default value, True.
-
-    Returns
-    -------
-    str
-
-    """
-    if flags:
-        for regex, value in regex_flags_dict.items():
-            text = re.sub(pattern=regex, repl=value, string=text, flags=re.IGNORECASE)
-        return text
-    else:
-        return text
 
 
 def remove_transfer_answer_header(text):

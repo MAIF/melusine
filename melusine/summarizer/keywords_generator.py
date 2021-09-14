@@ -9,7 +9,7 @@ from melusine.utils.transformer_scheduler import TransformerScheduler
 from melusine import config
 
 keywords = config["words_list"]["keywords"]
-stopwords = config["words_list"]["stopwords"] + config["words_list"]["names"]
+stopwords = config["tokenizer"]["stopwords"] + config["tokenizer"]["names"]
 
 
 class KeywordsGenerator(BaseEstimator, TransformerMixin):

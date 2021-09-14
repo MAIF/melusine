@@ -5,7 +5,7 @@ import re
 from melusine import config
 from melusine.nlp_tools.tokenizer import WordLevelTokenizer
 
-_common_terms = config["words_list"]["stopwords"] + config["words_list"]["names"]
+_common_terms = config["tokenizer"]["stopwords"] + config["tokenizer"]["names"]
 
 regex_tokenize_with_punctuations = r"(.*?[\s'])"
 tokenize_without_punctuations = r"(.*?)[\s']"

@@ -77,7 +77,6 @@ regex_tag_subsentence = REGEX_SEG["tag_subsentence"]
 regex_split_message_to_sentences_list = REGEX_SEG["split_message_to_sentences_list"]
 
 REGEX_CLEAN = config["regex"]["cleaning"]
-regex_flags_dict = REGEX_CLEAN["flags_dict"]
 
 
 def structure_email(row):
@@ -315,15 +314,6 @@ def tag(string):
     for tag in regex_segmenting_order:
         for compiled_regex in compiled_regex_segmenting_dict[tag]:
             if compiled_regex.search(sentence_with_no_accent):
-                if tag in ["HELLO", "GREETINGS", "THANKS"]:
-                    # We search for words of the flag list who mean the sentence contains information as body
-                    for regex, value in regex_flags_dict.items():
-                        if re.search(
-                            pattern=regex,
-                            string=sentence_with_no_accent,
-                            flags=re.IGNORECASE,
-                        ):
-                            return string, False
                 return [(string, tag)], True
 
     return string, False

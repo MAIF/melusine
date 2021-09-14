@@ -10,19 +10,22 @@ logger = logging.getLogger(__name__)
 
 
 class BaseMelusineTokenizer(ABC):
+    INDENT = 4
+    SORT_KEYS = True
+
     def __init__(self):
         pass
 
     @abstractmethod
-    def tokenize(self):
+    def tokenize(self, text: str):
         raise NotImplementedError()
 
     @abstractmethod
-    def save(self, path):
+    def save(self, path: str) -> None:
         raise NotImplementedError()
 
     @abstractmethod
-    def load(self, path):
+    def load(self, path: str) -> None:
         raise NotImplementedError()
 
 
@@ -46,7 +49,7 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         remove_stopwords: bool = config["tokenizer"]["remove_stopwords"],
         flag_dict: Dict[str, str] = config["tokenizer"]["flag_dict"],
         flashtext_separators: List[str] = config["tokenizer"]["flashtext_separators"],
-        flashtext_names: List[str] = config["tokenizer"]["flashtext_names"],
+        flashtext_names: List[str] = config["tokenizer"]["names"],
         name_flag: str = config["tokenizer"]["name_flag"],
     ):
         """
@@ -95,8 +98,7 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
                 {"flag_name_": self.flashtext_names}
             )
 
-    @staticmethod
-    def _flag_text(flag_dict: Dict[str, str], text: str) -> str:
+    def _flag_text(self, text: str, flag_dict: Dict[str, str] = None) -> str:
         """
         General flagging: replace remarkable expressions by a flag
         Ex: 0123456789 => flag_phone_
@@ -111,6 +113,9 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         text: str
             Flagged text
         """
+        if not flag_dict:
+            flag_dict = self.flag_dict
+
         for key, value in flag_dict.items():
             if isinstance(value, dict):
                 text = WordLevelTokenizer._flag_text(value, text)
@@ -177,7 +182,7 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
             List of tokens
         """
         # Text flagging
-        text = self._flag_text(self.flag_dict, text)
+        text = self._flag_text(text, self.flag_dict)
 
         # Text splitting
         tokens = self._text_to_tokens(text)
@@ -208,10 +213,10 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
                 d[key] = list(val)
 
         with open(path, "w") as f:
-            json.dump(d, f)
+            json.dump(d, f, sort_keys=self.SORT_KEYS, indent=self.INDENT)
 
     @classmethod
-    def load(cls, path: str):
+    def load(cls, path: str) -> None:
         """
         Load the tokenizer from a json file
         Parameters
@@ -227,7 +232,3 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
             params = json.load(f)
 
         return cls(**params)
-
-
-class Tokenizer:
-    pass

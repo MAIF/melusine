@@ -91,7 +91,7 @@ setup(
     ],
     data_files=[
         ("config", ["melusine/config/conf.json"]),
-        ("config", ["melusine/config/names.yml"]),
+        ("config", ["melusine/config/names.json"]),
         ("data", ["melusine/data/emails.csv"]),
     ],
     setup_requires=setup_requirements,
