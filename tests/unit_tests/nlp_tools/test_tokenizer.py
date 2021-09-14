@@ -1,53 +1,21 @@
 import pytest
-import pandas as pd
-from melusine.nlp_tools.tokenizer import Tokenizer
+from melusine.nlp_tools.tokenizer import WordLevelTokenizer
 
 
 @pytest.mark.parametrize(
-    "input_df, expected_serie",
+    "input_text, expected_tokens",
     [
-        (
-            pd.DataFrame(
-                ["Bonjour, je m'appelle Nicolas : nicolas_nom@hotmail.fr"],
-                columns=["body"],
-            ),
-            pd.Series(
-                [
-                    "Bonjour",
-                    "appelle",
-                    "flag_name_",
-                    "nicolas_nom",
-                    "hotmail",
-                    "fr",
-                ]
-            ),
-        ),
-        (
-            pd.DataFrame(
-                [
-                    "Bonjour, je fais suite au devis réalisé pour le contrat en mai dernier. "
-                    "Cdlt, Jean-pierre."
-                ],
-                columns=["body"],
-            ),
-            pd.Series(
-                [
-                    "Bonjour",
-                    "fais",
-                    "suite",
-                    "devis",
-                    "réalisé",
-                    "contrat",
-                    "mai",
-                    "dernier",
-                    "Cdlt",
-                    "flag_name_",
-                ]
-            ),
-        ),
+        ("hello,   world!", ["hello", "world"]),
+        ("\n   hello world    ", ["hello", "world"]),
+        ("hello(world)", ["hello", "world"]),
+        ("----- hello\tworld *****", ["hello", "world"]),
+        ("hello.world", ["hello", "world"]),
+        ("hello!world", ["hello", "world"]),
+        ("hello\nworld", ["hello", "world"]),
     ],
 )
-def test_flag_name(input_df, expected_serie):
-    tokenizer = Tokenizer(input_column="body")
-    result = pd.Series(tokenizer.transform(input_df).loc[0]["tokens"])
-    pd.testing.assert_series_equal(result, expected_serie)
+def test_tokenizer_default(input_text, expected_tokens):
+    tokenizer = WordLevelTokenizer()
+    tokens = tokenizer.tokenize(input_text)
+
+    assert tokens == expected_tokens

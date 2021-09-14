@@ -2,6 +2,7 @@ import pandas as pd
 import copy
 import os
 import ast
+
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder
 
@@ -21,8 +22,8 @@ from melusine.prepare_email.cleaning import clean_header
 from melusine.nlp_tools.phraser import Phraser
 from melusine.nlp_tools.phraser import phraser_on_body
 from melusine.nlp_tools.phraser import phraser_on_header
-from melusine.nlp_tools.tokenizer import Tokenizer
-from melusine.nlp_tools.embedding import Embedding
+from melusine.nlp_tools.tokenizer import WordLevelTokenizer
+from melusine.nlp_tools.embedding import Word2VecTrainer
 from melusine.summarizer.keywords_generator import KeywordsGenerator
 
 from melusine.prepare_email.metadata_engineering import MetaExtension
@@ -88,7 +89,7 @@ def test_classification():
     )
 
     # ============== Tokenizer ==============
-    tokenizer = Tokenizer(input_column="clean_body")
+    tokenizer = WordLevelTokenizer()
 
     # ============== Full Pipeline ==============
     PreprocessingPipeline = Pipeline(
@@ -97,12 +98,12 @@ def test_classification():
             ("Segmenting", Segmenting),
             ("LastBodyHeaderCleaning", LastBodyHeaderCleaning),
             ("PhraserTransformer", PhraserTransformer),
-            ("tokenizer", tokenizer),
         ]
     )
 
     # ============== Transform input DataFrame ==============
     input_df = PreprocessingPipeline.transform(input_df)
+    input_df["tokens"] = input_df["clean_body"].apply(tokenizer.tokenize)
 
     # ============== MetaData Pipeline ==============
     MetadataPipeline = Pipeline(
@@ -123,8 +124,13 @@ def test_classification():
     input_df = keywords_generator.fit_transform(input_df)
 
     # ============== Embeddings ==============
-    pretrained_embedding = Embedding(input_column="clean_body", workers=1, min_count=5)
-    pretrained_embedding.train(input_df)
+    embedding_trainer = Word2VecTrainer(
+        input_column="clean_body",
+        tokenizer=tokenizer,
+        min_count=2,
+    )
+    embedding_trainer.train(input_df)
+    pretrained_embedding = embedding_trainer.embedding
 
     # ============== CNN Classifier ==============
     X = pd.concat([input_df["clean_body"], df_meta], axis=1)

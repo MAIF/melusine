@@ -221,9 +221,13 @@ class Dummifier(BaseEstimator, TransformerMixin):
         dummies_ = tuple([col + "__" for col in self.columns_to_dummify])
 
         if "attachment_type" in self.columns_to_dummify:
-            X_attachment = pd.get_dummies(
-                X["attachment_type"].apply(pd.Series).stack().astype(int)
-            ).sum(level=0)
+            X_attachment = (
+                pd.get_dummies(
+                    X["attachment_type"].apply(pd.Series).stack().astype(int)
+                )
+                .groupby(level=0)
+                .sum()
+            )
             X_attachment = X_attachment.add_prefix("attachment_type__")
             self.dummy_features = [
                 c
@@ -267,9 +271,13 @@ class Dummifier(BaseEstimator, TransformerMixin):
         )
 
         if "attachment_type" in self.columns_to_dummify:
-            X_attachment = pd.get_dummies(
-                X_["attachment_type"].apply(pd.Series).stack().astype(int)
-            ).sum(level=0)
+            X_attachment = (
+                pd.get_dummies(
+                    X_["attachment_type"].apply(pd.Series).stack().astype(int)
+                )
+                .groupby(level=0)
+                .sum()
+            )
             X_attachment = X_attachment.add_prefix("attachment_type__")
             X_ = pd.concat([X_, X_attachment], axis=1)
 
