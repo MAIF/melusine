@@ -11,7 +11,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import TensorBoard
 
 from melusine import config
-from melusine.nlp_tools.tokenizer import Tokenizer
+from melusine.nlp_tools.tokenizer import WordLevelTokenizer
 from melusine.models.attention_model import PositionalEncoding
 from melusine.models.attention_model import TransformerEncoderLayer
 from melusine.models.attention_model import MultiHeadAttention
@@ -84,7 +84,8 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
 
     model : Model instance from Keras,
 
-    tokenizer : Tokenizer instance from Melusine,
+    tokenizer : WordLevelTokenizer
+        Tokenizer to split text into tokens
 
     embedding_matrix : np.array,
         Embedding matrix used as input for the neural network model.
@@ -93,14 +94,15 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
     --------
     >>> from melusine.models.train import NeuralModel
     >>> from melusine.models.neural_architectures import cnn_model
-    >>> from melusine.nlp_tools.embedding import Embedding
-    >>> pretrained_embedding = Embedding.load()
+    >>> pretrained_embedding = MyEmbedding
     >>> list_meta = ['extension', 'dayofweek', 'hour']
     >>> nn_model = NeuralModel(cnn_model, pretrained_embedding, list_meta)
     >>> nn_model.fit(X_train, y_train)
     >>> y_res = nn_model.predict(X_test)
 
     """
+
+    TOKENS_COL = "tokens"
 
     def __init__(
         self,
@@ -117,12 +119,16 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         n_epochs=15,
         bert_tokenizer="jplu/tf-camembert-base",
         bert_model="jplu/tf-camembert-base",
+        tokenizer=None,
         **kwargs,
     ):
         self.architecture_function = architecture_function
         self.pretrained_embedding = pretrained_embedding
         if self.architecture_function.__name__ != "bert_model":
-            self.tokenizer = Tokenizer(input_column=text_input_column)
+            if tokenizer is None:
+                self.tokenizer = WordLevelTokenizer()
+            else:
+                self.tokenizer = tokenizer
         elif "camembert" in bert_tokenizer.lower():
             # Prevent the HuggingFace dependency
             try:
@@ -216,11 +222,6 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             del dict_attr["embedding_matrix"]
             del dict_attr["pretrained_embedding"]
         return dict_attr
-
-    def __setstate__(self, dict_attr):
-        """Method called before loading class for a specific treatment to load
-        model weight and structure instead of standard serialization."""
-        self.__dict__ = dict_attr
 
     def fit(
         self, X_train, y_train, tensorboard_log_dir=None, validation_data=None, **kwargs
@@ -367,7 +368,12 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         """
 
         if self.architecture_function.__name__ != "bert_model":
-            X = self.tokenizer.transform(X)
+            if isinstance(X, dict):
+                X[self.TOKENS_COL] = self.tokenizer.tokenize(X[self.text_input_column])
+            else:
+                X[self.TOKENS_COL] = X[self.text_input_column].apply(
+                    self.tokenizer.tokenize
+                )
             X_seq = self._prepare_sequences(X)
             X_meta, nb_meta_features = self._get_meta(X)
             if nb_meta_features == 0:
@@ -396,13 +402,13 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         The vocabulary of the NN is those of the pretrained embedding
         """
         pretrained_embedding = self.pretrained_embedding
-        self.vocabulary = pretrained_embedding.embedding.index_to_key
+        self.vocabulary = pretrained_embedding.index_to_key
         vocab_size = len(self.vocabulary)
-        vector_dim = pretrained_embedding.embedding.vector_size
+        vector_dim = pretrained_embedding.vector_size
         embedding_matrix = np.zeros((vocab_size + 2, vector_dim))
         for index, word in enumerate(self.vocabulary):
             if word not in ["PAD", "UNK"]:
-                embedding_matrix[index + 2, :] = pretrained_embedding.embedding[word]
+                embedding_matrix[index + 2, :] = pretrained_embedding[word]
         embedding_matrix[1, :] = np.mean(embedding_matrix, axis=0)
 
         self.vocabulary.insert(0, "PAD")
@@ -439,7 +445,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         """Prepares the sequence to be used as input for the neural network
         model.
         The input column must be an already tokenized text : tokens
-        The tokens must have been optained using the same tokenizer than the
+        The tokens must have been obtained using the same tokenizer than the
         one used for the pre-trained embedding."""
 
         if isinstance(X, dict):
@@ -498,7 +504,12 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             nb_labels = len(np.unique(y))
 
         if self.architecture_function.__name__ != "bert_model":
-            X = self.tokenizer.transform(X)
+            if isinstance(X, dict):
+                X[self.TOKENS_COL] = self.tokenizer.tokenize(X[self.text_input_column])
+            else:
+                X[self.TOKENS_COL] = X[self.text_input_column].apply(
+                    self.tokenizer.tokenize
+                )
             X_meta, nb_meta_features = self._get_meta(X)
 
             if not validation_data:
