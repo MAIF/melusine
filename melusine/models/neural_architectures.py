@@ -354,6 +354,14 @@ def bert_model(
     -------
     Model instance
     """
+    # Prevent the HuggingFace dependency
+    try:
+        from transformers import TFCamembertModel, TFFlaubertModel
+    except ModuleNotFoundError:
+        raise (
+            """Please install transformers 3.4.0 (only version currently supported)
+            pip install melusine[transformers]"""
+        )
 
     text_input = Input(shape=(seq_max,), dtype="int32")
     attention_input = Input(shape=(seq_max,), dtype="int32")
