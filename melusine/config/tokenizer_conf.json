@@ -189,6 +189,7 @@
       "î",
       "æ"
     ],
-    "name_flag": "flag_name_"
+    "name_flag": "flag_name_",
+    "collocations_dict": {"rendez vous": "rendez_vous"}
   }
 }

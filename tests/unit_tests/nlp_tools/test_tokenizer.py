@@ -16,6 +16,10 @@ from melusine.nlp_tools.tokenizer import WordLevelTokenizer
             "bonjour! je m'appelle roger, mon numero est 0600000000",
             ["bonjour", "appelle", "flag_name_", "numero", "flag_phone_"],
         ),
+        (
+            "j'ai rendez vous avec simone",
+            ["rendez_vous", "flag_name_"],
+        ),
     ],
 )
 def test_tokenizer_default(input_text, expected_tokens):
@@ -88,3 +92,19 @@ def test_tokenizer_remove_stopwords(input_tokens, output_tokens):
     tokens = tokenizer._remove_stopwords(input_tokens)
 
     assert tokens == output_tokens
+
+
+@pytest.mark.parametrize(
+    "input_text, expected_text",
+    [
+        (
+            "rendez vous a bali",
+            "rendez_vous a bali",
+        ),
+    ],
+)
+def test_tokenizer_join_collocations(input_text, expected_text):
+    tokenizer = WordLevelTokenizer()
+    text = tokenizer._flag_text(input_text, tokenizer.collocations_dict)
+
+    assert text == expected_text

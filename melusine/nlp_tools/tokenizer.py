@@ -48,6 +48,7 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         stopwords: Sequence[str] = config["tokenizer"]["stopwords"],
         remove_stopwords: bool = config["tokenizer"]["remove_stopwords"],
         flag_dict: Dict[str, str] = config["tokenizer"]["flag_dict"],
+        collocations_dict: Dict[str, str] = config["tokenizer"]["collocations_dict"],
         flashtext_separators: Sequence[str] = config["tokenizer"][
             "flashtext_separators"
         ],
@@ -58,13 +59,15 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         Parameters
         ----------
         tokenizer_regex: str
-            Regex used to split the text into tokkens
+            Regex used to split the text into tokens
         stopwords: Sequence[str]
             List of words to be removed
         remove_stopwords: bool
             If True, stopwords removal is enabled
         flag_dict: Dict[str, str]
             Flagging dict with regex as key and replace_text as value
+        collocations_dict: Dict[str, str]
+            Dict with expressions to be grouped into one unit of sens
         flashtext_separators: Sequence[Str]
             List of separator words for FlashText
         flashtext_names: Sequence[Str]
@@ -81,6 +84,7 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         self.stopwords = set(stopwords) or None
         self.remove_stopwords = remove_stopwords
         self.flag_dict = flag_dict
+        self.collocations_dict = collocations_dict
         self.flashtext_separators = flashtext_separators
         self.flashtext_names = flashtext_names
         self.name_flag = name_flag
@@ -185,6 +189,9 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         """
         # Text flagging
         text = self._flag_text(text, self.flag_dict)
+
+        # Join collocations
+        text = self._flag_text(text, self.collocations_dict)
 
         # Text splitting
         tokens = self._text_to_tokens(text)
