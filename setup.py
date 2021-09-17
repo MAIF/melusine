@@ -43,8 +43,8 @@ extras_require["all"] = all_requirements
 
 
 setup(
-    author="Sacha Samama, Tom Stringer, Antoine Simoulin, Benoit Lebreton, Tiphaine Fabre",
-    author_email="ssamama@quantmetry.com",
+    author="Sacha Samama, Tom Stringer, Antoine Simoulin, Benoit Lebreton, Tiphaine Fabre, Hugo Perrier",
+    author_email="tiphaine.fabre@maif.fr",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
@@ -91,7 +91,7 @@ setup(
     ],
     data_files=[
         ("config", ["melusine/config/conf.json"]),
-        ("config", ["melusine/config/names.yml"]),
+        ("config", ["melusine/config/names.json"]),
         ("data", ["melusine/data/emails.csv"]),
     ],
     setup_requires=setup_requirements,
