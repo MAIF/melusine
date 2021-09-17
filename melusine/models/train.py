@@ -253,6 +253,8 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         self : object
             Returns the instance
         """
+        X_train = X_train.copy()
+        y_train = y_train.copy()
         X_input_train, y_categorical_train = self._prepare_data(X_train, y_train)
 
         if validation_data:
