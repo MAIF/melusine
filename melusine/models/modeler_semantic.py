@@ -3,7 +3,6 @@ import numpy as np
 
 from sklearn.base import BaseEstimator, TransformerMixin
 from melusine.utils.multiprocessing import apply_by_multiprocessing
-from gensim.models import Word2Vec
 
 
 def aggregation_percentile_60(x):
@@ -165,9 +164,11 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
         Parameters
         -------
         embedding : Embedding Object,
-            A Melusine Embedding object.
+            A Gensim Embedding object.
 
         """
+        if hasattr(embedding, "wv"):
+            embedding = embedding.wv
 
         if self.extend_seed_word_list:
             self.seed_dict, self.seed_list = self.compute_seeds_from_root(
@@ -212,7 +213,7 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
             all the seedwords found with the given prefixes
 
         """
-        words = list(embedding.embedding.key_to_index.keys())
+        words = list(embedding.key_to_index.keys())
         seed_dict = dict()
         seed_list = []
 
@@ -242,17 +243,13 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
             and the values their cosine similarity with the seeds (depending on the seedwise aggregation strategy).
 
         """
-
-        if type(embedding) == Word2Vec:
-            embedding = embedding.wv
-
-        words = list(embedding.embedding.key_to_index.keys())
+        words = list(embedding.key_to_index.keys())
 
         lexicon_mat = np.zeros((len(seed_list), len(words)))
 
         for i, seed in enumerate(seed_list):
             for j, word in enumerate(words):
-                similarity_value = embedding.embedding.similarity(seed, word)
+                similarity_value = embedding.similarity(seed, word)
                 lexicon_mat[i, j] = similarity_value
 
         lexicon_values = self.aggregation_function_seed_wise(lexicon_mat)

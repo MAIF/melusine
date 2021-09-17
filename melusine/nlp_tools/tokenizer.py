@@ -56,7 +56,7 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         flashtext_separators: Sequence[str] = config["tokenizer"][
             "flashtext_separators"
         ],
-        flashtext_names: Sequence[str] = config["tokenizer"]["names"],
+        names: Sequence[str] = config["tokenizer"]["names"],
         name_flag: str = config["tokenizer"]["name_flag"],
     ):
         """
@@ -78,22 +78,59 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
             Dict with expressions to be grouped into one unit of sens
         flashtext_separators: Sequence[Str]
             List of separator words for FlashText
-        flashtext_names: Sequence[Str]
+        names: Sequence[Str]
             List of names to be flagged
         name_flag: str
             Replace value for names
         """
         super().__init__()
 
+        # Tokenizer regex
+        if not tokenizer_regex:
+            raise AttributeError(
+                "You should specify a tokenizer_regex or use the default one"
+            )
         self.tokenizer_regex = tokenizer_regex
+
+        # Normalization
         self.normalization = normalization
+
+        # Lower casing
         self.lowercase = lowercase
-        self.stopwords = set(stopwords) or None
+
+        # Stopwords
+        if not stopwords:
+            self.stopwords = set()
+        else:
+            self.stopwords = set(stopwords) or None
         self.remove_stopwords = remove_stopwords
-        self.flag_dict = flag_dict
-        self.collocations_dict = collocations_dict
+
+        # Flags
+        if not flag_dict:
+            self.flag_dict = {}
+        else:
+            self.flag_dict = flag_dict
+
+        # Collocations
+        if not flag_dict:
+            self.collocations_dict = {}
+        else:
+            self.collocations_dict = collocations_dict
+
+        # Flashtext parameters
         self.flashtext_separators = flashtext_separators
-        self.flashtext_names = flashtext_names
+
+        # Collocations
+        if not names:
+            self.names = {}
+        else:
+            self.names = names
+
+        # Name flag
+        if not name_flag:
+            raise AttributeError(
+                "You should specify a name_flag or use the default one"
+            )
         self.name_flag = name_flag
 
         self.keyword_processor = None
@@ -107,9 +144,7 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
 
         for x in self.flashtext_separators:
             self.keyword_processor.add_non_word_boundary(x)
-            self.keyword_processor.add_keywords_from_dict(
-                {"flag_name_": self.flashtext_names}
-            )
+            self.keyword_processor.add_keywords_from_dict({"flag_name_": self.names})
 
     def _normalize_text(self, text):
         if self.normalization:
@@ -243,8 +278,11 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
             if isinstance(val, set):
                 d[key] = list(val)
 
+        # Wrap into a tokenizer key to comply with the Melusine configurations
+        save_dict = {"tokenizer": d}
+
         with open(path, "w") as f:
-            json.dump(d, f, sort_keys=self.SORT_KEYS, indent=self.INDENT)
+            json.dump(save_dict, f, sort_keys=self.SORT_KEYS, indent=self.INDENT)
 
     @classmethod
     def load(cls, path: str):
@@ -260,6 +298,6 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
             Tokenizer instance
         """
         with open(path, "r") as f:
-            params = json.load(f)
+            tokenizer_config = json.load(f)
 
-        return cls(**params)
+        return cls(**tokenizer_config["tokenizer"])

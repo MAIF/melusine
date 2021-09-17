@@ -70,9 +70,9 @@ def phraser_on_header(row, phraser):
         >>> from melusine.nlp_tools.phraser import phraser_on_header
         >>> from melusine.nlp_tools.phraser import Phraser
         >>> from melusine import load_email_data
-        >>> data = load_email_data()
+        >>> data = load_email_data(type="preprocessed")
         >>> # data contains a 'clean_body' column
-        >>> phraser = Phraser(columns='clean_header').load(filepath)
+        >>> phraser = Phraser.load(filepath)
         >>> data.apply(phraser_on_header, axis=1)  # apply to all samples
 
     """
@@ -185,8 +185,8 @@ class Phraser:
         self,
         input_column="clean_body",
         common_terms=_common_terms,
-        threshold=350,
-        min_count=200,
+        threshold=10,
+        min_count=5,
         tokenizer=None,
     ):
         self.common_terms = common_terms
@@ -203,13 +203,14 @@ class Phraser:
     def save(self, filepath):
         """Method to save Phraser object"""
         with open(filepath, "wb") as f:
-            pickle.dump(self.phraser, f)
+            pickle.dump(self, f)
 
-    def load(self, filepath):
+    @classmethod
+    def load(cls, filepath):
         """Method to load Phraser object"""
         with open(filepath, "rb") as f:
-            self.phraser = pickle.load(f)
-        return self
+            instance = pickle.load(f)
+        return instance
 
     def train(self, X):
         """Train phraser.
