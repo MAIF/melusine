@@ -24,4 +24,4 @@ def load_email_data(type="raw"):
             f"Unknown data type {type}. Choose between 'raw', 'preprocessed' and 'full'"
         )
 
-    return pd.read_csv(email_data_path, encoding="utf-8", sep=";")
+    return pd.read_csv(email_data_path, encoding="utf-8").fillna("")
