@@ -6,6 +6,8 @@ import logging
 import unicodedata
 
 from flashtext import KeywordProcessor
+from sklearn.base import BaseEstimator, TransformerMixin
+
 from melusine import config
 from typing import List, Dict, Sequence, Union
 from abc import ABC, abstractmethod
@@ -354,3 +356,21 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         return cls(
             **tokenizer_config_dict["tokenizer"], **names_config_dict["tokenizer"]
         )
+
+
+class Tokenizer(BaseEstimator, TransformerMixin):
+    def __init__(self, input_column, tokenizer=None):
+        if not tokenizer:
+            self.tokenizer = WordLevelTokenizer()
+        else:
+            self.tokenizer = tokenizer
+
+        self.input_column = input_column
+
+    def fit(self, x, y=None):
+        return self
+
+    def transform(self, x):
+        x = x.copy()
+        x["tokens"] = x[self.input_column].apply(self.tokenizer.tokenize)
+        return x

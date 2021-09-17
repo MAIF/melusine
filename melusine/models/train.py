@@ -123,6 +123,9 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         **kwargs,
     ):
         self.architecture_function = architecture_function
+        # For retro-compatibility
+        if hasattr(pretrained_embedding, "embedding"):
+            pretrained_embedding = pretrained_embedding.embedding
         self.pretrained_embedding = pretrained_embedding
         if self.architecture_function.__name__ != "bert_model":
             if tokenizer is None:
