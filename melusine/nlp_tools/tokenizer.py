@@ -1,6 +1,8 @@
-import logging
+import glob
 import re
+import os
 import json
+import logging
 import unicodedata
 
 from flashtext import KeywordProcessor
@@ -32,6 +34,8 @@ class BaseMelusineTokenizer(ABC):
 
 
 class WordLevelTokenizer(BaseMelusineTokenizer):
+    TOKENIZER_CONFIG_FILENAME = "tokenizer_config.json"
+    NAMES_FILENAME = "names.json"
     """
     Tokenizer which does the following:
     - General flagging (using regex)
@@ -261,28 +265,72 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
 
         return tokens
 
-    def save(self, path: str) -> None:
+    def save(self, path: str, filename_prefix: str = None) -> None:
         """
         Save the tokenizer into a json file
         Parameters
         ----------
         path: str
             Save path
+        filename_prefix: str
+            A prefix to add to the names of the files saved by the tokenizer.
         """
+        # Check if path is a file
+        if os.path.isfile(path):
+            logger.error(f"Provided path ({path}) should be a directory, not a file")
+            return
+
+        # Create directory if necessary
+        os.makedirs(path, exist_ok=True)
+
+        # Tokenizer config file path
+
+        # Names file path
+        names_path = os.path.join(
+            path,
+            (filename_prefix + "_" if filename_prefix else "") + self.NAMES_FILENAME,
+        )
+
         d = self.__dict__.copy()
         for key in self.EXCLUDE_LIST:
             _ = d.pop(key, None)
 
-        # Convert sets to lists
+        # Convert sets to lists (json compatibility)
         for key, val in d.items():
             if isinstance(val, set):
                 d[key] = list(val)
 
-        # Wrap into a tokenizer key to comply with the Melusine configurations
-        save_dict = {"tokenizer": d}
+        # Save the names file separately
+        names_list = d.pop("names")
+        names_config_dict = {"tokenizer": {"names": names_list}}
+        with open(names_path, "w") as f:
+            json.dump(
+                names_config_dict, f, sort_keys=self.SORT_KEYS, indent=self.INDENT
+            )
 
-        with open(path, "w") as f:
+        # Save the tokenizer config file
+        tokenizer_path = os.path.join(
+            path,
+            (filename_prefix + "_" if filename_prefix else "")
+            + self.TOKENIZER_CONFIG_FILENAME,
+        )
+        save_dict = {"tokenizer": d}
+        with open(tokenizer_path, "w") as f:
             json.dump(save_dict, f, sort_keys=self.SORT_KEYS, indent=self.INDENT)
+
+    @staticmethod
+    def load_json(path, suffix):
+        # Look for candidate files at given path
+        candidate_files = [x for x in glob.glob(os.path.join(path, f"*{suffix}"))]
+        if not candidate_files:
+            raise FileNotFoundError(f"Could not find {suffix} file at path {path}")
+        else:
+            filepath = candidate_files[0]
+            logger.info(f"Reading file {filepath}")
+        with open(filepath, "r") as f:
+            data = json.load(f)
+
+        return data
 
     @classmethod
     def load(cls, path: str):
@@ -297,7 +345,12 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         _: WordLevelTokenizer
             Tokenizer instance
         """
-        with open(path, "r") as f:
-            tokenizer_config = json.load(f)
+        # Load the Names file
+        names_config_dict = cls.load_json(path, cls.NAMES_FILENAME)
 
-        return cls(**tokenizer_config["tokenizer"])
+        # Load the Tokenizer config file
+        tokenizer_config_dict = cls.load_json(path, cls.TOKENIZER_CONFIG_FILENAME)
+
+        return cls(
+            **tokenizer_config_dict["tokenizer"], **names_config_dict["tokenizer"]
+        )
