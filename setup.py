@@ -94,6 +94,8 @@ setup(
         ("config", ["melusine/config/conf.json"]),
         ("config", ["melusine/config/names.json"]),
         ("data", ["melusine/data/emails.csv"]),
+        ("data", ["melusine/data/emails_preprocessed.csv"]),
+        ("data", ["melusine/data/emails_full.csv"]),
     ],
     setup_requires=setup_requirements,
     test_suite="tests",
