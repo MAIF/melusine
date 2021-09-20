@@ -330,7 +330,7 @@ Each messages of an email are segmented in the **structured_body** columns and e
 ### Dashboard App
 
 Melusine also offered an easy and nice dashboard app with StreamLit.
-The App contains exploratory dasboard on the email dataset and more specific study on discrimination between the dataset 
+The App contains exploratory dashboard on the email dataset and more specific study on discrimination between the dataset 
 and a neural model classification.
 
 To run the app, run the following command in your terminal in the melusine/data directory :
