@@ -1,4 +1,3 @@
-from tensorflow import keras
 from tensorflow.keras.layers import BatchNormalization
 from tensorflow.keras.layers import LeakyReLU
 from tensorflow.keras.layers import Input
@@ -13,12 +12,12 @@ from tensorflow.keras.layers import SpatialDropout1D
 from tensorflow.keras.layers import GlobalMaxPooling1D
 from tensorflow.keras.layers import GRU
 from tensorflow.keras.layers import Bidirectional
-from transformers import TFCamembertModel, TFFlaubertModel
 
 from melusine.models.attention_model import (
     PositionalEncoding,
     TransformerEncoderLayer,
 )
+
 
 
 def cnn_model(
@@ -63,7 +62,7 @@ def cnn_model(
 
     text_input = Input(shape=(seq_max,), dtype="int32")
 
-    x = keras.layers.Embedding(
+    x = Embedding(
         input_dim=embedding_matrix_init.shape[0],
         output_dim=embedding_matrix_init.shape[1],
         input_length=seq_max,
@@ -160,7 +159,7 @@ def rnn_model(
     """
     text_input = Input(shape=(seq_max,), dtype="int32")
 
-    x = keras.layers.Embedding(
+    x = Embedding(
         input_dim=embedding_matrix_init.shape[0],
         output_dim=embedding_matrix_init.shape[1],
         input_length=seq_max,
@@ -350,6 +349,14 @@ def bert_model(
     -------
     Model instance
     """
+    # Prevent the HuggingFace dependency
+    try:
+        from transformers import TFCamembertModel, TFFlaubertModel
+    except ModuleNotFoundError:
+        raise (
+            """Please install transformers 3.4.0 (only version currently supported)
+            pip install melusine[transformers]"""
+        )
 
     text_input = Input(shape=(seq_max,), dtype="int32")
     attention_input = Input(shape=(seq_max,), dtype="int32")

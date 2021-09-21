@@ -9,39 +9,39 @@ with open("README.md") as readme_file:
     readme = readme_file.read()
 
 requirements = [
-    "pandas>=0.25.0",
-    "scikit-learn>=0.19.0",
+    "tensorflow>=2.5.0",
+    "pandas>=1.0",
+    "scikit-learn>=0.23",
     "gensim>=4.0.0",
     "tqdm>=4.34",
-    "streamlit>=0.57.3",
-    "tensorflow>=2.2.0",
-    "transformers==3.4.0",
     "unidecode>=1.0",
     "flashtext>=2.7",
-    "plotly",
-    "h5py==2.10.0",
-    "numpy>=1.16.4,<1.19.0",
+    "h5py>=3.0",
     "joblib>=1.0",
 ]
 
-setup_requirements = [
-    "pytest-runner",
-]
-
-test_requirements = [
-    "pytest",
-]
-
+# Optional dependencies
 exchange_requirements = ["exchangelib>=4.2.0"]
-# Paving the way towards making transformers optional
 transformers_requirements = ["transformers==3.4.0"]
+viz_requirements = ["plotly", "streamlit>=0.57.3"]
+tf_probability = ["tensorflow-probability==0.14.0"]  # at MAIF tensorflow-probability==0.11.1
 
+# Test dependencies
+setup_requirements = ["pytest-runner"]
+test_requirements = transformers_requirements + ["pytest"]
+
+
+# Ex: Install test dependencies with ``pip install melusine[test]`
 extras_require = {
+    "test": test_requirements,
     "exchange": exchange_requirements,
     "transformers": transformers_requirements,
+    "viz": viz_requirements,
+    "tf_probability": tf_probability
 }
-all_requirements = [y for x in extras_require.values() for y in x]
+all_requirements = list(set([y for x in extras_require.values() for y in x]))
 extras_require["all"] = all_requirements
+
 
 setup(
     author="Sacha Samama, Tom Stringer, Antoine Simoulin, Benoit Lebreton, Tiphaine Fabre",

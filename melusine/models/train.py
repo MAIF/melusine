@@ -1,6 +1,8 @@
 import ast
 import numpy as np
+import pandas as pd
 import pickle
+import scipy.stats as st
 
 from collections import Counter
 from sklearn.base import BaseEstimator, ClassifierMixin
@@ -9,8 +11,6 @@ from tensorflow.keras.models import model_from_json
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import TensorBoard
-from transformers import CamembertTokenizer, XLMTokenizer
-from transformers import TFCamembertModel, TFFlaubertModel
 
 from melusine.config.config import ConfigJsonReader
 from melusine.nlp_tools.tokenizer import Tokenizer
@@ -128,9 +128,27 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         if self.architecture_function.__name__ != "bert_model":
             self.tokenizer = Tokenizer(input_column=text_input_column)
         elif "camembert" in bert_tokenizer.lower():
-            self.tokenizer = CamembertTokenizer.from_pretrained(bert_tokenizer)
+            # Prevent the HuggingFace dependency
+            try:
+                from transformers import CamembertTokenizer
+
+                self.tokenizer = CamembertTokenizer.from_pretrained(bert_tokenizer)
+            except ModuleNotFoundError:
+                raise (
+                    """Please install transformers 3.4.0 (only version currently supported)
+                    pip install melusine[transformers]"""
+                )
         elif "flaubert" in bert_tokenizer.lower():
-            self.tokenizer = XLMTokenizer.from_pretrained(bert_tokenizer)
+            # Prevent the HuggingFace dependency
+            try:
+                from transformers import XLMTokenizer
+
+                self.tokenizer = XLMTokenizer.from_pretrained(bert_tokenizer)
+            except ModuleNotFoundError:
+                raise (
+                    """Please install transformers 3.4.0 (only version currently supported)
+                    pip install melusine[transformers]"""
+                )
         else:
             raise NotImplementedError(
                 "Bert tokenizer {} not implemented".format(bert_tokenizer)
@@ -346,12 +364,54 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         Parameters
         ----------
         X : pd.DataFrame
+        confidence_interval : float, optional
+            between [0,1], the confidence level of the interval.
+            Only available with tensorflow-probability models.
+        Returns
+        -------
+        score : np.array
+            The estimation of probability for each category.
+        inf : np.array, optional
+            The upper bound of the estimation of probability.
+            Only provided if `confidence_interval` exists.
+        sup : np.array, optional
+            The lower bound of the estimation of probability.
+            Only provided if `confidence_interval` exists.
+        """
+
+        X_input = self.prepare_email_to_predict(X)
+        if self.model.layers[-1].get_config().get('convert_to_tensor_fn') == 'mode':
+            # tensorflow_probabilty model : the output is a distribution so we return the mean of the distribution
+            score = self.model(X_input).mean().numpy()
+            if "confidence_interval" in kwargs:
+                confidence_level = kwargs["confidence_interval"]
+                std = self.model(X_input).stddev()
+                two_sided_mult = st.norm.ppf((1+confidence_level)/2) # 1.96 for 0.95
+                inf = score-two_sided_mult*std.numpy()
+                sup = score+two_sided_mult*std.numpy()
+                return score, inf, sup
+            return score
+        else:
+            score = self.model.predict(X_input, **kwargs)
+            return score
+    
+    def prepare_email_to_predict(self, X):
+        """Returns the email as a compatible shape
+        wich depends on the type of neural model
+
+        Parameters
+        ----------
+        X : pd.DataFrame
 
         Returns
         -------
-        np.array
+        list
+            List of the inputs to the neural model
+            Either [X_seq] if no metadata
+            Or [X_seq, X_meta] if metadata
+            Or [X_seq, X_attention, X_meta] if Bert model
         """
-
+        
         if self.architecture_function.__name__ != "bert_model":
             X = self.tokenizer.transform(X)
             X_seq = self._prepare_sequences(X)
@@ -367,7 +427,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 X_input = [X_seq, X_meta]
             else:
                 X_input = [X_seq, X_attention, X_meta]
-        return self.model.predict(X_input, **kwargs)
+        return X_input
 
     def _create_vocabulary_from_tokens(self, X):
         """Create a word indexes dictionary from tokens."""
@@ -388,9 +448,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         embedding_matrix = np.zeros((vocab_size + 2, vector_dim))
         for index, word in enumerate(self.vocabulary):
             if word not in ["PAD", "UNK"]:
-                embedding_matrix[
-                    index + 2, :
-                ] = pretrained_embedding.embedding[word]
+                embedding_matrix[index + 2, :] = pretrained_embedding.embedding[word]
         embedding_matrix[1, :] = np.mean(embedding_matrix, axis=0)
 
         self.vocabulary.insert(0, "PAD")
@@ -536,7 +594,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         return X_input, y_categorical
 
     def _get_meta(self, X):
-        """Returns as a pd.DataFrame the metadata from X given the list_meta
+        """Returns as a np.array the metadata from X given the list_meta
         defined, and returns the number of columns. If meta_input_list is
         empty list or None, meta_input_list is returned as 0."""
         if self.meta_input_list is None or self.meta_input_list == []:
@@ -565,5 +623,6 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 X_meta = X[meta_columns_list]
 
             nb_meta_features = len(meta_columns_list)
-
+        if isinstance(X_meta, pd.DataFrame):
+            X_meta = X_meta.to_numpy()
         return X_meta, nb_meta_features
