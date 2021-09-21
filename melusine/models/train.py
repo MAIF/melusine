@@ -1,5 +1,6 @@
 import ast
 import numpy as np
+import pandas as pd
 import pickle
 import scipy.stats as st
 
@@ -418,14 +419,14 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             if nb_meta_features == 0:
                 X_input = X_seq
             else:
-                X_input = [X_seq, X_meta.to_numpy()]
+                X_input = [X_seq, X_meta]
         else:
             X_seq, X_attention = self._prepare_bert_sequences(X)
             X_meta, nb_meta_features = self._get_meta(X)
             if nb_meta_features == 0:
-                X_input = [X_seq, X_meta.to_numpy()]
+                X_input = [X_seq, X_meta]
             else:
-                X_input = [X_seq, X_attention, X_meta.to_numpy()]
+                X_input = [X_seq, X_attention, X_meta]
         return X_input
 
     def _create_vocabulary_from_tokens(self, X):
@@ -593,7 +594,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         return X_input, y_categorical
 
     def _get_meta(self, X):
-        """Returns as a pd.DataFrame the metadata from X given the list_meta
+        """Returns as a np.array the metadata from X given the list_meta
         defined, and returns the number of columns. If meta_input_list is
         empty list or None, meta_input_list is returned as 0."""
         if self.meta_input_list is None or self.meta_input_list == []:
@@ -622,5 +623,6 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 X_meta = X[meta_columns_list]
 
             nb_meta_features = len(meta_columns_list)
-
+        if isinstance(X_meta, pd.DataFrame):
+            X_meta = X_meta.to_numpy()
         return X_meta, nb_meta_features
