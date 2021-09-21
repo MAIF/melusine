@@ -24,6 +24,7 @@ requirements = [
 exchange_requirements = ["exchangelib>=4.2.0"]
 transformers_requirements = ["transformers==3.4.0"]
 viz_requirements = ["plotly", "streamlit>=0.57.3"]
+tf_probability = ["tensorflow-probability==0.14.0"]  # at MAIF tensorflow-probability==0.11.1
 
 # Test dependencies
 setup_requirements = ["pytest-runner"]
@@ -36,6 +37,7 @@ extras_require = {
     "exchange": exchange_requirements,
     "transformers": transformers_requirements,
     "viz": viz_requirements,
+    "tf_probability": tf_probability
 }
 all_requirements = list(set([y for x in extras_require.values() for y in x]))
 extras_require["all"] = all_requirements
