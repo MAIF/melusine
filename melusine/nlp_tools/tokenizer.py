@@ -41,6 +41,7 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
     """
     Tokenizer which does the following:
     - General flagging (using regex)
+    - Join collocations (deterministic phrasing)
     - Name flagging (using FlashText)
     - Text splitting
     - Stopwords removal
@@ -359,6 +360,13 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
 
 
 class Tokenizer(BaseEstimator, TransformerMixin):
+    """
+    This class is deprecated and should not be used.
+    Is is kept to ensure retro-compatibility with earlier Melusine versions.
+    It will be removed eventually.
+
+    """
+
     def __init__(self, input_column, tokenizer=None):
         if not tokenizer:
             self.tokenizer = WordLevelTokenizer()
