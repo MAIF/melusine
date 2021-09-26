@@ -101,5 +101,54 @@ def load_melusine_conf():
     return conf
 
 
+def config_retro_compatibility(config_):
+    deprecation_message_template = """
+        Deprecation warning : Melusine configurations have been updated
+        Found config key config{old}
+        This should be placed in config{new}    
+    """
+    if not config_.get("tokenizer"):
+        config_["tokenizer"] = dict()
+
+    config_regex = config_.get("regex")
+    config_words_list = config_.get("words_list")
+    if config_regex:
+        if config_regex.get("tokenizer") and not config_["tokenizer"].get(
+            "tokenizer_regex"
+        ):
+            config_["tokenizer"]["tokenizer_regex"] = config_regex["tokenizer"]
+            logger.warning(
+                deprecation_message_template.format(old="""["regex"]["tokenizer"]"""),
+                new="""["tokenizer"]["tokenizer_regex"]""",
+            )
+        if config_regex.get("flag_dict") and not config_["tokenizer"].get("flag_dict"):
+            config_["tokenizer"]["flag_dict"] = config_regex["flag_dict"]
+            logger.warning(
+                deprecation_message_template.format(old="""["regex"]["flag_dict"]"""),
+                new="""["tokenizer"]["flag_dict"]""",
+            )
+
+    if config_words_list:
+        if config_words_list.get("stopwords") and not config_["tokenizer"].get(
+            "stopwords"
+        ):
+            config_["tokenizer"]["stopwords"] = config_words_list["stopwords"]
+            logger.warning(
+                deprecation_message_template.format(
+                    old="""["words_list"]["stopwords"]"""
+                ),
+                new="""["tokenizer"]["stopwords"]""",
+            )
+        if config_words_list.get("names") and not config_["tokenizer"].get("names"):
+            config_["tokenizer"]["names"] = config_words_list["names"]
+            logger.warning(
+                deprecation_message_template.format(old="""["words_list"]["names"]"""),
+                new="""["tokenizer"]["names"]""",
+            )
+
+    return config_
+
+
 # Load Melusine configurations
 config = load_melusine_conf()
+config = config_retro_compatibility(config)
