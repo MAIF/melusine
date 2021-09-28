@@ -1,43 +1,36 @@
-import glob
 import re
-import os
-import json
 import logging
 import unicodedata
-
-from flashtext import KeywordProcessor
 from sklearn.base import BaseEstimator, TransformerMixin
 
-from melusine import config
-from typing import List, Dict, Sequence, Union
-from abc import ABC, abstractmethod
+from typing import Dict, Sequence, Union
+from abc import abstractmethod
+
+from melusine.nlp_tools.base_melusine_class import BaseMelusineClass
+from melusine.nlp_tools.lemmatizer import MelusineLemmatizer
+from melusine.nlp_tools.phraser_new import MelusinePhraser, DeterministicPhraser
+from melusine.nlp_tools.text_flagger import (
+    MelusineTextFlagger,
+    DeterministicTextFlagger,
+)
+from melusine.nlp_tools.token_flagger import MelusineTokenFlagger, FlashtextTokenFlagger
 
 logger = logging.getLogger(__name__)
 
 
-class BaseMelusineTokenizer(ABC):
-    INDENT = 4
-    SORT_KEYS = True
+class BaseMelusineTokenizer(BaseMelusineClass):
+    CONFIG_KEY = "tokenizer"
+    FILENAME = "tokenizer.json"
 
     def __init__(self):
-        pass
+        super().__init__()
 
     @abstractmethod
     def tokenize(self, text: str):
         raise NotImplementedError()
 
-    @abstractmethod
-    def save(self, path: str) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def load(self, path: str) -> None:
-        raise NotImplementedError()
-
 
 class WordLevelTokenizer(BaseMelusineTokenizer):
-    TOKENIZER_CONFIG_FILENAME = "tokenizer_config.json"
-    NAMES_FILENAME = "names.json"
     """
     Tokenizer which does the following:
     - General flagging (using regex)
@@ -53,18 +46,19 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
 
     def __init__(
         self,
-        tokenizer_regex: str = config["tokenizer"]["tokenizer_regex"],
-        normalization: Union[str, None] = config["tokenizer"]["normalization"],
-        lowercase: bool = config["tokenizer"]["lowercase"],
-        stopwords: Sequence[str] = config["tokenizer"]["stopwords"],
-        remove_stopwords: bool = config["tokenizer"]["remove_stopwords"],
-        flag_dict: Dict[str, str] = config["tokenizer"]["flag_dict"],
-        collocations_dict: Dict[str, str] = config["tokenizer"]["collocations_dict"],
-        flashtext_separators: Sequence[str] = config["tokenizer"][
-            "flashtext_separators"
-        ],
-        names: Sequence[str] = config["tokenizer"]["names"],
-        name_flag: str = config["tokenizer"]["name_flag"],
+        tokenizer_regex: str = r"\w+(?:[\?\-\"_]\w+)*",
+        normalization: str = "NFKD",
+        lowercase: bool = True,
+        stopwords: Sequence[str] = None,
+        remove_stopwords: bool = False,
+        text_flagger: MelusineTextFlagger = None,
+        phraser: MelusinePhraser = None,
+        token_flagger: MelusineTokenFlagger = None,
+        text_flags: Dict = None,
+        token_flags: Dict = None,
+        collocations: Dict = None,
+        lemmatizer=None,
+        **kwargs,
     ):
         """
         Parameters
@@ -112,46 +106,41 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
             self.stopwords = set(stopwords) or None
         self.remove_stopwords = remove_stopwords
 
-        # Flags
-        if not flag_dict:
-            self.flag_dict = {}
+        # Text Flagger
+        if text_flags:
+            if text_flagger:
+                raise AttributeError(
+                    f"You should specify only one of 'text_flags' and 'text_flagger'"
+                )
+            else:
+                self.text_flagger = DeterministicTextFlagger(text_flags=text_flags)
         else:
-            self.flag_dict = flag_dict
+            self.text_flagger = text_flagger
 
-        # Collocations
-        if not flag_dict:
-            self.collocations_dict = {}
+        # Phraser
+        if collocations:
+            if phraser:
+                raise AttributeError(
+                    f"You should specify only one of 'collocations' and 'phraser'"
+                )
+            else:
+                self.phraser = DeterministicPhraser(collocations=collocations)
         else:
-            self.collocations_dict = collocations_dict
+            self.phraser = phraser
 
-        # Flashtext parameters
-        self.flashtext_separators = flashtext_separators
-
-        # Collocations
-        if not names:
-            self.names = {}
+        # Token Flagger
+        if token_flags:
+            if token_flagger:
+                raise AttributeError(
+                    f"You should specify only one of 'token_flags' and 'token_flagger'"
+                )
+            else:
+                self.token_flagger = FlashtextTokenFlagger(token_flags=token_flags)
         else:
-            self.names = names
+            self.token_flagger = token_flagger
 
-        # Name flag
-        if not name_flag:
-            raise AttributeError(
-                "You should specify a name_flag or use the default one"
-            )
-        self.name_flag = name_flag
-
-        self.keyword_processor = None
-        self.init_flashtext()
-
-    def init_flashtext(self) -> None:
-        """
-        Initialize the flashtext KeywordProcessor object
-        """
-        self.keyword_processor = KeywordProcessor()
-
-        for x in self.flashtext_separators:
-            self.keyword_processor.add_non_word_boundary(x)
-            self.keyword_processor.add_keywords_from_dict({"flag_name_": self.names})
+        # Lemmatizer
+        self.lemmatizer = lemmatizer
 
     def _normalize_text(self, text):
         if self.normalization:
@@ -160,32 +149,6 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
                 .encode("ASCII", "ignore")
                 .decode("utf-8")
             )
-        return text
-
-    def _flag_text(self, text: str, flag_dict: Dict[str, str] = None) -> str:
-        """
-        General flagging: replace remarkable expressions by a flag
-        Ex: 0123456789 => flag_phone_
-        Parameters
-        ----------
-        flag_dict: Dict[str, str]
-            Flagging dict with regex as key and replace_text as value
-        text: str
-            Text to be flagged
-        Returns
-        -------
-        text: str
-            Flagged text
-        """
-        if not flag_dict:
-            flag_dict = self.flag_dict
-
-        for key, value in flag_dict.items():
-            if isinstance(value, dict):
-                text = self._flag_text(text, value)
-            else:
-                text = re.sub(key, value, text, flags=re.I)
-
         return text
 
     def _text_to_tokens(self, text: str) -> Sequence[str]:
@@ -219,20 +182,6 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         """
         return [token for token in tokens if token not in self.stopwords]
 
-    def _flag_names(self, tokens: Sequence[str]) -> Sequence[str]:
-        """
-        Replace name tokens with a flag
-        Parameters
-        ----------
-        tokens: Sequence[str]
-            List of tokens
-        Returns
-        -------
-        tokens: Sequence[str]
-            List of tokens with names flagged
-        """
-        return [self.keyword_processor.replace_keywords(token) for token in tokens]
-
     def tokenize(self, text: str) -> Sequence[str]:
         """
         Apply the full tokenization pipeline on a text.
@@ -252,19 +201,26 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
             text = text.lower()
 
         # Text flagging
-        text = self._flag_text(text, self.flag_dict)
+        if self.text_flagger is not None:
+            text = self.text_flagger.flag_text(text)
 
-        # Join collocations
-        text = self._flag_text(text, self.collocations_dict)
+        # Phraser
+        if self.phraser is not None:
+            text = self.phraser.phrase(text)
 
         # Text splitting
         tokens = self._text_to_tokens(text)
 
+        # Lemmatizer
+        if self.lemmatizer is not None:
+            tokens = self.lemmatizer.lemmatize(tokens)
+
+        # Token Flagging
+        if self.token_flagger is not None:
+            tokens = self.token_flagger.flag_tokens(tokens)
+
         # Stopwords removal
         tokens = self._remove_stopwords(tokens)
-
-        # Flagging
-        tokens = self._flag_names(tokens)
 
         return tokens
 
@@ -278,62 +234,32 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         filename_prefix: str
             A prefix to add to the names of the files saved by the tokenizer.
         """
-        # Check if path is a file
-        if os.path.isfile(path):
-            logger.error(f"Provided path ({path}) should be a directory, not a file")
-            return
-
-        # Create directory if necessary
-        os.makedirs(path, exist_ok=True)
-
-        # Tokenizer config file path
-
-        # Names file path
-        names_path = os.path.join(
-            path,
-            (filename_prefix + "_" if filename_prefix else "") + self.NAMES_FILENAME,
-        )
-
         d = self.__dict__.copy()
-        for key in self.EXCLUDE_LIST:
-            _ = d.pop(key, None)
 
         # Convert sets to lists (json compatibility)
         for key, val in d.items():
             if isinstance(val, set):
                 d[key] = list(val)
 
-        # Save the names file separately
-        names_list = d.pop("names")
-        names_config_dict = {"tokenizer": {"names": names_list}}
-        with open(names_path, "w") as f:
-            json.dump(
-                names_config_dict, f, sort_keys=self.SORT_KEYS, indent=self.INDENT
-            )
+        # Save Phraser
+        self.save_obj(d, path, filename_prefix, MelusinePhraser.CONFIG_KEY)
 
-        # Save the tokenizer config file
-        tokenizer_path = os.path.join(
-            path,
-            (filename_prefix + "_" if filename_prefix else "")
-            + self.TOKENIZER_CONFIG_FILENAME,
+        # Save Text Flagger
+        self.save_obj(d, path, filename_prefix, MelusineTextFlagger.CONFIG_KEY)
+
+        # Save Lemmatizer
+        self.save_obj(d, path, filename_prefix, MelusineLemmatizer.CONFIG_KEY)
+
+        # Save Token Flagger
+        self.save_obj(d, path, filename_prefix, MelusineTokenFlagger.CONFIG_KEY)
+
+        # Save Tokenizer
+        d = {self.CONFIG_KEY: d}
+        self.save_json(
+            save_dict=d,
+            path=path,
+            filename_prefix=filename_prefix,
         )
-        save_dict = {"tokenizer": d}
-        with open(tokenizer_path, "w") as f:
-            json.dump(save_dict, f, sort_keys=self.SORT_KEYS, indent=self.INDENT)
-
-    @staticmethod
-    def load_json(path, suffix):
-        # Look for candidate files at given path
-        candidate_files = [x for x in glob.glob(os.path.join(path, f"*{suffix}"))]
-        if not candidate_files:
-            raise FileNotFoundError(f"Could not find {suffix} file at path {path}")
-        else:
-            filepath = candidate_files[0]
-            logger.info(f"Reading file {filepath}")
-        with open(filepath, "r") as f:
-            data = json.load(f)
-
-        return data
 
     @classmethod
     def load(cls, path: str):
@@ -348,14 +274,38 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         _: WordLevelTokenizer
             Tokenizer instance
         """
-        # Load the Names file
-        names_config_dict = cls.load_json(path, cls.NAMES_FILENAME)
-
         # Load the Tokenizer config file
-        tokenizer_config_dict = cls.load_json(path, cls.TOKENIZER_CONFIG_FILENAME)
+        config_dict = cls.load_json(path)
+
+        if cls.CONFIG_KEY in config_dict:
+            config_dict = config_dict[cls.CONFIG_KEY]
+
+        # Load phraser
+        phraser = cls.load_obj(
+            config_dict, path=path, obj_key=MelusinePhraser.CONFIG_KEY
+        )
+
+        # Load text flagger
+        text_flagger = cls.load_obj(
+            config_dict, path=path, obj_key=MelusineTextFlagger.CONFIG_KEY
+        )
+
+        # Load lemmatizer
+        lemmatizer = cls.load_obj(
+            config_dict, path=path, obj_key=MelusineLemmatizer.CONFIG_KEY
+        )
+
+        # Load token flagger
+        token_flagger = cls.load_obj(
+            config_dict, path=path, obj_key=MelusineTokenFlagger.CONFIG_KEY
+        )
 
         return cls(
-            **tokenizer_config_dict["tokenizer"], **names_config_dict["tokenizer"]
+            phraser=phraser,
+            token_flagger=token_flagger,
+            text_flagger=text_flagger,
+            lemmatizer=lemmatizer,
+            **config_dict,
         )
 
 
