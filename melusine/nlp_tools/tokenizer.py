@@ -40,10 +40,6 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
     - Stopwords removal
     """
 
-    # Attributes excluded from the default save methods
-    # Ex: pickle.dump or json.dump
-    EXCLUDE_LIST = ["keyword_processor"]
-
     def __init__(
         self,
         tokenizer_regex: str = r"\w+(?:[\?\-\"_]\w+)*",
@@ -236,11 +232,6 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         """
         d = self.__dict__.copy()
 
-        # Convert sets to lists (json compatibility)
-        for key, val in d.items():
-            if isinstance(val, set):
-                d[key] = list(val)
-
         # Save Phraser
         self.save_obj(d, path, filename_prefix, MelusinePhraser.CONFIG_KEY)
 
@@ -254,7 +245,6 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         self.save_obj(d, path, filename_prefix, MelusineTokenFlagger.CONFIG_KEY)
 
         # Save Tokenizer
-        d = {self.CONFIG_KEY: d}
         self.save_json(
             save_dict=d,
             path=path,
@@ -276,9 +266,6 @@ class WordLevelTokenizer(BaseMelusineTokenizer):
         """
         # Load the Tokenizer config file
         config_dict = cls.load_json(path)
-
-        if cls.CONFIG_KEY in config_dict:
-            config_dict = config_dict[cls.CONFIG_KEY]
 
         # Load phraser
         phraser = cls.load_obj(

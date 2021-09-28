@@ -85,6 +85,12 @@ class BaseMelusineClass(ABC):
         for key in self.EXCLUDE_LIST:
             _ = save_dict.pop(key, None)
 
+        # Convert sets to lists (json compatibility)
+        for key, val in save_dict.items():
+            if isinstance(val, set):
+                save_dict[key] = list(val)
+
+        # Save file
         full_path = self.get_file_path(filename_prefix, path)
         with open(full_path, "w") as f:
             json.dump(save_dict, f, sort_keys=self.SORT_KEYS, indent=self.INDENT)
