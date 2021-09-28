@@ -1,0 +1,69 @@
+import logging
+from abc import abstractmethod
+
+
+from melusine.nlp_tools.base_melusine_class import BaseMelusineClass
+
+
+logger = logging.getLogger(__name__)
+
+
+class MelusineLemmatizer(BaseMelusineClass):
+    FILENAME = "lemmatizer.json"
+    CONFIG_KEY = "lemmatizer"
+
+    def __init__(self):
+        super().__init__()
+
+    @abstractmethod
+    def lemmatize(self, tokens):
+        raise NotImplementedError()
+
+
+class DummyLemmatizer(MelusineLemmatizer):
+    FILENAME = "lemmatizer.pkl"
+
+    def __init__(self):
+        super().__init__()
+
+    @staticmethod
+    def lemmatize_token(token):
+        if token.endswith("s") and len(token) > 3:
+            return token[:-1]
+        else:
+            return token
+
+    def lemmatize(self, tokens):
+        # Join collocations
+        tokens = [self.lemmatize_token(token) for token in tokens]
+
+        return tokens
+
+    def save(self, path: str, filename_prefix: str = None) -> None:
+        """
+        Save the Token Flagger into a pkl file
+
+        Parameters
+        ----------
+        path: str
+            Save path
+        filename_prefix: str
+            Prefix for saved files.
+        """
+        self.save_pkl(path, filename_prefix)
+
+    @classmethod
+    def load(cls, path: str):
+        """
+        Load the DeterministicTextFlagger from a json file.
+
+        Parameters
+        ----------
+        path: str
+            Load path
+        Returns
+        -------
+        _: DummyLemmatizer
+            DummyLemmatizer instance
+        """
+        return cls.load_pkl(path)
