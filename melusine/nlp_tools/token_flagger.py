@@ -3,12 +3,13 @@ from flashtext import KeywordProcessor
 from typing import Dict, Sequence, Union
 from abc import abstractmethod
 
+from melusine.nlp_tools.pipeline import MelusineTransformer
 from melusine.nlp_tools.base_melusine_class import BaseMelusineClass
 
 logger = logging.getLogger(__name__)
 
 
-class MelusineTokenFlagger(BaseMelusineClass):
+class MelusineTokenFlagger(MelusineTransformer):
     FILENAME = "token_flagger.json"
     EXCLUDE_LIST = list()
     CONFIG_KEY = "token_flagger"
@@ -81,7 +82,7 @@ class FlashtextTokenFlagger(MelusineTokenFlagger):
         )
 
     @classmethod
-    def load(cls, path: str):
+    def load(cls, path: str, filename_prefix: str = None):
         """
         Load the FlashtextTokenFlagger from a json file.
 
@@ -89,12 +90,17 @@ class FlashtextTokenFlagger(MelusineTokenFlagger):
         ----------
         path: str
             Load path
+        filename_prefix: str
         Returns
         -------
         _: FlashtextTokenFlagger
             FlashtextTokenFlagger instance
         """
         # Load json file
-        config_dict = cls.load_json(path)
+        config_dict = cls.load_json(path, filename_prefix=filename_prefix)
 
         return cls(**config_dict)
+
+    def transform(self, df):
+        df["tokens"] = df["tokens"].apply(self.flag_tokens)
+        return df

@@ -1,9 +1,8 @@
 import logging
 import gensim
-import pickle
 import re
 from melusine import config
-from melusine.nlp_tools.tokenizer import WordLevelTokenizer
+from melusine.nlp_tools.pipeline import MelusineTransformer
 
 _common_terms = config["tokenizer"]["stopwords"] + config["tokenizer"]["names"]
 
@@ -145,102 +144,54 @@ def _split_typos_words_separators(text, pattern=r"(\W*)\b(\w+)\b(\W*)"):
     return pre_typos_list, words_list, separators_list
 
 
-class Phraser:
-    """Class to train a phraser.
+class Phraser(MelusineTransformer):
+    """ """
 
-    Parameters
-    ----------
-    input_column : str,
-        Input text column to consider for the phraser.
+    FILENAME = "gensim_phraser.pkl"
 
-    common_terms : list of integers, optional
-        List of stopwords.
-        Default value, list of stopwords from nltk.
+    def __init__(self, **phraser_args):
+        super().__init__()
+        self.phraser_args = phraser_args
+        self.phraser_ = None
 
-    threshold : int, optional
-        Threshold to select colocations.
-        Default value, 350.
-
-    min_count : int, optional
-        Minimum count of word to be selected as colocation.
-        Default value, 200.
-
-    Attributes
-    ----------
-    common_terms, threshold, min_count,
-
-    phraser : Phraser object from Gensim
-
-    Examples
-    --------
-    >>> from melusine.nlp_tools.phraser import Phraser
-    >>> phraser = Phraser()
-    >>> phraser.train(X)
-    >>> phraser.save(filepath)
-    >>> phraser = phraser().load(filepath)
-
-    """
-
-    def __init__(
-        self,
-        input_column="clean_body",
-        common_terms=_common_terms,
-        threshold=10,
-        min_count=5,
-        tokenizer=None,
-    ):
-        self.common_terms = common_terms
-        self.threshold = threshold
-        self.min_count = min_count
-        self.input_column = input_column
-        self.phraser = None
-
-        if tokenizer is None:
-            self.tokenizer = WordLevelTokenizer()
-        else:
-            self.tokenizer = tokenizer
-
-    def save(self, filepath):
-        """Method to save Phraser object"""
-        with open(filepath, "wb") as f:
-            pickle.dump(self, f)
-
-    @classmethod
-    def load(cls, filepath):
-        """Method to load Phraser object"""
-        with open(filepath, "rb") as f:
-            instance = pickle.load(f)
-        return instance
-
-    def train(self, X):
-        """Train phraser.
+    def save(self, path: str, filename_prefix: str = None) -> None:
+        """
+        Save the Token Flagger into a pkl file
 
         Parameters
         ----------
-        X : pd.Dataframe
+        path: str
+            Save path
+        filename_prefix: str
+            Prefix for saved files.
+        """
+        self.save_pkl(path, filename_prefix)
 
+    @classmethod
+    def load(cls, path: str, filename_prefix: str = None):
+        """
+        Load the DeterministicTextFlagger from a json file.
+
+        Parameters
+        ----------
+        path: str
+            Load path
+        filename_prefix: str
         Returns
         -------
-        self : object
-            Returns the instance
+        _: Phraser
+            Phraser instance
         """
-        logger.info("Start training for colocation detector")
-        input_data = X[self.input_column].apply(self.tokenizer.tokenize)
+        return cls.load_pkl(path, filename_prefix=filename_prefix)
 
-        if gensim.__version__.startswith("3"):
-            phrases = gensim.models.Phrases(
-                input_data,
-                common_terms=self.common_terms,
-                threshold=self.threshold,
-                min_count=self.min_count,
-            )
-        else:
-            phrases = gensim.models.Phrases(
-                input_data,
-                connector_words=self.common_terms,
-                threshold=self.threshold,
-                min_count=self.min_count,
-            )
+    def transform(self, df):
+        df["tokens"] = self.phraser_[df["tokens"]]
+        return df
 
-        self.phraser = gensim.models.phrases.Phraser(phrases)
-        logger.info("Done.")
+    def fit(self, df, y=None):
+        """ """
+        input_data = df["tokens"]
+        phrases = gensim.models.Phrases(input_data, **self.phraser_args)
+        self.phraser_ = gensim.models.phrases.Phraser(phrases)
+
+        return self

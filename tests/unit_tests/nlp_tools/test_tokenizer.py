@@ -1,5 +1,5 @@
 import pytest
-from melusine.nlp_tools.tokenizer import WordLevelTokenizer
+from melusine.nlp_tools.text_processor import TextProcessor
 
 
 @pytest.mark.parametrize(
@@ -23,8 +23,8 @@ from melusine.nlp_tools.tokenizer import WordLevelTokenizer
     ],
 )
 def test_tokenizer_default(input_text, expected_tokens):
-    tokenizer = WordLevelTokenizer()
-    tokens = tokenizer.tokenize(input_text)
+    tokenizer = TextProcessor()
+    tokens = tokenizer.process(input_text)
 
     assert tokens == expected_tokens
 
@@ -58,7 +58,7 @@ def test_tokenizer_default(input_text, expected_tokens):
     ],
 )
 def test_tokenizer_flag_items(input_text, expected_text):
-    tokenizer = WordLevelTokenizer()
+    tokenizer = TextProcessor()
     text = tokenizer._flag_text(input_text)
 
     assert text == expected_text
@@ -73,7 +73,7 @@ def test_tokenizer_flag_items(input_text, expected_text):
     ],
 )
 def test_tokenizer_flag_names(input_tokens, output_tokens):
-    tokenizer = WordLevelTokenizer()
+    tokenizer = TextProcessor()
     tokens = tokenizer._flag_names(input_tokens)
 
     assert tokens == output_tokens
@@ -88,7 +88,7 @@ def test_tokenizer_flag_names(input_tokens, output_tokens):
     ],
 )
 def test_tokenizer_remove_stopwords(input_tokens, output_tokens):
-    tokenizer = WordLevelTokenizer()
+    tokenizer = TextProcessor()
     tokens = tokenizer._remove_stopwords(input_tokens)
 
     assert tokens == output_tokens
@@ -104,7 +104,7 @@ def test_tokenizer_remove_stopwords(input_tokens, output_tokens):
     ],
 )
 def test_tokenizer_join_collocations(input_text, expected_text):
-    tokenizer = WordLevelTokenizer()
+    tokenizer = TextProcessor()
     text = tokenizer._flag_text(input_text, tokenizer.collocations_dict)
 
     assert text == expected_text
@@ -115,7 +115,7 @@ def test_tokenizer_join_collocations(input_text, expected_text):
     [("éàèùöï", "eaeuoi")],
 )
 def test_tokenizer_normalize_text(input_text, expected_text):
-    tokenizer = WordLevelTokenizer()
+    tokenizer = TextProcessor()
     text = tokenizer._normalize_text(input_text)
 
     assert text == expected_text
@@ -129,7 +129,7 @@ def test_tokenizer_normalize_text(input_text, expected_text):
     ],
 )
 def test_tokenizer_normalize_text(input_text, lowercase, expected_tokens):
-    tokenizer = WordLevelTokenizer(lowercase=lowercase)
-    tokens = tokenizer.tokenize(input_text)
+    tokenizer = TextProcessor(lowercase=lowercase)
+    tokens = tokenizer.process(input_text)
 
     assert tokens == expected_tokens

@@ -2,6 +2,7 @@ import logging
 from abc import abstractmethod
 from typing import Dict
 
+from melusine.nlp_tools.pipeline import MelusineTransformer
 from melusine.nlp_tools.base_melusine_class import BaseMelusineClass
 from melusine.nlp_tools.nlp_tools_utils import _flag_text
 
@@ -9,7 +10,7 @@ from melusine.nlp_tools.nlp_tools_utils import _flag_text
 logger = logging.getLogger(__name__)
 
 
-class MelusineTextFlagger(BaseMelusineClass):
+class MelusineTextFlagger(MelusineTransformer):
     FILENAME = "text_flagger.json"
     CONFIG_KEY = "text_flagger"
 
@@ -59,7 +60,7 @@ class DeterministicTextFlagger(MelusineTextFlagger):
         )
 
     @classmethod
-    def load(cls, path: str):
+    def load(cls, path: str, filename_prefix: str = None):
         """
         Load the DeterministicTextFlagger from a json file.
 
@@ -67,12 +68,17 @@ class DeterministicTextFlagger(MelusineTextFlagger):
         ----------
         path: str
             Load path
+        filename_prefix: str
         Returns
         -------
         _: DeterministicTextFlagger
             DeterministicTextFlagger instance
         """
         # Load json file
-        config_dict = cls.load_json(path)
+        config_dict = cls.load_json(path, filename_prefix=filename_prefix)
 
         return cls(**config_dict)
+
+    def transform(self, df):
+        df["text"] = df["text"].apply(self.flag_text)
+        return df

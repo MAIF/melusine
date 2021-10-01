@@ -2,13 +2,12 @@ import logging
 from abc import abstractmethod
 
 
-from melusine.nlp_tools.base_melusine_class import BaseMelusineClass
-
+from melusine.nlp_tools.pipeline import MelusineTransformer
 
 logger = logging.getLogger(__name__)
 
 
-class MelusineLemmatizer(BaseMelusineClass):
+class MelusineLemmatizer(MelusineTransformer):
     FILENAME = "lemmatizer.json"
     CONFIG_KEY = "lemmatizer"
 
@@ -53,7 +52,7 @@ class DummyLemmatizer(MelusineLemmatizer):
         self.save_pkl(path, filename_prefix)
 
     @classmethod
-    def load(cls, path: str):
+    def load(cls, path: str, filename_prefix: str = None):
         """
         Load the DeterministicTextFlagger from a json file.
 
@@ -61,9 +60,14 @@ class DummyLemmatizer(MelusineLemmatizer):
         ----------
         path: str
             Load path
+        filename_prefix: str
         Returns
         -------
         _: DummyLemmatizer
             DummyLemmatizer instance
         """
-        return cls.load_pkl(path)
+        return cls.load_pkl(path, filename_prefix=filename_prefix)
+
+    def transform(self, df):
+        df["tokens"] = df["tokens"].apply(self.lemmatize)
+        return df
