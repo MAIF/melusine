@@ -5,7 +5,7 @@ from typing import Dict
 from melusine.nlp_tools.pipeline import MelusineTransformer
 from melusine.nlp_tools.base_melusine_class import BaseMelusineClass
 from melusine.nlp_tools.nlp_tools_utils import _flag_text
-
+from melusine.nlp_tools.transformer_backend import backend
 
 logger = logging.getLogger(__name__)
 
@@ -22,12 +22,21 @@ class MelusineTextFlagger(MelusineTransformer):
         raise NotImplementedError()
 
 
-class DeterministicTextFlagger(MelusineTextFlagger):
+class DeterministicTextFlagger(MelusineTransformer):
+    FILENAME = "text_flagger.json"
+
     def __init__(
         self,
         text_flags: Dict[str, str] = None,
+        input_columns=("text",),
+        output_columns=("text",),
     ):
-        super().__init__()
+        super().__init__(
+            input_columns=input_columns,
+            output_columns=output_columns,
+            func=self.flag_text,
+        )
+
         # Collocations
         if not text_flags:
             self.text_flags = {}
@@ -78,7 +87,3 @@ class DeterministicTextFlagger(MelusineTextFlagger):
         config_dict = cls.load_json(path, filename_prefix=filename_prefix)
 
         return cls(**config_dict)
-
-    def transform(self, df):
-        df["text"] = df["text"].apply(self.flag_text)
-        return df

@@ -6,6 +6,7 @@ from abc import abstractmethod
 
 from melusine.nlp_tools.base_melusine_class import BaseMelusineClass
 from melusine.nlp_tools.pipeline import MelusineTransformer
+from melusine.nlp_tools.transformer_backend import backend
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,8 @@ class MelusineTokenizer(MelusineTransformer):
         raise NotImplementedError()
 
 
-class RegexTokenizer(MelusineTokenizer):
+class RegexTokenizer(MelusineTransformer):
+    FILENAME = "tokenizer.json"
     """
     RegexTokenizer which does the following:
     - General flagging (using regex)
@@ -36,6 +38,8 @@ class RegexTokenizer(MelusineTokenizer):
         self,
         tokenizer_regex: str = r"\w+(?:[\?\-\"_]\w+)*",
         stopwords: List[str] = None,
+        input_columns=("text",),
+        output_columns=("tokens",),
     ):
         """
         Parameters
@@ -43,8 +47,11 @@ class RegexTokenizer(MelusineTokenizer):
         tokenizer_regex: str
             Regex used to split the text into tokens
         """
-        super().__init__()
-
+        super().__init__(
+            input_columns=input_columns,
+            output_columns=output_columns,
+            func=self.tokenize,
+        )
         # Tokenizer regex
         if not tokenizer_regex:
             raise AttributeError(
@@ -143,7 +150,3 @@ class RegexTokenizer(MelusineTokenizer):
         config_dict = cls.load_json(path, filename_prefix=filename_prefix)
 
         return cls(**config_dict)
-
-    def transform(self, df):
-        df["tokens"] = df["text"].apply(self.tokenize)
-        return df

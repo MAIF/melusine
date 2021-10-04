@@ -149,8 +149,12 @@ class Phraser(MelusineTransformer):
 
     FILENAME = "gensim_phraser.pkl"
 
-    def __init__(self, **phraser_args):
-        super().__init__()
+    def __init__(self, input_columns, output_columns, **phraser_args):
+        super().__init__(
+            input_columns=input_columns,
+            output_columns=output_columns,
+            func=None,
+        )
         self.phraser_args = phraser_args
         self.phraser_ = None
 
@@ -184,14 +188,14 @@ class Phraser(MelusineTransformer):
         """
         return cls.load_pkl(path, filename_prefix=filename_prefix)
 
-    def transform(self, df):
-        df["tokens"] = self.phraser_[df["tokens"]]
-        return df
-
     def fit(self, df, y=None):
         """ """
-        input_data = df["tokens"]
+        input_data = df[self.input_columns[0]]
         phrases = gensim.models.Phrases(input_data, **self.phraser_args)
         self.phraser_ = gensim.models.phrases.Phraser(phrases)
 
         return self
+
+    def transform(self, df):
+        df[self.input_columns[0]] = self.phraser_[df[self.output_columns[0]]]
+        return df

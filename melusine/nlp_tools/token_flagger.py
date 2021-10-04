@@ -5,6 +5,7 @@ from abc import abstractmethod
 
 from melusine.nlp_tools.pipeline import MelusineTransformer
 from melusine.nlp_tools.base_melusine_class import BaseMelusineClass
+from melusine.nlp_tools.transformer_backend import backend
 
 logger = logging.getLogger(__name__)
 
@@ -22,13 +23,22 @@ class MelusineTokenFlagger(MelusineTransformer):
         raise NotImplementedError()
 
 
-class FlashtextTokenFlagger(MelusineTokenFlagger):
+class FlashtextTokenFlagger(MelusineTransformer):
+    FILENAME = "token_flagger.json"
+
     def __init__(
         self,
         token_flags=None,
         flashtext_separators: Sequence[str] = ("-", "_", "/"),
+        input_columns=("tokens",),
+        output_columns=("tokens",),
     ):
-        super().__init__()
+        super().__init__(
+            input_columns=input_columns,
+            output_columns=output_columns,
+            func=self.flag_tokens,
+        )
+
         self.token_flags = token_flags
 
         # Flashtext parameters
@@ -100,7 +110,3 @@ class FlashtextTokenFlagger(MelusineTokenFlagger):
         config_dict = cls.load_json(path, filename_prefix=filename_prefix)
 
         return cls(**config_dict)
-
-    def transform(self, df):
-        df["tokens"] = df["tokens"].apply(self.flag_tokens)
-        return df

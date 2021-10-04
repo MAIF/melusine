@@ -4,7 +4,6 @@ from typing import Dict, Sequence, Union, List
 from abc import abstractmethod
 import unicodedata
 
-from melusine.nlp_tools.base_melusine_class import BaseMelusineClass
 from melusine.nlp_tools.pipeline import MelusineTransformer
 
 logger = logging.getLogger(__name__)
@@ -22,7 +21,8 @@ class MelusineNormalizer(MelusineTransformer):
         raise NotImplementedError()
 
 
-class Normalizer(MelusineNormalizer):
+class Normalizer(MelusineTransformer):
+    FILENAME = "normalizer.json"
     """
     Normalizer
     """
@@ -31,6 +31,8 @@ class Normalizer(MelusineNormalizer):
         self,
         form: str = "NFKD",
         lowercase: bool = True,
+        input_columns=("text",),
+        output_columns=("text",),
     ):
         """
         Parameters
@@ -38,8 +40,12 @@ class Normalizer(MelusineNormalizer):
         form: str
             Normalization method
         """
-        super().__init__()
 
+        super().__init__(
+            input_columns=input_columns,
+            output_columns=output_columns,
+            func=self.normalize,
+        )
         # Normalization form
         self.form = form
 
@@ -113,7 +119,3 @@ class Normalizer(MelusineNormalizer):
         config_dict = cls.load_json(path, filename_prefix=filename_prefix)
 
         return cls(**config_dict)
-
-    def transform(self, df):
-        df["text"] = df["text"].apply(self.normalize)
-        return df

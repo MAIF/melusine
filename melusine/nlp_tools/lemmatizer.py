@@ -19,11 +19,15 @@ class MelusineLemmatizer(MelusineTransformer):
         raise NotImplementedError()
 
 
-class DummyLemmatizer(MelusineLemmatizer):
+class DummyLemmatizer(MelusineTransformer):
     FILENAME = "lemmatizer.pkl"
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, input_columns=("tokens",), output_columns=("tokens",)):
+        super().__init__(
+            input_columns=input_columns,
+            output_columns=output_columns,
+            func=self.lemmatize,
+        )
 
     @staticmethod
     def lemmatize_token(token):
@@ -67,7 +71,3 @@ class DummyLemmatizer(MelusineLemmatizer):
             DummyLemmatizer instance
         """
         return cls.load_pkl(path, filename_prefix=filename_prefix)
-
-    def transform(self, df):
-        df["tokens"] = df["tokens"].apply(self.lemmatize)
-        return df

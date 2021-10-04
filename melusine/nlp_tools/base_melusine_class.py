@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseMelusineClass(ABC):
-    EXCLUDE_LIST = list()
+    EXCLUDE_LIST = ["func"]
     CONFIG_KEY = None
 
     # Save params

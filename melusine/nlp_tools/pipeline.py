@@ -4,6 +4,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.base import BaseEstimator, TransformerMixin
 
 from melusine.nlp_tools.base_melusine_class import BaseMelusineClass
+from melusine.nlp_tools.transformer_backend import backend
 
 
 class MelusinePipeline(Pipeline, BaseMelusineClass):
@@ -76,9 +77,19 @@ class MelusineTransformer(BaseMelusineClass, BaseEstimator, TransformerMixin):
     - Can be saved and loaded
     """
 
+    def __init__(self, input_columns, output_columns, func):
+        super().__init__()
+        self.input_columns = input_columns
+        self.output_columns = output_columns
+        self.func = func
+
     def fit(self, df, y=None):
         return self
 
-    @abstractmethod
     def transform(self, df):
-        raise NotImplementedError()
+        return backend.apply_transform(
+            data=df,
+            input_columns=self.input_columns,
+            output_columns=self.output_columns,
+            func=self.func,
+        )
