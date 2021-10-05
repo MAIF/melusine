@@ -101,7 +101,7 @@ def phraser_on_text(text, phraser):
         words_list,
         separators_list,
     ) = _split_typos_words_separators(text)
-    phrased_words_list = phraser.phraser[words_list]
+    phrased_words_list = phraser.phraser_[words_list]
     phrased_text = _rebuild_phrased_text_with_punctuation(
         pre_typos_list, words_list, separators_list, phrased_words_list
     )
@@ -147,9 +147,10 @@ def _split_typos_words_separators(text, pattern=r"(\W*)\b(\w+)\b(\W*)"):
 class Phraser(MelusineTransformer):
     """ """
 
-    FILENAME = "gensim_phraser.pkl"
+    FILENAME = "gensim_phraser_meta.json"
+    PHRASER_FILENAME = "gensim_phraser"
 
-    def __init__(self, input_columns, output_columns, **phraser_args):
+    def __init__(self, input_columns="tokens", output_columns="tokens", **phraser_args):
         super().__init__(
             input_columns=input_columns,
             output_columns=output_columns,
@@ -157,6 +158,7 @@ class Phraser(MelusineTransformer):
         )
         self.phraser_args = phraser_args
         self.phraser_ = None
+        self.EXCLUDE_LIST.append("phraser_")
 
     def save(self, path: str, filename_prefix: str = None) -> None:
         """
@@ -169,7 +171,16 @@ class Phraser(MelusineTransformer):
         filename_prefix: str
             Prefix for saved files.
         """
-        self.save_pkl(path, filename_prefix)
+        d = self.__dict__.copy()
+
+        self.save_json(
+            save_dict=d,
+            path=path,
+            filename_prefix=filename_prefix,
+        )
+
+        filepath = self.get_file_path(self.PHRASER_FILENAME, path, filename_prefix)
+        self.phraser_.save(filepath)
 
     @classmethod
     def load(cls, path: str, filename_prefix: str = None):
@@ -181,12 +192,24 @@ class Phraser(MelusineTransformer):
         path: str
             Load path
         filename_prefix: str
+
         Returns
         -------
         _: Phraser
             Phraser instance
         """
-        return cls.load_pkl(path, filename_prefix=filename_prefix)
+        # Load json file
+        config_dict = cls.load_json(path, filename_prefix=filename_prefix)
+        instance = cls(**config_dict)
+
+        # Load phraser file
+        filepath = cls.search_file(
+            cls.PHRASER_FILENAME, path, filename_prefix=filename_prefix
+        )
+        phraser = gensim.models.phrases.Phraser.load(filepath)
+        instance.phraser_ = phraser
+
+        return instance
 
     def fit(self, df, y=None):
         """ """

@@ -26,8 +26,8 @@ class DeterministicTextFlagger(MelusineTransformer):
     def __init__(
         self,
         text_flags: Dict[str, str] = None,
-        input_columns=("text",),
-        output_columns=("text",),
+        input_columns="text",
+        output_columns="text",
     ):
         super().__init__(
             input_columns=input_columns,

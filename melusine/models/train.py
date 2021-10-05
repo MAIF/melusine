@@ -11,6 +11,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import TensorBoard
 
 from melusine import config
+from melusine.backend.melusine_backend import use
 from melusine.nlp_tools.text_processor import TextProcessor
 from melusine.models.attention_model import PositionalEncoding
 from melusine.models.attention_model import TransformerEncoderLayer
@@ -373,12 +374,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         """
 
         if self.architecture_function.__name__ != "bert_model":
-            if isinstance(X, dict):
-                X[self.TOKENS_COL] = self.tokenizer.process(X[self.text_input_column])
-            else:
-                X[self.TOKENS_COL] = X[self.text_input_column].apply(
-                    self.tokenizer.process
-                )
+            X = self.tokenizer.transform(X)
             X_seq = self._prepare_sequences(X)
             X_meta, nb_meta_features = self._get_meta(X)
             if nb_meta_features == 0:
@@ -509,12 +505,8 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             nb_labels = len(np.unique(y))
 
         if self.architecture_function.__name__ != "bert_model":
-            if isinstance(X, dict):
-                X[self.TOKENS_COL] = self.tokenizer.process(X[self.text_input_column])
-            else:
-                X[self.TOKENS_COL] = X[self.text_input_column].apply(
-                    self.tokenizer.process
-                )
+            X = self.tokenizer.transform(X)
+
             X_meta, nb_meta_features = self._get_meta(X)
 
             if not validation_data:

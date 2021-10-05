@@ -6,6 +6,8 @@ import ast
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder
 
+from melusine import config
+from melusine.backend.melusine_backend import use
 from melusine.utils.transformer_scheduler import TransformerScheduler
 
 from melusine.prepare_email.manage_transfer_reply import check_mail_begin_by_transfer
@@ -22,8 +24,8 @@ from melusine.prepare_email.cleaning import clean_header
 from melusine.nlp_tools.phraser import Phraser
 from melusine.nlp_tools.phraser import phraser_on_body
 from melusine.nlp_tools.phraser import phraser_on_header
-from melusine.nlp_tools.tokenizer import WordLevelTokenizer
-from melusine.nlp_tools.embedding import Word2VecTrainer
+from melusine.nlp_tools.text_processor import make_tokenizer_from_config
+from melusine.nlp_tools.embedding import Word2VecTrainer, Embedding
 from melusine.summarizer.keywords_generator import KeywordsGenerator
 
 from melusine.prepare_email.metadata_engineering import MetaExtension
@@ -38,9 +40,6 @@ from melusine.data.data_loader import load_email_data
 
 body = "Bonjour\nThis is Melusine\nCordialement\nDev Team"
 header = "Test integration Melusine"
-body = "Bonjour\nThis is Melusine\nCordialement\nDev Team"
-body = "Bonjour\nThis is Melusine\nCordialement\nDev Team"
-body = "Bonjour\nThis is Melusine\nCordialement\nDev Team"
 
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
@@ -49,12 +48,16 @@ os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 def test_classification():
 
-    input_df = load_email_data()
+    input_df = load_email_data(type="preprocessed")
+
+    # ============== Tokenizer ==============
+    tokenizer = make_tokenizer_from_config(config, text_column="clean_body")
+    input_df = tokenizer.transform(input_df)
 
     # ============== Train Phraser ==============
-    phraser = Phraser(input_column="body", threshold=10, min_count=10)
+    phraser = Phraser(threshold=10, min_count=10)
 
-    phraser.train(input_df)
+    phraser.fit(input_df)
 
     # ============== Define Transformer Schedulers ==============
     ManageTransferReply = TransformerScheduler(
@@ -88,9 +91,6 @@ def test_classification():
         ]
     )
 
-    # ============== Tokenizer ==============
-    tokenizer = WordLevelTokenizer()
-
     # ============== Full Pipeline ==============
     PreprocessingPipeline = Pipeline(
         [
@@ -98,12 +98,12 @@ def test_classification():
             ("Segmenting", Segmenting),
             ("LastBodyHeaderCleaning", LastBodyHeaderCleaning),
             ("PhraserTransformer", PhraserTransformer),
+            ("tokenizer", tokenizer),
         ]
     )
 
     # ============== Transform input DataFrame ==============
     input_df = PreprocessingPipeline.transform(input_df)
-    input_df["tokens"] = input_df["clean_body"].apply(tokenizer.tokenize)
 
     # ============== MetaData Pipeline ==============
     MetadataPipeline = Pipeline(
@@ -124,13 +124,12 @@ def test_classification():
     input_df = keywords_generator.fit_transform(input_df)
 
     # ============== Embeddings ==============
-    embedding_trainer = Word2VecTrainer(
+    w2v = Embedding(
         input_column="clean_body",
-        tokenizer=tokenizer,
         min_count=2,
     )
-    embedding_trainer.train(input_df)
-    pretrained_embedding = embedding_trainer.embedding
+    w2v.fit(input_df)
+    pretrained_embedding = w2v.embeddings_
 
     # ============== CNN Classifier ==============
     X = pd.concat([input_df["clean_body"], df_meta], axis=1)
@@ -144,6 +143,7 @@ def test_classification():
         text_input_column="clean_body",
         meta_input_list=["extension", "dayofweek", "hour", "min", "attachment_type"],
         n_epochs=2,
+        tokenizer=tokenizer,
     )
 
     nn_model.fit(X, y)
@@ -152,6 +152,7 @@ def test_classification():
     le.inverse_transform(y_res)
 
     # ============== Test dict compatibility ==============
+    use("dict")
     dict_emails = input_df.to_dict(orient="records")[0]
     dict_meta = MetadataPipeline.transform(dict_emails)
     keywords_generator.transform(dict_emails)
@@ -160,5 +161,6 @@ def test_classification():
     dict_input["clean_body"] = dict_emails["clean_body"]
 
     nn_model.predict(dict_input)
+    use("pandas")
 
     assert True

@@ -21,7 +21,7 @@ class MelusineLemmatizer(MelusineTransformer):
 class DummyLemmatizer(MelusineTransformer):
     FILENAME = "lemmatizer.pkl"
 
-    def __init__(self, input_columns=("tokens",), output_columns=("tokens",)):
+    def __init__(self, input_columns="tokens", output_columns="tokens"):
         super().__init__(
             input_columns=input_columns,
             output_columns=output_columns,

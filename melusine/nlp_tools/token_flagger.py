@@ -28,8 +28,8 @@ class FlashtextTokenFlagger(MelusineTransformer):
         self,
         token_flags=None,
         flashtext_separators: Sequence[str] = ("-", "_", "/"),
-        input_columns=("tokens",),
-        output_columns=("tokens",),
+        input_columns="tokens",
+        output_columns="tokens",
     ):
         super().__init__(
             input_columns=input_columns,

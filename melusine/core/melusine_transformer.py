@@ -14,7 +14,11 @@ class MelusineTransformer(BaseMelusineClass, BaseEstimator, TransformerMixin):
 
     def __init__(self, input_columns, output_columns, func=None):
         super().__init__()
+        if isinstance(input_columns, str):
+            input_columns = (input_columns,)
         self.input_columns = input_columns
+        if isinstance(output_columns, str):
+            output_columns = (output_columns,)
         self.output_columns = output_columns
         self.func = func
 

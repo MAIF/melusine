@@ -31,8 +31,8 @@ class Normalizer(MelusineTransformer):
         self,
         form: str = "NFKD",
         lowercase: bool = True,
-        input_columns=("text",),
-        output_columns=("text",),
+        input_columns="text",
+        output_columns="text",
     ):
         """
         Parameters

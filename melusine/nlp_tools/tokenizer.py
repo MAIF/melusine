@@ -36,8 +36,8 @@ class RegexTokenizer(MelusineTransformer):
         self,
         tokenizer_regex: str = r"\w+(?:[\?\-\"_]\w+)*",
         stopwords: List[str] = None,
-        input_columns=("text",),
-        output_columns=("tokens",),
+        input_columns="text",
+        output_columns="tokens",
     ):
         """
         Parameters

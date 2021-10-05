@@ -206,12 +206,12 @@ df_email = phraser_pipeline.fit_transform(df_email)
 Melusine provides a WordLevelTokenizer object to split texts into tokens:
 
 ```python
-from melusine.nlp_tools.tokenizer import WordLevelTokenizer
+from melusine.nlp_tools.text_processor import TextProcessor
 
 # ============== Tokenizer ==============
-tokenizer = WordLevelTokenizer()
+tokenizer = TextProcessor()
 
-df_email["tokens"] = df_email["clean_body"].apply(tokenizer.tokenize)
+df_email["tokens"] = df_email["clean_body"].apply(tokenizer.process)
 ```
 
 
@@ -222,7 +222,7 @@ An example of embedding training is given below:
 ```python
 from melusine.nlp_tools.embedding import Word2VecTrainer
 
-embedding_trainer = Word2VecTrainer(input_column="clean_body", min_count=10)
+embedding_trainer = (input_column="clean_body", min_count=10)
 embedding_trainer.train(df_email)
 pretrained_embedding = embedding_trainer.embedding
 ```

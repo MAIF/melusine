@@ -2,95 +2,97 @@ import logging
 from gensim.models import Word2Vec
 from gensim.models import KeyedVectors
 
-from melusine.nlp_tools.tokenizer import WordLevelTokenizer
+from melusine.core.melusine_transformer import MelusineTransformer
 
 
 logger = logging.getLogger(__name__)
 
 
-class Word2VecTrainer:
-    def __init__(
-        self, input_column=None, tokens_column="tokens", tokenizer=None, **kwargs
-    ):
+class Embedding(MelusineTransformer):
+    """ """
 
-        self.input_column = input_column
-        self.tokens_column = tokens_column
-
-        if tokenizer is None:
-            self.tokenizer = WordLevelTokenizer()
-        else:
-            self.tokenizer = tokenizer
-
-        self.model_parameters_dict = kwargs
-        self.embedding = None
-
-    def train(self, x):
-        """Fits a Word2Vec Embedding on the given documents, and update the embedding attribute."""
-
-        if not self.tokens_column in x.columns:
-            x[self.tokens_column] = x[self.input_column].apply(self.tokenizer.tokenize)
-
-        embedding = Word2Vec(**self.model_parameters_dict)
-
-        embedding.build_vocab(x[self.tokens_column])
-        embedding.train(
-            x[self.tokens_column],
-            total_examples=embedding.corpus_count,
-            epochs=embedding.epochs,
-        )
-
-        self.embedding = embedding.wv
-
-
-class Embedding:
-    """
-    This class is deprecated and should not be used.
-    Is is kept to ensure retro-compatibility with earlier Melusine versions.
-    It will be removed eventually.
-
-    """
+    FILENAME = "gensim_embeddings_meta.json"
+    KEYED_VECTORS_FILENAME = "gensim_embeddings.w2v"
 
     def __init__(
-        self,
-        input_column=None,
-        tokens_column=None,
-        method="word2vec_cbow",
-        stop_removal=True,
-        **kwargs
+        self, input_columns=("tokens",), output_columns=("tokens",), **embeddings_args
     ):
-        self.input_column = input_column
-        self.tokens_column = tokens_column
-        self.method = method
-        self.stop_removal = stop_removal
-        self.train_params = kwargs
+        super().__init__(
+            input_columns=input_columns,
+            output_columns=output_columns,
+            func=None,
+        )
+        self.embeddings_args = embeddings_args
+        self.embeddings_ = None
+        self.EXCLUDE_LIST.append("embeddings_")
 
-        self.tokenizer = WordLevelTokenizer(remove_stopwords=self.stop_removal)
-        self.trainer = Word2VecTrainer()
-        self.embedding = None
+    def fit(self, df, y=None):
+        """ """
+        input_data = df[self.input_columns[0]]
+        w2v = Word2Vec(**self.embeddings_args)
+        w2v.build_vocab(input_data)
 
-    def train(self, x):
-        # Instantiate the trainer
-        embedding_trainer = Word2VecTrainer(
-            input_column=self.input_column,
-            tokens_column=self.tokens_column,
-            tokenizer=self.tokenizer,
-            **self.train_params
+        w2v.train(
+            input_data,
+            total_examples=w2v.corpus_count,
+            epochs=w2v.epochs,
         )
 
-        # Train the word embeddings model
-        embedding_trainer.train(x)
+        self.embeddings_ = w2v.wv
 
-        self.embedding = embedding_trainer.embedding
+        return self
 
-    def save(self, path):
-        self.embedding.save(path)
+    def transform(self, df):
+        return df
+
+    def save(self, path: str, filename_prefix: str = None) -> None:
+        """
+        Save the Embeddings into a pkl file
+
+        Parameters
+        ----------
+        path: str
+            Save path
+        filename_prefix: str
+            Prefix for saved files.
+        """
+        d = self.__dict__.copy()
+
+        self.save_json(
+            save_dict=d,
+            path=path,
+            filename_prefix=filename_prefix,
+        )
+
+        filepath = self.get_file_path(
+            self.KEYED_VECTORS_FILENAME, path, filename_prefix
+        )
+        self.embeddings_.save(filepath)
 
     @classmethod
-    def load(cls, path):
-        embedding = KeyedVectors.load(path)
+    def load(cls, path: str, filename_prefix: str = None):
+        """
+        Load the Embeddings from a json file.
 
-        # input_column is useless as the model should be trained already
-        instance = cls(input_column="body")
-        instance.embedding = embedding
+        Parameters
+        ----------
+        path: str
+            Load path
+        filename_prefix: str
+        Returns
+        -------
+        _: Phraser
+            Phraser instance
+        """
+        # Load json file
+        config_dict = cls.load_json(path, filename_prefix=filename_prefix)
+        instance = cls(**config_dict)
+
+        # Load embeddings file
+        filepath = cls.search_file(
+            cls.KEYED_VECTORS_FILENAME, path, filename_prefix=filename_prefix
+        )
+        embeddings = KeyedVectors.load(filepath)
+        instance.embeddings_ = embeddings
 
         return instance
