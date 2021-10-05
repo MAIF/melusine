@@ -1,13 +1,12 @@
 import logging
-from sklearn.base import BaseEstimator, TransformerMixin
 
 from typing import Dict, Sequence, Union
 from abc import abstractmethod
 
-from melusine.nlp_tools.base_melusine_class import BaseMelusineClass
+from melusine.core.base_melusine_class import BaseMelusineClass
 from melusine.nlp_tools.lemmatizer import MelusineLemmatizer
 from melusine.nlp_tools.normalizer import Normalizer, MelusineNormalizer
-from melusine.nlp_tools.pipeline import MelusinePipeline
+from melusine.core.pipeline import MelusinePipeline
 from melusine.nlp_tools.text_flagger import (
     MelusineTextFlagger,
     DeterministicTextFlagger,
@@ -242,7 +241,7 @@ class TextProcessor(MelusineTextProcessor):
         )
 
 
-def create_pipeline(
+def make_tokenizer(
     form: str = None,
     lowercase: bool = None,
     tokenizer_regex: str = None,

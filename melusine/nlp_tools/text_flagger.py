@@ -1,11 +1,9 @@
+import re
 import logging
 from abc import abstractmethod
 from typing import Dict
 
-from melusine.nlp_tools.pipeline import MelusineTransformer
-from melusine.nlp_tools.base_melusine_class import BaseMelusineClass
-from melusine.nlp_tools.nlp_tools_utils import _flag_text
-from melusine.nlp_tools.transformer_backend import backend
+from melusine.core.melusine_transformer import MelusineTransformer
 
 logger = logging.getLogger(__name__)
 
@@ -43,9 +41,33 @@ class DeterministicTextFlagger(MelusineTransformer):
         else:
             self.text_flags = text_flags
 
+    @staticmethod
+    def _flag_text(text: str, flag_dict: Dict[str, str]) -> str:
+        """
+        General flagging: replace remarkable expressions by a flag
+        Ex: 0123456789 => flag_phone_
+        Parameters
+        ----------
+        flag_dict: Dict[str, str]
+            Flagging dict with regex as key and replace_text as value
+        text: str
+            Text to be flagged
+        Returns
+        -------
+        text: str
+            Flagged text
+        """
+        for key, value in flag_dict.items():
+            if isinstance(value, dict):
+                text = DeterministicTextFlagger._flag_text(text, value)
+            else:
+                text = re.sub(key, value, text, flags=re.I)
+
+        return text
+
     def flag_text(self, text):
         # Join collocations
-        text = _flag_text(text, self.text_flags)
+        text = self._flag_text(text, self.text_flags)
 
         return text
 

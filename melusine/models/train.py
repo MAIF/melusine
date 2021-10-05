@@ -11,7 +11,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import TensorBoard
 
 from melusine import config
-from melusine.nlp_tools.tokenizer import WordLevelTokenizer
+from melusine.nlp_tools.text_processor import TextProcessor
 from melusine.models.attention_model import PositionalEncoding
 from melusine.models.attention_model import TransformerEncoderLayer
 from melusine.models.attention_model import MultiHeadAttention
@@ -84,7 +84,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
 
     model : Model instance from Keras,
 
-    tokenizer : WordLevelTokenizer
+    tokenizer : TextProcessor
         Tokenizer to split text into tokens
 
     embedding_matrix : np.array,
@@ -129,7 +129,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         self.pretrained_embedding = pretrained_embedding
         if self.architecture_function.__name__ != "bert_model":
             if tokenizer is None:
-                self.tokenizer = WordLevelTokenizer()
+                self.tokenizer = TextProcessor()
             else:
                 self.tokenizer = tokenizer
         elif "camembert" in bert_tokenizer.lower():
@@ -374,10 +374,10 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
 
         if self.architecture_function.__name__ != "bert_model":
             if isinstance(X, dict):
-                X[self.TOKENS_COL] = self.tokenizer.tokenize(X[self.text_input_column])
+                X[self.TOKENS_COL] = self.tokenizer.process(X[self.text_input_column])
             else:
                 X[self.TOKENS_COL] = X[self.text_input_column].apply(
-                    self.tokenizer.tokenize
+                    self.tokenizer.process
                 )
             X_seq = self._prepare_sequences(X)
             X_meta, nb_meta_features = self._get_meta(X)
@@ -510,10 +510,10 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
 
         if self.architecture_function.__name__ != "bert_model":
             if isinstance(X, dict):
-                X[self.TOKENS_COL] = self.tokenizer.tokenize(X[self.text_input_column])
+                X[self.TOKENS_COL] = self.tokenizer.process(X[self.text_input_column])
             else:
                 X[self.TOKENS_COL] = X[self.text_input_column].apply(
-                    self.tokenizer.tokenize
+                    self.tokenizer.process
                 )
             X_meta, nb_meta_features = self._get_meta(X)
 

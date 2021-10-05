@@ -1,11 +1,9 @@
 import logging
 from flashtext import KeywordProcessor
-from typing import Dict, Sequence, Union
+from typing import Sequence
 from abc import abstractmethod
 
-from melusine.nlp_tools.pipeline import MelusineTransformer
-from melusine.nlp_tools.base_melusine_class import BaseMelusineClass
-from melusine.nlp_tools.transformer_backend import backend
+from melusine.core.melusine_transformer import MelusineTransformer
 
 logger = logging.getLogger(__name__)
 
