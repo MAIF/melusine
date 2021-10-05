@@ -1,7 +1,7 @@
-from melusine.nlp_tools.transformer_backend import BaseTransformerBackend
+from melusine.backend.melusine_backend import BaseTransformerBackend
 
 
-class PandasBackendBase(BaseTransformerBackend):
+class PandasBackend(BaseTransformerBackend):
     @staticmethod
     def apply_transform_(data, func, output_columns, input_columns=None):
         import pandas as pd

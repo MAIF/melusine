@@ -1,8 +1,7 @@
 import logging
 from abc import abstractmethod
 
-
-from melusine.nlp_tools.pipeline import MelusineTransformer
+from melusine.core.melusine_transformer import MelusineTransformer
 
 logger = logging.getLogger(__name__)
 

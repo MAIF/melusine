@@ -18,12 +18,12 @@ class ActiveBackend:
     def switch_backend(self, new_backend):
 
         if new_backend == self.PANDAS_BACKEND:
-            from melusine.nlp_tools.pandas_backend import PandasBackendBase
+            from melusine.backend.pandas_backend import PandasBackend
 
-            self._backend = PandasBackendBase()
+            self._backend = PandasBackend()
 
         elif new_backend == self.DICT_BACKEND:
-            self._backend = DictBackendBase()
+            self._backend = DictBackend()
 
         elif isinstance(new_backend, BaseTransformerBackend):
             self._backend = new_backend
@@ -53,7 +53,7 @@ class BaseTransformerBackend(ABC):
         return NotImplementedError
 
 
-class DictBackendBase(BaseTransformerBackend):
+class DictBackend(BaseTransformerBackend):
     @staticmethod
     def apply_transform_(data, func, output_columns, input_columns=None):
 

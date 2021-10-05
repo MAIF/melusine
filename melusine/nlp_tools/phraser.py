@@ -2,7 +2,7 @@ import logging
 import gensim
 import re
 from melusine import config
-from melusine.nlp_tools.pipeline import MelusineTransformer
+from melusine.core.melusine_transformer import MelusineTransformer
 
 _common_terms = config["tokenizer"]["stopwords"] + config["tokenizer"]["names"]
 

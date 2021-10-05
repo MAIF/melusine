@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 
 class BaseMelusineClass(ABC):
     EXCLUDE_LIST = ["func"]
-    CONFIG_KEY = None
 
     # Save params
     SAVE_NAME = "name"
@@ -65,9 +64,9 @@ class BaseMelusineClass(ABC):
     def search_file(filename, path, filename_prefix: str = None):
         # Look for candidate files at given path
         if filename_prefix:
-            pattern = f"{filename_prefix}*{filename}"
+            pattern = f"{filename_prefix}_{filename}"
         else:
-            pattern = f"*{filename}"
+            pattern = f"{filename}"
 
         candidate_files = [x for x in glob.glob(os.path.join(path, pattern))]
         if not candidate_files:

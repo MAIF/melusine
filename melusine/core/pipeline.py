@@ -1,10 +1,6 @@
-from abc import abstractmethod
-
 from sklearn.pipeline import Pipeline
-from sklearn.base import BaseEstimator, TransformerMixin
 
-from melusine.nlp_tools.base_melusine_class import BaseMelusineClass
-from melusine.nlp_tools.transformer_backend import backend
+from melusine.core.base_melusine_class import BaseMelusineClass
 
 
 class MelusinePipeline(Pipeline, BaseMelusineClass):
@@ -23,7 +19,7 @@ class MelusinePipeline(Pipeline, BaseMelusineClass):
         n_steps = len(self.steps)
         for i, obj_params in enumerate(self.steps):
             name, obj = obj_params
-            step_prefix = self.get_step_prefix(filename_prefix, i, n_steps)
+            step_prefix = self.get_step_prefix(name, filename_prefix, i, n_steps)
 
             if hasattr(obj, "save"):
                 obj.save(path, step_prefix)
@@ -44,16 +40,18 @@ class MelusinePipeline(Pipeline, BaseMelusineClass):
         )
 
     @staticmethod
-    def get_step_prefix(filename_prefix, i, n_steps):
-        step_prefix = f"{i:0{len(str(n_steps))}d}"
+    def get_step_prefix(name, filename_prefix, i, n_steps):
+        prefix = ""
         if filename_prefix:
-            step_prefix += f"_{filename_prefix}"
-        return step_prefix
+            prefix += f"{filename_prefix}_"
+
+        prefix += f"{i:0{len(str(n_steps))}d}_{name}"
+        return prefix
 
     @classmethod
     def load(cls, path, filename_prefix: str = None):
         # Load the Pipeline config file
-        config_dict = cls.load_json(path)
+        config_dict = cls.load_json(path, filename_prefix=filename_prefix)
         steps = list()
 
         # Load steps meta data
@@ -62,34 +60,9 @@ class MelusinePipeline(Pipeline, BaseMelusineClass):
         # Instantiate transformers
         n_steps = len(steps_meta)
         for i, obj_params in enumerate(steps_meta):
-            step_prefix = cls.get_step_prefix(filename_prefix, i, n_steps)
+            name = obj_params[cls.SAVE_NAME]
+            step_prefix = cls.get_step_prefix(name, filename_prefix, i, n_steps)
             name, obj = cls.load_obj(obj_params, path=path, filename_prefix=step_prefix)
             steps.append((name, obj))
 
         return cls(steps=steps, **config_dict)
-
-
-class MelusineTransformer(BaseMelusineClass, BaseEstimator, TransformerMixin):
-    """
-    Base transformer class.
-    Melusine transformers have the following characteristics:
-    - Can be added to a Melusine (or sklearn) pipeline
-    - Can be saved and loaded
-    """
-
-    def __init__(self, input_columns, output_columns, func):
-        super().__init__()
-        self.input_columns = input_columns
-        self.output_columns = output_columns
-        self.func = func
-
-    def fit(self, df, y=None):
-        return self
-
-    def transform(self, df):
-        return backend.apply_transform(
-            data=df,
-            input_columns=self.input_columns,
-            output_columns=self.output_columns,
-            func=self.func,
-        )

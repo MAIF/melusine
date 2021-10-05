@@ -1,10 +1,10 @@
 import logging
 
-from typing import Dict, Sequence, Union, List
+from typing import Sequence
 from abc import abstractmethod
 import unicodedata
 
-from melusine.nlp_tools.pipeline import MelusineTransformer
+from melusine.core.melusine_transformer import MelusineTransformer
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +97,7 @@ class Normalizer(MelusineTransformer):
         """
         d = self.__dict__.copy()
 
-        # Save Tokenizer
+        # Save Normalizer
         self.save_json(save_dict=d, path=path, filename_prefix=filename_prefix)
 
     @classmethod
