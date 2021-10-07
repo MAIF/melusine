@@ -1,7 +1,7 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 
 from melusine.core.base_melusine_class import BaseMelusineClass
-from melusine.backend.melusine_backend import backend
+from melusine.backend.active_backend import backend
 
 
 class MelusineTransformer(BaseMelusineClass, BaseEstimator, TransformerMixin):

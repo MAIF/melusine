@@ -11,7 +11,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import TensorBoard
 
 from melusine import config
-from melusine.backend.melusine_backend import use
+from melusine.backend.active_backend import switch_backend
 from melusine.nlp_tools.text_processor import TextProcessor
 from melusine.models.attention_model import PositionalEncoding
 from melusine.models.attention_model import TransformerEncoderLayer
