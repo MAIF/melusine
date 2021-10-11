@@ -1,23 +1,10 @@
 import re
 import logging
-from abc import abstractmethod
 from typing import Dict
 
 from melusine.core.melusine_transformer import MelusineTransformer
 
 logger = logging.getLogger(__name__)
-
-
-class MelusineTextFlagger(MelusineTransformer):
-    FILENAME = "text_flagger.json"
-    CONFIG_KEY = "text_flagger"
-
-    def __init__(self):
-        super().__init__()
-
-    @abstractmethod
-    def flag_text(self, text):
-        raise NotImplementedError()
 
 
 class DeterministicTextFlagger(MelusineTransformer):

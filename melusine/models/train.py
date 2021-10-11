@@ -11,11 +11,10 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import TensorBoard
 
 from melusine import config
-from melusine.backend.active_backend import switch_backend
-from melusine.nlp_tools.text_processor import TextProcessor
 from melusine.models.attention_model import PositionalEncoding
 from melusine.models.attention_model import TransformerEncoderLayer
 from melusine.models.attention_model import MultiHeadAttention
+from melusine.nlp_tools.text_processor import make_tokenizer
 
 tensorboard_callback_parameters = config["tensorboard_callback"]
 
@@ -130,7 +129,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         self.pretrained_embedding = pretrained_embedding
         if self.architecture_function.__name__ != "bert_model":
             if tokenizer is None:
-                self.tokenizer = TextProcessor()
+                self.tokenizer = make_tokenizer()
             else:
                 self.tokenizer = tokenizer
         elif "camembert" in bert_tokenizer.lower():

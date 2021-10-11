@@ -1,24 +1,11 @@
 import logging
 
 from typing import Sequence
-from abc import abstractmethod
 import unicodedata
 
 from melusine.core.melusine_transformer import MelusineTransformer
 
 logger = logging.getLogger(__name__)
-
-
-class MelusineNormalizer(MelusineTransformer):
-    CONFIG_KEY = "normalizer"
-    FILENAME = "normalizer.json"
-
-    def __init__(self):
-        super().__init__()
-
-    @abstractmethod
-    def normalize(self, text: str):
-        raise NotImplementedError()
 
 
 class Normalizer(MelusineTransformer):
@@ -86,7 +73,7 @@ class Normalizer(MelusineTransformer):
 
     def save(self, path: str, filename_prefix: str = None) -> None:
         """
-        Save the Normalizer into a json file.
+        Save the Instance into a json file.
 
         Parameters
         ----------
@@ -103,7 +90,7 @@ class Normalizer(MelusineTransformer):
     @classmethod
     def load(cls, path: str, filename_prefix: str = None):
         """
-        Load the Normalizer from a json file.
+        Load the Instance from a json file.
 
         Parameters
         ----------

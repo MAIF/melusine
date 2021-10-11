@@ -1,21 +1,8 @@
 import logging
-from abc import abstractmethod
 
 from melusine.core.melusine_transformer import MelusineTransformer
 
 logger = logging.getLogger(__name__)
-
-
-class MelusineLemmatizer(MelusineTransformer):
-    FILENAME = "lemmatizer.json"
-    CONFIG_KEY = "lemmatizer"
-
-    def __init__(self):
-        super().__init__()
-
-    @abstractmethod
-    def lemmatize(self, tokens):
-        raise NotImplementedError()
 
 
 class DummyLemmatizer(MelusineTransformer):

@@ -6,6 +6,8 @@ import importlib
 import pickle
 from abc import ABC, abstractmethod
 
+from melusine import config
+
 logger = logging.getLogger(__name__)
 
 
@@ -23,6 +25,11 @@ class BaseMelusineClass(ABC):
 
     # Pickle save params
     PKL_SUFFIX = ".pkl"
+
+    # Config Mapping
+    CONFIG_MARKER = "CONFIG"
+    CONFIG_KEY = "config_key"
+    CONFIG_MAPPING = "config_mapping"
 
     def __init__(self):
         pass
@@ -89,6 +96,26 @@ class BaseMelusineClass(ABC):
         with open(filepath, "r") as f:
             data = json.load(f)
 
+        # data = cls.parse_config_parameters(data)
+
+        return data
+
+    @classmethod
+    def parse_config_parameters(cls, data):
+        config_mapping = dict()
+        config_key = data.pop(cls.CONFIG_KEY, None)
+        for key, value in data.items():
+            if isinstance(value, str) and value.startswith(cls.CONFIG_MARKER):
+                config_param = value.split(".")[-1]
+                if (config_key in config) and (config_param in config[config_key]):
+                    config_value = config[config_key][config_param]
+                else:
+                    raise KeyError(
+                        f"Could not find {config_key}.{config_param} in the configurations."
+                    )
+                config_mapping[key] = config_value
+        data[cls.CONFIG_MAPPING] = config_mapping
+
         return data
 
     def save_json(
@@ -101,6 +128,8 @@ class BaseMelusineClass(ABC):
         for key in self.EXCLUDE_LIST:
             _ = save_dict.pop(key, None)
 
+        self.save_config_mapping(save_dict)
+
         # Convert sets to lists (json compatibility)
         for key, val in save_dict.items():
             if isinstance(val, set):
@@ -110,6 +139,21 @@ class BaseMelusineClass(ABC):
         full_path = self.get_file_path(self.FILENAME, path, filename_prefix)
         with open(full_path, "w") as f:
             json.dump(save_dict, f, sort_keys=self.SORT_KEYS, indent=self.INDENT)
+
+    def save_config_mapping(self, save_dict):
+        config_mapping = save_dict.pop(self.CONFIG_MAPPING, dict())
+        if not config_mapping:
+            return save_dict
+
+        config_key = getattr(self, self.CONFIG_KEY, None)
+        if not config_key:
+            raise AttributeError(
+                f"Error: Found {self.CONFIG_MAPPING} attribute without a {self.CONFIG_KEY} attribute."
+            )
+
+        for key, value in config_mapping.items():
+            save_dict.pop(key)
+            save_dict[key] = f"CONFIG.{config_key}.{key}"
 
     @classmethod
     def load_pkl(cls, path, filename_prefix: str = None):
@@ -185,3 +229,37 @@ class BaseMelusineClass(ABC):
                 f"Object `{obj_name}` cannot be loaded from `{obj_path}`."
             )
         return getattr(module_obj, obj_name)
+
+    @classmethod
+    def from_config(cls, config_key, **kwargs):
+        init_params = dict()
+
+        # Add parameters from the conf
+        params_from_config = config[config_key]
+        init_params.update(**params_from_config)
+
+        # Add keyword arguments
+        init_params.update(**kwargs)
+
+        # Instantiate object
+        instance = cls(**init_params)
+
+        # Config Mapping parameters
+        setattr(instance, cls.CONFIG_MAPPING, params_from_config)
+        setattr(instance, cls.CONFIG_KEY, config_key)
+
+        return instance
+
+    @classmethod
+    def from_config_or_init(cls, **params_dict):
+        config_key = params_dict.pop(cls.CONFIG_KEY, None)
+        if config_key:
+            init_params = dict()
+            for key, value in params_dict.items():
+                if isinstance(value, str) and value.startswith(cls.CONFIG_MARKER):
+                    continue
+                else:
+                    init_params[key] = value
+            return cls.from_config(config_key, **init_params)
+        else:
+            return cls(**params_dict)

@@ -14,7 +14,7 @@ from melusine.prepare_email.compute_complexity import (
     mean_words_by_sentence,
     structured_score,
 )
-from melusine.nlp_tools.tokenizer import WordLevelTokenizer
+from melusine.nlp_tools.text_processor import TextProcessor
 
 try:
     import streamlit as st
@@ -37,7 +37,7 @@ except ModuleNotFoundError:
     )
 
 
-tokenizer = WordLevelTokenizer(remove_stopwords=False)
+tokenizer = TextProcessor(remove_stopwords=False)
 
 
 def intro():

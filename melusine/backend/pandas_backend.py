@@ -1,53 +1,139 @@
 from melusine.backend.base_backend import BaseTransformerBackend
+from joblib import Parallel, delayed
+import pandas as pd
+import numpy as np
+from tqdm import tqdm
 
 
 class PandasBackend(BaseTransformerBackend):
-    def __init__(self, progress_bar=False):
+    def __init__(self, progress_bar=False, workers=1):
         super().__init__()
         self.progress_bar = progress_bar
-        if self.progress_bar:
-            self.apply_transform_ = self.apply_transform_progress_bar
+        self.workers = workers
 
-    @staticmethod
-    def apply_transform_(data, func, output_columns, input_columns=None):
-        import pandas as pd
-
-        if not input_columns:
-            input_columns = data.columns.tolist()
-
-        if len(input_columns) == 1:
-            input_column = input_columns[0]
-            if len(output_columns) == 1:
-                output_column = output_columns[0]
-                data[output_column] = data[input_column].apply(func)
-            else:
-                data[output_columns] = data[input_column].apply(func).apply(pd.Series)
-        else:
-            data[output_columns] = data[input_columns].apply(
-                func, axis=1, expand_results=True
+    def apply_transform_(
+        self, data, func, output_columns, input_columns=None, **kwargs
+    ):
+        # Multiprocessing
+        if self.workers > 1:
+            data = self.apply_transform_multiprocessing(
+                data, func, output_columns, input_columns=input_columns, **kwargs
             )
+        else:
+            data = self.apply_transform_regular(
+                data, func, output_columns, input_columns=input_columns, **kwargs
+            )
+
         return data
 
-    @staticmethod
-    def apply_transform_progress_bar(data, func, output_columns, input_columns=None):
-        import pandas as pd
-        from tqdm import tqdm
+    def apply_transform_regular(
+        self, data, func, output_columns, input_columns=None, **kwargs
+    ):
 
-        tqdm.pandas(desc=func.__name__)
-        if not input_columns:
-            input_columns = data.columns.tolist()
+        if len(output_columns) > 1:
+            expand = "expand"
+            new_cols = list(output_columns)
+        else:
+            expand = None
+            new_cols = output_columns[0]
 
-        if len(input_columns) == 1:
+        if input_columns and len(input_columns) == 1:
             input_column = input_columns[0]
-            if len(output_columns) == 1:
-                output_column = output_columns[0]
-                data[output_column] = data[input_column].progress_apply(func)
-            else:
-                data[output_columns] = (
-                    data[input_column].apply(func).progress_apply(pd.Series)
+            data[new_cols] = self.apply_joblib_series(
+                s=data[input_column],
+                func=func,
+                expand=expand,
+                progress_bar=self.progress_bar,
+                **kwargs
+            )
+
+        else:
+            data[new_cols] = self.apply_joblib_dataframe(
+                df=data,
+                func=func,
+                expand=expand,
+                progress_bar=self.progress_bar,
+                **kwargs
+            )
+
+        return data
+
+    def apply_transform_multiprocessing(
+        self, data, func, output_columns, input_columns=None, **kwargs
+    ):
+        workers = min(self.workers, int(data.shape[0] // 2))
+        workers = max(workers, 1)
+
+        # Dataframe is too small to use multiprocessing
+        if workers == 1:
+            return self.apply_transform_regular(
+                data, func, output_columns, input_columns=input_columns
+            )
+
+        if len(output_columns) > 1:
+            expand = "expand"
+            new_cols = output_columns[0]
+        else:
+            expand = None
+            new_cols = output_columns
+
+        if input_columns and len(input_columns) == 1:
+            input_column = input_columns[0]
+            chunks = Parallel(n_jobs=workers)(
+                delayed(self.apply_joblib_series)(
+                    s=d[input_column],
+                    func=func,
+                    expand=expand,
+                    progress_bar=self.progress_bar,
+                    **kwargs
                 )
-        else:
-            data[output_columns] = data[input_columns].progress_apply(
-                func, axis=1, expand_results=True
+                for d in np.array_split(data, workers)
             )
+        else:
+            chunks = Parallel(n_jobs=workers)(
+                delayed(self.apply_joblib_dataframe)(
+                    df=d,
+                    func=func,
+                    expand=expand,
+                    progress_bar=self.progress_bar,
+                    **kwargs
+                )
+                for d in np.array_split(data, workers)
+            )
+
+        data[new_cols] = pd.concat(chunks)
         return data
+
+    @staticmethod
+    def apply_joblib_dataframe(df, func, expand=None, progress_bar=False, **kwargs):
+        """
+        Need to create a function to pass to Joblib Parallel.
+        This function can't be a lambda so we need to create a separate function.
+        """
+        if progress_bar:
+            apply_func = "progress_apply"
+            tqdm.pandas(desc=func.__name__)
+        else:
+            apply_func = "apply"
+
+        result = getattr(df, apply_func)(func, axis=1, result_type=expand, **kwargs)
+
+        return result
+
+    @staticmethod
+    def apply_joblib_series(s, func, expand=None, progress_bar=False, **kwargs):
+        """
+        Need to create a function to pass to Joblib Parallel.
+        This function can't be a lambda so we need to create a separate function.
+        """
+        if progress_bar:
+            apply_func = "progress_apply"
+            tqdm.pandas(desc=func.__name__)
+        else:
+            apply_func = "apply"
+
+        result = getattr(s, apply_func)(func, **kwargs)
+        if expand:
+            result = result.apply(pd.Series)
+
+        return result

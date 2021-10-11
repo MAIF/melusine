@@ -2,12 +2,13 @@ from melusine.backend.base_backend import BaseTransformerBackend
 
 
 class DictBackend(BaseTransformerBackend):
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         pass
 
-    @staticmethod
-    def apply_transform_(data, func, output_columns, input_columns=None):
+    def apply_transform_(
+        self, data, func, output_columns, input_columns=None, **kwargs
+    ):
 
         if input_columns and len(input_columns) == 1:
             input_column = input_columns[0]

@@ -2,23 +2,10 @@ import re
 import logging
 
 from typing import Sequence, List
-from abc import abstractmethod
 
 from melusine.core.melusine_transformer import MelusineTransformer
 
 logger = logging.getLogger(__name__)
-
-
-class MelusineTokenizer(MelusineTransformer):
-    CONFIG_KEY = "tokenizer"
-    FILENAME = "tokenizer.json"
-
-    def __init__(self):
-        super().__init__()
-
-    @abstractmethod
-    def tokenize(self, text: str):
-        raise NotImplementedError()
 
 
 class RegexTokenizer(MelusineTransformer):

@@ -7,7 +7,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import LabelEncoder
 
 from melusine import config
-from melusine.backend.melusine_backend import use
+from melusine.backend.active_backend import switch_backend
 from melusine.utils.transformer_scheduler import TransformerScheduler
 
 from melusine.prepare_email.manage_transfer_reply import check_mail_begin_by_transfer
@@ -25,7 +25,7 @@ from melusine.nlp_tools.phraser import Phraser
 from melusine.nlp_tools.phraser import phraser_on_body
 from melusine.nlp_tools.phraser import phraser_on_header
 from melusine.nlp_tools.text_processor import make_tokenizer_from_config
-from melusine.nlp_tools.embedding import Word2VecTrainer, Embedding
+from melusine.nlp_tools.embedding import Embedding
 from melusine.summarizer.keywords_generator import KeywordsGenerator
 
 from melusine.prepare_email.metadata_engineering import MetaExtension
@@ -125,7 +125,7 @@ def test_classification():
 
     # ============== Embeddings ==============
     w2v = Embedding(
-        input_column="clean_body",
+        input_columns="clean_body",
         min_count=2,
     )
     w2v.fit(input_df)
@@ -152,7 +152,7 @@ def test_classification():
     le.inverse_transform(y_res)
 
     # ============== Test dict compatibility ==============
-    use("dict")
+    switch_backend("dict")
     dict_emails = input_df.to_dict(orient="records")[0]
     dict_meta = MetadataPipeline.transform(dict_emails)
     keywords_generator.transform(dict_emails)
@@ -161,6 +161,6 @@ def test_classification():
     dict_input["clean_body"] = dict_emails["clean_body"]
 
     nn_model.predict(dict_input)
-    use("pandas")
+    switch_backend("pandas")
 
     assert True

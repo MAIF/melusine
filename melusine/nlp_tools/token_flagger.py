@@ -1,24 +1,10 @@
 import logging
 from flashtext import KeywordProcessor
 from typing import Sequence
-from abc import abstractmethod
 
 from melusine.core.melusine_transformer import MelusineTransformer
 
 logger = logging.getLogger(__name__)
-
-
-class MelusineTokenFlagger(MelusineTransformer):
-    FILENAME = "token_flagger.json"
-    EXCLUDE_LIST = list()
-    CONFIG_KEY = "token_flagger"
-
-    def __init__(self):
-        super().__init__()
-
-    @abstractmethod
-    def flag_tokens(self, tokens: Sequence[str]) -> Sequence[str]:
-        raise NotImplementedError()
 
 
 class FlashtextTokenFlagger(MelusineTransformer):
