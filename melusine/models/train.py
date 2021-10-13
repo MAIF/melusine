@@ -1,6 +1,7 @@
 import ast
 import numpy as np
 import pickle
+import gensim
 
 from collections import Counter
 from sklearn.base import BaseEstimator, ClassifierMixin
@@ -96,9 +97,9 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
     >>> from melusine.nlp_tools.embedding import Embedding
     >>> pretrained_embedding = Embedding.load()
     >>> list_meta = ['extension', 'dayofweek', 'hour']
-    >>> nn_model = NeuralModel(cnn_model, pretrained_embedding, list_meta)
-    >>> nn_model.fit(X_train, y_train)
-    >>> y_res = nn_model.predict(X_test)
+    >>> nn_model = NeuralModel(cnn_model, pretrained_embedding, list_meta)  #noqa
+    >>> nn_model.fit(X_train, y_train)  #noqa
+    >>> y_res = nn_model.predict(X_test)  #noqa
 
     """
 
@@ -107,7 +108,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         pretrained_embedding=None,
         architecture_function=None,
         text_input_column="clean_text",
-        meta_input_list=["extension", "dayofweek", "hour", "min"],
+        meta_input_list=("extension", "dayofweek", "hour", "min"),
         vocab_size=25000,
         seq_size=100,
         embedding_dim=200,
