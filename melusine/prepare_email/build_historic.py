@@ -1,9 +1,7 @@
 import re
 
-from melusine.config import ConfigJsonReader
+from melusine import config
 
-conf_reader = ConfigJsonReader()
-config = conf_reader.get_config_file()
 regex_transition_list = config["regex"]["build_historic"]["transition_list"]
 
 
