@@ -404,7 +404,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         for index, word in enumerate(self.vocabulary):
             if word not in ["PAD", "UNK"]:
                 embedding_matrix[index + 2, :] = pretrained_embedding.embedding[word]
-                embedding_matrix[1, :] = np.mean(embedding_matrix, axis=0)
+        embedding_matrix[1, :] = np.mean(embedding_matrix, axis=0)
 
         self.vocabulary.insert(0, "PAD")
         self.vocabulary.insert(1, "UNK")
