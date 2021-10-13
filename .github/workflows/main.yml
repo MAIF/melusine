@@ -24,7 +24,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip wheel setuptools
         pip install flake8 pytest
-        if [ -f requirements_dev.txt ]; then pip install ".["test"]"; fi
+        if [ -f requirements_dev.txt ]; then pip install ".["all"]"; fi
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
