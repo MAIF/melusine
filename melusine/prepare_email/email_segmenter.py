@@ -166,7 +166,7 @@ class EmailSegmenter(MelusineTransformer):
         _: EmailSegmenter
             EmailSegmenter instance
         """
-        # Load the object config file
-        loaded_dict = cls.load_json(path, filename_prefix=filename_prefix)
+        # Load parameters from json file
+        json_data = cls.load_json(path, filename_prefix=filename_prefix)
 
-        return cls.from_config_or_init(**loaded_dict)
+        return cls.from_json(**json_data)

@@ -1,0 +1,9 @@
+{
+  "tokenizer" : {
+    "stopwords": [
+        "le",
+        "les"
+    ],
+    "tokenizer_regex": "\\w+(?:[\\?\\-\\\"_]\\w+)*"
+  }
+}

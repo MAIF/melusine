@@ -11,7 +11,7 @@ from melusine import config
 logger = logging.getLogger(__name__)
 
 
-class BaseMelusineClass(ABC):
+class SaverMixin(ABC):
     EXCLUDE_LIST = ["func"]
 
     # Save params
@@ -27,7 +27,7 @@ class BaseMelusineClass(ABC):
     PKL_SUFFIX = ".pkl"
 
     # Config Mapping
-    CONFIG_MARKER = "CONFIG"
+    CONFIG_MARKER = "_CONFIG"
     CONFIG_KEY = "config_key"
     CONFIG_MAPPING = "config_mapping"
 
@@ -100,24 +100,6 @@ class BaseMelusineClass(ABC):
 
         return data
 
-    @classmethod
-    def parse_config_parameters(cls, data):
-        config_mapping = dict()
-        config_key = data.pop(cls.CONFIG_KEY, None)
-        for key, value in data.items():
-            if isinstance(value, str) and value.startswith(cls.CONFIG_MARKER):
-                config_param = value.split(".")[-1]
-                if (config_key in config) and (config_param in config[config_key]):
-                    config_value = config[config_key][config_param]
-                else:
-                    raise KeyError(
-                        f"Could not find {config_key}.{config_param} in the configurations."
-                    )
-                config_mapping[key] = config_value
-        data[cls.CONFIG_MAPPING] = config_mapping
-
-        return data
-
     def save_json(
         self,
         save_dict,
@@ -162,10 +144,10 @@ class BaseMelusineClass(ABC):
     @staticmethod
     def load_pkl_generic(filename, path, filename_prefix: str = None):
         # Add pickle suffix if necessary
-        if not filename.endswith(BaseMelusineClass.PKL_SUFFIX):
-            filename += BaseMelusineClass.PKL_SUFFIX
+        if not filename.endswith(SaverMixin.PKL_SUFFIX):
+            filename += SaverMixin.PKL_SUFFIX
 
-        filepath = BaseMelusineClass.search_file(
+        filepath = SaverMixin.search_file(
             filename, path, filename_prefix=filename_prefix
         )
         with open(filepath, "rb") as f:
@@ -183,10 +165,10 @@ class BaseMelusineClass(ABC):
     @staticmethod
     def save_pkl_generic(obj, filename, path, filename_prefix):
         # Add pickle suffix if necessary
-        if not filename.endswith(BaseMelusineClass.PKL_SUFFIX):
-            filename += BaseMelusineClass.PKL_SUFFIX
+        if not filename.endswith(SaverMixin.PKL_SUFFIX):
+            filename += SaverMixin.PKL_SUFFIX
 
-        full_path = BaseMelusineClass.get_file_path(filename, path, filename_prefix)
+        full_path = SaverMixin.get_file_path(filename, path, filename_prefix)
 
         with open(full_path, "wb") as f:
             pickle.dump(obj, f)
@@ -196,17 +178,17 @@ class BaseMelusineClass(ABC):
     @staticmethod
     def get_obj_meta(obj, name):
         return {
-            BaseMelusineClass.SAVE_NAME: name,
-            BaseMelusineClass.SAVE_CLASS: type(obj).__name__,
-            BaseMelusineClass.SAVE_MODULE: type(obj).__module__,
+            SaverMixin.SAVE_NAME: name,
+            SaverMixin.SAVE_CLASS: type(obj).__name__,
+            SaverMixin.SAVE_MODULE: type(obj).__module__,
         }
 
     @staticmethod
     def load_obj(obj_params, path, filename_prefix: str = None):
-        obj_name = obj_params[BaseMelusineClass.SAVE_NAME]
-        obj_class_name = obj_params[BaseMelusineClass.SAVE_CLASS]
-        obj_module = obj_params[BaseMelusineClass.SAVE_MODULE]
-        obj_class = BaseMelusineClass.load_class_obj(
+        obj_name = obj_params[SaverMixin.SAVE_NAME]
+        obj_class_name = obj_params[SaverMixin.SAVE_CLASS]
+        obj_module = obj_params[SaverMixin.SAVE_MODULE]
+        obj_class = SaverMixin.load_class_obj(
             obj_name=obj_class_name, obj_path=obj_module
         )
 
@@ -215,7 +197,7 @@ class BaseMelusineClass(ABC):
             obj = obj_class.load(path, filename_prefix=filename_prefix)
         # Use pickle load
         else:
-            obj = BaseMelusineClass.load_pkl_generic(
+            obj = SaverMixin.load_pkl_generic(
                 obj_name, path, filename_prefix=filename_prefix
             )
 
@@ -251,15 +233,18 @@ class BaseMelusineClass(ABC):
         return instance
 
     @classmethod
-    def from_config_or_init(cls, **params_dict):
+    def from_json(cls, **params_dict):
         config_key = params_dict.pop(cls.CONFIG_KEY, None)
         if config_key:
             init_params = dict()
             for key, value in params_dict.items():
-                if isinstance(value, str) and value.startswith(cls.CONFIG_MARKER):
-                    continue
-                else:
+                if not cls.is_from_config(value):
                     init_params[key] = value
             return cls.from_config(config_key, **init_params)
         else:
             return cls(**params_dict)
+
+    @classmethod
+    def is_from_config(cls, value):
+        if isinstance(value, str) and value.startswith(cls.CONFIG_MARKER):
+            return True

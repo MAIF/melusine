@@ -1,0 +1,12 @@
+{
+  "normalizer": {
+    "form": "NFKD",
+    "input_columns": [
+      "text"
+    ],
+    "lowercase": true,
+    "output_columns": [
+      "text"
+    ]
+  }
+}

@@ -1,10 +1,10 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 
-from melusine.core.base_melusine_class import BaseMelusineClass
+from melusine.core.saver_mixin import SaverMixin
 from melusine.backend.active_backend import backend
 
 
-class MelusineTransformer(BaseMelusineClass, BaseEstimator, TransformerMixin):
+class MelusineTransformer(SaverMixin, BaseEstimator, TransformerMixin):
     """
     Base transformer class.
     Melusine transformers have the following characteristics:

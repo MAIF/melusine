@@ -131,7 +131,7 @@ class RegexTokenizer(MelusineTransformer):
         _: TextProcessor
             TextProcessor instance
         """
-        # Load the Tokenizer config file
-        config_dict = cls.load_json(path, filename_prefix=filename_prefix)
+        # Load parameters from json file
+        json_data = cls.load_json(path, filename_prefix=filename_prefix)
 
-        return cls(**config_dict)
+        return cls.from_json(**json_data)

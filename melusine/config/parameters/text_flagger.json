@@ -1,0 +1,7 @@
+{
+  "text_flagger" : {
+    "text_flags": {
+        "\\d{10}": "flag_phone"
+    }
+  }
+}

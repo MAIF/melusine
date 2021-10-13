@@ -1,9 +1,9 @@
 from sklearn.pipeline import Pipeline
 
-from melusine.core.base_melusine_class import BaseMelusineClass
+from melusine.core.saver_mixin import SaverMixin
 
 
-class MelusinePipeline(Pipeline, BaseMelusineClass):
+class MelusinePipeline(Pipeline, SaverMixin):
     FILENAME = "pipeline.json"
     STEPS_KEY = "steps"
 
