@@ -31,9 +31,8 @@ setup_requirements = ["pytest-runner"]
 test_requirements = transformers_requirements + ["pytest"]
 
 
-# Ex: Install test dependencies with ``pip install melusine[test]`
+# Ex: Install all dependencies with ``pip install melusine[all]`
 extras_require = {
-    "test": test_requirements,
     "exchange": exchange_requirements,
     "transformers": transformers_requirements,
     "viz": viz_requirements,
