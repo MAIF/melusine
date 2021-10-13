@@ -397,26 +397,14 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         The vocabulary of the NN is those of the pretrained embedding
         """
         pretrained_embedding = self.pretrained_embedding
-        # Hack to solve the Gensim 4.0 / Tensorflow 2.6 conflict
-        if gensim.__version__.startswith("3"):
-            self.vocabulary = pretrained_embedding.embedding.wv.index2word
-        else:
-            self.vocabulary = pretrained_embedding.embedding.index_to_key
+        self.vocabulary = pretrained_embedding.embedding.index_to_key
         vocab_size = len(self.vocabulary)
         vector_dim = pretrained_embedding.embedding.vector_size
         embedding_matrix = np.zeros((vocab_size + 2, vector_dim))
         for index, word in enumerate(self.vocabulary):
             if word not in ["PAD", "UNK"]:
-                # Hack to solve the Gensim 4.0 / Tensorflow 2.6 conflict
-                if gensim.__version__.startswith("3"):
-                    embedding_matrix[
-                        index + 2, :
-                    ] = pretrained_embedding.embedding.wv.get_vector(word)
-                else:
-                    embedding_matrix[index + 2, :] = pretrained_embedding.embedding[
-                        word
-                    ]
-                    embedding_matrix[1, :] = np.mean(embedding_matrix, axis=0)
+                embedding_matrix[index + 2, :] = pretrained_embedding.embedding[word]
+                embedding_matrix[1, :] = np.mean(embedding_matrix, axis=0)
 
         self.vocabulary.insert(0, "PAD")
         self.vocabulary.insert(1, "UNK")

@@ -249,21 +249,11 @@ class Phraser:
         """
         self.logger.info("Start training for colocation detector")
         self.streamer.to_stream(X)
-        # Hack to solve the Gensim 4.0 / Tensorflow 2.6 conflict
-        if gensim.__version__.startswith("3"):
-            phrases = gensim.models.Phrases(
-                self.streamer.stream,
-                common_terms=self.common_terms,  # noqa
-                threshold=self.threshold,
-                min_count=self.min_count,
-            )
-        else:
-            phrases = gensim.models.Phrases(
-                self.streamer.stream,
-                connector_words=self.common_terms,  # noqa
-                threshold=self.threshold,
-                min_count=self.min_count,
-            )
+        phrases = gensim.models.Phrases(
+            self.streamer.stream,
+            connector_words=self.common_terms,  # noqa
+            threshold=self.threshold,
+            min_count=self.min_count,
+        )
         self.phraser = gensim.models.phrases.Phraser(phrases)
         self.logger.info("Done.")
-        pass

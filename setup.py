@@ -12,7 +12,7 @@ requirements = [
     "tensorflow>=2.5.0",
     "pandas>=1.0",
     "scikit-learn>=0.23",
-    "gensim<4.0.0",  # Gensim 4 requires numpy 1.20 (TF 2.5 requires numpy 1.19)
+    "gensim>4.1.2",
     "tqdm>=4.34",
     "unidecode>=1.0",
     "flashtext>=2.7",

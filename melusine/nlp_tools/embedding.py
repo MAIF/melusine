@@ -339,58 +339,30 @@ class Embedding:
 
     def train_word2vec(self):
         """Fits a Word2Vec Embedding on the given documents, and update the embedding attribute."""
-
-        # Hack to solve the Gensim 4.0 / Tensorflow 2.6 conflict
-        if gensim.__version__.startswith("3"):
-            embedding = Word2Vec(
-                size=self.train_params["size"],  # noqa
-                alpha=self.train_params["alpha"],
-                window=self.train_params["window"],
-                min_count=self.train_params["min_count"],
-                max_vocab_size=self.train_params["max_vocab_size"],
-                sample=self.train_params["sample"],
-                seed=self.train_params["seed"],
-                workers=self.train_params["workers"],
-                min_alpha=self.train_params["min_alpha"],
-                sg=self.train_params["sg"],
-                hs=self.train_params["hs"],
-                negative=self.train_params["negative"],
-                ns_exponent=self.train_params["ns_exponent"],
-                cbow_mean=self.train_params["cbow_mean"],
-                iter=self.train_params["iter"],  # noqa
-                null_word=self.train_params["null_word"],
-                trim_rule=self.train_params["trim_rule"],
-                sorted_vocab=self.train_params["sorted_vocab"],
-                batch_words=self.train_params["batch_words"],
-                compute_loss=self.train_params["compute_loss"],
-                callbacks=self.train_params["callbacks"],
-                max_final_vocab=self.train_params["max_final_vocab"],
-            )
-        else:
-            embedding = Word2Vec(
-                vector_size=self.train_params["size"],  # noqa
-                alpha=self.train_params["alpha"],
-                window=self.train_params["window"],
-                min_count=self.train_params["min_count"],
-                max_vocab_size=self.train_params["max_vocab_size"],
-                sample=self.train_params["sample"],
-                seed=self.train_params["seed"],
-                workers=self.train_params["workers"],
-                min_alpha=self.train_params["min_alpha"],
-                sg=self.train_params["sg"],
-                hs=self.train_params["hs"],
-                negative=self.train_params["negative"],
-                ns_exponent=self.train_params["ns_exponent"],
-                cbow_mean=self.train_params["cbow_mean"],
-                epochs=self.train_params["iter"],  # noqa
-                null_word=self.train_params["null_word"],
-                trim_rule=self.train_params["trim_rule"],
-                sorted_vocab=self.train_params["sorted_vocab"],
-                batch_words=self.train_params["batch_words"],
-                compute_loss=self.train_params["compute_loss"],
-                callbacks=self.train_params["callbacks"],
-                max_final_vocab=self.train_params["max_final_vocab"],
-            )
+        embedding = Word2Vec(
+            vector_size=self.train_params["size"],  # noqa
+            alpha=self.train_params["alpha"],
+            window=self.train_params["window"],
+            min_count=self.train_params["min_count"],
+            max_vocab_size=self.train_params["max_vocab_size"],
+            sample=self.train_params["sample"],
+            seed=self.train_params["seed"],
+            workers=self.train_params["workers"],
+            min_alpha=self.train_params["min_alpha"],
+            sg=self.train_params["sg"],
+            hs=self.train_params["hs"],
+            negative=self.train_params["negative"],
+            ns_exponent=self.train_params["ns_exponent"],
+            cbow_mean=self.train_params["cbow_mean"],
+            epochs=self.train_params["iter"],  # noqa
+            null_word=self.train_params["null_word"],
+            trim_rule=self.train_params["trim_rule"],
+            sorted_vocab=self.train_params["sorted_vocab"],
+            batch_words=self.train_params["batch_words"],
+            compute_loss=self.train_params["compute_loss"],
+            callbacks=self.train_params["callbacks"],
+            max_final_vocab=self.train_params["max_final_vocab"],
+        )
 
         # TODO Fix Streamer
         embedding.build_vocab(self.input_data)
@@ -439,18 +411,10 @@ class Embedding:
         kv.vector_size = vector_size
         kv.vectors = embedding_matrix
 
-        # Hack to solve the Gensim 4.0 / Tensorflow 2.6 conflict
-        if gensim.__version__.startswith("3"):
-            kv.index2word = list(vocab.keys())
+        kv.index_to_key = list(vocab.keys())
 
-            kv.vocab = {
-                word: Vocab(index=word_id, count=0) for word, word_id in vocab.items()
-            }
-        else:
-            kv.index_to_key = list(vocab.keys())
-
-            kv.key_to_index = {
-                word: Vocab(index=word_id, count=0) for word, word_id in vocab.items()
-            }
+        kv.key_to_index = {
+            word: Vocab(index=word_id, count=0) for word, word_id in vocab.items()
+        }
 
         self.embedding = kv
