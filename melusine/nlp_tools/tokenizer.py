@@ -10,6 +10,9 @@ names_list = config["words_list"]["names"]
 regex_tokenize = config["regex"]["tokenizer"]
 
 
+logger = logging.getLogger(__name__)
+
+
 def _create_flashtext_object():
     """
     Instantiates a Flashtext object.
@@ -85,7 +88,6 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         self.stopwords = set(stopwords)
         self.stop_removal = stop_removal
         self.n_jobs = n_jobs
-        self.logger = logging.getLogger(__name__)
         self.name_flagger = _create_flashtext_object()
         self.name_flagger.add_keywords_from_dict({"flag_name_": names_list})
 
@@ -96,16 +98,7 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         """
         d = self.__dict__.copy()
         d["n_jobs"] = 1
-        if "logger" in d:
-            d["logger"] = d["logger"].name
         return d
-
-    def __setstate__(self, d):
-        """To override the default pickling behavior and
-        avoid the pickling of the logger"""
-        if "logger" in d:
-            d["logger"] = logging.getLogger(d["logger"])
-        self.__dict__.update(d)
 
     def fit(self, X, y=None):
         """Unused method. Defined only for compatibility with scikit-learn API."""
@@ -123,7 +116,7 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         -------
         pandas.DataFrame
         """
-        self.logger.debug("Start transform tokenizing")
+        logger.debug("Start tokenizer transform")
 
         if isinstance(X, dict):
             apply_func = TransformerScheduler.apply_dict
@@ -133,7 +126,7 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         X["tokens"] = apply_func(X, self.tokenize)
         X["tokens"] = apply_func(X, lambda x: x["tokens"][0])
 
-        self.logger.debug("Done.")
+        logger.debug("Finished tokenizer transform")
         return X
 
     def tokenize(self, row):
