@@ -14,13 +14,7 @@ regex_process = r"\w+(?:[\?\-'\"_]\w+)*"
 regex_split_parts = r"(.*?[;.,?!])"
 
 
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-formatter = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s \
-                              - %(message)s",
-    datefmt="%d/%m %I:%M",
-)
+logger = logging.getLogger(__name__)
 
 
 def phraser_on_body(row, phraser):
@@ -194,35 +188,12 @@ class Phraser:
         threshold=350,
         min_count=200,
     ):
-        self.logger = logging.getLogger(__name__)
-        self.logger.debug("creating a Phraser instance")
         self.common_terms = common_terms
         self.threshold = threshold
         self.min_count = min_count
         self.input_column = input_column
         self.streamer = Streamer(column=self.input_column, stop_removal=False)
-        ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(logging.INFO)
-        ch.setFormatter(formatter)
-        self.logger.addHandler(ch)
         self.phraser = None
-
-    def __getstate__(self):
-        """should return a dict of attributes that will be pickled
-        To override the default pickling behavior and
-        avoid the pickling of the logger
-        """
-        d = self.__dict__.copy()
-        if "logger" in d:
-            d["logger"] = d["logger"].name
-        return d
-
-    def __setstate__(self, d):
-        """To override the default pickling behavior and
-        avoid the pickling of the logger"""
-        if "logger" in d:
-            d["logger"] = logging.getLogger(d["logger"])
-        self.__dict__.update(d)
 
     def save(self, filepath):
         """Method to save Phraser object"""
@@ -247,13 +218,13 @@ class Phraser:
         self : object
             Returns the instance
         """
-        self.logger.info("Start training for colocation detector")
+        logger.info("Start phraser training")
         self.streamer.to_stream(X)
         phrases = gensim.models.Phrases(
             self.streamer.stream,
-            connector_words=self.common_terms,  # noqa
+            connector_words=self.common_terms,
             threshold=self.threshold,
             min_count=self.min_count,
         )
         self.phraser = gensim.models.phrases.Phraser(phrases)
-        self.logger.info("Done.")
+        logger.info("Finished phraser training")

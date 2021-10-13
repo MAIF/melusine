@@ -1,5 +1,4 @@
 import logging
-import gensim
 from gensim.models import Word2Vec
 from gensim.models.keyedvectors import Vocab, KeyedVectors
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -10,12 +9,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 from melusine.utils.streamer import Streamer
 
-log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-formatter = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    datefmt="%d/%m %I:%M",
-)
+
+logger = logging.getLogger(__name__)
 
 
 class Embedding:
@@ -89,15 +84,9 @@ class Embedding:
                                     and Negative-Sampling.
                 - "lsa_docterm" : Trains an Embedding by using an SVD on a Document-Term Matrix.
                 - "lsa_tfidf" : Trains an Embedding by using an SVD on a TF-IDFized Document-Term Matrix.
-        min_count : TODO
+        min_count : int
+            Minimum number of occurence of a word to be included in the vocabulary
         """
-
-        self.logger = logging.getLogger(__name__)
-        ch = logging.StreamHandler()
-        ch.setLevel(logging.INFO)
-        ch.setFormatter(formatter)
-        self.logger.addHandler(ch)
-        self.logger.debug("Create an Embedding instance.")
         self.input_column = input_column
         self.tokens_column = tokens_column
         self.input_data = None
@@ -210,7 +199,7 @@ class Embedding:
             Containing a clean body column.
         """
 
-        self.logger.info("Start training for embedding")
+        logger.info("Start training word embeddings")
 
         if (not self.input_column) and (not self.tokens_column):
             raise ValueError(
@@ -243,7 +232,7 @@ class Embedding:
         # elif embedding_type == 'glove':
         #    self.train_glove(X, self.input_column)
 
-        self.logger.info("Done.")
+        logger.info("Finished training word embeddings")
 
     def train_tfidf(self):
         """Train a TF-IDF Vectorizer to compute a TF-IDFized Doc-Term Matrix relative to a corpus.
@@ -340,7 +329,7 @@ class Embedding:
     def train_word2vec(self):
         """Fits a Word2Vec Embedding on the given documents, and update the embedding attribute."""
         embedding = Word2Vec(
-            vector_size=self.train_params["size"],  # noqa
+            vector_size=self.train_params["size"],
             alpha=self.train_params["alpha"],
             window=self.train_params["window"],
             min_count=self.train_params["min_count"],
@@ -354,7 +343,7 @@ class Embedding:
             negative=self.train_params["negative"],
             ns_exponent=self.train_params["ns_exponent"],
             cbow_mean=self.train_params["cbow_mean"],
-            epochs=self.train_params["iter"],  # noqa
+            epochs=self.train_params["iter"],
             null_word=self.train_params["null_word"],
             trim_rule=self.train_params["trim_rule"],
             sorted_vocab=self.train_params["sorted_vocab"],
