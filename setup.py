@@ -23,7 +23,7 @@ requirements = [
 
 # Optional dependencies
 exchange_requirements = ["exchangelib>=4.2.0"]
-transformers_requirements = ["transformers==3.4.0"]  # This needs to be changed !
+transformers_requirements = ["transformers==3.4.0"]
 viz_requirements = ["plotly", "streamlit>=0.57.3"]
 
 # Test dependencies
