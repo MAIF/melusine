@@ -378,7 +378,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             X_seq, X_attention = self._prepare_bert_sequences(X)
             X_meta, nb_meta_features = self._get_meta(X)
             if nb_meta_features == 0:
-                X_input = [X_seq, X_meta]
+                X_input = [X_seq, X_attention]
             else:
                 X_input = [X_seq, X_attention, X_meta]
         return self.model.predict(X_input, **kwargs)
