@@ -77,7 +77,7 @@ regex_tag_subsentence = REGEX_SEG["tag_subsentence"]
 regex_split_message_to_sentences_list = REGEX_SEG["split_message_to_sentences_list"]
 
 REGEX_CLEAN = config["regex"]["cleaning"]
-regex_flags_dict = REGEX_CLEAN["flags_dict"]
+regex_flags_dict = config["text_flagger"]["text_flags"]
 
 
 def structure_email(row):

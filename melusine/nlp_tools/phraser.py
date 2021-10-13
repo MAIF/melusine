@@ -6,7 +6,10 @@ import re
 from melusine.utils.streamer import Streamer
 from melusine import config
 
-_common_terms = config["words_list"]["stopwords"] + config["words_list"]["names"]
+_common_terms = (
+    config["tokenizer"]["stopwords"]
+    + config["token_flagger"]["token_flags"]["flag_name"]
+)
 
 regex_tokenize_with_punctuations = r"(.*?[\s'])"
 tokenize_without_punctuations = r"(.*?)[\s']"
@@ -15,12 +18,6 @@ regex_split_parts = r"(.*?[;.,?!])"
 
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
-formatter = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s \
-                              - %(message)s",
-    datefmt="%d/%m %I:%M",
-)
 
 
 def phraser_on_body(row, phraser):

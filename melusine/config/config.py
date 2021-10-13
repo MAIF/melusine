@@ -208,5 +208,72 @@ def switch_config(new_config):
     config._switch_config(new_config)
 
 
+def ensure_retro_compatibility(config_dict):
+    """ """
+
+    def check_key(d, path):
+        path = path[:]
+        if not path:
+            return True
+
+        key = path.pop(0)
+        if key in d:
+            return check_key(d[key], path)
+        else:
+            return False
+
+    def get_key(d, path):
+        val = d
+        for key in path:
+            val = val[key]
+        return val
+
+    def set_key(d, path, value_):
+        val = d
+        for key in path[:-1]:
+            if key not in val:
+                val[key] = dict()
+            val = val[key]
+
+        val[path[-1]] = value_
+        return d
+
+    changes = [
+        ("words_list.stopwords", "tokenizer.stopwords"),
+        ("regex.tokenizer", "tokenizer.tokenizer_regex"),
+        ("regex.cleaning.flags_dict", "text_flagger.text_flags"),
+        ("words_list.names", "token_flagger.token_flags.flag_name"),
+    ]
+    deprecation_warning = False
+
+    for old, new in changes:
+        old_path = old.split(".")
+        new_path = new.split(".")
+
+        # Check if deprecated configs are present
+        if check_key(config_dict, old_path):
+            deprecation_warning = True
+            logger.warning(
+                f"Deprecation Warning :\n"
+                f"  You are using the deprecated config : {old}\n"
+                f"  Please use the new config : {new}"
+            )
+            # Get value of the deprecated config
+            value = get_key(config_dict, old_path)
+
+            # Set the value to the new config location
+            config_dict = set_key(config_dict, new_path, value)
+
+    if deprecation_warning:
+        logger.warning(
+            f"\nA major Melusine evolution is planed."
+            f"The new Melusine will make it easier for users to customize and extend Melusine. "
+            f"Melusine users are encouraged to take into account the deprecation warnings to anticipate future "
+            f"API breaking changes."
+        )
+
+    return config_dict
+
+
 # Load Melusine configurations
 config = MelusineConfig()

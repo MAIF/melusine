@@ -5,9 +5,9 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from melusine import config
 from melusine.utils.transformer_scheduler import TransformerScheduler
 
-stopwords = config["words_list"]["stopwords"]
-names_list = config["words_list"]["names"]
-regex_tokenize = config["regex"]["tokenizer"]
+stopwords = config["tokenizer"]["stopwords"]
+names_list = config["token_flagger"]["token_flags"]["flag_name"]
+regex_tokenize = config["tokenizer"]["tokenizer_regex"]
 
 
 def _create_flashtext_object():
