@@ -1,226 +1,186 @@
 import logging
 import re
-import json
 from flashtext import KeywordProcessor
+from sklearn.base import BaseEstimator, TransformerMixin
 from melusine import config
-from typing import List, Dict
+from melusine.utils.transformer_scheduler import TransformerScheduler
 
-logger = logging.getLogger(__name__)
+stopwords = config["words_list"]["stopwords"]
+names_list = config["words_list"]["names"]
+regex_tokenize = config["regex"]["tokenizer"]
 
 
-class WordLevelTokenizer:
+def _create_flashtext_object():
     """
-    Tokenizer which does the following:
-    - General flagging (using regex)
-    - Name flagging (using FlashText)
-    - Text splitting
-    - Stopwords removal
+    Instantiates a Flashtext object.
+    Separators are specified to not be considered as word boundaries
     """
+    keyword_processor = KeywordProcessor()
+    # special characters are included as natively flashtext library does not handle them correctly
+    for separator in [
+        "-",
+        "_",
+        "/",
+        "é",
+        "è",
+        "ê",
+        "â",
+        "ô",
+        "ö",
+        "ü",
+        "û",
+        "ù",
+        "ï",
+        "î",
+        "æ",
+    ]:
+        keyword_processor.add_non_word_boundary(separator)
+    return keyword_processor
 
-    # Attributes excluded from the default save methods
-    # Ex: pickle.dump or json.dump
-    EXCLUDE_LIST = ["keyword_processor"]
+
+class Tokenizer(BaseEstimator, TransformerMixin):
+    """Class to train and apply tokenizer.
+
+    Compatible with scikit-learn API (i.e. contains fit, transform methods).
+
+    Parameters
+    ----------
+    input_column : str,
+        Input text column to consider for the tokenizer.
+
+    stopwords : list of strings, optional
+        List of words to remove from list of tokens.
+        Default value, list defined in conf file
+
+    stop_removal : boolean, optional
+        True if stopwords to be removed, else False.
+        Default value, False.
+
+    n_jobs : int, optional
+        Number of cores used for computation.
+        Default value, 20.
+
+    Attributes
+    ----------
+    stopwords, stop_removal, n_jobs, name_flagger
+
+    Examples
+    --------
+    >>> from melusine.nlp_tools.tokenizer import Tokenizer
+    >>> tokenizer = Tokenizer()
+    >>> X = tokenizer.fit_transform(X)
+    >>> tokenizer.save(filepath)
+    >>> tokenizer = Tokenizer().load(filepath)
+
+    """
 
     def __init__(
         self,
-        tokenizer_regex: str = config["tokenizer"]["tokenizer_regex"],
-        stopwords: List[str] = config["tokenizer"]["stopwords"],
-        remove_stopwords: bool = config["tokenizer"]["remove_stopwords"],
-        flag_dict: Dict[str, str] = config["tokenizer"]["flag_dict"],
-        flashtext_separators: List[str] = config["tokenizer"]["flashtext_separators"],
-        flashtext_names: List[str] = config["tokenizer"]["flashtext_names"],
-        name_flag: str = config["tokenizer"]["name_flag"],
-        **kwargs
+        input_column="clean_text",
+        stopwords=stopwords,
+        stop_removal=True,
+        n_jobs=20,
     ):
+        self.input_column = input_column
+        self.stopwords = set(stopwords)
+        self.stop_removal = stop_removal
+        self.n_jobs = n_jobs
+        self.logger = logging.getLogger(__name__)
+        self.name_flagger = _create_flashtext_object()
+        self.name_flagger.add_keywords_from_dict({"flag_name_": names_list})
+
+    def __getstate__(self):
+        """should return a dict of attributes that will be pickled
+        To override the default pickling behavior and
+        avoid the pickling of the logger
         """
+        d = self.__dict__.copy()
+        d["n_jobs"] = 1
+        if "logger" in d:
+            d["logger"] = d["logger"].name
+        return d
+
+    def __setstate__(self, d):
+        """To override the default pickling behavior and
+        avoid the pickling of the logger"""
+        if "logger" in d:
+            d["logger"] = logging.getLogger(d["logger"])
+        self.__dict__.update(d)
+
+    def fit(self, X, y=None):
+        """Unused method. Defined only for compatibility with scikit-learn API."""
+        return self
+
+    def transform(self, X):
+        """Applies tokenize method on pd.Dataframe.
 
         Parameters
         ----------
-        tokenizer_regex: str
-            Regex used to split the text into tokkens
-        stopwords: List[str]
-            List of words to be removed
-        remove_stopwords: bool
-            If True, stopwords removal is enabled
-        flag_dict: Dict[str, str]
-            Flagging dict with regex as key and replace_text as value
-        flashtext_separators: List[Str]
-            List of separator words for FlashText
-        flashtext_names: List[Str]
-            List of names to be flagged
-        name_flag: str
-            Replace value for names
-        kwargs
-        """
-
-        # Text splitting
-        self.tokenizer_regex = tokenizer_regex
-
-        # Stopwords
-        self.stopwords = set(stopwords) or None
-        self.remove_stopwords = remove_stopwords
-        self.flag_dict = flag_dict
-        self.flashtext_separators = flashtext_separators
-        self.flashtext_names = flashtext_names
-        self.name_flag = name_flag
-
-        self.keyword_processor = None
-        self.init_flashtext()
-
-    def init_flashtext(self) -> None:
-        """
-        Initialize the flashtext KeywordProcessor object
-        """
-        self.keyword_processor = KeywordProcessor()
-
-        for x in self.flashtext_separators:
-            self.keyword_processor.add_non_word_boundary(x)
-            self.keyword_processor.add_keywords_from_dict(
-                {"flag_name_": self.flashtext_names}
-            )
-
-    @staticmethod
-    def _flag_text(flag_dict: Dict[str, str], text: str) -> str:
-        """
-        General flagging: replace remarkable expressions by a flag
-        Ex: 0123456789 => flag_phone_
-
-        Parameters
-        ----------
-        flag_dict: Dict[str, str]
-            Flagging dict with regex as key and replace_text as value
-        text: str
-            Text to be flagged
+        X : pandas.DataFrame,
+            Data on which transformations are applied.
 
         Returns
         -------
-        text: str
-            Flagged text
+        pandas.DataFrame
         """
-        for key, value in flag_dict.items():
-            if isinstance(value, dict):
-                text = WordLevelTokenizer._flag_text(value, text)
-            else:
-                text = re.sub(key, value, text, flags=re.I)
+        self.logger.debug("Start transform tokenizing")
 
-        return text
+        if isinstance(X, dict):
+            apply_func = TransformerScheduler.apply_dict
+        else:
+            apply_func = TransformerScheduler.apply_pandas
 
-    def _text_to_tokens(self, text: str) -> List[str]:
-        """
-        Split a text into values
+        X["tokens"] = apply_func(X, self.tokenize)
+        X["tokens"] = apply_func(X, lambda x: x["tokens"][0])
+
+        self.logger.debug("Done.")
+        return X
+
+    def tokenize(self, row):
+        """Returns list of tokens.
 
         Parameters
         ----------
-        text: Text to be split
+        row : row of pd.Dataframe
 
         Returns
         -------
-        tokens: List[str]
-            List of tokens
+        pd.Series
+
         """
+        text = row[self.input_column]
+        tokens = self._tokenize(text)
+        return [tokens]
+
+    def _tokenize(self, text, pattern=regex_tokenize):
+        """Returns list of tokens from text."""
         if isinstance(text, str):
-            tokens = re.findall(self.tokenizer_regex, text, re.M + re.DOTALL)
+            tokens = re.findall(pattern, text, re.M + re.DOTALL)
+            tokens = self._remove_stopwords(tokens)
         else:
             tokens = []
         return tokens
 
-    def _remove_stopwords(self, tokens: List[str]) -> List[str]:
+    def _remove_stopwords(self, token_list):
         """
-        Remove stopwords from tokens.
+        Removes stopwords from list if stop_removal parameter
+        set to True and replaces names by flag_name_.
 
         Parameters
         ----------
-        tokens: List[str]
+        token_list: list
             List of tokens
 
         Returns
         -------
-        tokens: List[str]
+        token_list: list
             List of tokens without stopwords
         """
-        return [token for token in tokens if token not in self.stopwords]
-
-    def _flag_names(self, tokens: List[str]) -> List[str]:
-        """
-        Replace name tokens with a flag
-
-        Parameters
-        ----------
-        tokens: List[str]
-            List of tokens
-
-        Returns
-        -------
-        tokens: List[str]
-            List of tokens with names flagged
-        """
-        return [self.keyword_processor.replace_keywords(token) for token in tokens]
-
-    def tokenize(self, text: str) -> List[str]:
-        """
-        Apply the full tokenization pipeline on a text.
-
-        Parameters
-        ----------
-        text: str
-            Input text to be tokenized
-
-        Returns
-        -------
-        tokens: List[str]
-            List of tokens
-        """
-        # Text flagging
-        text = self._flag_text(self.flag_dict, text)
-
-        # Text splitting
-        tokens = self._text_to_tokens(text)
-
-        # Stopwords removal
-        tokens = self._remove_stopwords(tokens)
-
-        # Flagging
-        tokens = self._flag_names(tokens)
-
-        return tokens
-
-    def save(self, path: str) -> None:
-        """
-        Save the tokenizer into a json file
-
-        Parameters
-        ----------
-        path: str
-            Save path
-        """
-        d = self.__dict__.copy()
-        for key in self.EXCLUDE_LIST:
-            _ = d.pop(key, None)
-
-        # Convert sets to lists
-        for key, val in d.items():
-            if isinstance(val, set):
-                d[key] = list(val)
-
-        with open(path, "w") as f:
-            json.dump(d, f)
-
-    @classmethod
-    def load(cls, path: str):
-        """
-        Load the tokenizer from a json file
-
-        Parameters
-        ----------
-        path: str
-            Load path
-
-        Returns
-        -------
-        _: WordLevelTokenizer
-            Tokenizer instance
-        """
-        with open(path, "r") as f:
-            params = json.load(f)
-
-        return cls(**params)
+        if self.stop_removal:
+            return [
+                self.name_flagger.replace_keywords(tok)
+                for tok in token_list
+                if tok not in stopwords
+            ]
+        else:
+            return token_list
