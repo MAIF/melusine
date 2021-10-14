@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/MAIF/melusine.svg?branch=master)](https://travis-ci.org/MAIF/melusine)
 [![documentation badge](https://readthedocs.org/projects/melusine/badge/?version=latest)](https://readthedocs.org/projects/melusine/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
+[![Generic badge](https://img.shields.io/badge/python-3.6|3.7|3.8-blue.svg)](https://shields.io/)
 
 🎉 We just released **Melusine 2.3.1** including a new `ExchangeConnector` class to interact with **Outlook mailboxes**. 
 Implement email routing on your own mailbox by following the **new [tutorial](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial14_exchange_connector.ipynb)**. 🎉
@@ -26,7 +26,7 @@ Use **Melusine** if you need a library which:
   * Supports transformers, CNN and RNN models.
   * Runs seamlessly on CPU and GPU.
 
-**Melusine** is compatible with `Python 3.6`.
+**Melusine** is compatible with `Python 3.6`, `Python 3.7` and `Python 3.8`.
 
 ## Release Notes
 ### 2.3
@@ -340,7 +340,7 @@ Each messages of an email are segmented in the **structured_body** columns and e
 ### Dashboard App
 
 Melusine also offered an easy and nice dashboard app with StreamLit.
-The App contains exploratory dasboard on the email dataset and more specific study on discrimination between the dataset 
+The App contains exploratory dashboard on the email dataset and more specific study on discrimination between the dataset 
 and a neural model classification.
 
 To run the app, run the following command in your terminal in the melusine/data directory :

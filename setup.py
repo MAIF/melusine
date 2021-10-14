@@ -31,9 +31,8 @@ setup_requirements = ["pytest-runner"]
 test_requirements = transformers_requirements + ["pytest"]
 
 
-# Ex: Install test dependencies with ``pip install melusine[test]`
+# Ex: Install all dependencies with ``pip install melusine[all]`
 extras_require = {
-    "test": test_requirements,
     "exchange": exchange_requirements,
     "transformers": transformers_requirements,
     "viz": viz_requirements,
@@ -43,8 +42,8 @@ extras_require["all"] = all_requirements
 
 
 setup(
-    author="Sacha Samama, Tom Stringer, Antoine Simoulin, Benoit Lebreton, Tiphaine Fabre",
-    author_email="ssamama@quantmetry.com",
+    author="Sacha Samama, Tom Stringer, Antoine Simoulin, Benoit Lebreton, Tiphaine Fabre, Hugo Perrier",
+    author_email="tiphaine.fabre@maif.fr",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",

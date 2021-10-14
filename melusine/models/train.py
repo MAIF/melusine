@@ -1,6 +1,7 @@
 import ast
 import numpy as np
 import pickle
+import gensim
 
 from collections import Counter
 from sklearn.base import BaseEstimator, ClassifierMixin
@@ -96,9 +97,9 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
     >>> from melusine.models.neural_architectures import cnn_model
     >>> pretrained_embedding = MyEmbedding
     >>> list_meta = ['extension', 'dayofweek', 'hour']
-    >>> nn_model = NeuralModel(cnn_model, pretrained_embedding, list_meta)
-    >>> nn_model.fit(X_train, y_train)
-    >>> y_res = nn_model.predict(X_test)
+    >>> nn_model = NeuralModel(cnn_model, pretrained_embedding, list_meta)  #noqa
+    >>> nn_model.fit(X_train, y_train)  #noqa
+    >>> y_res = nn_model.predict(X_test)  #noqa
 
     """
 
@@ -109,7 +110,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         pretrained_embedding=None,
         architecture_function=None,
         text_input_column="clean_text",
-        meta_input_list=["extension", "dayofweek", "hour", "min"],
+        meta_input_list=("extension", "dayofweek", "hour", "min"),
         vocab_size=25000,
         seq_size=100,
         embedding_dim=200,
@@ -384,7 +385,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             X_seq, X_attention = self._prepare_bert_sequences(X)
             X_meta, nb_meta_features = self._get_meta(X)
             if nb_meta_features == 0:
-                X_input = [X_seq, X_meta]
+                X_input = [X_seq, X_attention]
             else:
                 X_input = [X_seq, X_attention, X_meta]
         return self.model.predict(X_input, **kwargs)
