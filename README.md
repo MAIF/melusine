@@ -29,6 +29,17 @@ Use **Melusine** if you need a library which:
 **Melusine** is compatible with `Python 3.6`, `Python 3.7` and `Python 3.8`.
 
 ## Release Notes
+### 2.3.2
+Updates:
+  * Compatibility with python 3.7 and 3.8
+  * Optional dependencies (viz, transformers, all)
+  * Specify custom configurations with environment variable MELUSINE_CONFIG_DIR
+  * Use any number of JSON and YAML files for configurations
+    (instead of just one config file)
+
+Bug fix:
+  * Fixed bug when training transformers model without meta features
+  
 ### 2.3
 New features:
   * Added a class `ExchangeConnector` to interact with an Exchange Mailbox
