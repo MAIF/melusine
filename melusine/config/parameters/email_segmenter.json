@@ -1,0 +1,29 @@
+{
+    "email_segmenter" : {
+        "transition_patterns": [
+            "De\\s*:\\s*[^<]*?<?[a-zA-Z0-9._%+-\/=]+\\@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?\\s[;\nAÀ:](?:.{,80}\n){,3}Objet.+\n",
+            "[- ]*?Mail transf[ée]r[ée].*?[;|\n]",
+            "[- ]*?gestionsocietaire@maif.fr a [ée]crit.*?[;|\n]",
+            "Courriel original.+?Objet\\s*:.+?[;|\n]",
+            "Transf[ée]r[ée] par.+?Objet\\s*:.+?[;|\n]",
+            "Message transmis.+?Objet\\s*:.+?[;|\n]",
+            "Message transf[ée]r[ée].+?Objet\\s*:.+?[;|\n]",
+            "Message transf[ée]r[ée].+?Pour\\s*:.+?[;|\n]",
+            "D[ée]but du message transf[ée]r[ée].+?Objet\\s*:.+?[;|\n]",
+            "D[ée]but du message r[ée]exp[ée]di[ée].+?Objet\\s*:.+?[;|\n]",
+            "D[ée]but du message transf[ée]r[ée].+?Destinataire\\s*:.+?[;|\n]",
+            "mail transf[ée]r[ée].+?Objet\\s*:.+?[;|\n]",
+            "Forwarded message.+?To\\s*:.+?[;|\n]",
+            "Message d'origine.+?Objet\\s*:.+?[;|\n]",
+            "Mail original.+?Objet\\s*:.+?[;|\n]",
+            "Original Message.+?Subject\\s*:.+?[;|\n]",
+            "Message original.+?Objet\\s*:.+?[;|\n]",
+            "Exp[ée]diteur.+?Objet\\s*:.+?[;|\n]",
+            "(?:>?[;|\n]?\\s*(?:Envoy[ée]|De|Objet|Cc|Envoy[ée] par|Date|A|À|Destinataire|Sent|To|Subject|From|Copie [àa])+?\\s*:\\s*(?:.*?)\\s*[;|\n]\\s*)+",
+            "En date de.+?[ée]crit",
+            ">?\\s*\\bLe[^;\n]{0,30}[;|\n]{0,1}[^;\n]{0,30}a[^;\n]{0,30};{0,1}[^;\n]{0,30}[ée]crit\\s*:?",
+            ">?\\s*Message d[eu].+?Objet\\s*:.+?[;|\n]",
+            "En date de.+?[ée]crit"
+          ]
+    }
+}

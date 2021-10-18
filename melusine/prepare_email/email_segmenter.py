@@ -1,7 +1,6 @@
 import re
 from time import time
 
-from melusine import config
 from melusine.core.melusine_transformer import MelusineTransformer
 from melusine.prepare_email.message import Message
 
