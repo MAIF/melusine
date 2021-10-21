@@ -5,10 +5,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
 from sklearn.feature_extraction.text import CountVectorizer
 
-# from glove import Corpus, Glove
-
-from melusine.utils.streamer import Streamer
-
 
 logger = logging.getLogger(__name__)
 
@@ -17,10 +13,6 @@ class Embedding:
     """Class to train embeddings with Word2Vec algorithm.
     Attributes
     ----------
-    input_column : str,
-        String of the input column name for the pandas dataframe to compute the embedding on.
-    streamer : Streamer instance,
-        Builds a stream a tokens from a pd.Dataframe to train the embeddings.
     word2id: dict,
         Word vocabulary (key: word, value: word_index.
     embedding : Gensim KeyedVector Instance,
@@ -47,7 +39,6 @@ class Embedding:
 
     def __init__(
         self,
-        input_column=None,
         tokens_column=None,
         workers=40,
         random_seed=42,
@@ -60,8 +51,6 @@ class Embedding:
         """
         Parameters :
         ----------
-        input_column : str,
-            String of the input column name for the pandas dataframe to compute the embedding on (default="clean_text").
         workers : int,
             Number of CPUs to use for the embedding training process (default=40).
         random_seed : int,
@@ -87,10 +76,8 @@ class Embedding:
         min_count : int
             Minimum number of occurence of a word to be included in the vocabulary
         """
-        self.input_column = input_column
         self.tokens_column = tokens_column
         self.input_data = None
-        self.streamer = Streamer(column=self.input_column, stop_removal=stop_removal)
         self.word2id = {}
         self.embedding = None
         self.method = method
@@ -201,27 +188,8 @@ class Embedding:
 
         logger.info("Start training word embeddings")
 
-        if (not self.input_column) and (not self.tokens_column):
-            raise ValueError(
-                """
-            Please specify one of the following keyword argument when instanciating an Embedding class object:
-            - input_column argument (containing raw text)
-            - tokens_column argument (containing) list of tokens"""
-            )
-
         # If tokens column is provided: use it. Otherwise, use input column
-        if self.tokens_column:
-            self.input_data = X[self.tokens_column].tolist()
-        elif self.input_column:
-            self.streamer.to_stream(X)
-            self.input_data = self.streamer.stream
-        else:
-            raise ValueError(
-                """
-            Please specify one of the following keyword argument when instanciating an Embedding class object:
-            - input_column argument (containing raw text)
-            - tokens_column argument (containing) list of tokens"""
-            )
+        self.input_data = X[self.tokens_column].tolist()
 
         if self.method in ["word2vec_sg", "word2vec_cbow"]:
             self.train_word2vec()
@@ -229,8 +197,6 @@ class Embedding:
             self.train_tfidf()
         elif self.method == "lsa_docterm":
             self.train_docterm()
-        # elif embedding_type == 'glove':
-        #    self.train_glove(X, self.input_column)
 
         logger.info("Finished training word embeddings")
 
@@ -362,19 +328,6 @@ class Embedding:
         )
 
         self.embedding = embedding.wv
-
-    # def train_glove(self, X, input_column):
-    #
-    #    corpus = Corpus()
-    #
-    #    corpus.fit(X[input_column], window=self.window)
-    #
-    #    self.word2id = corpus.dictionary
-    #
-    #    glove=Glove(no_components=self.size)
-    #    glove.fit(corpus.matrix, epochs=self.iter, no_threads=self.workers, )
-    #
-    #    self.create_keyedvector_from_matrix(glove.word_vectors, self.word2id)
 
     def create_keyedvector_from_matrix(self, embedding_matrix, word2id):
         """
