@@ -1,10 +1,10 @@
+import os
 from sklearn.pipeline import Pipeline
 
 from melusine.core.saver_mixin import SaverMixin
 
 
 class MelusinePipeline(Pipeline, SaverMixin):
-    FILENAME = "pipeline.json"
     STEPS_KEY = "steps"
 
     def __init__(self, steps, memory=None, verbose=None):
@@ -21,7 +21,10 @@ class MelusinePipeline(Pipeline, SaverMixin):
             name, obj = obj_params
             step_prefix = self.get_step_prefix(name, filename_prefix, i, n_steps)
 
-            if hasattr(obj, "save"):
+            if isinstance(obj, MelusinePipeline):
+                step_path = os.path.join(path, step_prefix)
+                obj.save(step_path)
+            elif hasattr(obj, "save"):
                 obj.save(path, step_prefix)
             else:
                 self.save_pkl_generic(obj, name, path, step_prefix)
@@ -61,8 +64,19 @@ class MelusinePipeline(Pipeline, SaverMixin):
         n_steps = len(steps_meta)
         for i, obj_params in enumerate(steps_meta):
             name = obj_params[cls.SAVE_NAME]
+            class_name = obj_params[cls.SAVE_CLASS]
             step_prefix = cls.get_step_prefix(name, filename_prefix, i, n_steps)
-            name, obj = cls.load_obj(obj_params, path=path, filename_prefix=step_prefix)
+
+            # Pipeline composition (Load a MelusinePipeline object)
+            if class_name == cls.__name__:
+                step_path = os.path.join(path, step_prefix)
+                obj = cls.load(step_path)
+
+            # Load regular transformer (Melusine or sklearn)
+            else:
+                name, obj = cls.load_obj(
+                    obj_params, path=path, filename_prefix=step_prefix
+                )
             steps.append((name, obj))
 
         return cls(steps=steps, **config_dict)

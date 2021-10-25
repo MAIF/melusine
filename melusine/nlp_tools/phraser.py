@@ -147,7 +147,6 @@ def _split_typos_words_separators(text, pattern=r"(\W*)\b(\w+)\b(\W*)"):
 class Phraser(MelusineTransformer):
     """ """
 
-    FILENAME = "gensim_phraser_meta.json"
     PHRASER_FILENAME = "gensim_phraser"
 
     def __init__(self, input_columns="tokens", output_columns="tokens", **phraser_args):

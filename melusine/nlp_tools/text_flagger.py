@@ -8,8 +8,6 @@ logger = logging.getLogger(__name__)
 
 
 class DeterministicTextFlagger(MelusineTransformer):
-    FILENAME = "text_flagger.json"
-
     def __init__(
         self,
         text_flags: Dict[str, str] = None,

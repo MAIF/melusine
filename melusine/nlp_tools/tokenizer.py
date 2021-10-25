@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 
 class RegexTokenizer(MelusineTransformer):
-    FILENAME = "tokenizer.json"
     """
     RegexTokenizer which does the following:
     - General flagging (using regex)

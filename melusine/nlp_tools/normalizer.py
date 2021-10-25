@@ -9,7 +9,6 @@ logger = logging.getLogger(__name__)
 
 
 class Normalizer(MelusineTransformer):
-    FILENAME = "normalizer.json"
     """
     Normalizer
     """

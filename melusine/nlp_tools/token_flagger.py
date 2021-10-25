@@ -8,8 +8,6 @@ logger = logging.getLogger(__name__)
 
 
 class FlashtextTokenFlagger(MelusineTransformer):
-    FILENAME = "token_flagger.json"
-
     def __init__(
         self,
         token_flags=None,

@@ -20,6 +20,7 @@ class SaverMixin(ABC):
     SAVE_MODULE = "module"
 
     # JSON save params
+    JSON_SUFFIX = ".json"
     SORT_KEYS = True
     INDENT = 4
 
@@ -31,13 +32,8 @@ class SaverMixin(ABC):
     CONFIG_KEY = "config_key"
     CONFIG_MAPPING = "config_mapping"
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         pass
-
-    @property
-    @abstractmethod
-    def FILENAME(self):
-        raise NotImplementedError()
 
     @classmethod
     @abstractmethod
@@ -92,7 +88,8 @@ class SaverMixin(ABC):
 
     @classmethod
     def load_json(cls, path, filename_prefix: str = None):
-        filepath = cls.search_file(cls.FILENAME, path, filename_prefix=filename_prefix)
+        filename = cls.__name__ + cls.JSON_SUFFIX
+        filepath = cls.search_file(filename, path, filename_prefix=filename_prefix)
         with open(filepath, "r") as f:
             data = json.load(f)
 
@@ -118,7 +115,8 @@ class SaverMixin(ABC):
                 save_dict[key] = list(val)
 
         # Save file
-        full_path = self.get_file_path(self.FILENAME, path, filename_prefix)
+        filename = type(self).__name__ + self.JSON_SUFFIX
+        full_path = self.get_file_path(filename, path, filename_prefix)
         with open(full_path, "w") as f:
             json.dump(save_dict, f, sort_keys=self.SORT_KEYS, indent=self.INDENT)
 
@@ -135,11 +133,12 @@ class SaverMixin(ABC):
 
         for key, value in config_mapping.items():
             save_dict.pop(key)
-            save_dict[key] = f"CONFIG.{config_key}.{key}"
+            save_dict[key] = f"{self.CONFIG_MARKER}.{config_key}.{key}"
 
     @classmethod
     def load_pkl(cls, path, filename_prefix: str = None):
-        return cls.load_pkl_generic(cls.FILENAME, path, filename_prefix=filename_prefix)
+        filename = cls.__name__ + cls.PKL_SUFFIX
+        return cls.load_pkl_generic(filename, path, filename_prefix=filename_prefix)
 
     @staticmethod
     def load_pkl_generic(filename, path, filename_prefix: str = None):
@@ -156,9 +155,8 @@ class SaverMixin(ABC):
         return instance
 
     def save_pkl(self, path, filename_prefix):
-        full_save_path = self.save_pkl_generic(
-            self, self.FILENAME, path, filename_prefix
-        )
+        filename = type(self).__name__ + self.PKL_SUFFIX
+        full_save_path = self.save_pkl_generic(self, filename, path, filename_prefix)
 
         return full_save_path
 

@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 class Embedding(MelusineTransformer):
     """ """
 
-    FILENAME = "gensim_embeddings_meta.json"
     KEYED_VECTORS_FILENAME = "gensim_embeddings.w2v"
 
     def __init__(
