@@ -19,7 +19,6 @@ from melusine.models.attention_model import (
 )
 
 
-
 def cnn_model(
     embedding_matrix_init,
     ntargets,
