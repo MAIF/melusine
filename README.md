@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/MAIF/melusine.svg?branch=master)](https://travis-ci.org/MAIF/melusine)
 [![documentation badge](https://readthedocs.org/projects/melusine/badge/?version=latest)](https://readthedocs.org/projects/melusine/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
+[![Generic badge](https://img.shields.io/badge/python-3.6|3.7|3.8-blue.svg)](https://shields.io/)
 
 🎉 We just released **Melusine 2.3.1** including a new `ExchangeConnector` class to interact with **Outlook mailboxes**. 
 Implement email routing on your own mailbox by following the **new [tutorial](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial14_exchange_connector.ipynb)**. 🎉
@@ -26,9 +26,20 @@ Use **Melusine** if you need a library which:
   * Supports transformers, CNN and RNN models.
   * Runs seamlessly on CPU and GPU.
 
-**Melusine** is compatible with `Python >= 3.6`.
+**Melusine** is compatible with `Python 3.6`, `Python 3.7` and `Python 3.8`.
 
 ## Release Notes
+### 2.3.2
+Updates:
+  * Compatibility with python 3.7 and 3.8
+  * Optional dependencies (viz, transformers, all)
+  * Specify custom configurations with environment variable MELUSINE_CONFIG_DIR
+  * Use any number of JSON and YAML files for configurations
+    (instead of just one config file)
+
+Bug fix:
+  * Fixed bug when training transformers model without meta features
+  
 ### 2.3
 New features:
   * Added a class `ExchangeConnector` to interact with an Exchange Mailbox
@@ -82,7 +93,7 @@ This package is designed for the preprocessing, classification and automatic sum
 
 **An other subpackage is also provided** to manage, modify or add parameters such as : regular expressions, keywords, stopwords, etc.
 
-* ``config`` : contains *`ConfigJsonReader`* class to setup and handle a *conf.json* file. This JSON file is the core of this package since it's used by different submodules to preprocess the data.
+* ``config`` : This modules loads a configuration dict which is essential to the Melusine package. By customizing the configurations, users may adapt the text preprocessing to their needs.
 
 **2 other subpackages are offered to provide a dashboard app and ethics guidelines for AI project :**
 
@@ -330,7 +341,7 @@ Each messages of an email are segmented in the **structured_body** columns and e
 ### Dashboard App
 
 Melusine also offered an easy and nice dashboard app with StreamLit.
-The App contains exploratory dasboard on the email dataset and more specific study on discrimination between the dataset 
+The App contains exploratory dashboard on the email dataset and more specific study on discrimination between the dataset 
 and a neural model classification.
 
 To run the app, run the following command in your terminal in the melusine/data directory :

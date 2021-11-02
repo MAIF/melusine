@@ -12,14 +12,12 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import TensorBoard
 
-from melusine.config.config import ConfigJsonReader
+from melusine import config
 from melusine.nlp_tools.tokenizer import Tokenizer
 from melusine.models.attention_model import PositionalEncoding
 from melusine.models.attention_model import TransformerEncoderLayer
 from melusine.models.attention_model import MultiHeadAttention
 
-conf_reader = ConfigJsonReader()
-config = conf_reader.get_config_file()
 tensorboard_callback_parameters = config["tensorboard_callback"]
 
 
@@ -100,9 +98,9 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
     >>> from melusine.nlp_tools.embedding import Embedding
     >>> pretrained_embedding = Embedding.load()
     >>> list_meta = ['extension', 'dayofweek', 'hour']
-    >>> nn_model = NeuralModel(cnn_model, pretrained_embedding, list_meta)
-    >>> nn_model.fit(X_train, y_train)
-    >>> y_res = nn_model.predict(X_test)
+    >>> nn_model = NeuralModel(cnn_model, pretrained_embedding, list_meta)  #noqa
+    >>> nn_model.fit(X_train, y_train)  #noqa
+    >>> y_res = nn_model.predict(X_test)  #noqa
 
     """
 
@@ -111,7 +109,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         pretrained_embedding=None,
         architecture_function=None,
         text_input_column="clean_text",
-        meta_input_list=["extension", "dayofweek", "hour", "min"],
+        meta_input_list=("extension", "dayofweek", "hour", "min"),
         vocab_size=25000,
         seq_size=100,
         embedding_dim=200,
@@ -424,7 +422,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             X_seq, X_attention = self._prepare_bert_sequences(X)
             X_meta, nb_meta_features = self._get_meta(X)
             if nb_meta_features == 0:
-                X_input = [X_seq, X_meta]
+                X_input = [X_seq, X_attention]
             else:
                 X_input = [X_seq, X_attention, X_meta]
         return X_input

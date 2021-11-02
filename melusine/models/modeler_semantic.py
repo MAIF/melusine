@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+import gensim
 
 from sklearn.base import BaseEstimator, TransformerMixin
 from melusine.utils.multiprocessing import apply_by_multiprocessing
@@ -213,6 +214,7 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
 
         """
         words = list(embedding.embedding.key_to_index.keys())
+
         seed_dict = dict()
         seed_list = []
 
@@ -247,7 +249,6 @@ class SemanticDetector(BaseEstimator, TransformerMixin):
             embedding = embedding.wv
 
         words = list(embedding.embedding.key_to_index.keys())
-
         lexicon_mat = np.zeros((len(seed_list), len(words)))
 
         for i, seed in enumerate(seed_list):
