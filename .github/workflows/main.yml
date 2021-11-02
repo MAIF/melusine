@@ -8,7 +8,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        python-version: [3.6]
+        python-version: [3.6, 3.7, 3.8]
     steps:
     - uses: actions/checkout@v2
     - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
@@ -24,7 +24,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip wheel setuptools
         pip install flake8 pytest
-        if [ -f requirements_dev.txt ]; then pip install ".["test"]"; fi
+        if [ -f requirements_dev.txt ]; then pip install ".["all"]"; fi
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -38,7 +38,7 @@ jobs:
       run: |
         python setup.py sdist bdist_wheel
     - name: Deploy to PyPI
-      if: success() && startsWith(github.ref, 'refs/tags') && matrix.python-version == 3.6
+      if: success() && startsWith(github.ref, 'refs/tags') && matrix.python-version == 3.8
       uses: pypa/gh-action-pypi-publish@master
       with:
         user: __token__

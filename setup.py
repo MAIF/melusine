@@ -12,12 +12,13 @@ requirements = [
     "tensorflow>=2.5.0",
     "pandas>=1.0",
     "scikit-learn>=0.23",
-    "gensim>=4.0.0",
+    "gensim>=4.1.2",
     "tqdm>=4.34",
     "unidecode>=1.0",
     "flashtext>=2.7",
     "h5py>=3.0",
     "joblib>=1.0",
+    "PyYAML>=4.2",
 ]
 
 # Optional dependencies
@@ -31,9 +32,8 @@ setup_requirements = ["pytest-runner"]
 test_requirements = transformers_requirements + ["pytest"]
 
 
-# Ex: Install test dependencies with ``pip install melusine[test]`
+# Ex: Install all dependencies with ``pip install melusine[all]`
 extras_require = {
-    "test": test_requirements,
     "exchange": exchange_requirements,
     "transformers": transformers_requirements,
     "viz": viz_requirements,
@@ -44,8 +44,8 @@ extras_require["all"] = all_requirements
 
 
 setup(
-    author="Sacha Samama, Tom Stringer, Antoine Simoulin, Benoit Lebreton, Tiphaine Fabre",
-    author_email="ssamama@quantmetry.com",
+    author="Sacha Samama, Tom Stringer, Antoine Simoulin, Benoit Lebreton, Tiphaine Fabre, Hugo Perrier",
+    author_email="tiphaine.fabre@maif.fr",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
@@ -56,7 +56,10 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
     ],
-    description="Melusine is a high-level package for french emails preprocessing, classification and feature extraction, written in Python.",
+    description=(
+        """Melusine is a high-level package for french emails preprocessing, """
+        """classification and feature extraction, written in Python."""
+    ),
     entry_points={},
     install_requires=requirements,
     license="Apache Software License 2.0",
@@ -89,7 +92,7 @@ setup(
     ],
     data_files=[
         ("config", ["melusine/config/conf.json"]),
-        ("config", ["melusine/config/names.csv"]),
+        ("config", ["melusine/config/names.json"]),
         ("data", ["melusine/data/emails.csv"]),
     ],
     setup_requires=setup_requirements,
@@ -97,6 +100,6 @@ setup(
     tests_require=test_requirements,
     extras_require=extras_require,
     url="https://github.com/MAIF/melusine",
-    version="2.3.1",
+    version="2.3.2",
     zip_safe=False,
 )
