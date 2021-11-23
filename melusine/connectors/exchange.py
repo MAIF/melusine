@@ -310,15 +310,6 @@ class ExchangeConnector:
 
         all_new_data = (
             base_folder.all()
-            .only(
-                "message_id",
-                "datetime_sent",
-                "sender",
-                "to_recipients",
-                "subject",
-                "text_body",
-                "attachments",
-            )
             .order_by(order)[:max_emails]
         )
 
@@ -366,7 +357,8 @@ class ExchangeConnector:
 
         email_dict = {
             "message_id": email_item.message_id,
-            "body": email_item.text_body or "",
+            # "body": email_item.text_body or "",
+            "body": email_item.body or "",
             "header": email_item.subject or "",
             "date": email_item.datetime_sent.isoformat(),
             "from": email_item.sender.email_address or None,
