@@ -275,7 +275,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 validation_data = (X_input_val, y_categorical_val)
 
         if tensorboard_log_dir is None:
-            self.model.fit(
+            hist = self.model.fit(
                 X_input_train,
                 y_categorical_train,
                 batch_size=self.batch_size,
@@ -329,7 +329,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 embeddings_data=embeddings_data,
                 update_freq=update_freq,
             )
-            self.model.fit(
+            hist = self.model.fit(
                 X_input_train,
                 y_categorical_train,
                 batch_size=self.batch_size,
@@ -338,7 +338,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 validation_data=validation_data,
                 **kwargs,
             )
-        pass
+        return hist
 
     def predict(self, X, **kwargs):
         """Returns the class predicted.
