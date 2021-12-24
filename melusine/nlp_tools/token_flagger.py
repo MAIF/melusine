@@ -2,8 +2,6 @@ import logging
 from flashtext import KeywordProcessor
 from typing import Sequence
 
-from melusine.utils.io_utils import save_pkl_generic, load_pkl_generic
-
 logger = logging.getLogger(__name__)
 
 
@@ -57,45 +55,3 @@ class FlashtextTokenFlagger:
             List of tokens with names flagged
         """
         return [self.keyword_processor.replace_keywords(token) for token in tokens]
-
-    def fit(self, data, y=None):
-        return self
-
-    def transform(self, data):
-        input_col = self.input_columns[0]
-        output_col = self.output_columns[0]
-
-        data[output_col] = data[input_col].apply(self.flag_tokens)
-        return data
-
-    def save(self, path: str, filename_prefix: str = None) -> None:
-        """
-        Save object instance to a pickle file.
-
-        Parameters
-        ----------
-        path: str
-            Save path
-        filename_prefix: str
-            Prefix of the saved object
-        """
-        save_pkl_generic(self, self.FILENAME, path, filename_prefix)
-
-    @classmethod
-    def load(cls, path: str, filename_prefix: str = None):
-        """
-        Load object instance from a pickle file.
-
-        Parameters
-        ----------
-        path: str
-            Load path
-        filename_prefix: str
-            Prefix of the saved object
-
-        Returns
-        -------
-        _: DummyLemmatizer
-            DummyLemmatizer instance
-        """
-        return load_pkl_generic(cls.FILENAME, path, filename_prefix=filename_prefix)

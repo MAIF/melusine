@@ -18,8 +18,6 @@ class Normalizer:
         self,
         form: str = "NFKD",
         lowercase: bool = True,
-        input_columns=("text",),
-        output_columns=("text",),
     ):
         """
         Parameters
@@ -27,16 +25,6 @@ class Normalizer:
         form: str
             Normalization method
         """
-        if isinstance(input_columns, str):
-            self.input_columns = (input_columns,)
-        else:
-            self.input_columns = input_columns
-
-        if isinstance(output_columns, str):
-            self.output_columns = (output_columns,)
-        else:
-            self.output_columns = output_columns
-
         # Normalization form
         self.form = form
 
@@ -74,45 +62,3 @@ class Normalizer:
             text = text.lower()
 
         return text
-
-    def fit(self, data, y=None):
-        return self
-
-    def transform(self, data):
-        input_col = self.input_columns[0]
-        output_col = self.output_columns[0]
-
-        data[output_col] = data[input_col].apply(self.normalize)
-        return data
-
-    def save(self, path: str, filename_prefix: str = None) -> None:
-        """
-        Save object instance to a pickle file.
-
-        Parameters
-        ----------
-        path: str
-            Save path
-        filename_prefix: str
-            Prefix of the saved object
-        """
-        save_pkl_generic(self, self.FILENAME, path, filename_prefix)
-
-    @classmethod
-    def load(cls, path: str, filename_prefix: str = None):
-        """
-        Load object instance from a pickle file.
-
-        Parameters
-        ----------
-        path: str
-            Load path
-        filename_prefix: str
-            Prefix of the saved object
-
-        Returns
-        -------
-        _: DummyLemmatizer
-            DummyLemmatizer instance
-        """
-        return load_pkl_generic(cls.FILENAME, path, filename_prefix=filename_prefix)
