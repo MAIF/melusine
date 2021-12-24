@@ -96,7 +96,7 @@ setup(
         (
             "data",
             [
-                "melusine/data/emails.pkl",
+                "melusine/data/emails.csv",
                 "melusine/data/emails_preprocessed.pkl",
                 "melusine/data/emails_full.pkl",
             ],
