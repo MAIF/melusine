@@ -1,5 +1,4 @@
 import pytest
-from tempfile import TemporaryDirectory
 from melusine.nlp_tools.text_flagger import DeterministicTextFlagger
 
 
@@ -21,11 +20,4 @@ def test_text_flagger_default(input_text, output_text, text_flags):
     text_flagger = DeterministicTextFlagger(text_flags=text_flags)
     text = text_flagger.flag_text(input_text)
 
-    assert text == output_text
-
-    with TemporaryDirectory() as tmpdir:
-        text_flagger.save(path=tmpdir)
-        text_flagger_reload = DeterministicTextFlagger.load(tmpdir)
-
-    text = text_flagger_reload.flag_text(input_text)
     assert text == output_text

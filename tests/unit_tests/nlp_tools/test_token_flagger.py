@@ -1,5 +1,4 @@
 import pytest
-from tempfile import TemporaryDirectory
 from melusine.nlp_tools.token_flagger import FlashtextTokenFlagger
 
 
@@ -21,11 +20,4 @@ def test_token_flagger_default(input_tokens, output_tokens, token_flags):
     token_flagger = FlashtextTokenFlagger(token_flags=token_flags)
     tokens = token_flagger.flag_tokens(input_tokens)
 
-    assert tokens == output_tokens
-
-    with TemporaryDirectory() as tmpdir:
-        token_flagger.save(path=tmpdir)
-        token_flagger_reload = FlashtextTokenFlagger.load(tmpdir)
-
-    tokens = token_flagger_reload.flag_tokens(input_tokens)
     assert tokens == output_tokens
