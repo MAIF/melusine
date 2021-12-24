@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """The setup script."""
-
+import glob
 from setuptools import setup
 
 with open("README.md") as readme_file:
@@ -39,6 +39,9 @@ extras_require = {
 }
 all_requirements = list(set([y for x in extras_require.values() for y in x]))
 extras_require["all"] = all_requirements
+
+# Conf files
+conf_json_files = glob.glob("melusine/config/**/*.json")
 
 
 setup(
@@ -89,7 +92,7 @@ setup(
         "melusine.connectors",
     ],
     data_files=[
-        ("config", ["melusine/config/*.json"]),
+        ("config", conf_json_files),
         (
             "data",
             [
