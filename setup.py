@@ -89,9 +89,15 @@ setup(
         "melusine.connectors",
     ],
     data_files=[
-        ("config", ["melusine/config/conf.json"]),
-        ("config", ["melusine/config/names.json"]),
-        ("data", ["melusine/data/emails.csv"]),
+        ("config", ["melusine/config/*.json"]),
+        (
+            "data",
+            [
+                "melusine/data/emails.csv",
+                "melusine/data/emails_preprocessed.csv",
+                "melusine/data/emails_full.csv",
+            ],
+        ),
     ],
     setup_requires=setup_requirements,
     test_suite="tests",
