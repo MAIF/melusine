@@ -1,6 +1,5 @@
 import pytest
 import pandas as pd
-from tempfile import TemporaryDirectory
 from melusine.nlp_tools.phraser import Phraser
 
 
@@ -30,12 +29,4 @@ def test_phraser(input_tokens, output_tokens):
     phraser.fit(df)
 
     tokens = phraser.phraser_[input_tokens]
-    assert tokens == output_tokens
-
-    with TemporaryDirectory() as tmpdir:
-        phraser.save(path=tmpdir)
-        phraser_reload = Phraser.load(tmpdir)
-
-    tokens = phraser_reload.phraser_[input_tokens]
-
     assert tokens == output_tokens
