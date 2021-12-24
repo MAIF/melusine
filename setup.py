@@ -9,7 +9,7 @@ with open("README.md") as readme_file:
     readme = readme_file.read()
 
 requirements = [
-    "tensorflow>=2.5.0",
+    # "tensorflow>=2.5.0",
     "pandas>=1.0",
     "scikit-learn>=0.23",
     "gensim>=4.1.2",
