@@ -4,8 +4,8 @@ import pandas as pd
 from typing import Sequence, Union, List
 from sklearn.base import BaseEstimator, TransformerMixin
 from melusine import config
+from melusine.nlp_tools.normalizer import Normalizer
 from melusine.nlp_tools.token_flagger import FlashtextTokenFlagger
-from melusine.utils.io_utils import save_pkl_generic, load_pkl_generic
 
 logger = logging.getLogger(__name__)
 
@@ -20,8 +20,6 @@ class RegexTokenizer:
         self,
         tokenizer_regex: str = r"\w+(?:[\?\-\"_]\w+)*",
         stopwords: List[str] = None,
-        input_columns=("text",),
-        output_columns=("tokens",),
     ):
         """
         Parameters
@@ -29,16 +27,6 @@ class RegexTokenizer:
         tokenizer_regex: str
             Regex used to split the text into tokens
         """
-        if isinstance(input_columns, str):
-            self.input_columns = (input_columns,)
-        else:
-            self.input_columns = input_columns
-
-        if isinstance(output_columns, str):
-            self.output_columns = (output_columns,)
-        else:
-            self.output_columns = output_columns
-
         # Tokenizer regex
         if not tokenizer_regex:
             raise AttributeError(
@@ -104,48 +92,6 @@ class RegexTokenizer:
 
         return tokens
 
-    def fit(self, data, y=None):
-        return self
-
-    def transform(self, data):
-        input_col = self.input_columns[0]
-        output_col = self.output_columns[0]
-
-        data[output_col] = data[input_col].apply(self.tokenize)
-        return data
-
-    def save(self, path: str, filename_prefix: str = None) -> None:
-        """
-        Save object instance to a pickle file.
-
-        Parameters
-        ----------
-        path: str
-            Save path
-        filename_prefix: str
-            Prefix of the saved object
-        """
-        save_pkl_generic(self, self.FILENAME, path, filename_prefix)
-
-    @classmethod
-    def load(cls, path: str, filename_prefix: str = None):
-        """
-        Load object instance from a pickle file.
-
-        Parameters
-        ----------
-        path: str
-            Load path
-        filename_prefix: str
-            Prefix of the saved object
-
-        Returns
-        -------
-        _: DummyLemmatizer
-            DummyLemmatizer instance
-        """
-        return load_pkl_generic(cls.FILENAME, path, filename_prefix=filename_prefix)
-
 
 class Tokenizer(BaseEstimator, TransformerMixin):
     """
@@ -154,18 +100,16 @@ class Tokenizer(BaseEstimator, TransformerMixin):
 
     def __init__(
         self,
-        input_columns=("text",),
-        output_columns=("tokens",),
+        input_column="text",
+        output_column="tokens",
     ):
-        if isinstance(input_columns, str):
-            self.input_columns = (input_columns,)
-        else:
-            self.input_columns = input_columns
+        self.input_column = input_column
+        self.output_column = output_column
 
-        if isinstance(output_columns, str):
-            self.output_columns = (output_columns,)
-        else:
-            self.output_columns = output_columns
+        self.normalizer = Normalizer(
+            form=config["normalizer"]["form"],
+            lowercase=config["normalizer"]["lowercase"],
+        )
 
         self.regex_tokenizer = RegexTokenizer(
             stopwords=config["tokenizer"]["stopwords"],
@@ -192,8 +136,8 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         pandas.DataFrame
         """
         logger.debug("Start tokenizer transform")
-        text_col = self.input_columns[0]
-        token_col = self.output_columns[0]
+        text_col = self.input_column
+        token_col = self.output_column
 
         if isinstance(data, dict):
             if pd.isna(data[text_col]):

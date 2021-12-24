@@ -1,7 +1,6 @@
 import ast
 import numpy as np
 import pickle
-import gensim
 
 from collections import Counter
 from sklearn.base import BaseEstimator, ClassifierMixin
@@ -118,12 +117,14 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         n_epochs=15,
         bert_tokenizer="jplu/tf-camembert-base",
         bert_model="jplu/tf-camembert-base",
+        tokenizer=Tokenizer(),
         **kwargs,
     ):
         self.architecture_function = architecture_function
         self.pretrained_embedding = pretrained_embedding
         if self.architecture_function.__name__ != "bert_model":
-            self.tokenizer = Tokenizer(input_column=text_input_column)
+            self.tokenizer = tokenizer
+            self.tokenizer.input_column = text_input_column
         elif "camembert" in bert_tokenizer.lower():
             # Prevent the HuggingFace dependency
             try:
