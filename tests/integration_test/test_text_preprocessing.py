@@ -10,7 +10,7 @@ from melusine.nlp_tools.normalizer import Normalizer
 from melusine.nlp_tools.phraser import Phraser
 from melusine.nlp_tools.text_flagger import DeterministicTextFlagger
 from melusine.nlp_tools.token_flagger import FlashtextTokenFlagger
-from melusine.nlp_tools.tokenizer import RegexTokenizer
+from melusine.nlp_tools.tokenizer import RegexTokenizer, Tokenizer
 
 
 def test_text_preprocessing():
@@ -19,21 +19,7 @@ def test_text_preprocessing():
 
     pipeline = Pipeline(
         steps=[
-            ("normalizer", Normalizer(input_columns=input_col)),
-            (
-                "text_flagger",
-                DeterministicTextFlagger(
-                    input_columns=input_col,
-                    text_flags=config["text_flagger"]["text_flags"],
-                ),
-            ),
-            ("tokenizer", RegexTokenizer(input_columns=input_col)),
-            (
-                "token_flagger",
-                FlashtextTokenFlagger(
-                    token_flags=config["token_flagger"]["token_flags"],
-                ),
-            ),
+            ("tokenizer", Tokenizer(input_column=input_col)),
             ("phraser", Phraser()),
         ]
     )
