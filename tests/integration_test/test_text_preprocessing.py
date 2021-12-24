@@ -4,13 +4,9 @@ from tempfile import TemporaryDirectory
 import joblib
 from sklearn.pipeline import Pipeline
 
-from melusine import config
 from melusine.data.data_loader import load_email_data
-from melusine.nlp_tools.normalizer import Normalizer
 from melusine.nlp_tools.phraser import Phraser
-from melusine.nlp_tools.text_flagger import DeterministicTextFlagger
-from melusine.nlp_tools.token_flagger import FlashtextTokenFlagger
-from melusine.nlp_tools.tokenizer import RegexTokenizer, Tokenizer
+from melusine.nlp_tools.tokenizer import Tokenizer
 
 
 def test_text_preprocessing():

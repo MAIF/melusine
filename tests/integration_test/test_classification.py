@@ -32,9 +32,7 @@ from melusine.prepare_email.metadata_engineering import Dummifier
 
 from melusine.data.data_loader import load_email_data
 
-body = "Bonjour\nThis is Melusine\nCordialement\nDev Team"
-header = "Test integration Melusine"
-
+# Prevent GPU usage
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
@@ -43,14 +41,8 @@ def test_classification():
 
     input_df = load_email_data()
 
-    # ============== Train Phraser ==============
-    # tokenizer = Tokenizer(input_columns="body")
-    # input_df = tokenizer.transform(input_df)
-    # phraser = Phraser(input_columns="body", threshold=10, min_count=10)
-    # phraser.fit(input_df)
-
     # ============== Define Transformer Schedulers ==============
-    ManageTransferReply = TransformerScheduler(
+    manageTransferReply = TransformerScheduler(
         functions_scheduler=[
             (check_mail_begin_by_transfer, None, ["is_begin_by_transfer"]),
             (update_info_for_transfer_mail, None, None),
@@ -59,13 +51,13 @@ def test_classification():
         ]
     )
 
-    Segmenting = TransformerScheduler(
+    segmenting = TransformerScheduler(
         functions_scheduler=[
             (build_historic, None, ["structured_historic"]),
             (structure_email, None, ["structured_body"]),
         ]
     )
-    LastBodyHeaderCleaning = TransformerScheduler(
+    lastBodyHeaderCleaning = TransformerScheduler(
         functions_scheduler=[
             (extract_last_body, None, ["last_body"]),
             (clean_body, None, ["clean_body"]),
@@ -80,21 +72,21 @@ def test_classification():
     phraser = Phraser(threshold=10, min_count=10)
 
     # ============== Full Pipeline ==============
-    PreprocessingPipeline = Pipeline(
+    preprocessingPipeline = Pipeline(
         [
-            ("ManageTransferReply", ManageTransferReply),
-            ("Segmenting", Segmenting),
-            ("LastBodyHeaderCleaning", LastBodyHeaderCleaning),
+            ("ManageTransferReply", manageTransferReply),
+            ("Segmenting", segmenting),
+            ("LastBodyHeaderCleaning", lastBodyHeaderCleaning),
             ("tokenizer", tokenizer),
             ("phraser", phraser),
         ]
     )
 
     # ============== Transform input DataFrame ==============
-    input_df = PreprocessingPipeline.fit_transform(input_df)
+    input_df = preprocessingPipeline.fit_transform(input_df)
 
     # ============== MetaData Pipeline ==============
-    MetadataPipeline = Pipeline(
+    metadataPipeline = Pipeline(
         [
             ("MetaExtension", MetaExtension()),
             ("MetaDate", MetaDate()),
@@ -105,7 +97,7 @@ def test_classification():
 
     # ============== Transform MetaData ==============
     input_df["attachment"] = input_df["attachment"].apply(ast.literal_eval)
-    df_meta = MetadataPipeline.fit_transform(input_df)
+    df_meta = metadataPipeline.fit_transform(input_df)
 
     # ============== Keywords Generator ==============
     keywords_generator = KeywordsGenerator(n_max_keywords=4)
@@ -142,7 +134,7 @@ def test_classification():
 
     # ============== Test dict compatibility ==============
     dict_emails = input_df.to_dict(orient="records")[0]
-    dict_meta = MetadataPipeline.transform(dict_emails)
+    dict_meta = metadataPipeline.transform(dict_emails)
     keywords_generator.transform(dict_emails)
 
     dict_input = copy.deepcopy(dict_meta)
