@@ -102,6 +102,7 @@ class Tokenizer(BaseEstimator, TransformerMixin):
         self,
         input_column="text",
         output_column="tokens",
+        stop_removal=True,
     ):
         self.input_column = input_column
         self.output_column = output_column
@@ -111,8 +112,12 @@ class Tokenizer(BaseEstimator, TransformerMixin):
             lowercase=config["normalizer"]["lowercase"],
         )
 
+        if stop_removal:
+            stopwords = config["tokenizer"]["stopwords"]
+        else:
+            stopwords = []
         self.regex_tokenizer = RegexTokenizer(
-            stopwords=config["tokenizer"]["stopwords"],
+            stopwords=stopwords,
             tokenizer_regex=config["tokenizer"]["tokenizer_regex"],
         )
         self.token_flagger = FlashtextTokenFlagger(
