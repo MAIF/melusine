@@ -3,8 +3,6 @@ import logging
 from typing import Sequence
 import unicodedata
 
-from melusine.utils.io_utils import load_pkl_generic, save_pkl_generic
-
 logger = logging.getLogger(__name__)
 
 

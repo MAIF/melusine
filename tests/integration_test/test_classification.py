@@ -125,6 +125,8 @@ def test_classification():
             "attachment_type",
         ],
         n_epochs=2,
+        seq_size=8,
+        batch_size=8,
     )
 
     nn_model.fit(X, y)
