@@ -29,7 +29,7 @@ class Normalizer:
         # Lower casing
         self.lowercase = lowercase
 
-    def _normalize_text(self, text):
+    def _normalize_text(self, text: str) -> str:
         if self.form:
             text = (
                 unicodedata.normalize(self.form, text)

@@ -5,6 +5,7 @@ import os
 import os.path as op
 import warnings
 from pathlib import Path
+from typing import Dict, Any
 
 import yaml
 
@@ -46,7 +47,7 @@ def update_nested_dict(base_dict: dict, update_dict: dict) -> dict:
     return base_dict
 
 
-def load_conf_from_path(config_dir_path: str) -> dict:
+def load_conf_from_path(config_dir_path: str) -> Dict[str, Any]:
     """
     Given a directory path
     Parameters
@@ -211,7 +212,7 @@ def switch_config(new_config):
     config._switch_config(new_config)
 
 
-def config_deprecation_warnings(config_dict):
+def config_deprecation_warnings(config_dict: Dict[str, Any]) -> None:
     """
     Raise Deprecation Warning when using deprecated configs
     """

@@ -2,9 +2,13 @@ import os.path as op
 import pandas as pd
 
 
-def load_email_data(type="raw"):
+def load_email_data(type: str = "raw") -> pd.DataFrame:
     """
-    Load a csv file containing toy email data
+    Load a file containing toy email data.
+    Possible types are:
+    - raw : minimal DataFrame with email data
+    - preprocessed : DataFrame with preprocessed email data
+    - full : Full DataFrame with all email features
 
     Return
     ------
