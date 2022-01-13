@@ -217,7 +217,7 @@ def config_deprecation_warnings(config_dict):
     """
 
     words_list = config_dict.get("words_list")
-    if words_list and words_list.get("stopwords"):
+    if isinstance(words_list, dict) and words_list.get("stopwords"):
         logger.warning(
             "DeprecationWarning:"
             "Config words_list.stopwords is deprecated, please use tokenizer.stopwords"
@@ -227,7 +227,7 @@ def config_deprecation_warnings(config_dict):
             DeprecationWarning,
         )
 
-    if words_list and words_list.get("names"):
+    if isinstance(words_list, dict) and words_list.get("names"):
         logger.warning(
             "DeprecationWarning:"
             "Config words_list.names is deprecated, please use token_flagger.token_flags.flag_name"
@@ -238,7 +238,7 @@ def config_deprecation_warnings(config_dict):
         )
 
     regex = config_dict.get("regex")
-    if regex and regex.get("tokenizer"):
+    if isinstance(regex, dict) and regex.get("tokenizer"):
         logger.warning(
             "DeprecationWarning:"
             "Config regex.tokenizer is deprecated, please use tokenizer.tokenizer_regex"
@@ -248,9 +248,9 @@ def config_deprecation_warnings(config_dict):
             DeprecationWarning,
         )
 
-    if regex:
+    if isinstance(regex, dict):
         cleaning = regex.get("cleaning")
-        if cleaning and cleaning.get("flags_dict"):
+        if isinstance(cleaning, dict) and cleaning.get("flags_dict"):
             logger.warning(
                 "DeprecationWarning:"
                 "Config regex.cleaning.flags_dict is deprecated, please use text_flagger.text_flags"
