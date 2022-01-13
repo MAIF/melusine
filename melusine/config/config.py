@@ -1,11 +1,12 @@
+import collections.abc
 import json
+import logging
 import os
 import os.path as op
-import logging
+import warnings
 from pathlib import Path
 
 import yaml
-import collections.abc
 
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
@@ -60,6 +61,7 @@ def load_conf_from_path(config_dir_path: str) -> dict:
     conf = dict()
     conf_files = list()
     conf_files.extend([str(f) for f in Path(config_dir_path).rglob("*.yml")])
+    conf_files.extend([str(f) for f in Path(config_dir_path).rglob("*.yaml")])
     conf_files.extend([str(f) for f in Path(config_dir_path).rglob("*.json")])
 
     # Prevent loading notebook checkpoints
@@ -67,7 +69,7 @@ def load_conf_from_path(config_dir_path: str) -> dict:
 
     for name in conf_files:
         # Load YAML files
-        if name.endswith(".yml"):
+        if name.endswith(".yml") or name.endswith(".yaml"):
             logger.info(f"Loading data from file {name}")
             with open(name, "r") as f:
                 tmp_conf = yaml.load(f, Loader=Loader)
@@ -179,7 +181,7 @@ class MelusineConfig:
                 conf, load_conf_from_path(custom_config_directory)
             )
 
-        self._config = conf
+        self._switch_config(conf)
 
     def _switch_config(self, new_config):
         """
@@ -190,8 +192,9 @@ class MelusineConfig:
         new_config: dict
         Dict containing the new config
         """
+        config_deprecation_warnings(new_config)
         self._config = new_config
-        logger.info(f"Updated config from dictionary")
+        logger.info(f"Updated config")
 
 
 def switch_config(new_config):
@@ -208,71 +211,54 @@ def switch_config(new_config):
     config._switch_config(new_config)
 
 
-def ensure_retro_compatibility(config_dict):
-    """ """
+def config_deprecation_warnings(config_dict):
+    """
+    Raise Deprecation Warning when using deprecated configs
+    """
 
-    def check_key(d, path):
-        path = path[:]
-        if not path:
-            return True
-
-        key = path.pop(0)
-        if key in d:
-            return check_key(d[key], path)
-        else:
-            return False
-
-    def get_key(d, path):
-        val = d
-        for key in path:
-            val = val[key]
-        return val
-
-    def set_key(d, path, value_):
-        val = d
-        for key in path[:-1]:
-            if key not in val:
-                val[key] = dict()
-            val = val[key]
-
-        val[path[-1]] = value_
-        return d
-
-    changes = [
-        ("words_list.stopwords", "tokenizer.stopwords"),
-        ("regex.tokenizer", "tokenizer.tokenizer_regex"),
-        ("regex.cleaning.flags_dict", "text_flagger.text_flags"),
-        ("words_list.names", "token_flagger.token_flags.flag_name"),
-    ]
-    deprecation_warning = False
-
-    for old, new in changes:
-        old_path = old.split(".")
-        new_path = new.split(".")
-
-        # Check if deprecated configs are present
-        if check_key(config_dict, old_path):
-            deprecation_warning = True
-            logger.warning(
-                f"Deprecation Warning :\n"
-                f"  You are using the deprecated config : {old}\n"
-                f"  Please use the new config : {new}"
-            )
-            # Get value of the deprecated config
-            value = get_key(config_dict, old_path)
-
-            # Set the value to the new config location
-            config_dict = set_key(config_dict, new_path, value)
-
-    if deprecation_warning:
+    words_list = config_dict.get("words_list")
+    if words_list and words_list.get("stopwords"):
         logger.warning(
-            f"\nA major Melusine evolution is planed."
-            f"The new Melusine will make it easier for users to customize and extend Melusine. "
-            f"Melusine users are encouraged to take into account the deprecation warnings to anticipate future "
-            f"API breaking changes."
+            "DeprecationWarning:"
+            "Config words_list.stopwords is deprecated, please use tokenizer.stopwords"
+        )
+        warnings.warn(
+            "Config words_list.stopwords is deprecated, please use tokenizer.stopwords",
+            DeprecationWarning,
         )
 
-    return config_dict
+    if words_list and words_list.get("names"):
+        logger.warning(
+            "DeprecationWarning:"
+            "Config words_list.names is deprecated, please use token_flagger.token_flags.flag_name"
+        )
+        warnings.warn(
+            "Config words_list.names is deprecated, please use token_flagger.token_flags.flag_name",
+            DeprecationWarning,
+        )
+
+    regex = config_dict.get("regex")
+    if regex and regex.get("tokenizer"):
+        logger.warning(
+            "DeprecationWarning:"
+            "Config regex.tokenizer is deprecated, please use tokenizer.tokenizer_regex"
+        )
+        warnings.warn(
+            "Config regex.tokenizer is deprecated, please use tokenizer.tokenizer_regex",
+            DeprecationWarning,
+        )
+
+    if regex:
+        cleaning = regex.get("cleaning")
+        if cleaning and cleaning.get("flags_dict"):
+            logger.warning(
+                "DeprecationWarning:"
+                "Config regex.cleaning.flags_dict is deprecated, please use text_flagger.text_flags"
+            )
+            warnings.warn(
+                "Config regex.cleaning.flags_dict is deprecated, please use text_flagger.text_flags",
+                DeprecationWarning,
+            )
 
 
 # Load Melusine configurations
