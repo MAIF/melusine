@@ -15,6 +15,10 @@ def apply_df(input_args):
         args_ = kwargs.pop("args")
     else:
         args_ = None
+        
+    if kwargs.get("workers", 1) > 1:
+        progress_bar = False
+        
     if progress_bar:
         tqdm.pandas(
             leave=False,
