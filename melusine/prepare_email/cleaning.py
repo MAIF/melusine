@@ -8,7 +8,7 @@ import re
 from melusine import config
 
 REGEX_CLEAN = config["regex"]["cleaning"]
-regex_flags_dict = REGEX_CLEAN["flags_dict"]
+regex_flags_dict = config["text_flagger"]["text_flags"]
 regex_clean_header_dict = REGEX_CLEAN["clean_header_dict"]
 regex_remove_multiple_spaces_list = REGEX_CLEAN["remove_multiple_spaces_list"]
 

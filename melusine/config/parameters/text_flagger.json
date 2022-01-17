@@ -1,0 +1,16 @@
+{
+  "text_flagger": {
+    "text_flags": {
+          "<?[a-zA-Z0-9._%+-\/=]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}>?": " flag_mail_ ",
+          "(?i)\\b((?:https?:(?:/{1,3}|[a-z0-9%])|[a-z0-9.\\-]+[.](?:com|net|org|edu|gov|fr|eu|de|ie|us|uk|ch|in|ru|ai)/)(?:[^\\s()<>{}\\[\\]]+|\\([^\\s()]*?\\([^\\s()]+\\)[^\\s()]*?\\)|\\([^\\s]+?\\))+(?:\\([^\\s()]*?\\([^\\s()]+\\)[^\\s()]*?\\)|\\([^\\s]+?\\)|[^\\s`!()\\[\\]{};:'\".,<>?«»“”‘’])|(?:(?<!@)[a-z0-9]+(?:[.\\-][a-z0-9]+)*[.](?:com|net|org|edu|gov|fr|eu|de|ie|us|uk|ch|in|ru|ai)\\b/?(?!@)))": " flag_url_ ",
+          "(?:0|0033|\\+33\\s?|.?33\\s?|\\(0\\)\\s?)+[1-9](?:\\s|\\.|-)??(?:\\d{2}(?:\\s|\\.|-)??){4}": " flag_phone_ ",
+          " [A-Z]{2}[- ]?\\d{3}[- ]?[A-Z]{2}\\b|\\d{3,4}[- ]?[A-Z]{2,3}[- ]?\\d{2,3} ": " flag_immat_ ",
+          "(?:\\d\\s|(?:,|\\.|\\d))+\\s?(?:par\\svirements?|euro?s?|€|centimes|\\$|dollars?|EUR)": " flag_amount_ ",
+          "\\b\\d{5}(?!(?:par\\svirements?|euro?s?|€|centimes|\\$|dollars?|EUR)|\\d)": " flag_cp_ ",
+          "\\d{1,2}\\s?(?::|h|H|heure)\\s?(?:\\d{2})?(?::\\d{2})?": " flag_time_ ",
+          "(?<![\\d\\.])(?<!\\d\\s)(?:\\d{4}|\\d{2}|\\d)[\\/\\-\\.\\s]\\d{2}(?:[\\/\\-\\.\\s](?:\\d{4}|\\d{2}|\\d))?(?!(?:\\d|.\\d))(?!\\s?(?:par\\svirements?|euro?s?|€|centimes|\\$|dollars?|EUR)|\\d)": " flag_date_ ",
+          "(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)(?:\\s\\d{1,2}\\b)?(?:\\s(?:\\b(?:janvier|fevrier|mars|avril|mai|juin|juillet|aout?|septembre|octobre|novembre|decembre|janv?\\.?|fevr?\\.?|avr\\.?|juil\\.?|sept?\\.?|oct\\.?|nov\\.?|dec\\.?)\\b)(?:\\s\\d{4}|\\d{2})?)?": " flag_date_ ",
+          "(?:\\b\\d{1,2}\\s?)?\\b(?:janvier|f[eé]vrier|mars|avril|mai|juin|juillet|ao[uû]t?|septembre|octobre|novembre|d[ée]cembre|janv?\\.?|f[ée]vr?\\.?|avr\\.?|juil\\.?|sept?\\.?|oct\\.?|nov\\.?|d[ée]c\\.?)[\\b\\s](?:\\d{2,4})?": " flag_date_ "
+    }
+  }
+}
