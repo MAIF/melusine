@@ -1,0 +1,13 @@
+{
+  "test1": {
+    "ToStr": ["text", "beautiful_text"],
+    "ToLower": ["beautiful_text", "lower_text"],
+    "RemoveAccent": ["beautiful_text", "beautiful_text"],
+    "RemoveLineBreak": ["beautiful_text", "beautiful_text"],
+    "Strip": ["beautiful_text", "beautiful_text"]
+  },
+  "test2": {
+      "ToLower": ["beautiful_text", "perfect_text"],
+      "RemovePunctuation": ["perfect_text", "perfect_text"] 
+  }
+}
