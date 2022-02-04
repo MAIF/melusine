@@ -1,11 +1,13 @@
+import collections.abc
 import json
+import logging
 import os
 import os.path as op
-import logging
+import warnings
 from pathlib import Path
+from typing import Dict, Any
 
 import yaml
-import collections.abc
 
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
@@ -45,7 +47,7 @@ def update_nested_dict(base_dict: dict, update_dict: dict) -> dict:
     return base_dict
 
 
-def load_conf_from_path(config_dir_path: str) -> dict:
+def load_conf_from_path(config_dir_path: str) -> Dict[str, Any]:
     """
     Given a directory path
     Parameters
@@ -60,6 +62,7 @@ def load_conf_from_path(config_dir_path: str) -> dict:
     conf = dict()
     conf_files = list()
     conf_files.extend([str(f) for f in Path(config_dir_path).rglob("*.yml")])
+    conf_files.extend([str(f) for f in Path(config_dir_path).rglob("*.yaml")])
     conf_files.extend([str(f) for f in Path(config_dir_path).rglob("*.json")])
 
     # Prevent loading notebook checkpoints
@@ -67,7 +70,7 @@ def load_conf_from_path(config_dir_path: str) -> dict:
 
     for name in conf_files:
         # Load YAML files
-        if name.endswith(".yml"):
+        if name.endswith(".yml") or name.endswith(".yaml"):
             logger.info(f"Loading data from file {name}")
             with open(name, "r") as f:
                 tmp_conf = yaml.load(f, Loader=Loader)
@@ -179,7 +182,7 @@ class MelusineConfig:
                 conf, load_conf_from_path(custom_config_directory)
             )
 
-        self._config = conf
+        self._switch_config(conf)
 
     def _switch_config(self, new_config):
         """
@@ -190,8 +193,9 @@ class MelusineConfig:
         new_config: dict
         Dict containing the new config
         """
+        config_deprecation_warnings(new_config)
         self._config = new_config
-        logger.info(f"Updated config from dictionary")
+        logger.info(f"Updated config")
 
 
 def switch_config(new_config):
@@ -206,6 +210,56 @@ def switch_config(new_config):
     global config
 
     config._switch_config(new_config)
+
+
+def config_deprecation_warnings(config_dict: Dict[str, Any]) -> None:
+    """
+    Raise Deprecation Warning when using deprecated configs
+    """
+
+    words_list = config_dict.get("words_list")
+    if isinstance(words_list, dict) and words_list.get("stopwords"):
+        logger.warning(
+            "DeprecationWarning:"
+            "Config words_list.stopwords is deprecated, please use tokenizer.stopwords"
+        )
+        warnings.warn(
+            "Config words_list.stopwords is deprecated, please use tokenizer.stopwords",
+            DeprecationWarning,
+        )
+
+    if isinstance(words_list, dict) and words_list.get("names"):
+        logger.warning(
+            "DeprecationWarning:"
+            "Config words_list.names is deprecated, please use token_flagger.token_flags.flag_name"
+        )
+        warnings.warn(
+            "Config words_list.names is deprecated, please use token_flagger.token_flags.flag_name",
+            DeprecationWarning,
+        )
+
+    regex = config_dict.get("regex")
+    if isinstance(regex, dict) and regex.get("tokenizer"):
+        logger.warning(
+            "DeprecationWarning:"
+            "Config regex.tokenizer is deprecated, please use tokenizer.tokenizer_regex"
+        )
+        warnings.warn(
+            "Config regex.tokenizer is deprecated, please use tokenizer.tokenizer_regex",
+            DeprecationWarning,
+        )
+
+    if isinstance(regex, dict):
+        cleaning = regex.get("cleaning")
+        if isinstance(cleaning, dict) and cleaning.get("flags_dict"):
+            logger.warning(
+                "DeprecationWarning:"
+                "Config regex.cleaning.flags_dict is deprecated, please use text_flagger.text_flags"
+            )
+            warnings.warn(
+                "Config regex.cleaning.flags_dict is deprecated, please use text_flagger.text_flags",
+                DeprecationWarning,
+            )
 
 
 # Load Melusine configurations

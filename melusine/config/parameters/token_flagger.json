@@ -1,0 +1,10 @@
+{
+  "token_flagger": {
+    "flashtext_separators": [
+        "-",
+        "_",
+        "/"
+    ],
+    "token_flags": {}
+  }
+}

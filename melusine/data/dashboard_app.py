@@ -61,9 +61,9 @@ def exploration():
     st.write("## Load Data 📥 ")
     st.write("Loading Data from :")
     data_path = st.text_input(
-        "Data path", "../../tutorial/data/emails_preprocessed.csv"
+        "Pkl data path", "../../tutorial/data/emails_preprocessed.pkl"
     )
-    df_emails_preprocessed = pd.read_csv(data_path, encoding="utf-8", sep=";")
+    df_emails_preprocessed = pd.read_pickle(data_path)
     progress_bar.progress(10)
     i = df_emails_preprocessed.shape[0]
     st.write("Dataset contains %i emails" % i)
