@@ -6,7 +6,7 @@ import numpy
 import spacy
 from spacy.language import Language
 from spacy_lefff import LefffLemmatizer, POSTagger, Downloader
-from treetaggerwrapper import TreeTaggerError
+
 
 from socle_nlp.utils.socle_nlp_transformer import SocleNlpTransformer
 
@@ -33,12 +33,9 @@ class Lemmatizer(SocleNlpTransformer):
     """
 
     _AVAILABLE_ENGINES = ['spacy',
-                          'Lefff',
-                          'TreeTagger']
+                          'Lefff'
+                          ]
 
-    _TTW_ARGS = {'TAGLANG': 'fr',
-                 'TAGPARFILE': 'french.par'
-                 }
 
     _SPACY_ARGS = {'exclude': ['senter', 'ner']}
 
@@ -73,17 +70,8 @@ class Lemmatizer(SocleNlpTransformer):
         self.tagger = None
 
         assert engine in self._AVAILABLE_ENGINES, 'Specified engine is not supported. Available engines are ' \
-                                                  'spacy, Lefff and TreeTagger'
+                                                  'spacy, Lefff'
         try:
-            if self.engine == 'TreeTagger':
-                import treetaggerwrapper as ttw
-                try:
-                    self.tagger = ttw.TreeTagger(**self.engine_conf)
-                except TreeTaggerError as tte:
-                    self.logger.error("TreeTagger archive path incorrect")
-                    raise TreeTaggerError('Please download TreeTagger archive here and specify extraction location as TAGDIR \
-                                            : https://www.cis.uni-muenchen.de/~schmid/tools/TreeTagger/')
-
             if self.engine == 'spacy':
                 assert isinstance(self.engine_conf, str), "You have specified spacy as lemmatization engine but " \
                                                           "failed to provide the spacy model name as str"
@@ -101,16 +89,10 @@ class Lemmatizer(SocleNlpTransformer):
         except IOError as SpacyError:
             self.logger.error(SpacyError)
             raise BadConfigurationError('Incorrect Spacy configuration. Please refer to the tutorial')
-        except TreeTaggerError as tte:
-            self.logger.error(tte)
-            raise BadConfigurationError('Incorrect TreeTagger configuration. Please refer to the tutorial')
+
 
         def _get_lemmas(text: numpy.ndarray) -> numpy.ndarray:
             lemmas = numpy.empty(shape=text.shape, dtype='object')
-            if self.engine == 'TreeTagger':
-                lines = map(self.tagger.tag_text, text)
-                for i, tags in enumerate(lines):
-                    lemmas.put(i, ' '.join([tag.split('\t')[-1] for tag in tags]))
             if self.engine == 'spacy':
                 for i, doc in enumerate(self.nlp.pipe(text, n_process=self.n_jobs, batch_size=self.batch_size)):
                     lemmas.put(i, ' '.join([token.lemma_ for token in doc]))
