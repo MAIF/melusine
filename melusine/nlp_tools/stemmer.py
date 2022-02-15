@@ -44,5 +44,5 @@ class Stemmer:
 
     def transform(self, df):
         input_data = df[self.input_column]
-        df[self.output_column] = input_data.apply(lambda x: [self.stemmer.stem(token) for token in tokens_list])
+        df[self.output_column] = input_data.apply(lambda x: [self.stemmer.stem(token) for token in x])
         return df

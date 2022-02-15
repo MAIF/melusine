@@ -1,7 +1,9 @@
 pip>=20.0
 bumpversion==0.5.3
 coverage==4.5.1
+emoji
 flake8==3.5.0
+nltk
 numpydoc==0.8.0
 Sphinx==3.0.4
 sphinx-bootstrap-theme==0.6.5
@@ -23,8 +25,6 @@ unidecode>=1.0
 flashtext>=2.7
 plotly
 h5py>=3.0
-numpy<1.21 ; python_version=='3.6'
-numpy>=1.21 ; python_version>='3.7'
 joblib>=1.0
 PyYAML>=4.2
 

@@ -27,12 +27,13 @@ class DeterministicEmojiFlagger:
         >>> emoji_flagger = DeterministicEmojiFlagger()
         >>> emoji_flagger.transform(data)
         """
-        from emoji import get_emoji_regexp
-        self.emoji_pattern = get_emoji_regexp()
+        from emoji import replace_emoji
+        self.emoji_pattern = replace_emoji
         self.flag_emoji = flag_emoji
+        self.input_column = input_column
+        self.output_column = output_column
 
-    @staticmethod
-    def _flag_emojis(text: str) -> str:
+    def _flag_emojis(self, text: str) -> str:
         """Flag emojis
         WARNING : Execution time for flagging emojis is significantly higher than for other flags, which may make it inconvenient on a large sample size of emails, thus emojis aren't flagged by default. 
         Parameters
@@ -43,7 +44,8 @@ class DeterministicEmojiFlagger:
         -------
         str
         """
-        text = self.emoji_pattern.sub(repl=self.flag_emoji,  string=text)
+        text = self.emoji_pattern(string=text, replace=self.flag_emoji)
+        print(text)
         return text
 
     def fit(self, df, y=None):

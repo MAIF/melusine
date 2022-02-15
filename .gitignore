@@ -20,3 +20,7 @@ __pycache__/
 
 # Notebooks checkpoints
 .ipynb_checkpoints/
+
+# Tutorial repository
+tutorial/data/
+tutorial/custom_conf/
