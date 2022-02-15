@@ -215,6 +215,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         dict_attr = dict(self.__dict__)
         if "model" in dict_attr:
             del dict_attr["model"]
+        if "embedding_matrix" in dict_attr:
             del dict_attr["embedding_matrix"]
             del dict_attr["pretrained_embedding"]
         return dict_attr
