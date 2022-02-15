@@ -215,6 +215,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         dict_attr = dict(self.__dict__)
         if "model" in dict_attr:
             del dict_attr["model"]
+        if "embedding_matrix" in dict_attr:
             del dict_attr["embedding_matrix"]
             del dict_attr["pretrained_embedding"]
         return dict_attr
@@ -276,7 +277,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 validation_data = (X_input_val, y_categorical_val)
 
         if tensorboard_log_dir is None:
-            self.model.fit(
+            hist = self.model.fit(
                 X_input_train,
                 y_categorical_train,
                 batch_size=self.batch_size,
@@ -330,7 +331,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 embeddings_data=embeddings_data,
                 update_freq=update_freq,
             )
-            self.model.fit(
+            hist = self.model.fit(
                 X_input_train,
                 y_categorical_train,
                 batch_size=self.batch_size,
@@ -339,7 +340,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 validation_data=validation_data,
                 **kwargs,
             )
-        pass
+        return hist
 
     def predict(self, X, **kwargs):
         """Returns the class predicted.
