@@ -1,10 +1,10 @@
 from sklearn.base import BaseEstimator, TransformerMixin
 
 
-class SocleNlpTransformer(BaseEstimator, TransformerMixin):
-    
+class VerbitimTransformer(BaseEstimator, TransformerMixin):
+
     def __init__(self, func, kw_args, in_col, out_col):
-        
+
         def __check_function_type(fn):
             if not callable(fn):
                 raise TypeError("First item of the tuple (func, args, in_col, out_col) must be a \
@@ -29,7 +29,7 @@ class SocleNlpTransformer(BaseEstimator, TransformerMixin):
                     object not a {} object".format(type(col)))
             else:
                 return col
-        
+
         self.func = __check_function_type(func)
         self.kw_args = __check_kw_args_type(kw_args)
         self.in_col = __check_colname_type(in_col)

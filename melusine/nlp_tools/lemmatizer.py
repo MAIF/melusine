@@ -7,8 +7,7 @@ import spacy
 from spacy.language import Language
 from spacy_lefff import LefffLemmatizer, POSTagger, Downloader
 
-
-from socle_nlp.utils.socle_nlp_transformer import SocleNlpTransformer
+from melusine.utils.verbitim_transformer import VerbitimTransformer
 
 
 @Language.factory('melt_tagger')
@@ -27,7 +26,7 @@ class BadConfigurationError(Exception):
     pass
 
 
-class Lemmatizer(SocleNlpTransformer):
+class Lemmatizer(VerbitimTransformer):
     """ Lemmatizer component for Socle NLP
         Available engines include : spacy, Lefff and TreeTagger
     """
@@ -35,7 +34,6 @@ class Lemmatizer(SocleNlpTransformer):
     _AVAILABLE_ENGINES = ['spacy',
                           'Lefff'
                           ]
-
 
     _SPACY_ARGS = {'exclude': ['senter', 'ner']}
 
@@ -89,7 +87,6 @@ class Lemmatizer(SocleNlpTransformer):
         except IOError as SpacyError:
             self.logger.error(SpacyError)
             raise BadConfigurationError('Incorrect Spacy configuration. Please refer to the tutorial')
-
 
         def _get_lemmas(text: numpy.ndarray) -> numpy.ndarray:
             lemmas = numpy.empty(shape=text.shape, dtype='object')
