@@ -4,20 +4,51 @@ from typing import Union
 
 import numpy
 import spacy
+import spacy_lefff
 from spacy.language import Language
 from spacy_lefff import LefffLemmatizer, POSTagger, Downloader
 
 from melusine.utils.verbitim_transformer import VerbitimTransformer
 
+logger = logging.getLogger(__name__)
 
 @Language.factory('melt_tagger')
-def create_melt_tagger(nlp, name):
-    # TODO:Variable de release de l'asset
+def create_melt_tagger(nlp: spacy.lang.fr.Language, name: str) -> spacy_lefff.POSTagger:
+    """
+    Instanciates spacy pipeline component melt_tagger
+    The decorator @Language.factory('melt_tagger') informs spacy that this is a nlp pipeline component labeled
+    'melt_tagger'
+    Parameters
+    ----------
+    nlp : spacy.lang.fr.Language
+    A spacy nlp pipe object
+    name : str
+    Label of the component
+
+    Returns a POSTagger component
+    -------
+
+    """
     return POSTagger()
 
 
 @Language.factory('lefff_lemmatizer')
-def create_french_lemmatizer(nlp, name):
+def create_french_lemmatizer(nlp: spacy.lang.fr.Language, name: str) -> spacy_lefff.LefffLemmatizer :
+    """
+    Instanciates spacy pipeline component lefff_lemmatizer
+    The decorator @Language.factory('lefff_lemmatizer') informs spacy that this is a nlp pipeline component labeled
+    'lefff_lemmatizer'
+    Parameters
+    ----------
+    nlp : spacy.lang.fr.Language
+    A spacy nlp pipe object
+    name : str
+    Label of the component
+
+    Returns a LefffLemmatizer component
+    -------
+
+    """
     return LefffLemmatizer(after_melt=True, default=True)
 
 
@@ -28,7 +59,7 @@ class BadConfigurationError(Exception):
 
 class Lemmatizer(VerbitimTransformer):
     """ Lemmatizer component for Socle NLP
-        Available engines include : spacy, Lefff and TreeTagger
+        Available engines include : spacy and Lefff
     """
 
     _AVAILABLE_ENGINES = ['spacy',
@@ -41,30 +72,29 @@ class Lemmatizer(VerbitimTransformer):
                  in_col: str,
                  out_col: str,
                  engine: str,
-                 engine_conf: Union[dict, str, None],
-                 n_jobs: int = 1,
-                 batch_size: int = 1000
+                 engine_conf: str,
+                 **kwargs
                  ):
         """
         Initialize a Socle NLP Lemmatizer object
-        :param in_col:  input column of dataframe.
-        :param out_col: output column, will be created if it does not exist.
-        :param engine: lemmatization engine to load.
-        :param engine_conf: configuration for the engine chosen. For TreeTagger, a dictionary containing TAGDIR,
-                            TAGLANG, TAGPARFILE keys is required. For spacy based lemmatizers, the name of the model
-                            must be provided. Refer to tutorials for more information.
-        :param n_jobs: spacy-based engines only. Number of processes to be spawned by spacy pipe.
-        :param batch_size: spacy-based engines only. Batch size to process at once in spacy pipe.
+
+        Parameters
+        ----------
+        in_col : str
+        Input column in pandas.DataFrame
+        out_col : str
+        Output column in pandas.DataFrame.Will be created if it does not exist
+        engine : str
+        Lemmatization engine to load. Choices are 'spacy' and 'Lefff'.
+        engine_conf : str
+        Spacy model to load under the hood. For french, choices are 'fr_core_news_sm', 'fr_core_news_md',
+        'fr_core_news_lg'.
         """
 
         self.in_col = in_col
         self.out_col = out_col
         self.engine = engine
         self.engine_conf = engine_conf
-        self.n_jobs = n_jobs
-        self.batch_size = batch_size
-
-        self.logger = logging.getLogger(__name__)
         self.tagger = None
 
         assert engine in self._AVAILABLE_ENGINES, 'Specified engine is not supported. Available engines are ' \
@@ -85,16 +115,16 @@ class Lemmatizer(VerbitimTransformer):
                 self.nlp.add_pipe('lefff_lemmatizer', after='melt_tagger')
 
         except IOError as SpacyError:
-            self.logger.error(SpacyError)
+            logger.error(SpacyError)
             raise BadConfigurationError('Incorrect Spacy configuration. Please refer to the tutorial')
 
         def _get_lemmas(text: numpy.ndarray) -> numpy.ndarray:
             lemmas = numpy.empty(shape=text.shape, dtype='object')
             if self.engine == 'spacy':
-                for i, doc in enumerate(self.nlp.pipe(text, n_process=self.n_jobs, batch_size=self.batch_size)):
+                for i, doc in enumerate(self.nlp.pipe(text, **kwargs)):
                     lemmas.put(i, ' '.join([token.lemma_ for token in doc]))
             if self.engine == 'Lefff':
-                for i, doc in enumerate(self.nlp.pipe(text, n_process=self.n_jobs, batch_size=self.batch_size)):
+                for i, doc in enumerate(self.nlp.pipe(text, **kwargs)):
                     lemmas.put(i, ' '.join([token._.lefff_lemma for token in doc]))
             return lemmas
 
