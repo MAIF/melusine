@@ -25,6 +25,7 @@ requirements = [
 exchange_requirements = ["exchangelib>=4.2.0"]
 transformers_requirements = ["transformers==3.4.0"]
 viz_requirements = ["plotly", "streamlit>=0.57.3"]
+lemmatizer_requirements = ["spacy>=3.0.0", "spacy-lefff"]
 
 # Test dependencies
 setup_requirements = ["pytest-runner"]
@@ -36,6 +37,7 @@ extras_require = {
     "exchange": exchange_requirements,
     "transformers": transformers_requirements,
     "viz": viz_requirements,
+    "lemmatizer": lemmatizer_requirements
 }
 all_requirements = list(set([y for x in extras_require.values() for y in x]))
 extras_require["all"] = all_requirements
