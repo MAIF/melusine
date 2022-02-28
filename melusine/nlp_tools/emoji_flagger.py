@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 class DeterministicEmojiFlagger:
     FILENAME = "emoji_flagger.json"
 
-    def __init__(self, input_column: str ="clean_body", output_column: str ="clean_body", flag_emoji: str = " flag_emoji_ "):
+    def __init__(self, input_column: str ="last_body", output_column: str ="last_body", flag_emoji: str = " flag_emoji_ "):
         """Apply emoji flagging to string (header, body...)
 
         Parameters
@@ -45,7 +45,6 @@ class DeterministicEmojiFlagger:
         str
         """
         text = self.emoji_pattern(string=text, replace=self.flag_emoji)
-        print(text)
         return text
 
     def fit(self, df, y=None):

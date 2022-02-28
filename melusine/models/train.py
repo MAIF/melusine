@@ -122,26 +122,28 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
     ):
         self.architecture_function = architecture_function
         self.pretrained_embedding = pretrained_embedding
+        self.bert_tokenizer = bert_tokenizer
         if self.architecture_function.__name__ != "bert_model":
             self.tokenizer = tokenizer
             self.tokenizer.input_column = text_input_column
-        elif "camembert" in bert_tokenizer.lower():
+        
+        elif "camembert" in self.bert_tokenizer.lower():
             # Prevent the HuggingFace dependency
             try:
                 from transformers import CamembertTokenizer
 
-                self.tokenizer = CamembertTokenizer.from_pretrained(bert_tokenizer)
+                self.tokenizer = CamembertTokenizer.from_pretrained(self.bert_tokenizer)
             except ModuleNotFoundError:
                 raise (
                     """Please install transformers 3.4.0 (only version currently supported)
                     pip install melusine[transformers]"""
                 )
-        elif "flaubert" in bert_tokenizer.lower():
+        elif "flaubert" in self.bert_tokenizer.lower():
             # Prevent the HuggingFace dependency
             try:
                 from transformers import XLMTokenizer
 
-                self.tokenizer = XLMTokenizer.from_pretrained(bert_tokenizer)
+                self.tokenizer = XLMTokenizer.from_pretrained(self.bert_tokenizer)
             except ModuleNotFoundError:
                 raise (
                     """Please install transformers 3.4.0 (only version currently supported)
@@ -149,7 +151,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 )
         else:
             raise NotImplementedError(
-                "Bert tokenizer {} not implemented".format(bert_tokenizer)
+                "Bert tokenizer {} not implemented".format(self.bert_tokenizer)
             )
         self.text_input_column = text_input_column
         self.meta_input_list = meta_input_list
