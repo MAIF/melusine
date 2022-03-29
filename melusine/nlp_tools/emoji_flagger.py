@@ -12,9 +12,9 @@ class DeterministicEmojiFlagger:
         Parameters
         ----------
         input_column : str,
-            Column of pd.Dataframe which contains a list of tokens, default column ['tokens']
+            Column of pd.Dataframe which contains a string, default column ['last_body']
         output_column: str,
-            Column where is saved the list of stemmed tokens, default column ['stemmed_tokens']
+            Column where is saved flagged string, default column ['last_body']
         flag_emoji : str,
             Flag you want to insert in text
         

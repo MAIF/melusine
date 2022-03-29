@@ -30,7 +30,7 @@ Use **Melusine** if you need a library which :
   * Supports both convolutional networks and recurrent networks, as well as combinations of the two.
   * Runs seamlessly on CPU and GPU.
 
-**Melusine** is compatible with ``Python >= 3.5``.
+**Melusine** is compatible with `Python 3.6` (<=2.3.2), `Python 3.7` and `Python 3.8`.
 
 ..
   Guiding principles
@@ -43,6 +43,50 @@ Use **Melusine** if you need a library which :
 
 Release Notes
 -------------
+
+Release 2.3.3
+^^^^^^
+
+New features:
+    - **PR 128:** A `Lemmatizer` class has been added by the Société Générale team! `Lemmatizer` object is compatible with sklearn pipelines and is built around an sklearn Transformer. Details can be found in [tutorial 04](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial04_nlp_tools.ipynb) and [08](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial08_full_pipeline_detailed.ipynb)
+    - **PR XXX:** A `Stemmer`class has been added. Details can also be found in tutorial 04.
+    - **PR XXX:** A `DeterministicEmojiFlagger`class has been added to flag emojis. Details can be found in tutorial 08.
+
+Updates:
+    - `Python 3.6` is no longer supported for tensorflow compatibility issues. Melusine is now running with Tensorflow 2.8
+    - **PR 121:** Add the return of the histogram after the training (train.py)
+    - **PR 120:** `Tokenizer` can now be specified in a NeuralModel init. `Embedding` and `Phraser` classes have been simplified. See [tutorial 04](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial04_nlp_tools.ipynb)
+    - **PR 120:** `Config` has been split into different functionalities files that can be found in `/melusine/config/parameters` for more readability. See [tutorial 10](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial10_conf_file.ipynb)
+    - **PR 120:** A `text_flagger`and a `token_flagger` class have been created to give you a glimpse of the library redesign but are not called yet.
+
+Bug fix:
+    - **PR 124:** fixing purge of dict_attr keys while saving bert models (train.py)
+    - **Issue 126:** fixing initialisation of bert_tokenizer for cross validation (train.py)
+
+Release 2.3.2
+^^^^^^
+
+Updates:
+    - Compatibility with python 3.7 and 3.8
+    - Optional dependencies (viz, transformers, all)
+    - Specify custom configurations with environment variable MELUSINE_CONFIG_DIR
+    - Use any number of JSON and YAML files for configurations
+    (instead of just one config file)
+
+Bug fix:
+    - Fixed bug when training transformers model without meta features
+  
+Release 2.3
+^^^^^^
+
+New features:
+    - Added a class `ExchangeConnector` to interact with an Exchange Mailbox
+    - Added new tutorial `tutorial14_exchange_connector` to demonstrate the usage of the `ExchangeConnector` class
+
+Updates:
+    - Gensim upgrade ([4.0.0](https://github.com/RaRe-Technologies/gensim/releases))
+    - Propagate modifications stemming from the Gensim upgrade (code and tutorials)
+    - Package deployment : switch from Travis CI to Github actions
 
 Release 2.0
 ^^^^^^
@@ -171,23 +215,20 @@ Phraser and Tokenizer pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 A pipeline to train and apply the phraser end tokenizer is given below::
 
-    from melusine.nlp_tools.phraser import Phraser, phraser_on_body
+    from melusine.nlp_tools.phraser import Phraser
     from melusine.nlp_tools.tokenizer import Tokenizer
 
-    phraser = Phraser(input_column='clean_body')
-    phraser.train(df_email)
+    tokenizer = Tokenizer (input_column='clean_body', output_column="tokens")
+    df_email = tokenizer.fit_transform(df_email)
 
-    PhraserTransformer = TransformerScheduler(
-    functions_scheduler=[
-        (phraser_on_body, (phraser,), ['clean_body'])
-    ])
-
-    phraser_tokenizer_pipeline = Pipeline([
-      ('PhraserTransformer', PhraserTransformer),
-      ('Tokenizer', Tokenizer(input_column='clean_body'))
-    ])
-
-    df_email = phraser_tokenizer_pipeline.fit_transform(df_email)
+    phraser = Phraser(
+        input_column='tokens',
+        output_column='phrased_tokens',
+        threshold=5,
+        min_count=2
+    )
+    _ = phraser.fit(df_email)
+    df_email = phraser.transform(df_email)
 
 Embeddings training
 ^^^^^^^^^^^^^^^^^^^
@@ -195,7 +236,12 @@ An example of embedding training is given below::
 
     from melusine.nlp_tools.embedding import Embedding
 
-    embedding = Embedding(input_column='clean_body', min_count=10)
+    embedding = Embedding(
+        tokens_column='tokens',
+        size=300,
+        workers=4,
+        min_count=3
+    )
     embedding.train(df_email)
 
 
@@ -294,6 +340,9 @@ Columns added by Melusine:
 * **clean_text :** string, concatenation of clean_header and clean_body.
 * **tokens :** list of strings, corresponds to a tokenized column, by default clean_text.
 * **keywords :** list of strings, corresponds to the keywords of extracted from the tokens column.
+* **stemmed_tokens :** list of strings, corresponds to a stemmed column, by default stemmed_tokens.
+* **lemma_spacy_sm :** string, corresponds to a lemmatized column.
+* **lemma_lefff :** string, corresponds to a lemmatized column.
 
 Tags
 ^^^^

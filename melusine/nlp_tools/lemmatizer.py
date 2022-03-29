@@ -13,7 +13,7 @@ from melusine.utils.verbitim_transformer import VerbitimTransformer
 logger = logging.getLogger(__name__)
 
 @Language.factory('melt_tagger')
-def create_melt_tagger(nlp: spacy.lang.fr.Language, name: str) -> spacy_lefff.POSTagger:
+def create_melt_tagger(nlp, name: str) -> spacy_lefff.POSTagger:
     """
     Instanciates spacy pipeline component melt_tagger
     The decorator @Language.factory('melt_tagger') informs spacy that this is a nlp pipeline component labeled
@@ -33,7 +33,7 @@ def create_melt_tagger(nlp: spacy.lang.fr.Language, name: str) -> spacy_lefff.PO
 
 
 @Language.factory('lefff_lemmatizer')
-def create_french_lemmatizer(nlp: spacy.lang.fr.Language, name: str) -> spacy_lefff.LefffLemmatizer :
+def create_french_lemmatizer(nlp, name: str) -> spacy_lefff.LefffLemmatizer :
     """
     Instanciates spacy pipeline component lefff_lemmatizer
     The decorator @Language.factory('lefff_lemmatizer') informs spacy that this is a nlp pipeline component labeled

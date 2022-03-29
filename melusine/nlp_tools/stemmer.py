@@ -37,6 +37,10 @@ class Stemmer:
         self.input_column = input_column
         self.output_column = output_column
         self.stemmer = SnowballStemmer(language)
+    
+    def _stemming(self, input_tokens: list):
+        return [self.stemmer.stem(token) for token in input_tokens]
+
 
     def fit(self, df, y=None):
         """ """
@@ -44,5 +48,5 @@ class Stemmer:
 
     def transform(self, df):
         input_data = df[self.input_column]
-        df[self.output_column] = input_data.apply(lambda x: [self.stemmer.stem(token) for token in x])
+        df[self.output_column] = input_data.apply(self._stemming)
         return df

@@ -6,8 +6,8 @@ flake8==3.5.0
 nltk
 numpydoc==0.8.0
 Sphinx==3.0.4
-#sphinx-bootstrap-theme==0.6.5
 twine==3.2.0
+nbformat>=4.2.0
 psutil>=5.7.0
 pytest==3.8.2
 pytest-runner==4.2
@@ -26,5 +26,7 @@ plotly
 h5py>=3.0
 joblib>=1.0
 PyYAML>=4.2
+spacy>=3.0.0,<=3.0.4
+spacy-lefff==0.4.0
 
 
