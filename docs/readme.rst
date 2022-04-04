@@ -44,7 +44,7 @@ Use **Melusine** if you need a library which :
 Release Notes
 -------------
 
-Release 2.3.3
+Release 2.3.4
 ^^^^^^
 
 New features:

@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Generic badge](https://img.shields.io/badge/python-3.7|3.8-blue.svg)](https://shields.io/)
 
-🎉 We just released **Melusine 2.3.3** including new preprocessing features such as a `Lemmatizer` and a `Stemmer` class.
+🎉 We just released **Melusine 2.3.4** including new preprocessing features such as a `Lemmatizer` and a `Stemmer` class.
 For the first time, we are integrating numerous external contributions. Thank to those who have participated and make this library alive.  
 All new features can be found in the **full pipeline [tutorial](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial08_full_pipeline_detailed.ipynb)**. 🎉
 
@@ -30,7 +30,7 @@ Use **Melusine** if you need a library which:
 **Melusine** is compatible with `Python 3.6` (<=2.3.2), `Python 3.7` and `Python 3.8`.
 
 ## Release Notes
-### 2.3.3
+### 2.3.4
 New features:
   * **PR 128:** A `Lemmatizer` class has been added by the Société Générale team! `Lemmatizer` object is compatible with sklearn pipelines and is built around an sklearn Transformer. Details can be found in [tutorial 04](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial04_nlp_tools.ipynb) and [08](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial08_full_pipeline_detailed.ipynb)
   * **PR 132:** A `Stemmer`class has been added. Details can also be found in tutorial 04.
