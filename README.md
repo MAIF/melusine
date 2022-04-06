@@ -33,8 +33,8 @@ Use **Melusine** if you need a library which:
 ### 2.3.4
 New features:
   * **PR 128:** A `Lemmatizer` class has been added by the Société Générale team! `Lemmatizer` object is compatible with sklearn pipelines and is built around an sklearn Transformer. Details can be found in [tutorial 04](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial04_nlp_tools.ipynb) and [08](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial08_full_pipeline_detailed.ipynb)
-  * **PR 132:** A `Stemmer`class has been added. Details can also be found in tutorial 04.
-  * **PR 132:** A `DeterministicEmojiFlagger`class has been added to flag emojis. Details can be found in tutorial 08.
+  * **PR 132:** A `Stemmer`class has been added thanks to a STID contribution. Details can also be found in tutorial 04.
+  * **PR 132:** A `DeterministicEmojiFlagger`class has been added to flag emojis thanks to a STID contribution. Details can be found in tutorial 08.
 
 Updates:
   * `Python 3.6` is no longer supported for tensorflow compatibility issues. Melusine is now running with Tensorflow 2.8
