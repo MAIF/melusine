@@ -8,9 +8,9 @@ from setuptools import setup
 with open("README.md") as readme_file:
     readme = readme_file.read()
 
-requirements = [
-    "tensorflow>=2.5.0",
-    "pandas>=1.0",
+requirements = [    
+    "tensorflow>=2.8.0",
+    "pandas>=1.3.0",
     "scikit-learn>=0.23",
     "gensim>=4.1.2",
     "tqdm>=4.34",
@@ -25,6 +25,9 @@ requirements = [
 exchange_requirements = ["exchangelib>=4.2.0"]
 transformers_requirements = ["transformers==3.4.0"]
 viz_requirements = ["plotly", "streamlit>=0.57.3"]
+lemmatizer_requirements = ["spacy>=3.0.0,<=3.0.4", "spacy-lefff==0.4.0"]
+stemmer_requirements = ["nltk>=3.6.7"]
+emoji_requirements = ["emoji>=1.6.3"]
 tf_probability = ["tensorflow-probability==0.14.0"]
 
 # Test dependencies
@@ -38,6 +41,9 @@ extras_require = {
     "transformers": transformers_requirements,
     "viz": viz_requirements,
     "tf_probability": tf_probability
+    "lemmatizer": lemmatizer_requirements,
+    "stemmer": stemmer_requirements,
+    "emoji": emoji_requirements,
 }
 all_requirements = list(set([y for x in extras_require.values() for y in x]))
 extras_require["all"] = all_requirements
@@ -55,9 +61,8 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Natural Language :: English",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
     ],
     description=(
         """Melusine is a high-level package for french emails preprocessing, """
@@ -109,6 +114,6 @@ setup(
     tests_require=test_requirements,
     extras_require=extras_require,
     url="https://github.com/MAIF/melusine",
-    version="2.3.2",
+    version='2.3.4',
     zip_safe=False,
 )

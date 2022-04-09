@@ -124,26 +124,28 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
     ):
         self.architecture_function = architecture_function
         self.pretrained_embedding = pretrained_embedding
+        self.bert_tokenizer = bert_tokenizer
         if self.architecture_function.__name__ != "bert_model":
             self.tokenizer = tokenizer
             self.tokenizer.input_column = text_input_column
-        elif "camembert" in bert_tokenizer.lower():
+        
+        elif "camembert" in self.bert_tokenizer.lower():
             # Prevent the HuggingFace dependency
             try:
                 from transformers import CamembertTokenizer
 
-                self.tokenizer = CamembertTokenizer.from_pretrained(bert_tokenizer)
+                self.tokenizer = CamembertTokenizer.from_pretrained(self.bert_tokenizer)
             except ModuleNotFoundError:
                 raise (
                     """Please install transformers 3.4.0 (only version currently supported)
                     pip install melusine[transformers]"""
                 )
-        elif "flaubert" in bert_tokenizer.lower():
+        elif "flaubert" in self.bert_tokenizer.lower():
             # Prevent the HuggingFace dependency
             try:
                 from transformers import XLMTokenizer
 
-                self.tokenizer = XLMTokenizer.from_pretrained(bert_tokenizer)
+                self.tokenizer = XLMTokenizer.from_pretrained(self.bert_tokenizer)
             except ModuleNotFoundError:
                 raise (
                     """Please install transformers 3.4.0 (only version currently supported)
@@ -151,7 +153,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 )
         else:
             raise NotImplementedError(
-                "Bert tokenizer {} not implemented".format(bert_tokenizer)
+                "Bert tokenizer {} not implemented".format(self.bert_tokenizer)
             )
         self.text_input_column = text_input_column
         self.meta_input_list = meta_input_list
@@ -217,6 +219,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         dict_attr = dict(self.__dict__)
         if "model" in dict_attr:
             del dict_attr["model"]
+        if "embedding_matrix" in dict_attr:
             del dict_attr["embedding_matrix"]
             del dict_attr["pretrained_embedding"]
         return dict_attr
@@ -278,7 +281,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 validation_data = (X_input_val, y_categorical_val)
 
         if tensorboard_log_dir is None:
-            self.model.fit(
+            hist = self.model.fit(
                 X_input_train,
                 y_categorical_train,
                 batch_size=self.batch_size,
@@ -332,7 +335,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 embeddings_data=embeddings_data,
                 update_freq=update_freq,
             )
-            self.model.fit(
+            hist = self.model.fit(
                 X_input_train,
                 y_categorical_train,
                 batch_size=self.batch_size,
@@ -341,7 +344,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 validation_data=validation_data,
                 **kwargs,
             )
-        pass
+        return hist
 
     def predict(self, X, **kwargs):
         """Returns the class predicted.
