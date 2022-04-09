@@ -40,10 +40,10 @@ extras_require = {
     "exchange": exchange_requirements,
     "transformers": transformers_requirements,
     "viz": viz_requirements,
-    "tf_probability": tf_probability
     "lemmatizer": lemmatizer_requirements,
     "stemmer": stemmer_requirements,
     "emoji": emoji_requirements,
+    "tf_probability": tf_probability,
 }
 all_requirements = list(set([y for x in extras_require.values() for y in x]))
 extras_require["all"] = all_requirements
