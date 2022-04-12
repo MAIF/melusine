@@ -32,7 +32,8 @@ class MetaExtension(BaseEstimator, TransformerMixin):
         X["extension"] = X.apply(
             self.encode_extension, args=(self.top_extension,), axis=1
         )
-        self.le_extension.fit(X["extension"])
+        # We add the value "other" for the training of the label encoder to deal with unseen values of metadatas during inference !
+        self.le_extension.fit(pd.concat((X["extension"], pd.Series(["other"]))))
         return self
 
     def transform(self, X):
@@ -307,7 +308,8 @@ class MetaAttachmentType(BaseEstimator, TransformerMixin):
         X["attachment_type"] = X.apply(
             self.encode_type, args=(self.top_attachment_type,), axis=1
         )
-        self.le_extension.fit(X["attachment_type"].sum())
+        # We add the value "other" for the trainign of the label encoder to deal with unseen values during inference !
+        self.le_extension.fit(pd.concat((X["attachment_type"], pd.Series([['other']]))).sum())
         return self
 
     def transform(self, X):
