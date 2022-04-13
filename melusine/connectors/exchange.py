@@ -364,15 +364,28 @@ class ExchangeConnector:
         else:
             attachments_list = [i.name for i in email_item.attachments]
 
-        email_dict = {
-            "message_id": email_item.message_id,
-            "body": email_item.text_body or "",
-            "header": email_item.subject or "",
-            "date": email_item.datetime_sent.isoformat(),
-            "from": email_item.sender.email_address or None,
-            "to": to_list,
-            "attachment": attachments_list,
-        }
+        # Modification to deal with draft in arborescence
+        if email_item.datetime_sent != None and email_item.sender != None:
+            email_dict = {
+                "message_id": email_item.message_id,
+                "body": email_item.text_body or "",
+                "header": email_item.subject or "",
+                "date": email_item.datetime_sent.isoformat(),
+                "from": email_item.sender.email_address or None,
+                "to": to_list,
+                "attachment": attachments_list,
+            }
+        else:
+            # There is a draft in the emails
+            email_dict = {
+                "message_id": email_item.message_id,
+                "body": email_item.body or "",
+                "header": email_item.subject or "",
+                "date": None,
+                "from": None,
+                "to": None,
+                "attachment": attachments_list,
+            }
         return email_dict
 
     def route_emails(
