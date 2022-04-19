@@ -189,14 +189,17 @@ class Dummifier(BaseEstimator, TransformerMixin):
     """Transformer to dummifies categorial features and list of .
     Compatible with scikit-learn API.
     """
-
+    
     def __init__(
         self,
         columns_to_dummify=["extension", "dayofweek", "hour", "min", "attachment_type"],
-        copy=True,
+        # List of metadatas with the type list. For examples, the list of attachment type.
+        metadata_type_list=["attachment_type"],
+        copy=True
     ):
         self.columns_to_dummify = columns_to_dummify
         self.copy = copy
+        self.metadata_type_list = metadata_type_list
         pass
 
     def fit(self, X, y=None):
@@ -212,7 +215,8 @@ class Dummifier(BaseEstimator, TransformerMixin):
         X_ = pd.get_dummies(
             X,
             columns=[
-                col for col in self.columns_to_dummify if col != "attachment_type"
+                # We don't take the column with a type list
+                col for col in self.columns_to_dummify if (col not in self.metadata_type_list)
             ],
             prefix_sep="__",
             dummy_na=False,
@@ -220,16 +224,22 @@ class Dummifier(BaseEstimator, TransformerMixin):
 
         dummies_ = tuple([col + "__" for col in self.columns_to_dummify])
 
-        if "attachment_type" in self.columns_to_dummify:
-            X_attachment = pd.get_dummies(
-                X["attachment_type"].apply(pd.Series).stack().astype(int)
-            ).sum(level=0)
-            X_attachment = X_attachment.add_prefix("attachment_type__")
+        # If all the columns in metadata_type_list are in columns_to_dummify
+        if sum([(m in self.columns_to_dummify) for m in self.metadata_type_list]) == len(self.metadata_type_list):
+            X_m = []
+            for m in self.metadata_type_list:
+                X_m.append(pd.get_dummies(
+                    X[m].apply(pd.Series).stack().astype(int)
+                ).sum(level=0).add_prefix(m+"__"))
             self.dummy_features = [
                 c
-                for c in pd.concat([X_, X_attachment], axis=1)
+                for c in pd.concat(X_m, axis=1)
                 if c.startswith(dummies_)
             ]
+        # If we don't have have all the columns from metadata_type_list in columns_to_dummify
+        elif sum([(m in self.columns_to_dummify) for m in self.metadata_type_list]) > 1 :
+            raise SystemExit("Error : There are columns in metadata_type_list which are not in the columns_to_dummify list !")
+        # If in columns_to_dummify, we have no variable with a type list
         else:
             self.dummy_features = [c for c in X_ if c.startswith(dummies_)]
 
@@ -260,18 +270,24 @@ class Dummifier(BaseEstimator, TransformerMixin):
         X_ = pd.get_dummies(
             X_,
             columns=[
-                col for col in self.columns_to_dummify if col != "attachment_type"
+                # We don't take the column with a type list
+                col for col in self.columns_to_dummify if (col not in self.metadata_type_list)
             ],
             prefix_sep="__",
             dummy_na=False,
         )
-
-        if "attachment_type" in self.columns_to_dummify:
-            X_attachment = pd.get_dummies(
-                X_["attachment_type"].apply(pd.Series).stack().astype(int)
-            ).sum(level=0)
-            X_attachment = X_attachment.add_prefix("attachment_type__")
-            X_ = pd.concat([X_, X_attachment], axis=1)
+        
+        # If all the columns in metadata_type_list are in columns_to_dummify
+        if sum([(m in self.columns_to_dummify) for m in self.metadata_type_list]) == len(self.metadata_type_list):
+            X_m = []
+            for m in self.metadata_type_list:
+                X_m.append(pd.get_dummies(
+                    X[m].apply(pd.Series).stack().astype(int)
+                ).sum(level=0).add_prefix(m+"__"))
+            X_ = pd.concat(X_m, axis=1)
+            # If we don't have have all the columns from metadata_type_list in columns_to_dummify
+        elif sum([(m in self.columns_to_dummify) for m in self.metadata_type_list]) > 1 :
+            raise SystemExit("Error : There are columns in metadata_type_list which are not in the columns_to_dummify list !")
 
         if return_dict:
             X_ = X_.T.reindex(self.dummy_features).T.fillna(0)
