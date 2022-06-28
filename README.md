@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Generic badge](https://img.shields.io/badge/python-3.7|3.8-blue.svg)](https://shields.io/)
 
-🎉 We just released **Melusine 2.3.4** including new preprocessing features such as a `Lemmatizer` and a `Stemmer` class.
+🎉 We just released **Melusine 2.3.5** including new preprocessing features such as a `Lemmatizer` and a `Stemmer` class.
 For the first time, we are integrating numerous external contributions. Thank to those who have participated and make this library alive.  
 All new features can be found in the **full pipeline [tutorial](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial08_full_pipeline_detailed.ipynb)**. 🎉
 
@@ -30,6 +30,11 @@ Use **Melusine** if you need a library which:
 **Melusine** is compatible with `Python 3.6` (<=2.3.2), `Python 3.7` and `Python 3.8`.
 
 ## Release Notes
+
+### 2.3.5
+Bug fix: 
+  * **PR139:** Fix config search with a recursive paramater.
+  
 ### 2.3.4
 New features:
   * **PR 128:** A `Lemmatizer` class has been added by the Société Générale team! `Lemmatizer` object is compatible with sklearn pipelines and is built around an sklearn Transformer. Details can be found in [tutorial 04](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial04_nlp_tools.ipynb) and [08](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial08_full_pipeline_detailed.ipynb)
@@ -38,7 +43,7 @@ New features:
 
 Updates:
   * `Python 3.6` is no longer supported for tensorflow compatibility issues. Melusine is now running with Tensorflow 2.8
-  * **PR 121:** Add the return of the histogram after the training (train.py)
+  * **PR 121:** Add the return of the historic after the training (train.py)
   * **PR 120:** `Tokenizer` can now be specified in a NeuralModel init. `Embedding` and `Phraser` classes have been simplified. See [tutorial 04](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial04_nlp_tools.ipynb)
   * **PR 120:** `Config` has been split into different functionalities files that can be found in `/melusine/config/parameters` for more readability. See [tutorial 10](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial10_conf_file.ipynb)
   * **PR 120:** A `text_flagger`and a `token_flagger` class have been created to give you a glimpse of the library redesign but are not called yet.
