@@ -2,9 +2,13 @@ import ast
 import inspect
 import joblib
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
+
 import textwrap
+
+from collections import Counter
+from collections import OrderedDict
+
+from sklearn.preprocessing import LabelEncoder
 
 from melusine.prepare_email.compute_complexity import (
     mean_words_by_sentence,
@@ -12,13 +16,26 @@ from melusine.prepare_email.compute_complexity import (
 )
 from melusine.nlp_tools.tokenizer import Tokenizer
 
-from collections import Counter
-from collections import OrderedDict
+try:
+    import streamlit as st
+    from streamlit.logger import get_logger
+except ModuleNotFoundError:
+    raise (
+        """Please install streamlit
+        pip install melusine[viz]
+        (or pip install streamlit)"""
+    )
 
-import streamlit as st
-from streamlit.logger import get_logger
+try:
+    import plotly.express as px
+    import plotly.graph_objects as go
+except ModuleNotFoundError:
+    raise (
+        """Please install plotly
+        pip install melusine[viz]
+        (or pip install plotly)"""
+    )
 
-from sklearn.preprocessing import LabelEncoder
 
 tokenizer = Tokenizer(stop_removal=False)
 
@@ -44,9 +61,9 @@ def exploration():
     st.write("## Load Data 📥 ")
     st.write("Loading Data from :")
     data_path = st.text_input(
-        "Data path", "../../tutorial/data/emails_preprocessed.csv"
+        "Pkl data path", "../../tutorial/data/emails_preprocessed.pkl"
     )
-    df_emails_preprocessed = pd.read_csv(data_path, encoding="utf-8", sep=";")
+    df_emails_preprocessed = pd.read_pickle(data_path)
     progress_bar.progress(10)
     i = df_emails_preprocessed.shape[0]
     st.write("Dataset contains %i emails" % i)

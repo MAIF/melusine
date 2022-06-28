@@ -1,156 +1,266 @@
+import collections.abc
 import json
-import os.path as op
 import logging
-from configparser import ConfigParser
-import pandas as pd
-import unidecode
+import os
+import os.path as op
+import warnings
+from pathlib import Path
+from typing import Dict, Any
+
+import yaml
+
+try:
+    from yaml import CLoader as Loader, CDumper as Dumper
+except ImportError:
+    from yaml import Loader, Dumper
 
 
-class ConfigJsonReader:
-    """Class to initialize a config.json file that contains your own
-    parameters used by the package.
+logger = logging.getLogger(__name__)
 
-    In fact, the module `prepare_email` contains a set of functions which use "parameters"
-    pre-defined in the conf.json.
 
-    The json file contains parameters, such as:
-        - general or specific regular expressions
-        - footers, greetings or other mail keywords/tags
+def update_nested_dict(base_dict: dict, update_dict: dict) -> dict:
+    """
+    Update a (possibly) nested dictionary using another (possibly) nested dictionary.
+    Ex:
+        base_dict = {"A": {"a": "0"}}
+        u = {"A": {"b": "42"}}
+        update_dict = update_nested_dict(d, u)
+        # Output : {"A": {"a": "0", "b": "42"}}
 
-    Attributes
+    Parameters
     ----------
-    path_ini_file_ : str,
-        Path to the path.ini file (file used only to check,
-        set or get path of conf.json).
+    base_dict: Mapping
+        Base dict to be updated
+    update_dict: Mapping
+        Update dict to merge into d
 
-    path_default_conf_json_ : str,
-        Path to the default conf.json (define by the contributors).
+    Returns
+    -------
+    base_dict: Mapping
+        Updated dict
+    """
+    for key, value in update_dict.items():
+        if isinstance(value, collections.abc.Mapping):
+            base_dict[key] = update_nested_dict(base_dict.get(key, {}), value)
+        else:
+            base_dict[key] = value
+    return base_dict
 
-    Examples
-    --------
-    >>> conf = ConfigJsonReader()
-    >>> conf.path_ini_file_   # will return path to the created .ini file
 
-    >>> # I defined my own path otherwise it uses a default conf.json
-    >>> conf.set_config_path(file_path='path/to/my/conf.json')
-    >>> conf_dict = conf.get_config_file()
-    >>> print(conf_dict)  # will print the json.
+def load_conf_from_path(config_dir_path: str) -> Dict[str, Any]:
+    """
+    Given a directory path
+    Parameters
+    ----------
+    config_dir_path: str
+        Path to a directory containing YML or JSON conf files
+    Returns
+    -------
+    conf: dict
+        Loaded config dict
+    """
+    conf = dict()
+    conf_files = list()
+    conf_files.extend([str(f) for f in Path(config_dir_path).rglob("*.yml")])
+    conf_files.extend([str(f) for f in Path(config_dir_path).rglob("*.yaml")])
+    conf_files.extend([str(f) for f in Path(config_dir_path).rglob("*.json")])
 
+    # Prevent loading notebook checkpoints
+    conf_files = [x for x in conf_files if "ipynb_checkpoints" not in x]
+
+    for name in conf_files:
+        # Load YAML files
+        if name.endswith(".yml") or name.endswith(".yaml"):
+            logger.info(f"Loading data from file {name}")
+            with open(name, "r") as f:
+                tmp_conf = yaml.load(f, Loader=Loader)
+                conf = update_nested_dict(conf, tmp_conf)
+
+        # Load JSON files
+        elif name.endswith(".json"):
+            logger.info(f"Loading data from file {name}")
+            with open(file=name, mode="r", encoding="utf-8") as f:
+                tmp_conf = json.load(f)
+                conf = update_nested_dict(conf, tmp_conf)
+
+    return conf
+
+
+class MelusineConfig:
+    """
+    The MelusineConfig class acts as a dict containing configurations.
+    The configurations can be changed dynamically using the switch_config function.
     """
 
     def __init__(self):
-        config_directory = op.dirname(op.abspath(__file__))
-        self.path_ini_file_ = op.join(config_directory, "path.ini")
-        self.path_default_conf_json_ = op.join(config_directory, "conf.json")
-        self.path_default_names_csv_ = op.join(config_directory, "names.csv")
+        super().__init__()
+        self._config = None
+        self.load_melusine_conf()
 
-        if not op.exists(self.path_ini_file_):
-            logging.info("Create an path.ini file to configure your own config.json")
-            ini_file = open(self.path_ini_file_, "w")
-            conf = ConfigParser()
-            conf.add_section("PATH")
-            conf.set("PATH", "template_config", self.path_default_conf_json_)
-            conf.set("PATH", "default_name_file", self.path_default_names_csv_)
-            conf.write(ini_file)
-            ini_file.close()
+    def __getitem__(self, key):
+        """
+        Access configuration elements
+        """
+        return self._config[key]
 
-        self.config = ConfigParser()
-        self.config.read(self.path_ini_file_)
+    def __repr__(self):
+        """
+        Represent the MelusineConfig class
+        """
+        return repr(self._config)
 
-        pass
+    def __len__(self):
+        """
+        Returns the length of the config dict
+        """
+        return len(self._config)
 
-    def set_config_path(self, file_path=None):
-        """Set a path for your own `config.json`.
+    def copy(self):
+        """
+        Copy the config dict
+        """
+        return self._config.copy()
+
+    def has_key(self, k):
+        """
+        Checks if given key exists in the config dict
+        """
+        return k in self._config
+
+    def keys(self):
+        """
+        Returns the keys of the config dict
+        """
+        return self._config.keys()
+
+    def values(self):
+        """
+        Returns the values of the config dict
+        """
+        return self._config.values()
+
+    def items(self):
+        """
+        Returns the items of the config dict
+        """
+        return self._config.items()
+
+    def __contains__(self, item):
+        """
+        Checks if the given item is contained in the config dict
+        """
+        return item in self._config
+
+    def __iter__(self):
+        """
+        Iterates over the the config dict
+        """
+        return iter(self._config)
+
+    def load_melusine_conf(self) -> None:
+        """
+        Load the melusine configurations.
+        The default configurations are loaded first (the one present in the melusine package).
+        Custom configurations may overwrite the default ones.
+        Custom configuration should be specified in YML and JSON files and placed in a directory.
+        The directory path should be set as the value of the MELUSINE_CONFIG_DIR environment variable.
+        Returns
+        -------
+        conf: dict
+            Loaded config dict
+        """
+        conf = dict()
+
+        # Load default Melusine conf
+        default_config_directory = op.dirname(op.abspath(__file__))
+        conf = update_nested_dict(conf, load_conf_from_path(default_config_directory))
+
+        # Load custom Melusine conf
+        custom_config_directory = os.getenv("MELUSINE_CONFIG_DIR")
+        if custom_config_directory:
+            conf = update_nested_dict(
+                conf, load_conf_from_path(custom_config_directory)
+            )
+
+        self._switch_config(conf)
+
+    def _switch_config(self, new_config):
+        """
+        Modify the private attribute _config of the MelusineConfig instance.
 
         Parameters
         ----------
-        file_path: str, optional
-            Path to the json file. If set to None (default), it will use the default
-            json located in the built-in package `melusine/config/conf.json`.
+        new_config: dict
+        Dict containing the new config
         """
-        if file_path is not None:
-            # if file_path is specified, it writes new path in the .ini file.
-            self.config["PATH"]["template_config"] = file_path
-            with open(self.path_ini_file_, "w") as configfile:
-                self.config.write(configfile)
-        pass
+        config_deprecation_warnings(new_config)
+        self._config = new_config
+        logger.info(f"Updated config")
 
-    def get_config_file(self):
-        """Load a config json file from the given path.
-        Load the list of names from the names.csv file.
-        """
-        path = self.config["PATH"]["template_config"]
-        if path == self.path_default_conf_json_:
-            config_file = self.load_config_file(path=None)
-        else:
-            config_file = self.load_config_file(path=path)
-        name_file_path = self.config["PATH"]["default_name_file"]
 
-        if name_file_path == self.path_default_names_csv_:
-            name_list = self.load_name_file(path=None)
-        else:
-            name_list = self.load_name_file(path=name_file_path)
+def switch_config(new_config):
+    """
+    Function to change the Melusine configuration using a dict.
 
-        if "words_list" in config_file.keys():
-            config_file["words_list"]["names"] = name_list
-        else:
-            config_file["words_list"] = {"names": name_list}
+    Parameters
+    ----------
+    new_config: dict
+        Dict containing the new config
+    """
+    global config
 
-        return config_file
+    config._switch_config(new_config)
 
-    def reset_config_path(self):
-        self.config["PATH"]["template_config"] = self.path_default_conf_json_
-        with open(self.path_ini_file_, "w") as configfile:
-            self.config.write(configfile)
 
-        pass
+def config_deprecation_warnings(config_dict: Dict[str, Any]) -> None:
+    """
+    Raise Deprecation Warning when using deprecated configs
+    """
 
-    def load_config_file(self, path=None):
-        """Load Json."""
-        # by default it takes native the config.json
-        if path is None:
-            path = self.path_default_conf_json_
+    words_list = config_dict.get("words_list")
+    if isinstance(words_list, dict) and words_list.get("stopwords"):
+        logger.warning(
+            "DeprecationWarning:"
+            "Config words_list.stopwords is deprecated, please use tokenizer.stopwords"
+        )
+        warnings.warn(
+            "Config words_list.stopwords is deprecated, please use tokenizer.stopwords",
+            DeprecationWarning,
+        )
 
-        with open(file=path, mode="r", encoding="utf-8") as file:
-            config_file = json.load(file)
+    if isinstance(words_list, dict) and words_list.get("names"):
+        logger.warning(
+            "DeprecationWarning:"
+            "Config words_list.names is deprecated, please use token_flagger.token_flags.flag_name"
+        )
+        warnings.warn(
+            "Config words_list.names is deprecated, please use token_flagger.token_flags.flag_name",
+            DeprecationWarning,
+        )
 
-        return config_file
+    regex = config_dict.get("regex")
+    if isinstance(regex, dict) and regex.get("tokenizer"):
+        logger.warning(
+            "DeprecationWarning:"
+            "Config regex.tokenizer is deprecated, please use tokenizer.tokenizer_regex"
+        )
+        warnings.warn(
+            "Config regex.tokenizer is deprecated, please use tokenizer.tokenizer_regex",
+            DeprecationWarning,
+        )
 
-        logging.info("Load config from path: {}.".format(path))
+    if isinstance(regex, dict):
+        cleaning = regex.get("cleaning")
+        if isinstance(cleaning, dict) and cleaning.get("flags_dict"):
+            logger.warning(
+                "DeprecationWarning:"
+                "Config regex.cleaning.flags_dict is deprecated, please use text_flagger.text_flags"
+            )
+            warnings.warn(
+                "Config regex.cleaning.flags_dict is deprecated, please use text_flagger.text_flags",
+                DeprecationWarning,
+            )
 
-    def set_name_file_path(self, file_path=None):
-        """Set a path for your own `names.csv`.
 
-        Parameters
-        ----------
-        file_path: str, optional
-            Path to the csv file. If set to None (default), it will use the default
-            csv located in the built-in package `melusine/config/names.csv`.
-        """
-        if file_path is not None:
-            # if file_path is specified, it writes new path in the .ini file.
-            self.config["PATH"]["default_name_file"] = file_path
-            with open(self.path_ini_file_, "w") as configfile:
-                self.config.write(configfile)
-        pass
-
-    def reset_name_file_path(self):
-        self.config["PATH"]["default_name_file"] = self.path_default_names_csv_
-        with open(self.path_ini_file_, "w") as configfile:
-            self.config.write(configfile)
-        pass
-
-    def load_name_file(self, path):
-        """Load csv."""
-        # by default it takes native the names.csv
-        if path is None:
-            path = self.path_default_names_csv_
-
-        try:
-            df_names = pd.read_csv(path, encoding="utf-8", sep=";")
-            name_list = df_names["Name"].values
-            name_list = [unidecode.unidecode(p).lower() for p in name_list]
-        except FileNotFoundError:
-            name_list = []
-
-        return name_list
+# Load Melusine configurations
+config = MelusineConfig()

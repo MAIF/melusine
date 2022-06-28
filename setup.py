@@ -2,53 +2,71 @@
 # -*- coding: utf-8 -*-
 
 """The setup script."""
-
+import glob
 from setuptools import setup
 
 with open("README.md") as readme_file:
     readme = readme_file.read()
 
-with open("HISTORY.rst") as history_file:
-    history = history_file.read()
-
-requirements = [
-    "pandas>=0.25.0",
-    "scikit-learn>=0.19.0",
-    "gensim>=3.3.0",
+requirements = [    
+    "tensorflow>=2.8.0",
+    "pandas>=1.3.0",
+    "scikit-learn>=0.23",
+    "gensim>=4.1.2",
     "tqdm>=4.34",
-    "streamlit>=0.57.3",
-    "tensorflow>=2.2.0",
-    "unidecode",
+    "unidecode>=1.0",
     "flashtext>=2.7",
-    "plotly",
-    "transformers==3.4.0",
-    "h5py==2.10.0",
-    "numpy>=1.16.4,<1.19.0",
-    "joblib",
+    "h5py>=3.0",
+    "joblib>=1.0",
+    "PyYAML>=4.2",
 ]
 
-setup_requirements = [
-    "pytest-runner",
-]
+# Optional dependencies
+exchange_requirements = ["exchangelib>=4.2.0"]
+transformers_requirements = ["transformers==3.4.0"]
+viz_requirements = ["plotly", "streamlit>=0.57.3"]
+lemmatizer_requirements = ["spacy>=3.0.0,<=3.0.4", "spacy-lefff==0.4.0"]
+stemmer_requirements = ["nltk>=3.6.7"]
+emoji_requirements = ["emoji>=1.6.3"]
 
-test_requirements = [
-    "pytest",
-]
+
+# Test dependencies
+setup_requirements = ["pytest-runner"]
+test_requirements = transformers_requirements + ["pytest"]
+
+
+# Ex: Install all dependencies with ``pip install melusine[all]`
+extras_require = {
+    "exchange": exchange_requirements,
+    "transformers": transformers_requirements,
+    "viz": viz_requirements,
+    "lemmatizer": lemmatizer_requirements,
+    "stemmer": stemmer_requirements,
+    "emoji": emoji_requirements,
+}
+all_requirements = list(set([y for x in extras_require.values() for y in x]))
+extras_require["all"] = all_requirements
+
+# Conf files
+conf_json_files = glob.glob("melusine/config/**/*.json", recursive=True)
+
 
 setup(
-    author="Sacha Samama, Tom Stringer, Antoine Simoulin, Benoit Lebreton, Tiphaine Fabre",
-    author_email="ssamama@quantmetry.com",
+    author="Sacha Samama, Tom Stringer, Antoine Simoulin, Benoit Lebreton, Tiphaine Fabre, Hugo Perrier",
+    author_email="tiphaine.fabre@maif.fr",
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Natural Language :: English",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
     ],
-    description="Melusine is a high-level package for french emails preprocessing, classification and feature extraction, written in Python.",
+    description=(
+        """Melusine is a high-level package for french emails preprocessing, """
+        """classification and feature extraction, written in Python."""
+    ),
     entry_points={},
     install_requires=requirements,
     license="Apache Software License 2.0",
@@ -66,6 +84,7 @@ setup(
         "melusine.summarizer": "melusine/summarizer",
         "melusine.models": "melusine/models",
         "melusine.data": "melusine/data",
+        "melusine.connectors": "melusine/connectors",
     },
     packages=[
         "melusine",
@@ -76,16 +95,24 @@ setup(
         "melusine.summarizer",
         "melusine.models",
         "melusine.data",
+        "melusine.connectors",
     ],
     data_files=[
-        ("config", ["melusine/config/conf.json"]),
-        ("config", ["melusine/config/names.csv"]),
-        ("data", ["melusine/data/emails.csv"]),
+        ("config", conf_json_files),
+        (
+            "data",
+            [
+                "melusine/data/emails.csv",
+                "melusine/data/emails_preprocessed.pkl",
+                "melusine/data/emails_full.pkl",
+            ],
+        ),
     ],
     setup_requires=setup_requirements,
     test_suite="tests",
     tests_require=test_requirements,
+    extras_require=extras_require,
     url="https://github.com/MAIF/melusine",
-    version="2.2.6",
+    version='2.3.5',
     zip_safe=False,
 )

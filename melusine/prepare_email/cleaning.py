@@ -5,12 +5,10 @@ Cleaning of the body and the header
 import unidecode
 import unicodedata
 import re
-from melusine.config import ConfigJsonReader
+from melusine import config
 
-conf_reader = ConfigJsonReader()
-config = conf_reader.get_config_file()
 REGEX_CLEAN = config["regex"]["cleaning"]
-regex_flags_dict = REGEX_CLEAN["flags_dict"]
+regex_flags_dict = config["text_flagger"]["text_flags"]
 regex_clean_header_dict = REGEX_CLEAN["clean_header_dict"]
 regex_remove_multiple_spaces_list = REGEX_CLEAN["remove_multiple_spaces_list"]
 

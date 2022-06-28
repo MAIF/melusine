@@ -1,0 +1,6 @@
+{
+  "normalizer": {
+    "form": "NFKD",
+    "lowercase": true
+  }
+}

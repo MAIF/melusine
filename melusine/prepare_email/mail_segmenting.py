@@ -1,9 +1,6 @@
 import re
-from melusine.config.config import ConfigJsonReader
+from melusine import config
 from melusine.prepare_email.cleaning import remove_accents
-
-conf_reader = ConfigJsonReader()
-config = conf_reader.get_config_file()
 
 newline_character = config["regex"]["cleaning"]["newline_character"]
 signature_token_threshold = config["regex"]["mail_segmenting"][
@@ -80,7 +77,7 @@ regex_tag_subsentence = REGEX_SEG["tag_subsentence"]
 regex_split_message_to_sentences_list = REGEX_SEG["split_message_to_sentences_list"]
 
 REGEX_CLEAN = config["regex"]["cleaning"]
-regex_flags_dict = REGEX_CLEAN["flags_dict"]
+regex_flags_dict = config["text_flagger"]["text_flags"]
 
 
 def structure_email(row):
@@ -172,7 +169,7 @@ def structure_meta(meta):
 
 
 def _find_date(message):
-    """ Match pattern regex with a given message """
+    """Match pattern regex with a given message"""
     group = _find_meta(regex_date1, message)
     if group is None:
         group = _find_meta(regex_date2, message)
@@ -181,7 +178,7 @@ def _find_date(message):
 
 
 def _find_from(message):
-    """ Match pattern regex with a given message """
+    """Match pattern regex with a given message"""
     group = _find_meta(regex_from1, message)
     if group is None:
         group = _find_meta(regex_from2, message)
@@ -190,7 +187,7 @@ def _find_from(message):
 
 
 def _find_meta(regex, message):
-    """ Match pattern regex with a given message """
+    """Match pattern regex with a given message"""
     groups = re.findall(regex, message)
     if len(groups) < 1:
         return None
@@ -228,7 +225,7 @@ def tag_parts_message(text):
 
 
 def split_message_to_sentences(text, sep_=r"(.*?[;.,?!])"):
-    """ Split each sentences in a text """
+    """Split each sentences in a text"""
     regex1 = regex_split_message_to_sentences_list[0]
     regex2 = regex_split_message_to_sentences_list[1]
     regex3 = regex_split_message_to_sentences_list[2]
@@ -333,7 +330,7 @@ def tag(string):
 
 
 def _merge_parts(list_de_tuple_parts_id):
-    """ Merge two consecutives strings with the same tag """
+    """Merge two consecutives strings with the same tag"""
     if len(list_de_tuple_parts_id) <= 1:
         return list_de_tuple_parts_id
     i = 0
@@ -356,7 +353,7 @@ def _merge_parts(list_de_tuple_parts_id):
 
 
 def _remove_empty_parts(tagged_parts_list):
-    """ Remove all the empty parts in the list of tagged parts """
+    """Remove all the empty parts in the list of tagged parts"""
     tagged_parts_list = [part for part in tagged_parts_list if len(part[0]) > 0]
 
     return tagged_parts_list
@@ -381,12 +378,12 @@ def _update_typo_part(part_tag_tuple):
 
 
 def __is_typo(part, compiled_regex_typo=compiled_regex_typo):
-    """ Check if a string is typo """
+    """Check if a string is typo"""
     return compiled_regex_typo.search(part)
 
 
 def _remove_typo_parts(tagged_parts_list):
-    """  """
+    """ """
     tagged_parts_list = [
         part_tag_tuple
         for part_tag_tuple in tagged_parts_list
@@ -397,7 +394,7 @@ def _remove_typo_parts(tagged_parts_list):
 
 
 def _tuples_to_dict(meta, header, tagged_parts):
-    """ Convert a dictionnary and list of tuples into dictionnary """
+    """Convert a dictionnary and list of tuples into dictionnary"""
     structured_message = {}
     structured_message["meta"] = meta
     structured_message["structured_text"] = {}

@@ -6,13 +6,12 @@ from collections import Counter
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_extraction.text import TfidfVectorizer
 from melusine.utils.transformer_scheduler import TransformerScheduler
-from melusine.config.config import ConfigJsonReader
-
-conf_reader = ConfigJsonReader()
-config = conf_reader.get_config_file()
+from melusine import config
 
 keywords = config["words_list"]["keywords"]
-stopwords = config["words_list"]["stopwords"] + config["words_list"]["names"]
+stopwords = config["tokenizer"]["stopwords"] + list(
+    config["token_flagger"]["token_flags"]["flag_name"]
+)
 
 
 class KeywordsGenerator(BaseEstimator, TransformerMixin):
@@ -98,8 +97,8 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
         keywords=keywords,
         stopwords=stopwords,
         resample=False,
-        n_jobs=20,
-        progress_bar=True,
+        n_jobs=1,
+        progress_bar=False,
         copy=True,
         n_max_keywords=6,
         n_min_keywords=0,
@@ -107,7 +106,7 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
         n_docs_in_class=100,
         keywords_coef=10,
     ):
-        self.max_tfidf_features_ = max_tfidf_features
+        self.max_tfidf_features = max_tfidf_features
         self.tfidf_vectorizer = TfidfVectorizer(max_features=max_tfidf_features)
         self.keywords = keywords
         self.stopwords = stopwords

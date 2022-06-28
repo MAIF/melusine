@@ -23,6 +23,18 @@ you through the process.
 .. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
 
 
+Optional dependencies
+---------------------
+When running Melusine in production, users may want to limit the number of packages installed.
+For this purpose, Melusine makes use of optional dependencies.
+The command `pip install melusine` installs only the mandatory dependencies.
+Optional dependencies can be install as follows:
+  * `pip install melusine[viz]` : Installs plotly and streamlit for visualization purposes
+  * `pip install melusine[exchange]` : Installs exchangelib to connect Melusine with an Outlook Exchange mailbox
+  * `pip install melusine[transformers]` : Installs transformers to train BERT-like models
+  * `pip install melusine[all]` : Installs all the dependencies
+
+
 From sources
 ------------
 

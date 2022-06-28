@@ -9,17 +9,13 @@ from tensorflow.keras.models import model_from_json
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import TensorBoard
-from transformers import CamembertTokenizer, XLMTokenizer
-from transformers import TFCamembertModel, TFFlaubertModel
 
-from melusine.config.config import ConfigJsonReader
+from melusine import config
 from melusine.nlp_tools.tokenizer import Tokenizer
 from melusine.models.attention_model import PositionalEncoding
 from melusine.models.attention_model import TransformerEncoderLayer
 from melusine.models.attention_model import MultiHeadAttention
 
-conf_reader = ConfigJsonReader()
-config = conf_reader.get_config_file()
 tensorboard_callback_parameters = config["tensorboard_callback"]
 
 
@@ -100,9 +96,9 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
     >>> from melusine.nlp_tools.embedding import Embedding
     >>> pretrained_embedding = Embedding.load()
     >>> list_meta = ['extension', 'dayofweek', 'hour']
-    >>> nn_model = NeuralModel(cnn_model, pretrained_embedding, list_meta)
-    >>> nn_model.fit(X_train, y_train)
-    >>> y_res = nn_model.predict(X_test)
+    >>> nn_model = NeuralModel(cnn_model, pretrained_embedding, list_meta)  #noqa
+    >>> nn_model.fit(X_train, y_train)  #noqa
+    >>> y_res = nn_model.predict(X_test)  #noqa
 
     """
 
@@ -111,7 +107,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         pretrained_embedding=None,
         architecture_function=None,
         text_input_column="clean_text",
-        meta_input_list=["extension", "dayofweek", "hour", "min"],
+        meta_input_list=("extension", "dayofweek", "hour", "min"),
         vocab_size=25000,
         seq_size=100,
         embedding_dim=200,
@@ -121,19 +117,41 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         n_epochs=15,
         bert_tokenizer="jplu/tf-camembert-base",
         bert_model="jplu/tf-camembert-base",
+        tokenizer=Tokenizer(),
         **kwargs,
     ):
         self.architecture_function = architecture_function
         self.pretrained_embedding = pretrained_embedding
+        self.bert_tokenizer = bert_tokenizer
         if self.architecture_function.__name__ != "bert_model":
-            self.tokenizer = Tokenizer(input_column=text_input_column)
-        elif "camembert" in bert_tokenizer.lower():
-            self.tokenizer = CamembertTokenizer.from_pretrained(bert_tokenizer)
-        elif "flaubert" in bert_tokenizer.lower():
-            self.tokenizer = XLMTokenizer.from_pretrained(bert_tokenizer)
+            self.tokenizer = tokenizer
+            self.tokenizer.input_column = text_input_column
+        
+        elif "camembert" in self.bert_tokenizer.lower():
+            # Prevent the HuggingFace dependency
+            try:
+                from transformers import CamembertTokenizer
+
+                self.tokenizer = CamembertTokenizer.from_pretrained(self.bert_tokenizer)
+            except ModuleNotFoundError:
+                raise (
+                    """Please install transformers 3.4.0 (only version currently supported)
+                    pip install melusine[transformers]"""
+                )
+        elif "flaubert" in self.bert_tokenizer.lower():
+            # Prevent the HuggingFace dependency
+            try:
+                from transformers import XLMTokenizer
+
+                self.tokenizer = XLMTokenizer.from_pretrained(self.bert_tokenizer)
+            except ModuleNotFoundError:
+                raise (
+                    """Please install transformers 3.4.0 (only version currently supported)
+                    pip install melusine[transformers]"""
+                )
         else:
             raise NotImplementedError(
-                "Bert tokenizer {} not implemented".format(bert_tokenizer)
+                "Bert tokenizer {} not implemented".format(self.bert_tokenizer)
             )
         self.text_input_column = text_input_column
         self.meta_input_list = meta_input_list
@@ -199,6 +217,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         dict_attr = dict(self.__dict__)
         if "model" in dict_attr:
             del dict_attr["model"]
+        if "embedding_matrix" in dict_attr:
             del dict_attr["embedding_matrix"]
             del dict_attr["pretrained_embedding"]
         return dict_attr
@@ -260,7 +279,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 validation_data = (X_input_val, y_categorical_val)
 
         if tensorboard_log_dir is None:
-            self.model.fit(
+            hist = self.model.fit(
                 X_input_train,
                 y_categorical_train,
                 batch_size=self.batch_size,
@@ -314,7 +333,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 embeddings_data=embeddings_data,
                 update_freq=update_freq,
             )
-            self.model.fit(
+            hist = self.model.fit(
                 X_input_train,
                 y_categorical_train,
                 batch_size=self.batch_size,
@@ -323,7 +342,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 validation_data=validation_data,
                 **kwargs,
             )
-        pass
+        return hist
 
     def predict(self, X, **kwargs):
         """Returns the class predicted.
@@ -364,7 +383,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             X_seq, X_attention = self._prepare_bert_sequences(X)
             X_meta, nb_meta_features = self._get_meta(X)
             if nb_meta_features == 0:
-                X_input = [X_seq, X_meta]
+                X_input = [X_seq, X_attention]
             else:
                 X_input = [X_seq, X_attention, X_meta]
         return self.model.predict(X_input, **kwargs)
@@ -382,15 +401,13 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         The vocabulary of the NN is those of the pretrained embedding
         """
         pretrained_embedding = self.pretrained_embedding
-        self.vocabulary = pretrained_embedding.embedding.wv.index2word
+        self.vocabulary = pretrained_embedding.embedding.index_to_key
         vocab_size = len(self.vocabulary)
         vector_dim = pretrained_embedding.embedding.vector_size
         embedding_matrix = np.zeros((vocab_size + 2, vector_dim))
         for index, word in enumerate(self.vocabulary):
             if word not in ["PAD", "UNK"]:
-                embedding_matrix[
-                    index + 2, :
-                ] = pretrained_embedding.embedding.wv.get_vector(word)
+                embedding_matrix[index + 2, :] = pretrained_embedding.embedding[word]
         embedding_matrix[1, :] = np.mean(embedding_matrix, axis=0)
 
         self.vocabulary.insert(0, "PAD")
