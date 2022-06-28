@@ -48,7 +48,7 @@ all_requirements = list(set([y for x in extras_require.values() for y in x]))
 extras_require["all"] = all_requirements
 
 # Conf files
-conf_json_files = glob.glob("melusine/config/**/*.json")
+conf_json_files = glob.glob("melusine/config/**/*.json", recursive=True)
 
 
 setup(
