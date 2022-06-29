@@ -1,5 +1,4 @@
 pip>=20.0
-bumpversion==0.5.3
 coverage==4.5.1
 emoji
 flake8==3.5.0
