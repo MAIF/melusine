@@ -35,6 +35,7 @@ def bayesian_cnn_with_meta_model(
     nb_meta,
     loss=None, 
     activation="softmax",):
+    
     text_input = Input(shape=(seq_max,), dtype="int32")
 
     x = Embedding(
@@ -92,22 +93,6 @@ def bayesian_cnn_with_meta_model(
     model.compile(optimizer=Adam(), loss=lambda y, p_y: -p_y.log_prob(y), metrics=["accuracy"])
     return model
 
-def spike_and_slab(event_shape, dtype):
-    "Define the spike and slab distribution."
-    distribution = tfd.Mixture(
-        cat=tfd.Categorical(probs=[0.5, 0.5]),
-        components=[
-            tfd.Independent(tfd.Normal(
-                loc=tf.zeros(event_shape, dtype=dtype), 
-                scale=1.0*tf.ones(event_shape, dtype=dtype)),
-                            reinterpreted_batch_ndims=1), # TODO scale : 1.0*tf.ones
-            tfd.Independent(tfd.Normal(
-                loc=tf.zeros(event_shape, dtype=dtype), 
-                scale=10.0*tf.ones(event_shape, dtype=dtype)), 
-                            reinterpreted_batch_ndims=1)],  # TODO scale : 10.0*tf.ones
-    name='spike_and_slab')
-    return distribution
-
 
 def prior(kernel_size, bias_size, dtype = None):
     """
@@ -134,11 +119,13 @@ def posterior(kernel_size, bias_size, dtype=None):
         tfpl.IndependentNormal(n)
     ])
 
+
 def variational_cnn_model(
     embedding_matrix_init,
     ntargets,
     seq_max,
     nb_meta,
+    training_data_size=None,
     loss=None, 
     activation="softmax",
 ):
@@ -152,8 +139,7 @@ def variational_cnn_model(
     -------
     Model instance
     """
-    N = 40 ################################################ TODO replace 40 en len(X)
-    divergence_fn = lambda q, p, _ : tfd.kl_divergence(q, p) / N
+    divergence_fn = lambda q, p, _ : tfd.kl_divergence(q, p) / training_data_size
     text_input = Input(shape=(seq_max,), dtype="int32")
 
     x = Embedding(
@@ -177,19 +163,15 @@ def variational_cnn_model(
     )(x)
     x = GlobalMaxPooling1D()(x)
     inputs = [text_input]
-
-    x = tfpl.DenseVariational(
-        units=2**6,
-        make_prior_fn=prior,
-        make_posterior_fn=posterior,
-        kl_weight=1/N
-    )(x)
     
-    x = tfpl.DenseVariational(
+    x = tfpl.DenseReparameterization(
         units=tfpl.OneHotCategorical.params_size(ntargets),
-        make_prior_fn=prior,
-        make_posterior_fn=posterior,
-        kl_weight=1/N
+        kernel_prior_fn=tfpl.default_multivariate_normal_fn,
+        kernel_posterior_fn=tfpl.default_mean_field_normal_fn(is_singular=False),
+        kernel_divergence_fn=divergence_fn,
+        bias_prior_fn=tfpl.default_multivariate_normal_fn,
+        bias_posterior_fn=tfpl.default_mean_field_normal_fn(is_singular=False),
+        bias_divergence_fn=divergence_fn,
     )(x)
 
     outputs = tfpl.OneHotCategorical(ntargets, convert_to_tensor_fn=tfd.Distribution.mode)(x)
@@ -199,11 +181,13 @@ def variational_cnn_model(
     model.compile(optimizer=Adam(), loss=lambda y, p_y: -p_y.log_prob(y), metrics=["accuracy"])
     return model
 
+
 def flipout_cnn_model(
     embedding_matrix_init,
     ntargets,
     seq_max,
     nb_meta,
+    training_data_size=None,
     loss=None, 
     activation="softmax",
 ):
@@ -217,8 +201,7 @@ def flipout_cnn_model(
     -------
     Model instance
     """
-    N = 40 ################################################ TODO replace 40 en len(X)
-    divergence_fn = lambda q, p, _ : tfd.kl_divergence(q, p) / N
+    divergence_fn = lambda q, p, _ : tfd.kl_divergence(q, p) / training_data_size
     text_input = Input(shape=(seq_max,), dtype="int32")
 
     x = Embedding(
@@ -229,14 +212,11 @@ def flipout_cnn_model(
         trainable=False,
     )(text_input)
     x = tfpl.Convolution1DFlipout(
-         filters=2**7, kernel_size=3, padding='SAME',
+         filters=2**6, kernel_size=3, padding='SAME',
          kernel_divergence_fn=divergence_fn,
          activation=tf.nn.relu)(x)
     x = GlobalMaxPooling1D()(x)
     inputs = [text_input]
-    x = tfpl.DenseFlipout(
-         2**6, kernel_divergence_fn=divergence_fn,
-         activation=tf.nn.relu)(x)
     x = tfpl.DenseFlipout(
         ntargets, kernel_divergence_fn=divergence_fn,
         activation=tf.nn.softmax)(x)

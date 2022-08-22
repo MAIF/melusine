@@ -122,6 +122,12 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         tokenizer=Tokenizer(),
         **kwargs,
     ):
+        if architecture_function.__name__ in ["variational_cnn_model", "flipout_cnn_model"]:
+            if "training_data_size" not in kwargs:
+                raise TypeError("""Please define training_data_size arg to define the kl_divergence""")
+            training_data_size = kwargs["training_data_size"]
+            init_training_data_size, loss, activation = architecture_function.__defaults__
+            architecture_function.__defaults__ = (training_data_size, loss, activation)
         self.architecture_function = architecture_function
         self.pretrained_embedding = pretrained_embedding
         self.bert_tokenizer = bert_tokenizer
