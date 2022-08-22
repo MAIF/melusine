@@ -140,10 +140,10 @@ To create one, on the top of your forked repository, you will find a button "Com
 
 As you can see, you can select on the right side which branch of your forked repository you want to associate to the pull request. 
 
-On the left side, you will find the official Melusine repository.
+On the left side, you will find the official Melusine repository. Due to increase of external contributions, we advise you to create a pull request on develop so we can test before integrating it to the final release.
 
 - Base repository: MAIF/melusine
-- Base branch: master
+- Base branch: develop
 - Head repository: your-github-username/melusine
 - Head branch: your-contribution-branch
 

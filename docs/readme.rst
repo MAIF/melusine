@@ -44,6 +44,11 @@ Use **Melusine** if you need a library which :
 Release Notes
 -------------
 
+Release 2.3.5
+^^^^^^
+Bug fix:
+  - **PR139:** Fix config search with a recursive paramater.
+  
 Release 2.3.4
 ^^^^^^
 
