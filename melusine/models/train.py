@@ -373,7 +373,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         Parameters
         ----------
         X : pd.DataFrame
-        confidence_interval : float, optional
+        prediction_interval : float, optional
             between [0,1], the confidence level of the interval.
             Only available with tensorflow-probability models.
         Returns
@@ -382,18 +382,18 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             The estimation of probability for each category.
         inf : np.array, optional
             The upper bound of the estimation of probability.
-            Only provided if `confidence_interval` exists.
+            Only provided if `prediction_interval` exists.
         sup : np.array, optional
             The lower bound of the estimation of probability.
-            Only provided if `confidence_interval` exists.
+            Only provided if `prediction_interval` exists.
         """
 
         X_input = self.prepare_email_to_predict(X)
         if self.model.layers[-1].get_config().get('convert_to_tensor_fn') == 'mode':
             # tensorflow_probabilty model : the output is a distribution so we return the mean of the distribution
             score = self.model(X_input).mean().numpy()
-            if "confidence_interval" in kwargs:
-                confidence_level = kwargs["confidence_interval"]
+            if "prediction_interval" in kwargs:
+                confidence_level = kwargs["prediction_interval"]
                 std = self.model(X_input).stddev()
                 two_sided_mult = st.norm.ppf((1+confidence_level)/2) # 1.96 for 0.95
                 inf = score-two_sided_mult*std.numpy()
