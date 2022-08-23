@@ -49,7 +49,7 @@ all_requirements = list(set([y for x in extras_require.values() for y in x]))
 extras_require["all"] = all_requirements
 
 # Conf files
-conf_json_files = glob.glob("melusine/config/**/*.json")
+conf_json_files = glob.glob("melusine/config/**/*.json", recursive=True)
 
 
 setup(
@@ -114,6 +114,6 @@ setup(
     tests_require=test_requirements,
     extras_require=extras_require,
     url="https://github.com/MAIF/melusine",
-    version='2.3.4',
+    version='2.3.5',
     zip_safe=False,
 )
