@@ -561,6 +561,7 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                     word: i for i, word in enumerate(self.vocabulary)
                 }
                 if self.architecture_function.__name__ == "flipout_cnn_model":
+                    # this variational model needs also the size of the training dataset
                     training_data_size = len(X)
                     self.model = self.architecture_function(
                         embedding_matrix_init=self.embedding_matrix,

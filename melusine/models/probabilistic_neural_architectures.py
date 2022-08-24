@@ -35,7 +35,37 @@ def probabilistic_cnn_with_meta_model(
     nb_meta,
     loss=None, 
     activation="softmax",):
-    
+    """Pre-defined architecture of a probabilistic CNN model.
+
+    Parameters
+    ----------
+    embedding_matrix_init : np.array,
+        Pretrained embedding matrix.
+
+    ntargets : int, optional
+        Dimension of model output.
+        Default value, 18.
+
+    seq_max : int, optional
+        Maximum input length.
+        Default value, 100.
+
+    nb_meta : int, optional
+        Dimension of meta data input.
+        Default value, 252.
+
+    loss : str, optional
+        Loss function for training.
+        Default value, 'categorical_crossentropy'.
+
+    activation : str, optional
+        Activation function.
+        Default value, 'softmax'.
+
+    Returns
+    -------
+    Model instance
+    """
     text_input = Input(shape=(seq_max,), dtype="int32")
 
     x = Embedding(
@@ -133,7 +163,28 @@ def flipout_cnn_model(
 
     Parameters
     ----------
-    TODO DEFINE
+    embedding_matrix_init : np.array,
+        Pretrained embedding matrix.
+
+    ntargets : int, optional
+        Dimension of model output.
+        Default value, 18.
+
+    seq_max : int, optional
+        Maximum input length.
+        Default value, 100.
+
+    nb_meta : int, optional
+        Dimension of meta data input.
+        Default value, 252.
+
+    loss : str, optional
+        Loss function for training.
+        Default value, 'categorical_crossentropy'.
+
+    activation : str, optional
+        Activation function.
+        Default value, 'softmax'.
 
     Returns
     -------
