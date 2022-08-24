@@ -18,6 +18,7 @@ from melusine.models.attention_model import PositionalEncoding
 from melusine.models.attention_model import TransformerEncoderLayer
 from melusine.models.attention_model import MultiHeadAttention
 
+
 tensorboard_callback_parameters = config["tensorboard_callback"]
 
 
@@ -122,12 +123,6 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
         tokenizer=Tokenizer(),
         **kwargs,
     ):
-        if architecture_function.__name__ in ["variational_cnn_model", "flipout_cnn_model"]:
-            if "training_data_size" not in kwargs:
-                raise TypeError("""Please define training_data_size arg to define the kl_divergence""")
-            training_data_size = kwargs["training_data_size"]
-            init_training_data_size, loss, activation = architecture_function.__defaults__
-            architecture_function.__defaults__ = (training_data_size, loss, activation)
         self.architecture_function = architecture_function
         self.pretrained_embedding = pretrained_embedding
         self.bert_tokenizer = bert_tokenizer
@@ -565,14 +560,26 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 self.vocabulary_dict = {
                     word: i for i, word in enumerate(self.vocabulary)
                 }
-                self.model = self.architecture_function(
-                    embedding_matrix_init=self.embedding_matrix,
-                    ntargets=nb_labels,
-                    seq_max=self.seq_size,
-                    nb_meta=nb_meta_features,
-                    loss=self.loss,
-                    activation=self.activation,
-                )
+                if self.architecture_function.__name__ == "flipout_cnn_model":
+                    training_data_size = len(X)
+                    self.model = self.architecture_function(
+                        embedding_matrix_init=self.embedding_matrix,
+                        ntargets=nb_labels,
+                        seq_max=self.seq_size,
+                        nb_meta=nb_meta_features,
+                        loss=self.loss,
+                        activation=self.activation,
+                        training_data_size=training_data_size
+                    )
+                else:
+                    self.model = self.architecture_function(
+                        embedding_matrix_init=self.embedding_matrix,
+                        ntargets=nb_labels,
+                        seq_max=self.seq_size,
+                        nb_meta=nb_meta_features,
+                        loss=self.loss,
+                        activation=self.activation,
+                    )
 
             X_seq = self._prepare_sequences(X)
 
@@ -621,7 +628,6 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
             meta_columns_list = [
                 col for col in columns_list if col.startswith(tuple(meta_input_list))
             ]
-
             if isinstance(X, dict):
                 X_meta = np.array(
                     [
@@ -630,7 +636,6 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 )
             else:
                 X_meta = X[meta_columns_list]
-
             nb_meta_features = len(meta_columns_list)
         if isinstance(X_meta, pd.DataFrame):
             X_meta = X_meta.to_numpy()

@@ -120,68 +120,6 @@ def posterior(kernel_size, bias_size, dtype=None):
     ])
 
 
-def variational_cnn_model(
-    embedding_matrix_init,
-    ntargets,
-    seq_max,
-    nb_meta,
-    training_data_size=None,
-    loss=None, 
-    activation="softmax",
-):
-    """Pre-defined architecture of a CNN model.
-
-    Parameters
-    ----------
-    TODO DEFINE
-
-    Returns
-    -------
-    Model instance
-    """
-    divergence_fn = lambda q, p, _ : tfd.kl_divergence(q, p) / training_data_size
-    text_input = Input(shape=(seq_max,), dtype="int32")
-
-    x = Embedding(
-        input_dim=embedding_matrix_init.shape[0],
-        output_dim=embedding_matrix_init.shape[1],
-        input_length=seq_max,
-        weights=[embedding_matrix_init],
-        trainable=False,
-    )(text_input)
-    x = tfpl.Convolution1DReparameterization(
-        filters=2**7, 
-        kernel_size=3, 
-        activation='relu',
-        padding='valid', 
-        kernel_prior_fn=tfpl.default_multivariate_normal_fn,
-        kernel_posterior_fn=tfpl.default_mean_field_normal_fn(is_singular=False),
-        kernel_divergence_fn=divergence_fn,
-        bias_prior_fn=tfpl.default_multivariate_normal_fn,
-        bias_posterior_fn=tfpl.default_mean_field_normal_fn(is_singular=False),
-        bias_divergence_fn=divergence_fn
-    )(x)
-    x = GlobalMaxPooling1D()(x)
-    inputs = [text_input]
-    
-    x = tfpl.DenseReparameterization(
-        units=tfpl.OneHotCategorical.params_size(ntargets),
-        kernel_prior_fn=tfpl.default_multivariate_normal_fn,
-        kernel_posterior_fn=tfpl.default_mean_field_normal_fn(is_singular=False),
-        kernel_divergence_fn=divergence_fn,
-        bias_prior_fn=tfpl.default_multivariate_normal_fn,
-        bias_posterior_fn=tfpl.default_mean_field_normal_fn(is_singular=False),
-        bias_divergence_fn=divergence_fn,
-    )(x)
-
-    outputs = tfpl.OneHotCategorical(ntargets, convert_to_tensor_fn=tfd.Distribution.mode)(x)
-
-    model = Model(inputs=inputs, outputs=outputs)
-
-    model.compile(optimizer=Adam(), loss=lambda y, p_y: -p_y.log_prob(y), metrics=["accuracy"])
-    return model
-
-
 def flipout_cnn_model(
     embedding_matrix_init,
     ntargets,
@@ -201,6 +139,8 @@ def flipout_cnn_model(
     -------
     Model instance
     """
+    if not training_data_size:
+        raise TypeError("""Please define training_data_size arg to define the kl_divergence""")
     divergence_fn = lambda q, p, _ : tfd.kl_divergence(q, p) / training_data_size
     text_input = Input(shape=(seq_max,), dtype="int32")
 
@@ -212,16 +152,30 @@ def flipout_cnn_model(
         trainable=False,
     )(text_input)
     x = tfpl.Convolution1DFlipout(
-         filters=2**6, kernel_size=3, padding='SAME',
+         filters=2**7, kernel_size=3, padding='SAME',
          kernel_divergence_fn=divergence_fn,
          activation=tf.nn.relu)(x)
     x = GlobalMaxPooling1D()(x)
-    inputs = [text_input]
-    x = tfpl.DenseFlipout(
-        ntargets, kernel_divergence_fn=divergence_fn,
-        activation=tf.nn.softmax)(x)
+    
+    if nb_meta == 0:
+        inputs = [text_input]
+        concatenate_2 = x
+    else:
+        Meta_input = Input(shape=(nb_meta,), dtype="float32")
+        inputs = [text_input, Meta_input]
+        concatenate_1 = Meta_input
+        y = tfpl.DenseFlipout(units=2**6, activation=tf.nn.relu)(concatenate_1)
+        concatenate_2 = Concatenate(axis=1)([x, y])
+    z = tfpl.DenseFlipout(
+        units=2**6, 
+        kernel_divergence_fn=divergence_fn,
+        activation=tf.nn.softmax)(concatenate_2)
+    z = tfpl.DenseFlipout(
+        units=tfpl.OneHotCategorical.params_size(ntargets), 
+        kernel_divergence_fn=divergence_fn,
+        activation=tf.nn.softmax)(z)
 
-    outputs = tfpl.OneHotCategorical(ntargets, convert_to_tensor_fn=tfd.Distribution.mode)(x)
+    outputs = tfpl.OneHotCategorical(ntargets, convert_to_tensor_fn=tfd.Distribution.mode)(z)
 
     model = Model(inputs=inputs, outputs=outputs)
 
