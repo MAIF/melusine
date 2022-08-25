@@ -391,8 +391,8 @@ class NeuralModel(BaseEstimator, ClassifierMixin):
                 confidence_level = kwargs["prediction_interval"]
                 std = self.model(X_input).stddev()
                 two_sided_mult = st.norm.ppf((1+confidence_level)/2) # 1.96 for 0.95
-                inf = score-two_sided_mult*std.numpy()
-                sup = score+two_sided_mult*std.numpy()
+                inf = np.clip(a=score-two_sided_mult*std.numpy(), a_min=0, a_max=1)
+                sup = np.clip(a=score+two_sided_mult*std.numpy(), a_min=0, a_max=1)
                 return score, inf, sup
             return score
         else:
