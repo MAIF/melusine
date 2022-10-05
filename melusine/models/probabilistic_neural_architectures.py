@@ -28,7 +28,7 @@ def negative_log_likelihood(y_true, y_pred):
     return -y_pred.log_prob(y_true)
 
 
-def probabilistic_cnn_with_meta_model(
+def probabilistic_cnn_model(
     embedding_matrix_init,
     ntargets,
     seq_max,
