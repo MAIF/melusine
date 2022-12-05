@@ -28,7 +28,7 @@ viz_requirements = ["plotly", "streamlit>=0.57.3"]
 lemmatizer_requirements = ["spacy>=3.0.0,<=3.0.4", "spacy-lefff==0.4.0"]
 stemmer_requirements = ["nltk>=3.6.7"]
 emoji_requirements = ["emoji>=1.6.3"]
-
+tf_probability = ["tensorflow-probability==0.14.0"]
 
 # Test dependencies
 setup_requirements = ["pytest-runner"]
@@ -43,6 +43,7 @@ extras_require = {
     "lemmatizer": lemmatizer_requirements,
     "stemmer": stemmer_requirements,
     "emoji": emoji_requirements,
+    "tf_probability": tf_probability,
 }
 all_requirements = list(set([y for x in extras_require.values() for y in x]))
 extras_require["all"] = all_requirements

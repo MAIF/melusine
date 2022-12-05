@@ -1,4 +1,3 @@
-from tensorflow import keras
 from tensorflow.keras.layers import BatchNormalization
 from tensorflow.keras.layers import LeakyReLU
 from tensorflow.keras.layers import Input
@@ -62,7 +61,7 @@ def cnn_model(
 
     text_input = Input(shape=(seq_max,), dtype="int32")
 
-    x = keras.layers.Embedding(
+    x = Embedding(
         input_dim=embedding_matrix_init.shape[0],
         output_dim=embedding_matrix_init.shape[1],
         input_length=seq_max,
@@ -159,7 +158,7 @@ def rnn_model(
     """
     text_input = Input(shape=(seq_max,), dtype="int32")
 
-    x = keras.layers.Embedding(
+    x = Embedding(
         input_dim=embedding_matrix_init.shape[0],
         output_dim=embedding_matrix_init.shape[1],
         input_length=seq_max,

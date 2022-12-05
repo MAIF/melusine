@@ -56,10 +56,25 @@ git pull upstream master
 
 Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
 
+First create a python virtual environment
 ```
 mkvirtualenv melusine
+```
+Go in the melusine directory
+```
 cd melusine 
+```
+Install you local package 
+```
 python setup.py develop
+```
+or
+```
+pip install -e .
+```
+or to have optionnal dependencies
+```
+pip install ".[transformers]"
 ```
 
 ## Start your contribution code
