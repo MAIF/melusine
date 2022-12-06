@@ -4,8 +4,9 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Generic badge](https://img.shields.io/badge/python-3.7|3.8-blue.svg)](https://shields.io/)
 
-🎉 We just released **Melusine 2.3.5** including new preprocessing features such as a `Lemmatizer` and a `Stemmer` class.
-For the first time, we are integrating numerous external contributions. Thank to those who have participated and make this library alive.  
+🎉 We just released **Melusine 2.3.6** including uncertainty estimations using TensorFlow Probability.
+Checkout this [tutorial](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial15_probabilistic_models.ipynb) 
+to learn more. We are grateful to those who contribute and make this library alive!  
 All new features can be found in the **full pipeline [tutorial](https://github.com/MAIF/melusine/blob/master/tutorial/tutorial08_full_pipeline_detailed.ipynb)**. 🎉
 
 # Melusine
