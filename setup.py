@@ -11,7 +11,7 @@ with open("README.md") as readme_file:
 requirements = [    
     "tensorflow>=2.8.0",
     "pandas>=1.3.0",
-    "scikit-learn>=0.23",
+    "scikit-learn>=1.0",
     "gensim>=4.1.2",
     "tqdm>=4.34",
     "unidecode>=1.0",
