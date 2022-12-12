@@ -163,7 +163,7 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
         # return vetorizer with binary term frequency atribute
         self.dict_scores_ = dict(
             zip(
-                self.tfidf_vectorizer.get_feature_names(),
+                self.tfidf_vectorizer.get_feature_names_out(),
                 self.tfidf_vectorizer.idf_,
             )
         )
@@ -265,7 +265,7 @@ class KeywordsGenerator(BaseEstimator, TransformerMixin):
         """Returns the tf-idf weights of each tokens"""
         tokens_joined = X["tokens"].apply(lambda x: " ".join(x))
         X_vec = self.tfidf_vectorizer.transform(tokens_joined)
-        feature_names = self.tfidf_vectorizer.get_feature_names()
+        feature_names = self.tfidf_vectorizer.get_feature_names_out()
         idf_weights = self._get_weights(X_vec.toarray(), self.keywords, feature_names)
 
         return idf_weights
