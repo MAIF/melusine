@@ -23,7 +23,7 @@ requirements = [
 
 # Optional dependencies
 exchange_requirements = ["exchangelib>=4.2.0"]
-transformers_requirements = ["transformers==3.4.0"]
+transformers_requirements = ["transformers==4.30.0"]
 viz_requirements = ["plotly", "streamlit>=0.57.3"]
 lemmatizer_requirements = ["spacy>=3.0.0,<=3.0.4", "spacy-lefff==0.4.0"]
 stemmer_requirements = ["nltk>=3.6.7"]

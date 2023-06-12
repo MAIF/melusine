@@ -18,7 +18,7 @@ gensim>=4.1.2
 tqdm>=4.34
 streamlit>=0.57.3
 tensorflow>=2.8.0
-transformers==3.4.0
+transformers==4.30.0
 unidecode>=1.0
 flashtext>=2.7
 plotly
