@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "melusine"
+authors = [
+    {name = "TODO", email = "todo@maif.fr"},
+    {name = "Hugo Perrier", email = "hugorperrier@gmail.com"},
+]
+description = "Melusine is"
+requires-python = ">=3.8"
+keywords = ["nlp", "emails"]
+license = {text = "todo"}
+classifiers = [
+    "Framework :: XYXY",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "arrow",
+    "pandas>2",
+    "scikit-learn>=1",
+    "tqdm>=4.34",
+    "omegaconf>=2.0",
+    # flashtext >= 2.7
+]
+dynamic = ["version", "readme"]
+
+[project.optional-dependencies] # Optional
+dev = []
+test = ["pytest", "coverage"]
+transformers = ["transformers>4"]
+
+[tool.setuptools.packages.find]
+where = ["."]  # list of folders that contain the packages
+
+[tool.setuptools]
+# If there are data files included in your packages that need to be
+# installed, specify them here.
+package-data = {"conf" = ["*.json", "*.yaml", "*.yml",], "data" = ["*.csv"]}
+
+[tool.setuptools.dynamic]
+version = {attr = "melusine.VERSION"}
+readme = {file = ["README.md"]}
+
+[tool.black]
+line-length = 120
+
+[tool.coverage.run]
+omit = [
+    # omit init files in docs_src
+    "docs/__init__.py",
+    "docs/docs_src/*/__init__.py",
+    # omit test files
+    "tests/*",
+    # omit anything in a .local directory anywhere
+    "*/.local/*",
+    # omit single files
+    "melusine/connectors/__init__.py",
+    "melusine/connectors/exchange.py",
+]
