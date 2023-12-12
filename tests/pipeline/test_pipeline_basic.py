@@ -24,7 +24,7 @@ def test_pipeline_basic(dataframe_basic):
     pipe = MelusinePipeline(steps=[("normalizer", normalizer), ("tokenizer", tokenizer)], verbose=True)
 
     # Fit the pipeline and transform the data
-    df_transformed = pipe.fit_transform(df)
+    df_transformed = pipe.transform(df)
 
     # Most basic test, check that the pipeline returns a pandas DataFrame
     assert isinstance(df_transformed, pd.DataFrame)
@@ -67,7 +67,7 @@ def test_pipeline_from_config(dataframe_basic):
     pipe = MelusinePipeline.from_config(config_key=pipeline_key, verbose=True)
 
     # Fit the pipeline and transform the data
-    df_transformed = pipe.fit_transform(df)
+    df_transformed = pipe.transform(df)
 
     # Make basic tests
     assert isinstance(df_transformed, pd.DataFrame)
@@ -113,7 +113,7 @@ def test_pipeline_from_dict(dataframe_basic):
     pipe = MelusinePipeline.from_config(config_dict=conf_pipeline_basic, verbose=True)
 
     # Fit the pipeline and transform the data
-    df_transformed = pipe.fit_transform(df)
+    df_transformed = pipe.transform(df)
 
     # Make basic tests
     assert isinstance(df_transformed, pd.DataFrame)

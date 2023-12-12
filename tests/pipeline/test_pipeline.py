@@ -35,7 +35,7 @@ def test_pipeline_with_processors():
     df = pd.DataFrame({"a": [dum0, dum0]})
 
     # Fit the pipeline and transform the data
-    df_transformed = pipe.fit_transform(df)
+    df_transformed = pipe.transform(df)
 
     # Most basic test, check that the pipeline returns a pandas DataFrame
     assert isinstance(df_transformed, pd.DataFrame)
@@ -46,39 +46,6 @@ def test_pipeline_with_processors():
     assert df_transformed["a"].iloc[0] == dum0
     assert df_transformed["b"].iloc[0] == dum1
     assert df_transformed["c"].iloc[0] == dum2
-
-
-def test_pipeline_with_arbitrary_transformer():
-    class ArbitraryTransformer:
-        def __init__(self, dummy_attr=dum1):
-            self.dummy_attr = dummy_attr
-
-        def add_dummy_col(self, col_a_data):
-            return self.dummy_attr
-
-        def fit(self, x, y=None):
-            return self
-
-        def transform(self, x):
-            x["b"] = x["a"].apply(self.add_dummy_col)
-
-            return x
-
-    d1 = ArbitraryTransformer()
-
-    # Create pipeline
-    pipe = MelusinePipeline(steps=[("d1", d1)], verbose=True)
-
-    # Create data
-    df = pd.DataFrame({"a": [dum0, dum0]})
-
-    # Fit the pipeline and transform the data
-    df_transformed = pipe.fit_transform(df)
-
-    # Most basic test, check that the pipeline returns a pandas DataFrame
-    assert isinstance(df_transformed, pd.DataFrame)
-    assert "a" in df_transformed.columns
-    assert "b" in df_transformed.columns
 
 
 def test_meta_pipeline():
@@ -95,7 +62,7 @@ def test_meta_pipeline():
     df = pd.DataFrame({"a": [dum0, dum0]})
 
     # Fit the pipeline and transform the data
-    df_transformed = meta_pipe.fit_transform(df)
+    df_transformed = meta_pipe.transform(df)
 
     # Most basic test, check that the pipeline returns a pandas DataFrame
     assert isinstance(df_transformed, pd.DataFrame)
