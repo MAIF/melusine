@@ -1,0 +1,4 @@
+transfer_detector:
+  name: transfer
+  header_column: det_clean_header
+  messages_column: messages

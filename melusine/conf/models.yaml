@@ -1,0 +1,4 @@
+models:
+  dummy_model:
+    inference_mode: LOCAL
+    version: null

@@ -1,0 +1,3 @@
+reply_detector:
+  name: reply
+  header_column: det_clean_header

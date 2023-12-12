@@ -1,0 +1,8 @@
+vacation_reply_pipeline:
+  steps:
+  - class_name: MelusinePipeline
+    config_key: preprocessing_pipeline
+    module: melusine.pipeline
+  - class_name: VacationReplyDetector
+    config_key: vacation_reply_detector
+    module: melusine.detectors

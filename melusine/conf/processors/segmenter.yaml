@@ -1,0 +1,5 @@
+segmenter:
+  input_columns:
+  - tmp_clean_body
+  output_columns:
+  - messages

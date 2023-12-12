@@ -1,0 +1,3 @@
+thanks_detector:
+  name: thanks
+  messages_column: messages

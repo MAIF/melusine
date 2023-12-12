@@ -1,0 +1,3 @@
+emergency_detector:
+  name: emergency
+  text_column: det_normalized_last_body

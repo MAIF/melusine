@@ -1,0 +1,19 @@
+text_flagger:
+  input_columns:
+  - det_clean_last_body
+  output_columns:
+  - det_flagged_last_body
+  add_spaces: true
+  text_flags:
+    'rendez[- ]vous': rendez_vous
+    'ci[- ]joint': ci_joint
+
+header_flagger:
+  input_columns:
+  - det_clean_header
+  output_columns:
+  - det_flagged_header
+  add_spaces: true
+  text_flags:
+    'rendez[- ]vous': rendez_vous
+    'ci[- ]joint': ci_joint

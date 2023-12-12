@@ -1,0 +1,35 @@
+preprocessing_pipeline:
+  steps:
+  - class_name: Cleaner
+    config_key: body_cleaner
+    module: melusine.processors
+  - class_name: Cleaner
+    config_key: header_cleaner
+    module: melusine.processors
+  - class_name: Segmenter
+    config_key: segmenter
+    module: melusine.processors
+  - class_name: ContentTagger
+    config_key: content_tagger
+    module: melusine.processors
+  - class_name: TransferredEmailProcessor
+    config_key: transferred_email_processor
+    module: melusine.processors
+  - class_name: TextExtractor
+    config_key: text_extractor
+    module: melusine.processors
+  - class_name: DeterministicTextFlagger
+    config_key: text_flagger
+    module: melusine.processors
+  - class_name: DeterministicTextFlagger
+    config_key: header_flagger
+    module: melusine.processors
+  - class_name: RegexTokenizer
+    config_key: tokenizer
+    module: melusine.processors
+  - class_name: RegexTokenizer
+    config_key: header_tokenizer
+    module: melusine.processors
+  - class_name: TokensExtractor
+    config_key: tokens_extractor
+    module: melusine.processors

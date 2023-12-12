@@ -1,0 +1,6 @@
+tokens_extractor:
+  input_columns:
+  - ml_header_tokens
+  - ml_body_tokens
+  output_columns:
+  - ml_tokens

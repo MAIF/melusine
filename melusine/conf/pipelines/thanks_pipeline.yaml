@@ -1,0 +1,8 @@
+thanks_pipeline:
+  steps:
+  - class_name: MelusinePipeline
+    config_key: preprocessing_pipeline
+    module: melusine.pipeline
+  - class_name: ThanksDetector
+    config_key: thanks_detector
+    module: melusine.detectors

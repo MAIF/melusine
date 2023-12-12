@@ -1,0 +1,8 @@
+recipients_pipeline:
+  steps:
+  - class_name: MelusinePipeline
+    config_key: preprocessing_pipeline
+    module: melusine.pipeline
+  - class_name: RecipientsDetector
+    config_key: recipients_detector
+    module: melusine.detectors

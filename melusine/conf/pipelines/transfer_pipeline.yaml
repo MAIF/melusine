@@ -1,0 +1,8 @@
+transfer_pipeline:
+  steps:
+  - class_name: MelusinePipeline
+    config_key: preprocessing_pipeline
+    module: melusine.pipeline
+  - class_name: TransferDetector
+    config_key: transfer_detector
+    module: melusine.detectors

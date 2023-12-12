@@ -1,0 +1,9 @@
+text_extractor:
+  include_tags: BODY
+  input_columns:
+  - messages
+  output_columns:
+  - det_clean_last_body
+  n_messages: 1
+  stop_at:
+    - GREETINGS
