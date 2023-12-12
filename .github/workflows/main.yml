@@ -1,0 +1,49 @@
+name: Build & Test
+on: push
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: psf/black@stable
+        with:
+          src: "./melusine"
+
+  test:
+    name: Test
+    needs: lint
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        python-version: ["3.8", "3.10"]
+    steps:
+    - name: Checkout the repository
+      uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install tox tox-gh-actions
+    - name: Test with tox
+      run: tox
+
+  coverage:
+    name: Create coverage badge
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Coverage Badge
+        uses: codecov/codecov-action@v3
+
+  deploy:
+    name: Deploy python package
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Deploying .."

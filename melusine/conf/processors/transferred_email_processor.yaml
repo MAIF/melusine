@@ -1,0 +1,8 @@
+transferred_email_processor:
+  output_columns:
+    - messages
+    - det_original_from
+  tags_to_ignore:
+    - FOOTER
+    - SIGNATURE
+  messages_column: messages

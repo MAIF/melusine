@@ -1,0 +1,8 @@
+expeditor_pipeline:
+  steps:
+  - class_name: MelusinePipeline
+    config_key: preprocessing_pipeline
+    module: melusine.pipeline
+  - class_name: ExpeditorDetector
+    config_key: expeditor_detector
+    module: melusine.detectors

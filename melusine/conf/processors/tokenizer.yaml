@@ -1,0 +1,21 @@
+tokenizer:
+  input_columns:
+  - det_flagged_last_body
+  output_columns:
+  - ml_body_tokens
+  normalization_form: NFKD
+  stopwords:
+  - le
+  - les
+  tokenizer_regex: \w+(?:[\?\-\"_]\w+)*
+
+header_tokenizer:
+  input_columns:
+  - det_flagged_header
+  output_columns:
+  - ml_header_tokens
+  normalization_form: NFKD
+  stopwords:
+  - le
+  - les
+  tokenizer_regex: \w+(?:[\?\-\"_]\w+)*

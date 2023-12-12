@@ -1,0 +1,3 @@
+vacation_reply_detector:
+  name: vacation_reply
+  messages_column: messages

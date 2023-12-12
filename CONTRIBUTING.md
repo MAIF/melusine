@@ -62,9 +62,9 @@ mkvirtualenv melusine
 ```
 Go in the melusine directory
 ```
-cd melusine 
+cd melusine
 ```
-Install you local package 
+Install you local package
 ```
 python setup.py develop
 ```
@@ -83,7 +83,7 @@ To contribute to Melusine, you will need to create a personal branch.
 ```
 git checkout -b feature/my-contribution-branch
 ```
-We recommand to use a convention of naming branch. 
+We recommand to use a convention of naming branch.
 - **feature/your_feature_name** if you are creating a feature
 - **hotfix/your_bug_fix** if you are fixing a bug
 
@@ -95,7 +95,7 @@ Before committing your modifications, we have some recommendations :
 ```
 pytest
 ```
-- Try to build Melusine 
+- Try to build Melusine
 ```
 python setup.py bdist_wheel
 ```
@@ -125,7 +125,7 @@ git commit -m ‘detailed description of your change’
 git push origin feature/my-contribution-branch
 ```
 
-Your branch is now available on your remote forked repository, with your changes. 
+Your branch is now available on your remote forked repository, with your changes.
 
 Next step is now to create a Pull Request so the Melusine Team can add your changes to the official repository.
 
@@ -138,7 +138,7 @@ To create one, on the top of your forked repository, you will find a button "Com
 
 <img src="https://raw.githubusercontent.com/MAIF/melusine/master/docs/assets/images/contributing/melusine-compare-pr.png" alt="pull request" />
 
-As you can see, you can select on the right side which branch of your forked repository you want to associate to the pull request. 
+As you can see, you can select on the right side which branch of your forked repository you want to associate to the pull request.
 
 On the left side, you will find the official Melusine repository. Due to increase of external contributions, we advise you to create a pull request on develop so we can test before integrating it to the final release.
 

@@ -1,0 +1,18 @@
+pipeline_selection:
+- attr_1: value_1
+  attr_2: value_2
+  attr_3: value_3
+  pipeline_conf_key: pipeline_abc
+- attr_1: value_1
+  attr_2: value_2
+  pipeline_conf_key: pipeline_def
+- attr_1: value_1
+  pipeline_conf_key: pipeline_ghi
+- attr_2: value_2
+  pipeline_conf_key: pipeline_jkl
+- attr_1: value_1
+  attr_2: value_21
+  pipeline_conf_key: pipeline_mno
+- attr_1: value_1
+  attr_3: value_3
+  pipeline_conf_key: pipeline_pqr

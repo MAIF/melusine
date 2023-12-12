@@ -1,0 +1,23 @@
+demo_pipeline:
+  steps:
+  - class_name: Cleaner
+    config_key: body_cleaner
+    module: melusine.processors
+  - class_name: Cleaner
+    config_key: header_cleaner
+    module: melusine.processors
+  - class_name: Segmenter
+    config_key: segmenter
+    module: melusine.processors
+  - class_name: ContentTagger
+    config_key: content_tagger
+    module: melusine.processors
+  - class_name: TextExtractor
+    config_key: text_extractor
+    module: melusine.processors
+  - class_name: Normalizer
+    config_key: demo_normalizer
+    module: melusine.processors
+  - class_name: EmergencyDetector
+    config_key: emergency_detector
+    module: melusine.detectors

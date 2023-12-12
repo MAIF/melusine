@@ -1,0 +1,31 @@
+body_cleaner:
+  input_columns:
+  - body
+  output_columns:
+  - tmp_clean_body
+  substitutions:
+      "’": "'"  # Replace special quotes
+      "œ": "oe"  # Specific french combination
+      "\\s*[\\r\\n]+\\s*": "\\n"  # Standardize newline characters
+      " +": " "  # Remove multiple spaces
+      "\\n*<\\n(\\w)": " <\\1"  # Undesired newlines
+      "(\\w)\\n>": "\\1>"  # Undesired newlines
+      "\n ?»": " »"  # Undesired newlines
+      "« ?\n": "« "  # Undesired newlines
+      "\\xa0": " "  # Replace non-breaking spaces
+      "(?m)^\\s+": ""  # Remove beginning of line newline characters
+      "(?m)\\s+$": ""  # Remove ending of line newline characters
+
+header_cleaner:
+  input_columns:
+  - header
+  output_columns:
+  - det_clean_header
+  substitutions:
+      "’": "'"
+      "œ": "oe"
+      "\\s*[\\r\\n]+\\s*": "\\n"
+      " +": " "
+      "<\\n(\\w)": "<\\1"
+      "(\\w)\\n>": "\\1>"
+      "\\xa0": " "
