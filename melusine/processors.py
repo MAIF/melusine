@@ -1258,7 +1258,7 @@ class ContentTagger(BaseContentTagger):
             "^.{0,3}(talk|write|see you|speak to you) soon.{0,3}$",
             "^.{0,3}take care.{0,3}$",
             "^.{0,3}catch you later.{0,3}$",
-            fr"^.{{0,3}}have an? (blessed|excellent|good|fantastic|great) ({english_times_pattern}).{{0,3}}$",
+            rf"^.{{0,3}}have an? (blessed|excellent|good|fantastic|great) ({english_times_pattern}).{{0,3}}$",
             r"i am looking forward to hearing from you.{0,3}$",
             "^.{0,3}looking forward to your reply.{0,3}$",
             "^.{0,3}hoping to hear from you( soon)?.{0,3}$",
@@ -1306,7 +1306,7 @@ class ContentTagger(BaseContentTagger):
             r"mesdames",
             r"messieurs",
             # English
-            fr"good {english_times_pattern}",
+            rf"good {english_times_pattern}",
             r"hi( there)?",
             r"hello",
             r"greetings",
@@ -1316,7 +1316,7 @@ class ContentTagger(BaseContentTagger):
             r"how are you (doing|today)",
             r"(it is|it's)? ?(good|great) to hear from you",
             r"i hope (you are|you're)( doing)? well",
-            fr"i hope (you are|you're) having an? ?(great|wonderful|fantastic)? ({english_times_pattern})",
+            rf"i hope (you are|you're) having an? ?(great|wonderful|fantastic)? ({english_times_pattern})",
             r"i hope this email finds you well",
             r"to whom it may concern",
         ]
