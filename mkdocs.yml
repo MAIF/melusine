@@ -1,0 +1,67 @@
+# yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
+site_name: Melusine
+site_description: A framework for automated email qualification
+site_url: https://todo.com
+
+repo_name: MAIF/melusine
+repo_url: https://github.com/MAIF/melusine
+
+theme:
+  name: 'material'
+  features:
+    - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - announce.dismiss
+    - navigation.tabs
+
+nav:
+  - Intro:
+    - index.md
+  - Project history:
+    - history/history.md
+  - Tutorials:
+    - tutorials/00_GettingStarted.md
+#    - tutorials/01_MelusinePipeline.md
+#    - tutorials/02_MelusineTransformers.md
+#    - tutorials/03_MelusineRegex.md
+#    - tutorials/04_UsingModels.md
+    - tutorials/05a_MelusineDetectors.md
+    - tutorials/05b_MelusineDetectorsAdvanced.md
+    - tutorials/06_Configurations.md
+    - tutorials/07_BasicClassification.md
+  - Advanced Tutorials:
+    - advanced/ContentTagger.md
+    - advanced/CustomDetector.md
+    - advanced/ExchangeConnector.md
+    - advanced/PreTrainedModelsHF.md
+  - Code Philosophy:
+    - philosophy/philosophy.md
+  - Contributions:
+    - contribute/how_to_contribute.md
+    - contribute/maif.md
+
+markdown_extensions:
+  mdx_include:
+    base_path: docs
+  tables:
+  admonition:
+#  pymdownx.details:
+#  pymdownx.extra:
+  pymdownx.tabbed:
+    alternate_style: true
+  pymdownx.highlight:
+    anchor_linenums: true
+    line_spans: __span
+    pygments_lang_class: true
+  pymdownx.inlinehilite:
+  pymdownx.snippets:
+    dedent_subsections: true
+  pymdownx.superfences:
+    custom_fences:
+    - name: mermaid
+      class: mermaid
+      format: !!python/name:pymdownx.superfences.fence_code_format ''
+  attr_list:
+  md_in_html:
