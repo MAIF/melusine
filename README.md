@@ -1,6 +1,5 @@
 [![pypi badge](https://img.shields.io/pypi/v/melusine.svg)](https://pypi.python.org/pypi/melusine)
-[![Build Status](https://travis-ci.org/MAIF/melusine.svg?branch=master)](https://travis-ci.org/MAIF/melusine)
-[![documentation badge](https://readthedocs.org/projects/melusine/badge/?version=latest)](https://readthedocs.org/projects/melusine/)
+[![build status](https://github.com/MAIF/melusine/actions/workflows/main/badge.svg)]
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Generic badge](https://img.shields.io/badge/python-3.7|3.8-blue.svg)](https://shields.io/)
 
