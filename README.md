@@ -1,26 +1,40 @@
-[![pypi badge](https://img.shields.io/pypi/v/melusine.svg)](https://pypi.python.org/pypi/melusine)
-[![Build & Test](https://github.com/MAIF/melusine/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/MAIF/melusine/actions/workflows/main.yml)[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Generic badge](https://img.shields.io/badge/python-3.8+-blue.svg)](https://shields.io/)
+<p align="center">
+<a href="https://github.com/MAIF/melusine/actions?branch=master" target="_blank">
+<img src="https://github.com/MAIF/melusine/actions/workflows/main.yml/badge.svg?branch=master" alt="Build & Test">
+</a>
+<a href="https://pypi.python.org/pypi/melusine" target="_blank">
+<img src="https://img.shields.io/pypi/v/melusine.svg" alt="pypi">
+</a>
+<a href="https://opensource.org/licenses/Apache-2.0" target="_blank">
+<img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="Test">
+</a>
+<a href="https://shields.io/" target="_blank">
+<img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="pypi">
+</a>
+</p>
 
-🎉 BREAKING : New major version **Melusine 3.0.0** is available 🎉  
-Checkout the [documentation](https://maif.github.io/melusine/) and [tutorials](https://maif.github.io/melusine/tutorials/00_GettingStarted/) to get started.
+<p align="center">🎉 **BREAKING** : New major version **Melusine 3.0.0** is available 🎉</p>
 
-<!-- <img src=`docs/_static/melusine.png` width=`200`/> -->
-![](docs/_static/melusine.png)
+<p align="center">
+<a href="https://maif.github.io/melusine" target="_blank">
+<img src="docs/_static/melusine.png">
+</a>
+</p>
 
-- Free software: Apache Software License 2.0
-- Documentation: [click here](https://maif.github.io/melusine/).
-- Installation: `pip install melusine`.
+- **Free software**: Apache Software License 2.0
+- **Documentation**: [maif.github.io/melusine](https://maif.github.io/melusine/)
+- **Installation**: `pip install melusine`
+- **Tutorials**: [Discover melusine](https://maif.github.io/melusine/tutorials/00_GettingStarted/)
 
 ## Overview
 
 
 Melusine is a high-level library for emails processing that can be used to do:
 
-- Email routing: Make sure emails are sent to the most appropriate destination.
-- Prioritization: Ensure urgent emails are treated first.
-- Summarization: Save time reading summaries instead of long emails.
-- Filtering: Remove undesired emails.
+- **Email routing**: Make sure emails are sent to the most appropriate destination.
+- **Prioritization**: Ensure urgent emails are treated first.
+- **Summarization**: Save time reading summaries instead of long emails.
+- **Filtering**: Remove undesired emails.
 
 Melusine facilitates the integration of deep learning frameworks (HuggingFace, Pytorch, Tensorflow, etc) 
 deterministic rules (regex, keywords, heuristics) into a full email qualification workflow.
