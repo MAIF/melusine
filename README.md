@@ -1,6 +1,5 @@
 [![pypi badge](https://img.shields.io/pypi/v/melusine.svg)](https://pypi.python.org/pypi/melusine)
-[![build status](https://github.com/MAIF/melusine/actions/workflows/main.yaml/badge.svg)]
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Build & Test](https://github.com/MAIF/melusine/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/MAIF/melusine/actions/workflows/main.yml)[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Generic badge](https://img.shields.io/badge/python-3.7|3.8-blue.svg)](https://shields.io/)
 
 🎉 We just released **Melusine 2.3.6** including uncertainty estimations using TensorFlow Probability.
