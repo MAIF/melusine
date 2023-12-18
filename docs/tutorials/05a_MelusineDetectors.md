@@ -33,14 +33,14 @@ The next sections break down the different parts of the code.
 
 ```Python
 --8<--
-docs_src/MelusineDetectors/tutorial001.py:detector
+docs/docs_src/MelusineDetectors/tutorial001.py:detector
 --8<--
 ```
 
 The detector is run on a simple dataframe:
 ```Python
 --8<--
-docs_src/MelusineDetectors/tutorial001.py:run
+docs/docs_src/MelusineDetectors/tutorial001.py:run
 --8<--
 ```
 
@@ -66,7 +66,7 @@ In the init method, you should call the superclass init and provide:
 
 ```Python
 --8<--
-docs_src/MelusineDetectors/tutorial001.py:detector_init
+docs/docs_src/MelusineDetectors/tutorial001.py:detector_init
 --8<--
 ```
 
@@ -80,7 +80,7 @@ The `pre_detect` method simply combines the header text and the body text
 (separated by a line break).
 ```Python
 --8<--
-docs_src/MelusineDetectors/tutorial001.py:pre_detect
+docs/docs_src/MelusineDetectors/tutorial002.py:pre_detect
 --8<--
 ```
 
@@ -90,7 +90,7 @@ The `detect` applies two regexes on the selected text:
 - A negative regex to avoid false positive detections
 ```Python
 --8<--
-docs_src/MelusineDetectors/tutorial001.py:detect
+docs/docs_src/MelusineDetectors/tutorial002.py:detect
 --8<--
 ```
 
@@ -98,7 +98,7 @@ docs_src/MelusineDetectors/tutorial001.py:detect
 The `post_detect` combines the regex detection result to determine the final result.
 ```Python
 --8<--
-docs_src/MelusineDetectors/tutorial001.py:post_detect
+docs/docs_src/MelusineDetectors/tutorial002.py:post_detect
 --8<--
 ```
 

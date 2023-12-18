@@ -33,7 +33,7 @@ A typical code for a melusine-based application looks like this :
 
 ```Python
 --8<--
-docs_src/GettingStarted/tutorial001.py:simple_pipeline
+docs/docs_src/GettingStarted/tutorial001.py:simple_pipeline
 --8<--
 ```
 
@@ -90,7 +90,7 @@ End users typically want to know what lead melusine to a specific detection resu
 
 ```Python
 --8<--
-docs_src/GettingStarted/tutorial002.py:debug_pipeline
+docs/docs_src/GettingStarted/tutorial002.py:debug_pipeline
 --8<--
 ```
 
