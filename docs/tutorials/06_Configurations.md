@@ -4,14 +4,14 @@ Melusine components can be instantiated using parameters defined in configuratio
 The `from_config` method accepts a `config_dict` argument
 ```Python
 --8<--
-docs_src/Configurations/tutorial001.py:from_config_dict
+docs/docs_src/Configurations/tutorial001.py:from_config_dict
 --8<--
 ```
 
 or a `config_key` argument.
 ```Python
 --8<--
-docs_src/Configurations/tutorial001.py:from_config
+docs/docs_src/Configurations/tutorial001.py:from_config
 --8<--
 ```
 When `demo_pipeline` is given as argument, parameters are read from the `melusine.config` object at key `demo_pipeline`. 
@@ -21,7 +21,7 @@ When `demo_pipeline` is given as argument, parameters are read from the `melusin
 The melusine configurations can be accessed with the `config` object.
 ```Python
 --8<--
-docs_src/Configurations/tutorial001.py:print_config
+docs/docs_src/Configurations/tutorial001.py:print_config
 --8<--
 ```
 
@@ -45,7 +45,7 @@ The configuration of the `demo_pipeline` can then be easily inspected.
 The simplest way to modify configurations is to create a new directory directly.
 ```Python
 --8<--
-docs_src/Configurations/tutorial001.py:modify_conf_with_dict
+docs/docs_src/Configurations/tutorial001.py:modify_conf_with_dict
 --8<--
 ```
 
@@ -54,7 +54,7 @@ modifying the configurations on the fly.
 Melusine lets you specify the path to a folder containing *yaml* files and loads them (the `OmegaConf` package is used behind the scene).
 ```Python
 --8<--
-docs_src/Configurations/tutorial001.py:modify_conf_with_path
+docs/docs_src/Configurations/tutorial001.py:modify_conf_with_path
 --8<--
 ```
 
@@ -62,7 +62,7 @@ When the `MELUSINE_CONFIG_DIR` environment variable is set, Melusine loads direc
 the path specified by the environment variable.
 ```Python
 --8<--
-docs_src/Configurations/tutorial001.py:modify_conf_with_env
+docs/docs_src/Configurations/tutorial001.py:modify_conf_with_env
 --8<--
 ```
 
@@ -76,7 +76,7 @@ It is advised to export the default configurations and then modify just the file
 
 ```Python
 --8<--
-docs_src/Configurations/tutorial001.py:export_config
+docs/docs_src/Configurations/tutorial001.py:export_config
 --8<--
 ```
 
