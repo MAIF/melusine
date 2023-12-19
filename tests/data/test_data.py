@@ -1,5 +1,3 @@
-import pytest
-
 from melusine.data import load_email_data
 
 
