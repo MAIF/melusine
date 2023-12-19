@@ -24,7 +24,7 @@ In this tutorial we want to detect insatisfaction in an email dataset.
 Let's create a basic dataset:
 ```Python
 --8<--
-docs_src/BasicClassification/tutorial001.py:create_dataset
+docs/docs_src/BasicClassification/tutorial001.py:create_dataset
 --8<--
 ```
 
@@ -40,7 +40,7 @@ The `transformers` library makes it really simple to use pre-trained models for 
 
 ```Python
 --8<--
-docs_src/BasicClassification/tutorial001.py:transformers
+docs/docs_src/BasicClassification/tutorial001.py:transformers
 --8<--
 ```
 
@@ -73,7 +73,7 @@ Melusine uses the MelusineDetector template class to standardise how models are 
 
 ```Python
 --8<--
-docs_src/BasicClassification/tutorial001.py:detector_init
+docs/docs_src/BasicClassification/tutorial001.py:detector_init
 --8<--
 ```
 
@@ -81,7 +81,7 @@ The `pre_detect` method assembles the text that we want to use for classificatio
 
 ```Python
 --8<--
-docs_src/BasicClassification/tutorial001.py:pre_detect
+docs/docs_src/BasicClassification/tutorial001.py:pre_detect
 --8<--
 ```
 
@@ -89,7 +89,7 @@ The `detect` method runs the classification model on the text.
 
 ```Python
 --8<--
-docs_src/BasicClassification/tutorial001.py:detect
+docs/docs_src/BasicClassification/tutorial001.py:detect
 --8<--
 ```
 
@@ -97,7 +97,7 @@ The `post_detect` method applies a threshold on the prediction score to determin
 
 ```Python
 --8<--
-docs_src/BasicClassification/tutorial001.py:post_detect
+docs/docs_src/BasicClassification/tutorial001.py:post_detect
 --8<--
 ```
 
@@ -109,7 +109,7 @@ Putting it all together, we run the detector on the input dataset.
 
 ```Python
 --8<--
-docs_src/BasicClassification/tutorial001.py:run
+docs/docs_src/BasicClassification/tutorial001.py:run
 --8<--
 ```
 

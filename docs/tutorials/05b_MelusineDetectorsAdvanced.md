@@ -27,7 +27,7 @@ Populating this debug dict with debug info is then left to the user's responsibi
 Exemple of a detector with debug data
 ```Python hl_lines="21 22 37-53"
 --8<--
-docs_src/MelusineDetectors/tutorial003.py:detector
+docs/docs_src/MelusineDetectors/tutorial003.py:detector
 --8<--
 ```
 
@@ -60,7 +60,7 @@ Otherwise, dataframe wise transformations are used.
 Exemple of a Detector with dataframe wise method (works with a PandasBackend only).
 ```Python hl_lines="22 28 39"
 --8<--
-docs_src/MelusineDetectors/tutorial002.py:detector
+docs/docs_src/MelusineDetectors/tutorial002.py:detector
 --8<--
 ```
 
@@ -75,7 +75,7 @@ instead of the default `pre_detect`/`detect`/`post_detect`.
 
 ```Python
 --8<--
-docs_src/MelusineDetectors/tutorial004.py:detector
+docs/docs_src/MelusineDetectors/tutorial004.py:detector
 --8<--
 ```
 
@@ -88,7 +88,7 @@ The `transform` method will now call `prepare` and `run`.
 
 ```Python
 --8<--
-docs_src/MelusineDetectors/tutorial004.py:run
+docs/docs_src/MelusineDetectors/tutorial004.py:run
 --8<--
 ```
 
