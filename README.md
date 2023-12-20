@@ -13,7 +13,7 @@
 </a>
 </p>
 
-<p align="center">🎉 **BREAKING** : New major version **Melusine 3.0.0** is available 🎉</p>
+<p align="center">🎉 **BREAKING** : New major version <b>Melusine 3.0</b> is available 🎉</p>
 
 <p align="center">
 <a href="https://maif.github.io/melusine" target="_blank">
