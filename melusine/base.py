@@ -112,6 +112,7 @@ class MelusineTransformer(BaseEstimator, TransformerMixin, IoMixin):
         _: MelusineDataset
             Transformed data (output).
         """
+        logger.debug(f"Running transform for {type(self).__name__}")
         if self.func is None:
             raise AttributeError(f"Attribute func of MelusineTransformer {type(self).__name__} should not be None")
         try:
@@ -210,6 +211,8 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
         _: MelusineDataset
             Transformed data (output).
         """
+        logger.debug(f"Running transform for {type(self).__name__}")
+
         # Debug mode ON?
         debug_mode: bool = backend.check_debug_flag(df)
 
@@ -232,6 +235,7 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
             return_cols.append(self.debug_dict_col)
 
         for method in self.transform_methods:
+            logger.debug(f"Running method {method.__name__}")
             first_arg_name: str = list(inspect.signature(method).parameters)[0]
 
             if first_arg_name == "row":
