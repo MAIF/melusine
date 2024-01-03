@@ -34,10 +34,10 @@ transformers = ["transformers>4"]
 [tool.setuptools.packages.find]
 where = ["."]  # list of folders that contain the packages
 
-[tool.setuptools]
-# If there are data files included in your packages that need to be
-# installed, specify them here.
-package-data = {"conf" = ["*.json", "*.yaml", "*.yml",], "data" = ["*.csv"]}
+# [tool.setuptools.package-data]
+# package_data and data_files are specified in the MANIFEST.in
+# conf = ["*.yaml"]
+# data = ["*.json"]
 
 [tool.setuptools.dynamic]
 version = {attr = "melusine.VERSION"}
