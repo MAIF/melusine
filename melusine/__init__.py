@@ -1,10 +1,11 @@
 """
 Top-level package.
 """
+import logging
+import pandas as pd
+
 from ctypes import CDLL, cdll
 from typing import Any, Optional
-
-import pandas as pd
 
 from melusine._config import config
 
@@ -12,6 +13,11 @@ __all__ = ["config"]
 
 VERSION = (3, 0, 0)
 __version__ = ".".join(map(str, VERSION))
+
+# ------------------------------- #
+#             LOGGING
+# ------------------------------- #
+logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 
 # ------------------------------- #
