@@ -7,9 +7,8 @@ This tutorial presents the advanced features of the `MelusineDetector` class:
 - Custom transform methods
 
 ## Debug mode
-`MelusineDetector` are designed to be easily debugged. For that purpose, the 
-pre-detect/detect/post-detect methods all have a `debug_mode` argument. 
-The debug mode is activated by setting the debug attribute of a dataframe to True.
+
+`MelusineDetector` are designed to be easily debugged. For that purpose, the `pre-detect`/`detect`/`post-detect` methods all have a `debug_mode` argument. The debug mode is activated by setting the `debug` attribute of a dataframe to `True`.
 
 ```Python hl_lines="3"
 import pandas as pd
@@ -20,11 +19,11 @@ df.debug = True
 !!! warning
     Debug mode activation is backend dependent. With a DictBackend, tou should use `my_dict["debug"] = True`
 
-When debug mode is activated, a column named "DETECTOR_NAME_debug" containing an empty 
-dictionary is automatically created.
+When debug mode is activated, a column named `DETECTOR_NAME_debug` containing an empty dictionary is automatically created.
 Populating this debug dict with debug info is then left to the user's responsibility. 
 
-Exemple of a detector with debug data
+Example of a detector with debug data:
+
 ```Python hl_lines="21 22 37-53"
 --8<--
 docs/docs_src/MelusineDetectors/tutorial003.py:detector
@@ -38,40 +37,38 @@ In the end, an extra column is created containing debug data:
 |  0 | True           | {'detection_input': '...', 'positive_match_data': {'result': True, 'match_text': 'virus'}, 'negative_match_data': {'result': False, 'match_text': None}}          |
 |  1 | False          | {'detection_input': '...', 'positive_match_data': {'result': False, 'match_text': None}, 'negative_match_data': {'result': False, 'match_text': None}}            |
 |  2 | True           | {'detection_input': '...', 'positive_match_data': {'result': True, 'match_text': 'virus'}, 'negative_match_data': {'result': False, 'match_text': None}}          |
-|  3 | False          | {'detection_input': '...', 'positive_match_data': {'result': True, 'match_text': 'virus'}, 'negative_match_data': {'result': True, 'match_text': 'corona virus'}} |e          | {'detection_input': 'test\ncorona virus is annoying', 'positive_match_data': {'result': True, 'match_text': 'virus'}, 'negative_match_data': {'result': True, 'match_text': 'corona virus'}} |                                                                                                                                                     
+|  3 | False          | {'detection_input': '...', 'positive_match_data': {'result': True, 'match_text': 'virus'}, 'negative_match_data': {'result': True, 'match_text': 'corona virus'}} |e          | {'detection_input': 'test\ncorona virus is annoying', 'positive_match_data': {'result': True, 'match_text': 'virus'}, 'negative_match_data': {'result': True, 'match_text': 'corona virus'}} |
 
+## Row Methods VS Dataframe Methods
 
-## Row methods vs dataframe methods
-There are two ways to use the pre-detect/detect/post-detect methods:
+There are two ways to use the `pre-detect`/`detect`/`post-detect` methods:
 
-- Row wise: The method works on a single row of a DataFrame.
-In that case, a map-like method is used to apply it on an entire dataframe
-(typically pandas.DataFrame.apply is used with the PandasBackend)
-- Dataframe wise: The method works directly on the entire DataFrame.
+- **Row wise**: The method works on a single row of a `DataFrame`. In that case, a map-like method is used to apply it on an entire dataframe (typically [`pandas.DataFrame.apply`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.apply.html) is used with the PandasBackend).
+- **Dataframe wise**: The method works directly on the entire DataFrame.
 
 !!! tip
     Using row wise methods make your code backend independent. You may 
     switch from a `PandasBackend` to a `DictBackend` at any time. 
     The `PandasBackend` also supports multiprocessing for row wise methods.
 
-To use row wise methods, you just need to name the first parameter of "row". 
-Otherwise, dataframe wise transformations are used.
+To use row wise methods, you just need to name the first parameter of "row". Otherwise, dataframe wise transformations are used.
 
-Exemple of a Detector with dataframe wise method (works with a PandasBackend only).
+Example of a Detector with dataframe wise method (works with a PandasBackend only).
+
 ```Python hl_lines="22 28 39"
 --8<--
 docs/docs_src/MelusineDetectors/tutorial002.py:detector
 --8<--
 ```
 
-## Custom transform methods
-If you are not happy with the `pre_detect`/`detect`/`post_detect` transform methods, you: 
+## Custom Transform Methods
 
-- Use custom template methods
-- Use regular pipeline steps (not inheriting from the `MelusineDetector` class)
+If you are not happy with the `pre_detect`/`detect`/`post_detect` transform methods, you may: 
 
-In this exemple, the `prepare`/`run` custom transform methods are used
-instead of the default `pre_detect`/`detect`/`post_detect`.
+- Use custom template methods.
+- Use regular pipeline steps (not inheriting from the `MelusineDetector` class).
+
+- In this example, the `prepare`/`run` custom transform methods are used instead of the default `pre_detect`/`detect`/`post_detect`.
 
 ```Python
 --8<--
@@ -81,8 +78,8 @@ docs/docs_src/MelusineDetectors/tutorial004.py:detector
 
 To configure custom transform methods you need to: 
 
-- inherit from the melusine.base.BaseMelusineDetector class
-- define the `transform_methods` property
+- Inherit from the `melusine.base.BaseMelusineDetector` class.
+- Define the `transform_methods` property.
 
 The `transform` method will now call `prepare` and `run`.
 

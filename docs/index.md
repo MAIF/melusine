@@ -1,4 +1,4 @@
-# Welcome to melusine
+# Welcome to Melusine
 
 <figure markdown>
   ![Melusine logo](_static/melusine.png){ align=center }
@@ -6,8 +6,7 @@
 
 ## Overview
 
-Discover Melusine, a comprehensive email processing library 
-designed to optimize your email workflow. 
+Discover Melusine, a comprehensive email processing library designed to optimize your email workflow.
 Leverage Melusine's advanced features to achieve:
 
 - **Effortless Email Routing**: Ensure emails reach their intended destinations with high accuracy.
@@ -15,28 +14,24 @@ Leverage Melusine's advanced features to achieve:
 - **Snippet Summaries**: Extract relevant information from lengthy emails, saving you precious time and effort.
 - **Precision Filtering**: Eliminate unwanted emails from your inbox, maintaining focus and reducing clutter.
 
-Melusine facilitates the integration of deep learning frameworks (HuggingFace, Pytorch, Tensorflow, etc), 
+Melusine facilitates the integration of deep learning frameworks (HuggingFace, Pytorch, Tensorflow, etc.), 
 deterministic rules (regex, keywords, heuristics) into a full email qualification workflow.
 
-## Why Choose Melusine ?
+## Why Choose Melusine?
 
 Melusine stands out with its combination of features and advantages:  
 
-- **Out-of-the-box features** : Melusine comes with features such as
-    - Segmenting an email conversation into individual messages
-    - Tagging message parts (Email body, signatures, footers, etc)
-    - Transferred email handling
-- **Streamlined Execution** : Focus on the core email qualification logic 
-while Melusine handles the boilerplate code, providing debug mode, pipeline execution, code parallelization, and more.
-- **Flexible Integrations** : Melusine's modular architecture enables seamless integration with various AI frameworks, 
-ensuring compatibility with your preferred tools.
-- **Production ready** : Proven in the MAIF production environment, 
-Melusine provides the robustness and stability you need.
+- **Out-of-the-box features**: Melusine comes with features such as
+    - Segmenting an email conversation into individual messages.
+    - Tagging message parts (Email body, signatures, footers, etc.).
+    - Transferred email handling.
+- **Streamlined Execution**: Focus on the core email qualification logic while Melusine handles the boilerplate code, providing debug mode, pipeline execution, code parallelization, and more.
+- **Flexible Integrations**: Melusine's modular architecture enables seamless integration with various AI frameworks, ensuring compatibility with your preferred tools.
+- **Production ready**: Proven in the MAIF production environment, Melusine provides the robustness and stability you need.
 
-## Email Segmentation Exemple
+## Email Segmentation Example
 
-In the following example, an email is divided into two distinct messages 
-separated by a transition pattern. 
+In the following example, an email is divided into two distinct messages separated by a transition pattern. 
 Each message is then tagged line by line. 
 This email segmentation can later be leveraged to enhance the performance of machine learning models.
 
@@ -103,24 +98,15 @@ This email segmentation can later be leveraged to enhance the performance of mac
 
 ## Getting Started
 
-Get started with melusine following our (tested!) tutorials:
+Get started with Melusine following our (tested!) tutorials:
 
 * [Getting Started](tutorials/00_GettingStarted.md){target=_blank}
-
 * [MelusinePipeline](tutorials/01_MelusinePipeline.md){target=_blank}
-
 * [MelusineTransformers](tutorials/02_MelusineTransformers.md){target=_blank}
-
 * [MelusineRegex](tutorials/03_MelusineRegex.md){target=_blank}
-
 * [ML models](tutorials/04_UsingModels.md){target=_blank}
-
 * [MelusineDetector](tutorials/05a_MelusineDetectors.md){target=_blank}
-
 * [Configurations](tutorials/06_Configurations.md){target=_blank}
-
 * [Basic Classification](tutorials/07_BasicClassification.md){target=_blank}
 
-
-With Melusine, you're well-equipped to transform your email handling, streamlining processes, maximizing efficiency, 
-and enhancing overall productivity.
+With Melusine, you're well-equipped to transform your email handling, streamlining processes, maximizing efficiency, and enhancing overall productivity.

@@ -1,6 +1,6 @@
 # Getting started with Melusine
 
-Let's run **emergency detection** with melusine :
+Let's run **emergency detection** with Melusine:
 
 * Load a fake email dataset
 * Load a demonstration pipeline
@@ -29,7 +29,7 @@ The present tutorial only makes use of the **body** and **header** data.
 
 ## Code
 
-A typical code for a melusine-based application looks like this :
+A typical code for a melusine-based application looks like this:
 
 ```Python
 --8<--
@@ -40,11 +40,10 @@ docs/docs_src/GettingStarted/tutorial001.py:simple_pipeline
 1. This tutorial uses one of the default pipeline configuration `demo_pipeline`. Melusine users will typically define their own pipeline configuration.
    See more in the [Configurations tutorial](06_Configurations.md){target=_blank}
 
-## Output data
+## Output Data
 
 The pipeline created extra columns in the dataset.
-Some columns are temporary variables required by detectors (ex: `normalized_body`)
-and some are detection results with direct business value (ex: `emergency_result`).
+Some columns are temporary variables required by detectors (ex: `normalized_body`) and some are detection results with direct business value (ex: `emergency_result`).
 
 |    | body                             | header      | normalized_body             | emergency_result   |
 |:---|:---------------------------------|:------------|:---------------------------------|:-------------------|
@@ -53,9 +52,9 @@ and some are detection results with direct business value (ex: `emergency_result
 | 2  | Urgent update about Mr. Annoying | Latest news | Urgent update about Mr. Annoying | False              |
 | 3  | Please call me now               | URGENT      | Please call me now               | True               |
 
-## Pipeline steps
+## Pipeline Steps
 
-Illustration of the pipeline used in the present tutorial :
+Illustration of the pipeline used in the present tutorial:
 
 ``` mermaid
 ---
@@ -68,9 +67,9 @@ flowchart LR
     F --> Output[[Qualified Email]]
 ```
 
-* `Cleaner` : Cleaning transformations such as uniformization of line breaks (`\r\n` -> `\n`)
-* `Normalizer` : Text normalisation to delete/replace non utf8 characters (`éöà` -> `eoa`)
-* `EmergencyDetector` : Detection of urgent emails
+* `Cleaner`: Cleaning transformations such as uniformization of line breaks (`\r\n` -> `\n`).
+* `Normalizer`: Text normalisation to delete/replace non utf8 characters (`éöà` -> `eoa`).
+* `EmergencyDetector`: Detection of urgent emails.
 
 
 !!! info
@@ -84,7 +83,7 @@ flowchart LR
     - More on detectors in the [MelusineDetector tutorial](05a_MelusineDetectors.md){target=_blank}
 
 
-## Debug mode
+## Debug Mode
 
 End users typically want to know what lead melusine to a specific detection result. The debug mode generates additional explainability info.
 
@@ -106,13 +105,12 @@ A new column `debug_emergency` is created.
 
 Inspecting the debug data gives a lot of info:
 
-- `text` : Effective text considered for detection.
-- `EmergencyRegex` : melusine used an `EmergencyRegex` object to run detection.
-- `match_result` : The `EmergencyRegex` did not match the text
-- `positive_match_data` : The `EmergencyRegex` matched **positively** the text pattern "Urgent" (Required condition)
-- `negative_match_data` : The `EmergencyRegex` matched **negatively** the text pattern "Mr. Annoying" (Forbidden condition)
-- `BLACKLIST` : Detection groups can be defined to easily link a matching pattern to the corresponding regex. DEFAULT is used if no detection group is specified.
-
+- `text`: Effective text considered for detection.
+- `EmergencyRegex`: melusine used an `EmergencyRegex` object to run detection.
+- `match_result`: The `EmergencyRegex` did not match the text.
+- `positive_match_data`: The `EmergencyRegex` matched **positively** the text pattern "Urgent" (Required condition).
+- `negative_match_data`: The `EmergencyRegex` matched **negatively** the text pattern "Mr. Annoying" (Forbidden condition).
+- `BLACKLIST`: Detection groups can be defined to easily link a matching pattern to the corresponding regex. DEFAULT is used if no detection group is specified.
 
 ```Python
 # print(df.iloc[2]["debug_emergency"])
