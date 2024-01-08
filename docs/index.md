@@ -33,7 +33,75 @@ ensuring compatibility with your preferred tools.
 - **Production ready** : Proven in the MAIF production environment, 
 Melusine provides the robustness and stability you need.
 
-## Getting started
+## Email Segmentation Exemple
+
+In the following example, an email is divided into two distinct messages 
+separated by a transition pattern. 
+Each message is then tagged line by line. 
+This email segmentation can later be leveraged to enhance the performance of machine learning models.
+
+???+ note "Message 1"
+
+    <p style="text-align:left;"> Dear Kim
+    <span style="float:right;background-color:#58D68D;"> HELLO</span>
+    </p>
+    <p style="text-align:left;"> Please find the details in the forwarded email.
+    <span style="float:right;background-color:#F4D03F;"> BODY</span>
+    </p>
+    <p style="text-align:left;"> Best Regards
+    <span style="float:right;background-color:#9C640C;"> GREETINGS</span>
+    </p>
+    <p style="text-align:left;"> Jo Kahn
+    <span style="float:right;background-color:#EB984E;"> SIGNATURE</span>
+    </p>
+
+???+ note "Transition pattern"
+
+    <p>Forwarded by jo@maif.fr on Monday december 12th</span>
+    <span style="float:right;background-color:#D5DBDB;"> TRANSITION</span>
+    </p>
+    <p>From: alex@gmail.com
+    <span style="float:right;background-color:#D5DBDB;"> TRANSITION</span>
+    </p>
+    <p>To: jo@maif.fr
+    <span style="float:right;background-color:#D5DBDB;"> TRANSITION</span>
+    </p>
+    <p>Subject: New address
+    <span style="float:right;background-color:#D5DBDB;"> TRANSITION</span>
+    </p>
+
+???+ note "Message 2"
+
+    <p style="text-align:left;"> Dear Jo
+    <span style="float:right;background-color:#58D68D;"> HELLO</span>
+    </p>
+    <p style="text-align:left;"> A new version of Melusine is about to be released.
+    <span style="float:right;background-color:#F4D03F;"> BODY</span>
+    </p>
+    <p style="text-align:left;"> Feel free to test it and send us feedbacks!
+    <span style="float:right;background-color:#F4D03F;"> BODY</span>
+    </p>
+    <p style="text-align:left;"> Thank you for your help.
+    <span style="float:right;background-color:#A93226;"> THANKS</span>
+    </p>
+    <p style="text-align:left;"> Cheers
+    <span style="float:right;background-color:#9C640C;"> GREETINGS</span>
+    </p>
+    <p style="text-align:left;"> Alex Leblanc
+    <span style="float:right;background-color:#EB984E;"> SIGNATURE</span>
+    </p>
+    <p style="text-align:left;"> 55 Rue du Faubourg Saint-Honoré
+    <span style="float:right;background-color:#EB984E;"> SIGNATURE</span>
+    </p>
+    <p style="text-align:left;"> 75008 Paris
+    <span style="float:right;background-color:#EB984E;"> SIGNATURE</span>
+    </p>
+    <p style="text-align:left;"> Sent from my iPhone
+    <span style="float:right;background-color:#6E2C00;"> FOOTER</span>
+    </p>
+
+
+## Getting Started
 
 Get started with melusine following our (tested!) tutorials:
 

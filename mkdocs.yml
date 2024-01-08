@@ -47,7 +47,7 @@ markdown_extensions:
     base_path: docs
   tables:
   admonition:
-#  pymdownx.details:
+  pymdownx.details:
 #  pymdownx.extra:
   pymdownx.tabbed:
     alternate_style: true
