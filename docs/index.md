@@ -1,52 +1,37 @@
 # Welcome to melusine
 
-![Melusine logo](_static/melusine.png){ align=center }
-
+<figure markdown>
+  ![Melusine logo](_static/melusine.png){ align=center }
+</figure>
 
 ## Overview
 
+Discover Melusine, a comprehensive email processing library 
+designed to optimize your email workflow. 
+Leverage Melusine's advanced features to achieve:
 
-Melusine is a high-level library for emails processing that can be used to :
+- **Effortless Email Routing**: Ensure emails reach their intended destinations with high accuracy.
+- **Smart Prioritization**: Prioritize urgent emails for timely handling and efficient task management.
+- **Snippet Summaries**: Extract relevant information from lengthy emails, saving you precious time and effort.
+- **Precision Filtering**: Eliminate unwanted emails from your inbox, maintaining focus and reducing clutter.
 
-- Categorize emails using AI, regex patterns or both
-- Prioritize urgent emails
-- Extract information
-- And much more !
+Melusine facilitates the integration of deep learning frameworks (HuggingFace, Pytorch, Tensorflow, etc), 
+deterministic rules (regex, keywords, heuristics) into a full email qualification workflow.
 
-## Why melusine ?
+## Why Choose Melusine ?
 
-The added value of melusine mainly resides in the following aspects:
+Melusine stands out with its combination of features and advantages:  
 
-- **Off-the-shelf features** :  melusine comes with a number of features that can be used straightaway
-    - Segmenting messages in an email conversation
+- **Out-of-the-box features** : Melusine comes with features such as
+    - Segmenting an email conversation into individual messages
     - Tagging message parts (Email body, signatures, footers, etc)
     - Transferred email handling
-- **Execution framework** : users can focus on the email qualification code and save time on the boilerplate code  
-    - debug mode  
-    - pipeline execution  
-    - code parallelization
-    - etc
-- **Integrations** : the modular nature of melusine makes it easy to integrate with a variety of AI frameworks
-  (HuggingFace, Pytorch, Tensorflow, etc)
-- **Production ready** : melusine builds-up on the feedback from several years of running automatic email processing 
-in production at MAIF.
-
-
-## The melusine package
-
-    melusine/
-        docs/  # Documentation (using mkdocs-material).
-        exemples/  # Tutorials and exemples
-        src/  # Sources of the melusine package.
-            backend/  # Define execution backends (JSON, Pandas, Polars, etc)
-            conf/  # Configuration loading and default conf
-            data/  # Dummy data for examples and prototyping
-            io/  # Save/Load operations
-            models/  # AI/ML related features
-            regex/  # Regex related code
-            testing/  # Pipeline testing code
-        tests/  # Extensive testing of the code and the tutorials.
-
+- **Streamlined Execution** : Focus on the core email qualification logic 
+while Melusine handles the boilerplate code, providing debug mode, pipeline execution, code parallelization, and more.
+- **Flexible Integrations** : Melusine's modular architecture enables seamless integration with various AI frameworks, 
+ensuring compatibility with your preferred tools.
+- **Production ready** : Proven in the MAIF production environment, 
+Melusine provides the robustness and stability you need.
 
 ## Getting started
 
@@ -67,3 +52,7 @@ Get started with melusine following our (tested!) tutorials:
 * [Configurations](tutorials/06_Configurations.md){target=_blank}
 
 * [Basic Classification](tutorials/07_BasicClassification.md){target=_blank}
+
+
+With Melusine, you're well-equipped to transform your email handling, streamlining processes, maximizing efficiency, 
+and enhancing overall productivity.
