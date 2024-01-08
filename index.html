@@ -215,6 +215,22 @@
   
 
       
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="contribute/how_to_contribute/" class="md-tabs__link">
+        Contributions
+      </a>
+    </li>
+  
+
+      
     </ul>
   </div>
 </nav>
@@ -337,15 +353,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#why-melusine" class="md-nav__link">
-    Why melusine ?
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-melusine-package" class="md-nav__link">
-    The melusine package
+  <a href="#why-choose-melusine" class="md-nav__link">
+    Why Choose Melusine ?
   </a>
   
 </li>
@@ -526,6 +535,55 @@
   
 
     
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          Contributions
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Contributions
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="contribute/how_to_contribute/" class="md-nav__link">
+        How to contribute
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -560,15 +618,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#why-melusine" class="md-nav__link">
-    Why melusine ?
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-melusine-package" class="md-nav__link">
-    The melusine package
+  <a href="#why-choose-melusine" class="md-nav__link">
+    Why Choose Melusine ?
   </a>
   
 </li>
@@ -599,50 +650,37 @@
 
 
 <h1 id="welcome-to-melusine">Welcome to melusine</h1>
+<figure>
 <p><img align="center" alt="Melusine logo" src="_static/melusine.png" /></p>
+</figure>
 <h2 id="overview">Overview</h2>
-<p>Melusine is a high-level library for emails processing that can be used to :</p>
+<p>Discover Melusine, a comprehensive email processing library 
+designed to optimize your email workflow. 
+Leverage Melusine's advanced features to achieve:</p>
 <ul>
-<li>Categorize emails using AI, regex patterns or both</li>
-<li>Prioritize urgent emails</li>
-<li>Extract information</li>
-<li>And much more !</li>
+<li><strong>Effortless Email Routing</strong>: Ensure emails reach their intended destinations with high accuracy.</li>
+<li><strong>Smart Prioritization</strong>: Prioritize urgent emails for timely handling and efficient task management.</li>
+<li><strong>Snippet Summaries</strong>: Extract relevant information from lengthy emails, saving you precious time and effort.</li>
+<li><strong>Precision Filtering</strong>: Eliminate unwanted emails from your inbox, maintaining focus and reducing clutter.</li>
 </ul>
-<h2 id="why-melusine">Why melusine ?</h2>
-<p>The added value of melusine mainly resides in the following aspects:</p>
+<p>Melusine facilitates the integration of deep learning frameworks (HuggingFace, Pytorch, Tensorflow, etc), 
+deterministic rules (regex, keywords, heuristics) into a full email qualification workflow.</p>
+<h2 id="why-choose-melusine">Why Choose Melusine ?</h2>
+<p>Melusine stands out with its combination of features and advantages:  </p>
 <ul>
-<li><strong>Off-the-shelf features</strong> :  melusine comes with a number of features that can be used straightaway<ul>
-<li>Segmenting messages in an email conversation</li>
+<li><strong>Out-of-the-box features</strong> : Melusine comes with features such as<ul>
+<li>Segmenting an email conversation into individual messages</li>
 <li>Tagging message parts (Email body, signatures, footers, etc)</li>
 <li>Transferred email handling</li>
 </ul>
 </li>
-<li><strong>Execution framework</strong> : users can focus on the email qualification code and save time on the boilerplate code  <ul>
-<li>debug mode  </li>
-<li>pipeline execution  </li>
-<li>code parallelization</li>
-<li>etc</li>
+<li><strong>Streamlined Execution</strong> : Focus on the core email qualification logic 
+while Melusine handles the boilerplate code, providing debug mode, pipeline execution, code parallelization, and more.</li>
+<li><strong>Flexible Integrations</strong> : Melusine's modular architecture enables seamless integration with various AI frameworks, 
+ensuring compatibility with your preferred tools.</li>
+<li><strong>Production ready</strong> : Proven in the MAIF production environment, 
+Melusine provides the robustness and stability you need.</li>
 </ul>
-</li>
-<li><strong>Integrations</strong> : the modular nature of melusine makes it easy to integrate with a variety of AI frameworks
-  (HuggingFace, Pytorch, Tensorflow, etc)</li>
-<li><strong>Production ready</strong> : melusine builds-up on the feedback from several years of running automatic email processing 
-in production at MAIF.</li>
-</ul>
-<h2 id="the-melusine-package">The melusine package</h2>
-<div class="language-text highlight"><pre><span></span><code>melusine/
-    docs/  # Documentation (using mkdocs-material).
-    exemples/  # Tutorials and exemples
-    src/  # Sources of the melusine package.
-        backend/  # Define execution backends (JSON, Pandas, Polars, etc)
-        conf/  # Configuration loading and default conf
-        data/  # Dummy data for examples and prototyping
-        io/  # Save/Load operations
-        models/  # AI/ML related features
-        regex/  # Regex related code
-        testing/  # Pipeline testing code
-    tests/  # Extensive testing of the code and the tutorials.
-</code></pre></div>
 <h2 id="getting-started">Getting started</h2>
 <p>Get started with melusine following our (tested!) tutorials:</p>
 <ul>
@@ -671,6 +709,8 @@ in production at MAIF.</li>
 <p><a href="tutorials/07_BasicClassification/" target="_blank">Basic Classification</a></p>
 </li>
 </ul>
+<p>With Melusine, you're well-equipped to transform your email handling, streamlining processes, maximizing efficiency, 
+and enhancing overall productivity.</p>
 
 
 
