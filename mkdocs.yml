@@ -38,8 +38,8 @@ nav:
 #    - advanced/PreTrainedModelsHF.md
 #  - Code Philosophy:
 #    - philosophy/philosophy.md
-#  - Contributions:
-#    - contribute/how_to_contribute.md
+  - Contributions:
+    - contribute/how_to_contribute.md
 #    - contribute/maif.md
 
 markdown_extensions:

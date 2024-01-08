@@ -11,6 +11,5 @@ def test_pipeline_debug_logging(caplog):
 
         assert "Running transform for Cleaner" in caplog.text
         assert "Running transform for EmergencyDetector" in caplog.text
-        assert "Running method pre_detect" in caplog.text
-        assert "Running method detect" in caplog.text
-        assert "Running method post_detect" in caplog.text
+        assert "Running transform for EmergencyDetector (detect)" in caplog.text
+        assert "Running transform for EmergencyDetector (post_detect)" in caplog.text
