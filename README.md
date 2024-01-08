@@ -64,19 +64,10 @@ This email segmentation can later be leveraged to enhance the performance of mac
 
 <p align="center">
 <a href="https://maif.github.io/melusine" target="_blank">
-<img src="docs/_static/segmentation1.png">
+<img src="docs/_static/segmentation.png">
 </a>
 </p>
-<p align="center">
-<a href="https://maif.github.io/melusine" target="_blank">
-<img src="docs/_static/segmentation2.png">
-</a>
-</p>
-<p align="center">
-<a href="https://maif.github.io/melusine" target="_blank">
-<img src="docs/_static/segmentation3.png">
-</a>
-</p>
+
 ## Getting started
 
 Explore our comprehensive [documentation](https://maif.github.io/melusine/) and tested [tutorials](https://maif.github.io/melusine/tutorials/00_GettingStarted/) to get started. 

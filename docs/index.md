@@ -49,7 +49,7 @@ This email segmentation can later be leveraged to enhance the performance of mac
     <span style="float:right;background-color:#F4D03F;"> BODY</span>
     </p>
     <p style="text-align:left;"> Best Regards
-    <span style="float:right;background-color:#9C640C;"> GREETINGS</span>
+    <span style="float:right;background-color:#85C1E9;"> GREETINGS</span>
     </p>
     <p style="text-align:left;"> Jo Kahn
     <span style="float:right;background-color:#EB984E;"> SIGNATURE</span>
@@ -82,10 +82,10 @@ This email segmentation can later be leveraged to enhance the performance of mac
     <span style="float:right;background-color:#F4D03F;"> BODY</span>
     </p>
     <p style="text-align:left;"> Thank you for your help.
-    <span style="float:right;background-color:#A93226;"> THANKS</span>
+    <span style="float:right;background-color:#BB8FCE;"> THANKS</span>
     </p>
     <p style="text-align:left;"> Cheers
-    <span style="float:right;background-color:#9C640C;"> GREETINGS</span>
+    <span style="float:right;background-color:#85C1E9;"> GREETINGS</span>
     </p>
     <p style="text-align:left;"> Alex Leblanc
     <span style="float:right;background-color:#EB984E;"> SIGNATURE</span>
@@ -97,7 +97,7 @@ This email segmentation can later be leveraged to enhance the performance of mac
     <span style="float:right;background-color:#EB984E;"> SIGNATURE</span>
     </p>
     <p style="text-align:left;"> Sent from my iPhone
-    <span style="float:right;background-color:#6E2C00;"> FOOTER</span>
+    <span style="float:right;background-color:#73C6B6;"> FOOTER</span>
     </p>
 
 
