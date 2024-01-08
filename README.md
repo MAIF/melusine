@@ -62,66 +62,11 @@ separated by a transition pattern.
 Each message is then tagged line by line. 
 This email segmentation can later be leveraged to enhance the performance of machine learning models.
 
-
-<hr>
-<p style="text-align:left;"> Dear Kim
-<span style="float:right;background-color:#58D68D;"> HELLO</span>
+<p align="center">
+<a href="https://maif.github.io/melusine" target="_blank">
+<img src="docs/_static/segmentation.png">
+</a>
 </p>
-<p style="text-align:left;"> Please find the details in the forwarded email.
-<span style="float:right;background-color:#F4D03F;"> BODY</span>
-</p>
-<p style="text-align:left;"> Best Regards
-<span style="float:right;background-color:#9C640C;"> GREETINGS</span>
-</p>
-<p style="text-align:left;"> Jo Kahn
-<span style="float:right;background-color:#EB984E;"> SIGNATURE</span>
-</p>
-<hr>
-
-<p><b>Transition pattern</b></p>
-<p>Forwarded by jo@maif.fr on Monday december 12th</span>
-<span style="float:right;background-color:#D5DBDB;"> TRANSITION</span>
-</p>
-<p>From: alex@gmail.com
-<span style="float:right;background-color:#D5DBDB;"> TRANSITION</span>
-</p>
-<p>To: jo@maif.fr
-<span style="float:right;background-color:#D5DBDB;"> TRANSITION</span>
-</p>
-<p>Subject: New address
-<span style="float:right;background-color:#D5DBDB;"> TRANSITION</span>
-</p>
-<hr>
-
-<p><b>Message 2</b></p>
-<p style="text-align:left;"> Dear Jo
-<span style="float:right;background-color:#58D68D;"> HELLO</span>
-</p>
-<p style="text-align:left;"> A new version of Melusine is about to be released.
-<span style="float:right;background-color:#F4D03F;"> BODY</span>
-</p>
-<p style="text-align:left;"> Feel free to test it and send us feedbacks!
-<span style="float:right;background-color:#F4D03F;"> BODY</span>
-</p>
-<p style="text-align:left;"> Thank you for your help.
-<span style="float:right;background-color:#A93226;"> THANKS</span>
-</p>
-<p style="text-align:left;"> Cheers
-<span style="float:right;background-color:#9C640C;"> GREETINGS</span>
-</p>
-<p style="text-align:left;"> Alex Leblanc
-<span style="float:right;background-color:#EB984E;"> SIGNATURE</span>
-</p>
-<p style="text-align:left;"> 55 Rue du Faubourg Saint-Honoré
-<span style="float:right;background-color:#EB984E;"> SIGNATURE</span>
-</p>
-<p style="text-align:left;"> 75008 Paris
-<span style="float:right;background-color:#EB984E;"> SIGNATURE</span>
-</p>
-<p style="text-align:left;"> Sent from my iPhone
-<span style="float:right;background-color:#6E2C00;"> FOOTER</span>
-</p>
-<hr>
 
 ## Getting started
 
