@@ -43,7 +43,7 @@ dependencies = [
 dynamic = ["version", "readme"]
 
 [project.optional-dependencies] # Optional
-dev = ["tox", "pre-commit", "black", "flake8", "isort", "mypy", "pytest", "coverage"]
+dev = ["tox", "pre-commit", "black", "flake8", "isort", "mypy", "pytest", "coverage", "build"]
 test = ["pytest", "coverage"]
 transformers = ["transformers>4"]
 docs = ["mkdocs", "markdown", "mkdocs-material", "mdx-include"]
