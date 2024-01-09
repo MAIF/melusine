@@ -10,7 +10,7 @@
       
       
       
-        <link rel="canonical" href="https://todo.com/tutorials/07_BasicClassification/">
+        <link rel="canonical" href="https://maif.github.io/melusine/tutorials/07_BasicClassification/">
       
       
         <link rel="prev" href="../06_Configurations/">
@@ -313,7 +313,7 @@
   
     <li class="md-nav__item">
       <a href="../.." class="md-nav__link">
-        Welcome to melusine
+        Welcome to Melusine
       </a>
     </li>
   
@@ -502,8 +502,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tutorial-intro" class="md-nav__link">
-    Tutorial intro
+  <a href="#tutorial-introduction" class="md-nav__link">
+    Tutorial Introduction
   </a>
   
 </li>
@@ -517,14 +517,14 @@
       
         <li class="md-nav__item">
   <a href="#implement-a-dissatisfaction-detector" class="md-nav__link">
-    Implement a Dissatisfaction detector
+    Implement a Dissatisfaction Detector
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#run-detection" class="md-nav__link">
-    Run detection
+    Run Detection
   </a>
   
 </li>
@@ -580,7 +580,7 @@
   
     <li class="md-nav__item">
       <a href="../../contribute/how_to_contribute/" class="md-nav__link">
-        How to contribute
+        How to Contribute
       </a>
     </li>
   
@@ -620,8 +620,8 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tutorial-intro" class="md-nav__link">
-    Tutorial intro
+  <a href="#tutorial-introduction" class="md-nav__link">
+    Tutorial Introduction
   </a>
   
 </li>
@@ -635,14 +635,14 @@
       
         <li class="md-nav__item">
   <a href="#implement-a-dissatisfaction-detector" class="md-nav__link">
-    Implement a Dissatisfaction detector
+    Implement a Dissatisfaction Detector
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#run-detection" class="md-nav__link">
-    Run detection
+    Run Detection
   </a>
   
 </li>
@@ -676,13 +676,10 @@ flowchart LR
     X --&gt; B(Boat)
     X --&gt; C(Housing)
     X --&gt; D(Health)</code></pre>
-<p>Typically, to reach high classification performance, 
-models need to be trained on context specific labeled data. 
-Zero-shot classification is a type of classification that 
-uses a pre-trained model and does not require further training on context specific data.</p>
-<h2 id="tutorial-intro">Tutorial intro</h2>
-<p>In this tutorial we want to detect insatisfaction in an email dataset. 
-Let's create a basic dataset:
+<p>Typically, to reach high classification performance,  models need to be trained on context specific labeled data. 
+Zero-shot classification is a type of classification that  uses a pre-trained model and does not require further training on context specific data.</p>
+<h2 id="tutorial-introduction">Tutorial Introduction</h2>
+<p>In this tutorial we want to detect dissatisfaction in an email dataset. Let's create a basic dataset:</p>
 <div class="language-Python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">pipeline</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
@@ -704,7 +701,7 @@ Let's create a basic dataset:
 </span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="p">)</span>
 </span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>
 </span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    <span class="k">return</span> <span class="n">df</span>
-</span></code></pre></div></p>
+</span></code></pre></div>
 <table>
 <thead>
 <tr>
@@ -727,7 +724,7 @@ Let's create a basic dataset:
 </tbody>
 </table>
 <h2 id="classify-with-zero-shot-classification">Classify with Zero-Shot-Classification</h2>
-<p>The <code>transformers</code> library makes it really simple to use pre-trained models for zero shot classification.</p>
+<p>The <code>transformers</code> library, provided by <a href="https://huggingface.co/">HuggingFace</a>, makes it really simple to use pre-trained models for zero shot classification.</p>
 <div class="language-Python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">model_name_or_path</span> <span class="o">=</span> <span class="s2">&quot;cmarkea/distilcamembert-base-nli&quot;</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">sentences</span> <span class="o">=</span> <span class="p">[</span>
@@ -742,7 +739,7 @@ Let's create a basic dataset:
 </span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="n">sequences</span><span class="o">=</span><span class="n">sentences</span><span class="p">,</span> <span class="n">candidate_labels</span><span class="o">=</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;positif&quot;</span><span class="p">,</span> <span class="s2">&quot;négatif&quot;</span><span class="p">]),</span> <span class="n">hypothesis_template</span><span class="o">=</span><span class="s2">&quot;Ce texte est </span><span class="si">{}</span><span class="s2">.&quot;</span>
 </span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="p">)</span>
 </span></code></pre></div>
-<p>The classifier returns a score for the "positif" and "négatif" label for each input text:</p>
+<p>The classifier returns a score for the positive (<em>positif</em> in French) and negative (<em>négatif</em> in French) labels for each input text:</p>
 <div class="language-Json highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">[</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="p">{</span>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">        </span><span class="err">&#39;seque</span><span class="kc">n</span><span class="err">ce&#39;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Quelle belle journée aujourd&#39;hui&quot;</span><span class="p">,</span>
@@ -760,9 +757,9 @@ Let's create a basic dataset:
 </span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">     </span><span class="p">}</span>
 </span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="p">]</span>
 </span></code></pre></div>
-<h2 id="implement-a-dissatisfaction-detector">Implement a Dissatisfaction detector</h2>
-<p>A full email processing pipeline could contain multiple models. 
-Melusine uses the MelusineDetector template class to standardise how models are integrated into a pipeline.</p>
+<h2 id="implement-a-dissatisfaction-detector">Implement a Dissatisfaction Detector</h2>
+<p>A full email processing pipeline may contain multiple models.
+Melusine uses the <code>MelusineDetector</code> template class to standardize how models are integrated into a pipeline.</p>
 <div class="language-Python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">class</span> <span class="nc">DissatisfactionDetector</span><span class="p">(</span><span class="n">MelusineDetector</span><span class="p">):</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="sd">    Detect if the text expresses dissatisfaction.</span>
@@ -830,7 +827,7 @@ Melusine uses the MelusineDetector template class to standardise how models are 
 </span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    <span class="k">return</span> <span class="n">row</span>
 </span></code></pre></div>
 <p>On top of that, the detector takes care of building debug data to make the result explicable.</p>
-<h2 id="run-detection">Run detection</h2>
+<h2 id="run-detection">Run Detection</h2>
 <p>Putting it all together, we run the detector on the input dataset.</p>
 <div class="language-Python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">df</span> <span class="o">=</span> <span class="n">create_dataset</span><span class="p">()</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>

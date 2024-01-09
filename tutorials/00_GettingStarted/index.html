@@ -10,7 +10,7 @@
       
       
       
-        <link rel="canonical" href="https://todo.com/tutorials/00_GettingStarted/">
+        <link rel="canonical" href="https://maif.github.io/melusine/tutorials/00_GettingStarted/">
       
       
         <link rel="prev" href="../../history/history/">
@@ -313,7 +313,7 @@
   
     <li class="md-nav__item">
       <a href="../.." class="md-nav__link">
-        Welcome to melusine
+        Welcome to Melusine
       </a>
     </li>
   
@@ -461,21 +461,21 @@
       
         <li class="md-nav__item">
   <a href="#output-data" class="md-nav__link">
-    Output data
+    Output Data
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#pipeline-steps" class="md-nav__link">
-    Pipeline steps
+    Pipeline Steps
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#debug-mode" class="md-nav__link">
-    Debug mode
+    Debug Mode
   </a>
   
 </li>
@@ -587,7 +587,7 @@
   
     <li class="md-nav__item">
       <a href="../../contribute/how_to_contribute/" class="md-nav__link">
-        How to contribute
+        How to Contribute
       </a>
     </li>
   
@@ -642,21 +642,21 @@
       
         <li class="md-nav__item">
   <a href="#output-data" class="md-nav__link">
-    Output data
+    Output Data
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#pipeline-steps" class="md-nav__link">
-    Pipeline steps
+    Pipeline Steps
   </a>
   
 </li>
       
         <li class="md-nav__item">
   <a href="#debug-mode" class="md-nav__link">
-    Debug mode
+    Debug Mode
   </a>
   
 </li>
@@ -680,7 +680,7 @@
 
 
 <h1 id="getting-started-with-melusine">Getting started with Melusine</h1>
-<p>Let's run <strong>emergency detection</strong> with melusine :</p>
+<p>Let's run <strong>emergency detection</strong> with Melusine:</p>
 <ul>
 <li>Load a fake email dataset</li>
 <li>Load a demonstration pipeline</li>
@@ -732,7 +732,7 @@
 </tbody>
 </table>
 <h2 id="code">Code</h2>
-<p>A typical code for a melusine-based application looks like this :</p>
+<p>A typical code for a melusine-based application looks like this:</p>
 <div class="language-Python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">melusine.data</span> <span class="kn">import</span> <span class="n">load_email_data</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span> <span class="nn">melusine.pipeline</span> <span class="kn">import</span> <span class="n">MelusinePipeline</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
@@ -749,10 +749,9 @@
 <li>This tutorial uses one of the default pipeline configuration <code>demo_pipeline</code>. Melusine users will typically define their own pipeline configuration.
    See more in the <a href="../06_Configurations/" target="_blank">Configurations tutorial</a></li>
 </ol>
-<h2 id="output-data">Output data</h2>
+<h2 id="output-data">Output Data</h2>
 <p>The pipeline created extra columns in the dataset.
-Some columns are temporary variables required by detectors (ex: <code>normalized_body</code>)
-and some are detection results with direct business value (ex: <code>emergency_result</code>).</p>
+Some columns are temporary variables required by detectors (ex: <code>normalized_body</code>) and some are detection results with direct business value (ex: <code>emergency_result</code>).</p>
 <table>
 <thead>
 <tr>
@@ -794,8 +793,8 @@ and some are detection results with direct business value (ex: <code>emergency_r
 </tr>
 </tbody>
 </table>
-<h2 id="pipeline-steps">Pipeline steps</h2>
-<p>Illustration of the pipeline used in the present tutorial :</p>
+<h2 id="pipeline-steps">Pipeline Steps</h2>
+<p>Illustration of the pipeline used in the present tutorial:</p>
 <pre class="mermaid"><code>---
 title: Demonstration pipeline
 ---
@@ -805,9 +804,9 @@ flowchart LR
     C --&gt; F(Emergency\nDetector)
     F --&gt; Output[[Qualified Email]]</code></pre>
 <ul>
-<li><code>Cleaner</code> : Cleaning transformations such as uniformization of line breaks (<code>\r\n</code> -&gt; <code>\n</code>)</li>
-<li><code>Normalizer</code> : Text normalisation to delete/replace non utf8 characters (<code>éöà</code> -&gt; <code>eoa</code>)</li>
-<li><code>EmergencyDetector</code> : Detection of urgent emails</li>
+<li><code>Cleaner</code>: Cleaning transformations such as uniformization of line breaks (<code>\r\n</code> -&gt; <code>\n</code>).</li>
+<li><code>Normalizer</code>: Text normalisation to delete/replace non utf8 characters (<code>éöà</code> -&gt; <code>eoa</code>).</li>
+<li><code>EmergencyDetector</code>: Detection of urgent emails.</li>
 </ul>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
@@ -821,7 +820,7 @@ For example, pipelines may contain:</p>
 <li>More on detectors in the <a href="../05a_MelusineDetectors/" target="_blank">MelusineDetector tutorial</a></li>
 </ul>
 </div>
-<h2 id="debug-mode">Debug mode</h2>
+<h2 id="debug-mode">Debug Mode</h2>
 <p>End users typically want to know what lead melusine to a specific detection result. The debug mode generates additional explainability info.</p>
 <div class="language-Python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">melusine.data</span> <span class="kn">import</span> <span class="n">load_email_data</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span> <span class="nn">melusine.pipeline</span> <span class="kn">import</span> <span class="n">MelusinePipeline</span>
@@ -877,12 +876,12 @@ For example, pipelines may contain:</p>
 </table>
 <p>Inspecting the debug data gives a lot of info:</p>
 <ul>
-<li><code>text</code> : Effective text considered for detection.</li>
-<li><code>EmergencyRegex</code> : melusine used an <code>EmergencyRegex</code> object to run detection.</li>
-<li><code>match_result</code> : The <code>EmergencyRegex</code> did not match the text</li>
-<li><code>positive_match_data</code> : The <code>EmergencyRegex</code> matched <strong>positively</strong> the text pattern "Urgent" (Required condition)</li>
-<li><code>negative_match_data</code> : The <code>EmergencyRegex</code> matched <strong>negatively</strong> the text pattern "Mr. Annoying" (Forbidden condition)</li>
-<li><code>BLACKLIST</code> : Detection groups can be defined to easily link a matching pattern to the corresponding regex. DEFAULT is used if no detection group is specified.</li>
+<li><code>text</code>: Effective text considered for detection.</li>
+<li><code>EmergencyRegex</code>: melusine used an <code>EmergencyRegex</code> object to run detection.</li>
+<li><code>match_result</code>: The <code>EmergencyRegex</code> did not match the text.</li>
+<li><code>positive_match_data</code>: The <code>EmergencyRegex</code> matched <strong>positively</strong> the text pattern "Urgent" (Required condition).</li>
+<li><code>negative_match_data</code>: The <code>EmergencyRegex</code> matched <strong>negatively</strong> the text pattern "Mr. Annoying" (Forbidden condition).</li>
+<li><code>BLACKLIST</code>: Detection groups can be defined to easily link a matching pattern to the corresponding regex. DEFAULT is used if no detection group is specified.</li>
 </ul>
 <div class="language-Python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># print(df.iloc[2][&quot;debug_emergency&quot;])</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="p">{</span>
