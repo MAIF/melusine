@@ -107,3 +107,6 @@ dmypy.json
 
 # Pytest-env
 pytest.ini
+
+# IDEA/Jetbrains
+.idea
