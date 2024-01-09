@@ -51,7 +51,7 @@ class BaseTransformerBackend(ABC):
         """
 
     @abstractmethod
-    def add_fields(self, left: Any, right: Any, fields: List[str] = None) -> Any:
+    def add_fields(self, left: Any, right: Any, fields: Optional[List[str]] = None) -> Any:
         """
         Method to add fields form the right object to the left object.
 
@@ -71,7 +71,7 @@ class BaseTransformerBackend(ABC):
         """
 
     @abstractmethod
-    def copy(self, data: Any, fields: List[str] = None) -> Any:
+    def copy(self, data: Any, fields: Optional[List[str]] = None) -> Any:
         """
         Method to make a copy of the dataset.
 

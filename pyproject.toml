@@ -59,6 +59,15 @@ readme = {file = ["README.md"]}
 [tool.black]
 line-length = 120
 
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+ignore_missing_imports = true
+disallow_untyped_defs = false
+hide_error_codes = false
+no_site_packages = true
+
 [tool.coverage.run]
 omit = [
     # omit init files in docs_src

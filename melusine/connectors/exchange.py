@@ -29,12 +29,12 @@ class ExchangeConnector:
         mailbox_address: str,
         credentials: Credentials,
         config: Configuration,
-        routing_folder_path: str = None,
-        correction_folder_path: str = None,
-        done_folder_path: str = None,
+        routing_folder_path: Optional[str] = None,
+        correction_folder_path: Optional[str] = None,
+        done_folder_path: Optional[str] = None,
         target_column: str = "target",
-        account_args: Dict[str, Any] = None,
-        sender_address: str = None,
+        account_args: Optional[Dict[str, Any]] = None,
+        sender_address: Optional[str] = None,
     ):
         """
         Parameters
@@ -238,7 +238,7 @@ class ExchangeConnector:
             folder_path = self._get_folder_path(self.correction_folder)
             logger.info(f"Correction folder path set to '{folder_path}'")
 
-    def create_folders(self, folder_list: List[str], base_folder_path: str = None) -> None:
+    def create_folders(self, folder_list: List[str], base_folder_path: Optional[str] = None) -> None:
         """Create folders in the mailbox.
 
         Parameters
@@ -267,7 +267,7 @@ class ExchangeConnector:
     def get_emails(
         self,
         max_emails: int = 100,
-        base_folder_path: str = None,
+        base_folder_path: Optional[str] = None,
         ascending: bool = True,
     ) -> pd.DataFrame:
         """
@@ -495,7 +495,7 @@ class ExchangeConnector:
         self.mailbox_account.bulk_move(ids=items, to_folder=self.done_folder, chunk_size=5)
         logger.info(f"Moved {n_items} corrected emails to the folder {self.done_folder_path}")
 
-    def list_subfolders(self, base_folder_path: str = None) -> List[str]:
+    def list_subfolders(self, base_folder_path: Optional[str] = None) -> List[str]:
         """
         List the sub-folders of the specified folder.
 

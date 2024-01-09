@@ -10,7 +10,6 @@ from melusine._config import MelusineConfig, MelusineConfigError
 
 def test_load_default_conf(caplog):
     with caplog.at_level(logging.WARNING):
-
         test_conf = MelusineConfig()
         test_conf.reset()
 
@@ -19,7 +18,6 @@ def test_load_default_conf(caplog):
 
 
 def test_load_conf_from_env_variable(caplog):
-
     try:
         with caplog.at_level(logging.INFO):
             test_conf = MelusineConfig()
@@ -40,7 +38,6 @@ def test_load_conf_from_env_variable(caplog):
 
 
 def test_load_conf_from_config_path(caplog):
-
     with caplog.at_level(logging.INFO):
         test_conf = MelusineConfig()
         test_conf.reset(config_path=test_conf.DEFAULT_CONFIG_PATH)
@@ -56,7 +53,6 @@ def test_load_conf_from_config_path(caplog):
 
 
 def test_load_conf_from_config_dict(caplog):
-
     with caplog.at_level(logging.INFO):
         test_conf = MelusineConfig()
         test_conf.reset(config_dict={"my_key": "hello"})
@@ -65,7 +61,6 @@ def test_load_conf_from_config_dict(caplog):
 
 
 def test_config_modif_error():
-
     test_conf = MelusineConfig()
     test_conf.reset(config_dict={"my_key": "hello"})
 
@@ -80,14 +75,12 @@ def test_config_modif_error():
 
 
 def test_shared_variable():
-
     # Shared variable TEST_VAR specified in conf/shared.yaml
     # Conf test_shared_variable specified in global.yaml
     assert config["global"]["test_shared_variable"] == "test"
 
 
 def test_export_config(tmp_path):
-
     file_list = config.export_default_config(path=str(tmp_path))
     assert file_list
     for file in file_list:

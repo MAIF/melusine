@@ -1,0 +1,28 @@
+[flake8]
+extend-ignore =
+    # Line too long
+    E501
+    # Whitespace issues
+    D2
+    # Quote issues
+    D3
+    # Docstring Content Issues
+    D4
+    # Missing docstring in public module
+    D100
+    # Missing docstring in public package
+    D104
+    # Missing docstring in magic method
+    D105
+    # Missing docstring in public nested class
+    D106
+    # Missing docstring in __init__
+    D107
+    # Line break occurred before a binary operator
+    W503
+    # Whitespace before ':'
+    E203
+extend-exclude =
+    tests/**,
+    docs/**
+max-line-length = 119

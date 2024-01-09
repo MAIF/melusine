@@ -6,7 +6,7 @@ Contained classes: [IoMixin]
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Optional, Type, TypeVar
+from typing import Any, TypeVar
 
 from melusine import config
 
@@ -28,13 +28,13 @@ class IoMixin:
 
     def __init__(self, **kwargs: Any):
         """Initialize attribute."""
-        self.json_exclude_list: List[str] = ["_func", "json_exclude_list"]
+        self.json_exclude_list: list[str] = ["_func", "json_exclude_list"]
 
     @classmethod
     def from_config(
-        cls: Type[T],
-        config_key: Optional[str] = None,
-        config_dict: Optional[Dict[str, Any]] = None,
+        cls: type[T],
+        config_key: str | None = None,
+        config_dict: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> T:
         """
@@ -44,7 +44,7 @@ class IoMixin:
         ----------
         config_key: str
             Configuration key.
-        config_dict: Dict[str, Any]
+        config_dict: dict[str, Any]
             Dictionary of config.
         kwargs: Any
 
@@ -69,13 +69,13 @@ class IoMixin:
         return cls.from_dict(**config_dict)
 
     @classmethod
-    def from_dict(cls: Type[T], **params_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], **params_dict: dict[str, Any]) -> T:
         """
         Method to instantiate a class based a dict object.
 
         Parameters
         ----------
-        params_dict: Dict[str, Any]
+        params_dict: dict[str, Any]
             Parameters dict.
 
         Returns

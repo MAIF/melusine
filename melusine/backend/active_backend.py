@@ -102,7 +102,7 @@ class ActiveBackend(BaseTransformerBackend):
             **kwargs,
         )
 
-    def copy(self, data: Any, fields: List[str] = None) -> Any:
+    def copy(self, data: Any, fields: Optional[List[str]] = None) -> Any:
         """
         Method to make a copy of the input dataset.
 
@@ -136,7 +136,7 @@ class ActiveBackend(BaseTransformerBackend):
         """
         return self.backend.get_fields(data=data)
 
-    def add_fields(self, left: Any, right: Any, fields: List[str] = None) -> Any:
+    def add_fields(self, left: Any, right: Any, fields: Optional[List[str]] = None) -> Any:
         """
         Method to add fields from the right object to the left object
 
