@@ -1,24 +1,27 @@
 # Configurations
 
-Melusine components can be instantiated using parameters defined in configurations.
-The `from_config` method accepts a `config_dict` argument
+Melusine components can be instantiated using parameters defined in configurations. The `from_config` method accepts a `config_dict` argument.
+
 ```Python
 --8<--
 docs/docs_src/Configurations/tutorial001.py:from_config_dict
 --8<--
 ```
 
-or a `config_key` argument.
+Or a `config_key` argument.
+
 ```Python
 --8<--
 docs/docs_src/Configurations/tutorial001.py:from_config
 --8<--
 ```
-When `demo_pipeline` is given as argument, parameters are read from the `melusine.config` object at key `demo_pipeline`. 
 
-## Access configurations
+When `demo_pipeline` is given as argument, parameters are read from the `melusine.config` object at key `demo_pipeline`.
+
+## Access Configurations
 
 The melusine configurations can be accessed with the `config` object.
+
 ```Python
 --8<--
 docs/docs_src/Configurations/tutorial001.py:print_config
@@ -41,17 +44,19 @@ The configuration of the `demo_pipeline` can then be easily inspected.
 }
 ```
 
-## Modify configurations
+## Modify Configurations
+
 The simplest way to modify configurations is to create a new directory directly.
+
 ```Python
 --8<--
 docs/docs_src/Configurations/tutorial001.py:modify_conf_with_dict
 --8<--
 ```
 
-To deliver code in a production environment, using configuration files should be preferred to
-modifying the configurations on the fly.  
-Melusine lets you specify the path to a folder containing *yaml* files and loads them (the `OmegaConf` package is used behind the scene).
+To deliver code in a production environment, using configuration files should be preferred to modifying the configurations on the fly.
+Melusine lets you specify the path to a folder containing `yaml` files and loads them (the `OmegaConf` package is used behind the scene).
+
 ```Python
 --8<--
 docs/docs_src/Configurations/tutorial001.py:modify_conf_with_path
@@ -60,6 +65,7 @@ docs/docs_src/Configurations/tutorial001.py:modify_conf_with_path
 
 When the `MELUSINE_CONFIG_DIR` environment variable is set, Melusine loads directly the configurations files located at
 the path specified by the environment variable.
+
 ```Python
 --8<--
 docs/docs_src/Configurations/tutorial001.py:modify_conf_with_env
@@ -69,7 +75,7 @@ docs/docs_src/Configurations/tutorial001.py:modify_conf_with_env
 !!! tip
     If the `MELUSINE_CONFIG_DIR` is set before melusine is imported (e.g., before starting the program), you don't need to call `config.reset()`. 
 
-## Export configurations
+## Export Configurations
 
 Creating your configuration folder from scratch would be cumbersome.
 It is advised to export the default configurations and then modify just the files you need.

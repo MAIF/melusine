@@ -14,14 +14,13 @@ flowchart LR
     X --> D(Health)
 ```
 
-Typically, to reach high classification performance, 
-models need to be trained on context specific labeled data. 
-Zero-shot classification is a type of classification that 
-uses a pre-trained model and does not require further training on context specific data.
+Typically, to reach high classification performance,  models need to be trained on context specific labeled data. 
+Zero-shot classification is a type of classification that  uses a pre-trained model and does not require further training on context specific data.
 
-## Tutorial intro
-In this tutorial we want to detect insatisfaction in an email dataset. 
-Let's create a basic dataset:
+## Tutorial Introduction
+
+In this tutorial we want to detect dissatisfaction in an email dataset. Let's create a basic dataset:
+
 ```Python
 --8<--
 docs/docs_src/BasicClassification/tutorial001.py:create_dataset
@@ -36,7 +35,7 @@ docs/docs_src/BasicClassification/tutorial001.py:create_dataset
 
 ## Classify with Zero-Shot-Classification
 
-The `transformers` library makes it really simple to use pre-trained models for zero shot classification.
+The `transformers` library, provided by [HuggingFace](https://huggingface.co/), makes it really simple to use pre-trained models for zero shot classification.
 
 ```Python
 --8<--
@@ -44,7 +43,7 @@ docs/docs_src/BasicClassification/tutorial001.py:transformers
 --8<--
 ```
 
-The classifier returns a score for the "positif" and "négatif" label for each input text:
+The classifier returns a score for the positive (*positif* in French) and negative (*négatif* in French) labels for each input text:
 
 ```Json
 [
@@ -65,11 +64,10 @@ The classifier returns a score for the "positif" and "négatif" label for each i
 ]
 ```
 
+## Implement a Dissatisfaction Detector
 
-## Implement a Dissatisfaction detector
-
-A full email processing pipeline could contain multiple models. 
-Melusine uses the MelusineDetector template class to standardise how models are integrated into a pipeline.
+A full email processing pipeline may contain multiple models.
+Melusine uses the `MelusineDetector` template class to standardize how models are integrated into a pipeline.
 
 ```Python
 --8<--
@@ -103,7 +101,7 @@ docs/docs_src/BasicClassification/tutorial001.py:post_detect
 
 On top of that, the detector takes care of building debug data to make the result explicable.
 
-## Run detection
+## Run Detection
 
 Putting it all together, we run the detector on the input dataset.
 

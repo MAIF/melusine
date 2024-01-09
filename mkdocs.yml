@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
 site_name: Melusine
 site_description: A framework for automated email qualification
-site_url: https://todo.com
+site_url: https://maif.github.io/melusine/
 
 repo_name: MAIF/melusine
 repo_url: https://github.com/MAIF/melusine
@@ -40,7 +40,6 @@ nav:
 #    - philosophy/philosophy.md
   - Contributions:
     - contribute/how_to_contribute.md
-#    - contribute/maif.md
 
 markdown_extensions:
   mdx_include:

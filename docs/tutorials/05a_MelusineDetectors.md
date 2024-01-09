@@ -1,7 +1,6 @@
 # Melusine Detectors
 
-The `MelusineDetector` component aims at standardizing how detection 
-is performed in a `MelusinePipeline`. 
+The `MelusineDetector` component aims at standardizing how detection is performed in a `MelusinePipeline`. 
 
 !!! tip
     Project running over several years (such as email automation) 
@@ -10,15 +9,11 @@ is performed in a `MelusinePipeline`.
 
 The `MelusineDetector` class splits detection into three steps:
 
-- `pre_detect`: Select/combine the inputs needed for detection.
-Ex: Select the text parts tagged as `BODY` and combine them with the text 
-in the email header.
-- `detect`: Use regular expressions, ML models or heuristics to run detection
-on the input text.
+- `pre_detect`: Select/combine the inputs needed for detection. For example, select the text parts tagged as `BODY` and combine them with the text of the email header.
+- `detect`: Use regular expressions, ML models or heuristics to run detection on the input text.
 - `post_detect`: Run detection rules such as thresholding or combine results from multiple models.
 
-The method `transform` is defined by the BaseClass `MelusineDetector` and will call 
-the pre_detect/detect/post_detect methods in turn (Template pattern).
+The method `transform` is defined by the BaseClass `MelusineDetector` and will call the `pre_detect`/`detect`/`post_detect` methods in turn (Template pattern).
 
 ```Python
 # Instantiate Detector
@@ -37,14 +32,15 @@ docs/docs_src/MelusineDetectors/tutorial001.py:detector
 --8<--
 ```
 
-The detector is run on a simple dataframe:
+Here, the detector is run on a simple [Pandas Dataframe](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html):
+
 ```Python
 --8<--
 docs/docs_src/MelusineDetectors/tutorial001.py:run
 --8<--
 ```
 
-The output is a dataframe with a new `virus_result` column.
+The output is a Dataframe with a new `virus_result` column.
 
 |    | body                      | header                | virus_result   |
 |---:|:--------------------------|:----------------------|:---------------|
@@ -57,7 +53,8 @@ The output is a dataframe with a new `virus_result` column.
     Columns that are not declared in the `output_columns` are dropped automatically.
 
 
-## Detector init
+## Detector `init`
+
 In the init method, you should call the superclass init and provide:
 
 - A name for the detector
@@ -75,46 +72,49 @@ docs/docs_src/MelusineDetectors/tutorial001.py:detector_init
     you may skip the init method entirely when defining your `MelusineDetector`.
 
 
-## Detector pre_detect
-The `pre_detect` method simply combines the header text and the body text
-(separated by a line break).
+## Detector `pre_detect`
+
+The `pre_detect` method simply combines the header text and the body text (separated by a line break).
+
 ```Python
 --8<--
 docs/docs_src/MelusineDetectors/tutorial002.py:pre_detect
 --8<--
 ```
 
-## Detector detect
+## Detector `detect`
+
 The `detect` applies two regexes on the selected text:
-- A positive regex to catch mentions to viruses
-- A negative regex to avoid false positive detections
+- A positive regex to catch mentions to viruses.
+- A negative regex to avoid false positive detections.
+
 ```Python
 --8<--
 docs/docs_src/MelusineDetectors/tutorial002.py:detect
 --8<--
 ```
 
-## Detector post_detect
+## Detector `post_detect`
+
 The `post_detect` combines the regex detection result to determine the final result.
+
 ```Python
 --8<--
 docs/docs_src/MelusineDetectors/tutorial002.py:post_detect
 --8<--
 ```
 
-## Are MelusineDetectors mandatory for melusine?
+## Are `MelusineDetectors` mandatory for melusine?
+
 No.  
 
-You can use any scikit-learn compatible component in your `MelusinePipeline`. 
-However, we recommend using the `MelusineDetector` (and `MelusineTransformer`) 
-classes to benefit from:
+You can use any `scikit-learn` compatible component in your `MelusinePipeline`. 
+However, we recommend using the `MelusineDetector` (and `MelusineTransformer`) classes to benefit from:
 
 - Code standardization
 - Input columns validation
-- Dataframe backend variabilization
-  Today dict and pandas backend are supported but more backends may be added (e.g. polars)
+- Dataframe backend variabilization. Today native Python dictionaries and [`pandas`](https://pandas.pydata.org/docs/reference/api) backend are supported but more backends may be added (e.g. [`polars`](https://docs.pola.rs/py-polars/html/reference/dataframe/index.html))
 - Debug mode
 - Multiprocessing
 
-Check-out the [next tutorial](05a_MelusineDetectors.md){target=_blank} 
-to discover advanced features of the `MelusineDetector` class.
+Check-out the [next tutorial](05a_MelusineDetectors.md){target=_blank} to discover advanced features of the `MelusineDetector` class.
