@@ -5,10 +5,22 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: psf/black@stable
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Run black
+        uses: psf/black@stable
         with:
           src: "./melusine"
+
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the repository
+      uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+    - name: Run pre-commit
+      uses: pre-commit/action@v3.0.0
 
   test:
     name: Test
