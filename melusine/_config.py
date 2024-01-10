@@ -99,14 +99,15 @@ class MelusineConfig(UserDict):
 
         Returns
         -------
-        _:
+        _: the list of all copied files.
         """
-        from distutils.dir_util import copy_tree
+        from shutil import copytree
 
         source = self.DEFAULT_CONFIG_PATH
-        file_list: List[str] = copy_tree(source, path)
+        new_directory: str = copytree(source, path, dirs_exist_ok=True)
+        copied_files = [str(path) for path in Path(new_directory).rglob("*") if path.is_file()]
 
-        return file_list
+        return copied_files
 
 
 # Load Melusine configuration
