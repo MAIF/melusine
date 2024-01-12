@@ -1,4 +1,10 @@
-from melusine.regex import EmergencyRegex, ReplyRegex, ThanksRegex, TransferRegex, VacationReplyRegex
+from melusine.regex import (
+    EmergencyRegex,
+    ReplyRegex,
+    ThanksRegex,
+    TransferRegex,
+    VacationReplyRegex,
+)
 
 
 def test_reply_regex():

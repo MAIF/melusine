@@ -80,7 +80,9 @@ class DictBackend(BaseTransformerBackend):
 
         return data
 
-    def add_fields(self, left: Dict[str, Any], right: Dict[str, Any], fields: List[str] = None) -> Dict[str, Any]:
+    def add_fields(
+        self, left: Dict[str, Any], right: Dict[str, Any], fields: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
         """
         Method to add fields form the right object to the left object.
 
@@ -106,7 +108,7 @@ class DictBackend(BaseTransformerBackend):
 
         return left
 
-    def copy(self, data: Dict[str, Any], fields: List[str] = None) -> Dict[str, Any]:
+    def copy(self, data: Dict[str, Any], fields: Optional[List[str]] = None) -> Dict[str, Any]:
         """
         Method to make a copy of the dataset.
 

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import copy
 import importlib
-from typing import Dict, Iterable, List, Optional, Set, Tuple, TypeVar
+from typing import Iterable, TypeVar
 
 from sklearn.pipeline import Pipeline
 
@@ -42,8 +42,8 @@ class MelusinePipeline(Pipeline):
 
     def __init__(
         self,
-        steps: List[Tuple[str, MelusineTransformer]],
-        memory: Optional[bool] = None,
+        steps: list[tuple[str, MelusineTransformer]],
+        memory: bool | None = None,
         verbose: bool = False,
     ) -> None:
         """
@@ -64,7 +64,7 @@ class MelusinePipeline(Pipeline):
         self.verbose = verbose
 
     @property
-    def input_columns(self) -> List[str]:
+    def input_columns(self) -> list[str]:
         """
         Input fields of the Pipeline.
 
@@ -73,7 +73,7 @@ class MelusinePipeline(Pipeline):
         _: List[str]
             List of input fields.
         """
-        column_set: Set[str] = set()
+        column_set: set[str] = set()
         for _, step in self.steps:
             # UNION between sets
             column_set |= set(step.input_columns)
@@ -81,7 +81,7 @@ class MelusinePipeline(Pipeline):
         return list(column_set)
 
     @property
-    def output_columns(self) -> List[str]:
+    def output_columns(self) -> list[str]:
         """
         Output fields of the Pipeline.
 
@@ -90,14 +90,14 @@ class MelusinePipeline(Pipeline):
         _: List[str]
             List of output fields.
         """
-        column_set: Set[str] = set()
+        column_set: set[str] = set()
         for _, step in self.steps:
             column_set |= set(step.output_columns)
 
         return list(column_set)
 
     @classmethod
-    def get_obj_class(cls, obj_params: Dict[str, Any]) -> Any:
+    def get_obj_class(cls, obj_params: dict[str, Any]) -> Any:
         """
         Get the class object of an instance.
 
@@ -142,7 +142,7 @@ class MelusinePipeline(Pipeline):
         return obj_class
 
     @classmethod
-    def flatten_pipeline_config(cls, conf: Dict[str, Any]) -> Dict[str, Any]:
+    def flatten_pipeline_config(cls, conf: dict[str, Any]) -> dict[str, Any]:
         """
         Flatten nested Melusine Pipelines.
 
@@ -158,7 +158,7 @@ class MelusinePipeline(Pipeline):
         _: Dict[str, Any]
             Flattened conf.
         """
-        new_conf: List[Any] = list()
+        new_conf: list[Any] = list()
         for step in conf[cls.STEPS_KEY]:
             if step.get(cls.OBJ_CLASS, "") == cls.__name__:
                 subpipeline_conf = cls.flatten_pipeline_config(step["parameters"])
@@ -171,7 +171,7 @@ class MelusinePipeline(Pipeline):
 
     @classmethod
     def from_config(
-        cls, config_key: Optional[str] = None, config_dict: Optional[Dict[str, Any]] = None, **kwargs: Any
+        cls, config_key: str | None = None, config_dict: dict[str, Any] | None = None, **kwargs: Any
     ) -> MelusinePipeline:
         """
         Instantiate a MelusinePipeline from a config key.
@@ -233,7 +233,7 @@ class MelusinePipeline(Pipeline):
         return cls(steps=steps, **init_params)
 
     @classmethod
-    def validate_step_config(cls, step: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_step_config(cls, step: dict[str, Any]) -> dict[str, Any]:
         """
         Validate a pipeline step configuration.
 
@@ -276,7 +276,7 @@ class MelusinePipeline(Pipeline):
         }
 
     @classmethod
-    def validate_pipeline_config(cls, pipeline_conf: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_pipeline_config(cls, pipeline_conf: dict[str, Any]) -> dict[str, Any]:
         """
         Validate a pipeline configuration.
 
@@ -288,7 +288,7 @@ class MelusinePipeline(Pipeline):
         -------
         _: Validated pipeline configuration.
         """
-        validated_pipeline_conf: Dict[str, Any] = {cls.STEPS_KEY: []}
+        validated_pipeline_conf: dict[str, Any] = {cls.STEPS_KEY: []}
         steps = pipeline_conf.get(cls.STEPS_KEY)
 
         if not steps or not isinstance(steps, list):
@@ -302,7 +302,7 @@ class MelusinePipeline(Pipeline):
         return validated_pipeline_conf
 
     @classmethod
-    def parse_pipeline_config(cls, config_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_pipeline_config(cls, config_dict: dict[str, Any]) -> dict[str, Any]:
         """
         Parse config dict to replace config key by the associated configurations.
 
@@ -345,7 +345,7 @@ class MelusinePipeline(Pipeline):
         return MelusinePipeline.flatten_pipeline_config(config_dict)
 
     @classmethod
-    def get_config_from_key(cls, config_key: str) -> Dict[str, Any]:
+    def get_config_from_key(cls, config_key: str) -> dict[str, Any]:
         """
         Parse config dict to replace config key by the associated configurations.
 
@@ -370,7 +370,7 @@ class MelusinePipeline(Pipeline):
         data: Any
             Input data.
         """
-        active_fields: Set[str] = set(backend.get_fields(data))
+        active_fields: set[str] = set(backend.get_fields(data))
 
         for step_name, step in self.steps:
             difference = set(step.input_columns).difference(active_fields)

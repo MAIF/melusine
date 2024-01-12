@@ -44,7 +44,7 @@ dependencies = [
 dynamic = ["version", "readme"]
 
 [project.optional-dependencies] # Optional
-dev = ["tox", "pre-commit", "black", "flake8", "isort", "mypy", "pytest", "coverage", "build"]
+dev = ["tox", "pre-commit", "black", "flake8", "isort", "mypy", "pytest", "coverage", "build", "ruff"]
 test = ["pytest", "coverage"]
 transformers = ["transformers>4"]
 docs = ["mkdocs", "markdown", "mkdocs-material", "mdx-include"]
@@ -58,6 +58,22 @@ readme = {file = ["README.md"]}
 
 [tool.black]
 line-length = 120
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+ignore_missing_imports = true
+disallow_untyped_defs = false
+hide_error_codes = false
+no_site_packages = true
+
+[tool.ruff]
+line-length = 120
+exclude = [
+    "tests",
+    "docs"
+]
 
 [tool.coverage.run]
 omit = [

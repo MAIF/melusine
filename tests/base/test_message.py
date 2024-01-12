@@ -5,7 +5,6 @@ from melusine.message import Message
 
 
 def test_message_repr():
-
     message = Message(text="Hello")
 
     assert re.search(r"meta='NA'", repr(message))
@@ -18,7 +17,6 @@ def test_message_repr():
 
 
 def test_message_has_tags():
-
     message = Message(text="Hello")
     message.tags = [
         ("HELLO", "Bonjour"),
@@ -32,7 +30,6 @@ def test_message_has_tags():
 
 
 def test_message_has_tags_stop_at():
-
     message = Message(text="Hello")
     message.tags = [
         ("HELLO", "Bonjour"),
@@ -44,14 +41,12 @@ def test_message_has_tags_stop_at():
 
 
 def test_message_has_tags_no_tags():
-
     message = Message(text="Hello")
 
     assert not message.has_tags(target_tags=["BODY"])
 
 
 def test_message_extract_parts():
-
     message = Message(text="Hello")
     message.tags = [
         ("HELLO", "Bonjour"),
@@ -67,7 +62,6 @@ def test_message_extract_parts():
 
 
 def test_message_extract_parts_stop():
-
     message = Message(text="Hello")
     message.tags = [
         ("HELLO", "Bonjour"),
@@ -88,7 +82,6 @@ def test_message_extract_parts_no_tags():
 
 
 def test_message_extract_last_body():
-
     message = Message(text="Hello")
     message.tags = [
         ("HELLO", "Bonjour"),

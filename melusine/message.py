@@ -82,7 +82,9 @@ class Message:
         else:
             return config["message"].get("str_line_length", self.DEFAULT_STR_LINE_LENGTH)
 
-    def extract_parts(self, target_tags: Iterable[str] = None, stop_at: Iterable[str] = None) -> List[Tuple[str, str]]:
+    def extract_parts(
+        self, target_tags: Optional[Iterable[str]] = None, stop_at: Optional[Iterable[str]] = None
+    ) -> List[Tuple[str, str]]:
         """
         Function to extract target tags from the message.
 

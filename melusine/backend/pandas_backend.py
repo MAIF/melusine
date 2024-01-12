@@ -238,7 +238,7 @@ class PandasBackend(BaseTransformerBackend):
     def apply_joblib_dataframe(
         df: pd.DataFrame,
         func: Callable,
-        expand: str = None,
+        expand: Optional[str] = None,
         progress_bar: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame:
@@ -260,7 +260,7 @@ class PandasBackend(BaseTransformerBackend):
     def apply_joblib_series(
         s: pd.Series,
         func: Callable,
-        expand: str = None,
+        expand: Optional[str] = None,
         progress_bar: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame:
@@ -280,7 +280,7 @@ class PandasBackend(BaseTransformerBackend):
 
         return result
 
-    def add_fields(self, left: pd.DataFrame, right: pd.DataFrame, fields: List[str] = None) -> pd.DataFrame:
+    def add_fields(self, left: pd.DataFrame, right: pd.DataFrame, fields: Optional[List[str]] = None) -> pd.DataFrame:
         """
         Method to add fields form the right object to the left object.
 
@@ -302,7 +302,7 @@ class PandasBackend(BaseTransformerBackend):
 
         return left
 
-    def copy(self, data: pd.DataFrame, fields: List[str] = None) -> pd.DataFrame:
+    def copy(self, data: pd.DataFrame, fields: Optional[List[str]] = None) -> pd.DataFrame:
         """
         Method to make a copy of the dataset.
 

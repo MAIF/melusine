@@ -2,10 +2,10 @@
 Top-level package.
 """
 import logging
-import pandas as pd
-
 from ctypes import CDLL, cdll
 from typing import Any, Optional
+
+import pandas as pd
 
 from melusine._config import config
 

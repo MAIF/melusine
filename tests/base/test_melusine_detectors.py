@@ -21,7 +21,6 @@ class MyDetector(BaseMelusineDetector):
 
 
 def test_detector_transform_dataframe_wise():
-
     df = pd.DataFrame([{"input_col": "test0"}, {"input_col": "test1"}])
     detector = MyDetector(name="test_detector", input_columns=["input_col"], output_columns=["row_output", "df_output"])
     df = detector.transform(df)

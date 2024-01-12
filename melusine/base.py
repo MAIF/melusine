@@ -18,7 +18,7 @@ import inspect
 import logging
 import re
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, Iterable, List, Optional, TypeVar, Union
+from typing import Any, Callable, Dict, Iterable, TypeVar, Union
 
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -55,9 +55,9 @@ class MelusineTransformer(BaseEstimator, TransformerMixin, IoMixin):
 
     def __init__(
         self,
-        input_columns: Union[str, Iterable[str]],
-        output_columns: Union[str, Iterable[str]],
-        func: Optional[Callable] = None,
+        input_columns: str | Iterable[str],
+        output_columns: str | Iterable[str],
+        func: Callable | None = None,
     ) -> None:
         """
         Attribute initialization.
@@ -73,12 +73,12 @@ class MelusineTransformer(BaseEstimator, TransformerMixin, IoMixin):
         """
         IoMixin.__init__(self)
 
-        self.input_columns: List[str] = self.parse_column_list(input_columns)
-        self.output_columns: List[str] = self.parse_column_list(output_columns)
+        self.input_columns: list[str] = self.parse_column_list(input_columns)
+        self.output_columns: list[str] = self.parse_column_list(output_columns)
         self.func = func
 
     @staticmethod
-    def parse_column_list(columns: Union[str, Iterable[str]]) -> List[str]:
+    def parse_column_list(columns: str | Iterable[str]) -> list[str]:
         """
         Transform a string into a list with a single element.
 
@@ -89,7 +89,7 @@ class MelusineTransformer(BaseEstimator, TransformerMixin, IoMixin):
 
         Returns
         -------
-        _: List[str]
+        _: list[str]
             A list of column names.
         """
         # Change string into list of strings if necessary
@@ -142,8 +142,8 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
     def __init__(
         self,
         name: str,
-        input_columns: List[str],
-        output_columns: List[str],
+        input_columns: list[str],
+        output_columns: list[str],
     ):
         """
         Attributes initialization.
@@ -185,13 +185,13 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
 
     @property
     @abstractmethod
-    def transform_methods(self) -> List[Callable]:
+    def transform_methods(self) -> list[Callable]:
         """
         Specify the sequence of methods to be called by the transform method.
 
         Returns
         -------
-        _: List[Callable]
+        _: list[Callable]
             List of  methods to be called by the transform method.
         """
 
@@ -260,8 +260,8 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
         data: MelusineDataset
             Input data.
         """
-        input_fields: List[str] = backend.get_fields(data)
-        missing_fields: List[str] = [x for x in self.input_columns if x not in input_fields]
+        input_fields: list[str] = backend.get_fields(data)
+        missing_fields: list[str] = [x for x in self.input_columns if x not in input_fields]
         if missing_fields:
             raise MissingFieldError(f"Fields {missing_fields} are missing from the input data")
 
@@ -277,13 +277,13 @@ class MelusineDetector(BaseMelusineDetector, ABC):
     """
 
     @property
-    def transform_methods(self) -> List[Callable]:
+    def transform_methods(self) -> list[Callable]:
         """
         Specify the sequence of methods to be called by the transform method.
 
         Returns
         -------
-        _: List[Callable]
+        _: list[Callable]
             List of  methods to be called by the transform method.
         """
         return [self.pre_detect, self.detect, self.post_detect]
@@ -343,7 +343,7 @@ class MelusineRegex(ABC):
 
     @property
     @abstractmethod
-    def positive(self) -> Union[Dict[str, str], str]:
+    def positive(self) -> dict[str, str] | str:
         """
         Define regex patterns required to activate the MelusineRegex.
 
@@ -352,7 +352,7 @@ class MelusineRegex(ABC):
         """
 
     @property
-    def neutral(self) -> Optional[Union[Dict[str, str], str]]:
+    def neutral(self) -> dict[str, str] | str | None:
         """
         Define regex patterns to be ignored when running detection.
 
@@ -362,7 +362,7 @@ class MelusineRegex(ABC):
         return None
 
     @property
-    def negative(self) -> Optional[Union[Dict[str, str], str]]:
+    def negative(self) -> dict[str, str] | str | None:
         """
         Define regex patterns prohibited to activate the MelusineRegex.
 
@@ -373,7 +373,7 @@ class MelusineRegex(ABC):
 
     @property
     @abstractmethod
-    def match_list(self) -> List[str]:
+    def match_list(self) -> list[str]:
         """
         List of texts that should activate the MelusineRegex.
 
@@ -383,7 +383,7 @@ class MelusineRegex(ABC):
 
     @property
     @abstractmethod
-    def no_match_list(self) -> List[str]:
+    def no_match_list(self) -> list[str]:
         """
         List of texts that should NOT activate the MelusineRegex.
 
@@ -392,8 +392,8 @@ class MelusineRegex(ABC):
         """
 
     def _get_match(
-        self, text: str, base_regex: Union[str, Dict[str, str]], regex_group: Optional[str] = None
-    ) -> Dict[str, List[Dict[str, Any]]]:
+        self, text: str, base_regex: str | dict[str, str], regex_group: str | None = None
+    ) -> dict[str, list[dict[str, Any]]]:
         """
         Run specified regex on the input text and return a dict with matching group as key.
 
@@ -435,7 +435,7 @@ class MelusineRegex(ABC):
     def ignore_text(
         self,
         text: str,
-        match_data_dict: Dict[str, List[Dict[str, Any]]],
+        match_data_dict: dict[str, list[dict[str, Any]]],
     ) -> str:
         """
         Replace neutral regex match text with substitution text to ignore it.
@@ -471,7 +471,7 @@ class MelusineRegex(ABC):
         result = self(text)
         return result[self.MATCH_RESULT]
 
-    def __call__(self, text: str) -> Dict[str, Any]:
+    def __call__(self, text: str) -> dict[str, Any]:
         """
         Apply MelusineRegex patterns (neutral, negative and positive) on the input text.
         Return a detailed output of the match results as a dict.
@@ -519,7 +519,7 @@ class MelusineRegex(ABC):
             position: If True, print regex match start and stop positions.
         """
 
-        def _describe_match_field(match_field_data: Dict[str, List[Dict[str, Any]]]) -> None:
+        def _describe_match_field(match_field_data: dict[str, list[dict[str, Any]]]) -> None:
             """
             Format and print result description text.
 
