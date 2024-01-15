@@ -1478,9 +1478,10 @@ class ContentTagger(BaseContentTagger):
             r"Chief",
             r"VP",
             r"C.O",
+            r"(Sales)? Representative",
         ]
         job_regex = r"\b(" + r"|".join(jobs) + r")\b"
-        line_with_known_job = rf"(?:^ *.{{,5}}{job_regex}( +{self.word_block(6)})?(?:\n+|$))"
+        line_with_known_job = rf"(?:^ *.{{,5}}{self.word_block(1)}{job_regex}( +{self.word_block(6)})?(?:\n+|$))"
 
         # Street address regex
         street_word_list = [
@@ -1500,13 +1501,21 @@ class ContentTagger(BaseContentTagger):
             r"r[ée]sidence",
             r"rue",
             r"sentier",
+            # English
+            r"st\.?",
+            r"street",
+            r"ln\.?",
+            r"lane",
+            r"rd\.?",
+            r"road",
+            r"hill",
         ]
-        street_word_pattern = "(" + "|".join(street_word_list) + ")"
+        street_word_pattern = r"\b(" + "|".join(street_word_list) + r")\b"
 
         # A number (house number) or range, free words (up to 2), an equivalent of street (rue, allée, etc)
         # and more free words (up to 5), free chars at the end (up to 2)
         street_address_regex = (
-            r"^ *\d+(?:-\d+)?(?:bis|ter)?,? +(\w+\b *){,2}\b" + street_word_pattern + r"\b *(\w+\b[ -]*){,5}.{,2}$"
+            r"^ *\d+(?:-\d+)?(?:bis|ter|b)?,? +(\w+\b *){,2}\b" + street_word_pattern + r"\b *(\w+\b[ -]*){,5}.{,2}$"
         )
 
         # Email address

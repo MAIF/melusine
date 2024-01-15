@@ -621,6 +621,29 @@ def test_tag_text_french(text, expected_tags):
             ],
             id="english job signature patterns",
         ),
+        pytest.param(
+            (
+                "9 downing street\n"
+                "4-6 Beverly Hill\n"
+                "4 Abbey road W24RA\n"
+                "3 Ocean Rd.\n"
+                "5th avenue\n"
+                "221b Baker St.\n"
+                "6bis River ln.\n"
+                "7 Winter lane\n"
+            ),
+            [
+                ("SIGNATURE", "9 downing street"),
+                ("SIGNATURE", "4-6 Beverly Hill"),
+                ("SIGNATURE", "4 Abbey road W24RA"),
+                ("SIGNATURE", "3 Ocean Rd."),
+                ("SIGNATURE", "5th avenue"),
+                ("SIGNATURE", "221b Baker St."),
+                ("SIGNATURE", "6bis River ln."),
+                ("SIGNATURE", "7 Winter lane"),
+            ],
+            id="english adsress signature patterns",
+        ),
     ],
 )
 def test_tag_text_english(text, expected_tags):
