@@ -11,6 +11,7 @@ authors = [
     {name = "Antoine Simoulin"},
 ]
 description = "Melusine is a high-level library for emails processing"
+readme = "README.md"
 requires-python = ">=3.8"
 keywords = ["nlp", "email", "courriel", "text", "data-science", "machine-learning", "natural-language-processing"]
 license = {text = "Apache Software License 2.0"}
@@ -41,7 +42,7 @@ dependencies = [
     "tqdm>=4.34",
     "omegaconf>=2.0",
 ]
-dynamic = ["version", "readme"]
+dynamic = ["version"]
 
 [project.optional-dependencies] # Optional
 dev = ["tox", "pre-commit", "black", "flake8", "isort", "mypy", "pytest", "coverage", "build", "ruff"]
@@ -54,7 +55,6 @@ where = ["."]
 
 [tool.setuptools.dynamic]
 version = {attr = "melusine.VERSION"}
-readme = {file = ["README.md"]}
 
 [tool.black]
 line-length = 120
