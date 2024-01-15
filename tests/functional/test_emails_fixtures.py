@@ -364,7 +364,7 @@ testcase_real_message = dict(
     test_name="real_email_1",
     body=(
         "De :\n_Délégation - Ville <ma-ville@maif.fr>\n\n\nEnvoyé :\nlundi 27 septembre 2021 22:19\n\n\n"
-        "À :\nBAL REZO <balrezo@maif.fr>\n\n\nObjet :\nTR : Soc : 1111111A - Votre"
+        "À :\nTEST <test@maif.fr>\n\n\nObjet :\nTR : Soc : 1111111A - Votre"
         " attestation assurance\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDe :\nJean Dupont <jdupont@gmail.com>"
         "\n\n\nEnvoyé :\nlundi 27 septembre 2021 22:23:43 (UTC+01:00) Brussels, Copenhagen, Madrid, Paris"
         "\n\n\nÀ :\n_Délégation - Ville <ma-ville06@maif.fr>\n\n\nSujet :\nRE: Soc : 1111111A - "
@@ -422,16 +422,15 @@ testcase_false_reply1 = dict(
 testcase_true_transfer = dict(
     test_name="Transferdetecteur (True)",
     header="Tr: Suivi de dossier",
-    body="Bonjour,\n\n\n\n\n\nUn taux d’humidité de 30% a été relevé le 19/04/2022.\n\n\n\nNous reprendrons contact avec l’assurée"
-    + " en Aout 2022.\n\n\n\n\n\n\nBien cordialement,\n\n\n\n\n\nNuméro Auxiliaire : 116113 T / 116133 J\n\n\n\n\n\n\n\n\nABOU"
-    + " ELELA Donia\n\n\nSté LVP\n-\n\nL\na\nV\nalorisation du\nP\natrimoine\n\n\n2, rue de la Paix\n\n\n94300 VINCENNES"
-    + "\n\n\n\n\n\n\n\nTél :    0143740992\n\n\nPort :  0767396737\n\n\nhttp://lvpfrance.fr\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
-    + "\n\n\nDe :\nAccueil - Lucile RODRIGUES <accueil@lvpfrance.fr>\n\n\n\nEnvoyé :\njeudi 13 janvier 2022 15:26\n\n\nÀ "
-    + ":\nCommercial <etudes7@lvpfrance.fr>\n\n\nObjet :\nTR: Evt : M211110545P survenu le 15/10/2021 - Intervention entreprise"
-    + " partenaire\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDe :\n\n\ngestionsinistre@maif.fr\n[\nmailto:gestionsinistre@maif.fr\n]\n\n\n\n"
-    + "Envoyé :\njeudi 13 janvier 2022 15:13\n\n\nÀ :\nAccueil - Lucile RODRIGUES\n\n\nObjet :\nEvt : M211110545P survenu le 15/10/2021"
-    + " - Intervention entreprise partenaire\n\n\n\n\n\nMerci de bien vouloir prendre connaissance du document ci-joint.\n\n\n\nSentiments"
-    + "mutualistes.\n\nLa MAIF",
+    body="Bonjour,\n\n\n\n\n\nUn taux d’humidité de 30% a été relevé le 01/01/2024.\n\n\n\nNous reprendrons contact avec l’assurée"
+    + " en Janvier 2024.\n\n\n\n\n\n\nBien cordialement,\n\n\n\n\n\nNuméro Auxiliaire : 000000A / 000000B\n\n\n\n\n\n\n\n\n"
+    + "Smith KIM\n\n\nTEST\n-\n\nL\na\nV\nalorisation du\nP\natrimoine\n\n\n2, rue du Test\n\n\n00000 Niort"
+    + "\n\n\n\n\n\n\n\nTél :    0101010101\n\n\nPort :  0101010101\n\n\nhttp://test.fr\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+    + "\n\n\nDe :\nAccueil - Alex Dupond <alex@test.fr>\n\n\n\nEnvoyé :\njeudi 01 janvier 2024 01:01\n\n\nÀ "
+    + ":\nCommercial <etudes@test.fr>\n\n\nObjet :\nTR: Evt : A000000000B survenu le 15/10/2021 - Intervention entreprise"
+    + " partenaire\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDe :\n\n\ntest@maif.fr\n[\nmailto:test@maif.fr\n]\n\n\n\n"
+    + "Envoyé :\njeudi 01 janvier 2024 01:01\n\n\nÀ :\nAccueil - Alex Dupond\n\n\nObjet :\nEvt : A000000000B survenu le 01/01/2024"
+    + " - Intervention entreprise partenaire\n\n\n\n\n\nMerci de bien vouloir prendre connaissance du document ci-joint.",
     transfer_detector_expected={
         "transfer_result": True,
     },
@@ -439,12 +438,11 @@ testcase_true_transfer = dict(
 testcase_true_transfer1 = dict(
     test_name="Transferdetecteur (True)",
     header="Suivi de dossier",
-    body="De :\nAccueil - Lucile RODRIGUES <accueil@lvpfrance.fr>\n\n\n\nEnvoyé :\njeudi 13 janvier 2022 15:26\n\n\nÀ "
-    + ":\nCommercial <etudes7@lvpfrance.fr>\n\n\nObjet :\nTR: Evt : M211110545P survenu le 15/10/2021 - Intervention entreprise"
-    + " partenaire\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDe :\n\n\ngestionsinistre@maif.fr\n[\nmailto:gestionsinistre@maif.fr\n]\n\n\n\n"
-    + "Envoyé :\njeudi 13 janvier 2022 15:13\n\n\nÀ :\nAccueil - Lucile RODRIGUES\n\n\nObjet :\nEvt : M211110545P survenu le 15/10/2021"
-    + " - Intervention entreprise partenaire\n\n\n\n\n\nMerci de bien vouloir prendre connaissance du document ci-joint.\n\n\n\nSentiments"
-    + "mutualistes.\n\nLa MAIF",
+    body="De :\nAccueil - Alex Dupond <accueil@test.fr>\n\n\n\nEnvoyé :\njeudi 01 janvier 2024 01:01\n\n\nÀ "
+    + ":\nCommercial <etudes@test.fr>\n\n\nObjet :\nTR: Evt : A000000000B survenu le 15/10/2021 - Intervention entreprise"
+    + " partenaire\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDe :\n\n\ntest@maif.fr\n[\nmailto:test@maif.fr\n]\n\n\n\n"
+    + "Envoyé :\njeudi 01 janvier 2024 01:01\n\n\nÀ :\nAccueil - Alex Dupond\n\n\nObjet :\nEvt : A000000000B survenu le 01/01/2024"
+    + " - Intervention entreprise partenaire\n\n\n\n\n\nMerci de bien vouloir prendre connaissance du document ci-joint.",
     transfer_detector_expected={
         "transfer_result": True,
     },

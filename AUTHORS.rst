@@ -2,21 +2,23 @@
 Credits
 =======
 
-Development Lead (Quantmetry Team support Maif Team)
-----------------------------------------------------
+Maintainers
+-----------
 
-* Sacha Samama
-* Tom Stringer
-* Antoine Simoulin <asimoulin@quantmetry.com>
-* Benoit Lebreton <blebreton@quantmetry.com>
+* Hugo Perrier <hugo.perrier@maif.fr>
 
 Contributors
 ------------
 
-* Florian Arthur <farthur@quantmetry.com>
-* Fabre Tiphaine <tiphaine.fabre@maif.fr>
-* Marouane Il Idrissi <ilidrissi.m@gmail.com>
-* Hugo Perrier <hperrier@quantmetry.com>
-* Victor Bigand <vbigand@quantmetry.com>
+* Florian Arthur
+* Guillaume Bernard
+* Victor Bigand
+* Tiphaine Fabre
+* Marouane Il Idrissi
+* Benoit Lebreton
+* Hugo Perrier
+* Sacha Samama
+* Antoine Simoulin
+* Tom Stringer
 
 To be continued ...

@@ -267,16 +267,15 @@ def test_transform_debug_mode(df_emails, expected_result, expected_debug_info):
                     "from": ["test@gmail.com"],
                     "header": ["fwd: Envoi d'un document de la Société Imaginaire"],
                     "body": [
-                        "Bonjour,\n\n\n\n\n\nUn taux d’humidité de 30% a été relevé le 19/04/2022.\n\n\n\nNous reprendrons contact avec l’assurée"
-                        + " en Aout 2022.\n\n\n\n\n\n\nBien cordialement,\n\n\n\n\n\nNuméro Auxiliaire : 116113 T / 116133 J\n\n\n\n\n\n\n\n\nABOU"
-                        + " ELELA Donia\n\n\nSté LVP\n-\n\nL\na\nV\nalorisation du\nP\natrimoine\n\n\n2, rue de la Paix\n\n\n94300 VINCENNES"
+                        "Bonjour,\n\n\n\n\n\nUn taux d’humidité de 30% a été relevé le 01/01/2024.\n\n\n\nNous reprendrons contact avec l’assurée"
+                        + " en Aout 2022.\n\n\n\n\n\n\nBien cordialement,\n\n\n\n\n\nNuméro Auxiliaire : 000000 A / 000000 B\n\n\n\n\n\n\n\n\n"
+                        + "SMITH Kim\n\n\nTEST\n-\n\nL\na\nV\nalorisation du\nP\natrimoine\n\n\n2, rue du Test\n\n\n00000 NIORT"
                         + "\n\n\n\n\n\n\n\nTél :    0143740992\n\n\nPort :  0767396737\n\n\nhttp://lvpfrance.fr\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
-                        + "\n\n\nDe :\nAccueil - Lucile RODRIGUES <accueil@lvpfrance.fr>\n\n\n\nEnvoyé :\njeudi 13 janvier 2022 15:26\n\n\nÀ "
-                        + ":\nCommercial <etudes7@lvpfrance.fr>\n\n\nObjet :\nTR: Evt : M211110545P survenu le 15/10/2021 - Intervention entreprise"
-                        + " partenaire\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDe :\n\n\ngestionsinistre@maif.fr\n[\nmailto:gestionsinistre@maif.fr\n]\n\n\n\n"
-                        + "Envoyé :\njeudi 13 janvier 2022 15:13\n\n\nÀ :\nAccueil - Lucile RODRIGUES\n\n\nObjet :\nEvt : M211110545P survenu le 15/10/2021"
-                        + " - Intervention entreprise partenaire\n\n\n\n\n\nMerci de bien vouloir prendre connaissance du document ci-joint.\n\n\n\nSentiments"
-                        + "mutualistes.\n\nLa MAIF",
+                        + "\n\n\nDe :\nAccueil - Alex Dupond <accueil@test.fr>\n\n\n\nEnvoyé :\njeudi 01 janvier 2024 01:01\n\n\nÀ "
+                        + ":\nCommercial <etudes@test.fr>\n\n\nObjet :\nTR: Evt : A0000000B survenu le 01/01/2024 - Intervention entreprise"
+                        + " partenaire\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDe :\n\n\ntest@maif.fr\n[\nmailto:test@maif.fr\n]\n\n\n\n"
+                        + "Envoyé :\njeudi 01 janvier 2024 01:01\n\n\nÀ :\nAccueil - Alex Dupond\n\n\nObjet :\nEvt : A0000000B survenu le 01/01/2024"
+                        + " - Intervention entreprise partenaire\n\n\n\n\n\nMerci de bien vouloir prendre connaissance du document ci-joint.",
                     ],
                 }
             ),
@@ -288,16 +287,15 @@ def test_transform_debug_mode(df_emails, expected_result, expected_debug_info):
                     "from": ["test@gmail.com"],
                     "header": ["Virement"],
                     "body": [
-                        "Bonjour,\n\n\n\n\n\nUn taux d’humidité de 30% a été relevé le 19/04/2022.\n\n\n\nNous reprendrons contact avec l’assurée"
-                        + " en Aout 2022.\n\n\n\n\n\n\nBien cordialement,\n\n\n\n\n\nNuméro Auxiliaire : 116113 T / 116133 J\n\n\n\n\n\n\n\n\nABOU"
-                        + " ELELA Donia\n\n\nSté LVP\n-\n\nL\na\nV\nalorisation du\nP\natrimoine\n\n\n2, rue de la Paix\n\n\n94300 VINCENNES"
+                        "Bonjour,\n\n\n\n\n\nUn taux d’humidité de 30% a été relevé le 01/01/2024.\n\n\n\nNous reprendrons contact avec l’assurée"
+                        + " en Aout 2022.\n\n\n\n\n\n\nBien cordialement,\n\n\n\n\n\nNuméro Auxiliaire : 000000 A / 000000 B\n\n\n\n\n\n\n\n\n"
+                        + "SMITH Kim\n\n\nTEST\n-\n\nL\na\nV\nalorisation du\nP\natrimoine\n\n\n2, rue du Test\n\n\n00000 NIORT"
                         + "\n\n\n\n\n\n\n\nTél :    0143740992\n\n\nPort :  0767396737\n\n\nhttp://lvpfrance.fr\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
-                        + "\n\n\nDe :\nAccueil - Lucile RODRIGUES <accueil@lvpfrance.fr>\n\n\n\nEnvoyé :\njeudi 13 janvier 2022 15:26\n\n\nÀ "
-                        + ":\nCommercial <etudes7@lvpfrance.fr>\n\n\nObjet :\nTR: Evt : M211110545P survenu le 15/10/2021 - Intervention entreprise"
-                        + " partenaire\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDe :\n\n\ngestionsinistre@maif.fr\n[\nmailto:gestionsinistre@maif.fr\n]\n\n\n\n"
-                        + "Envoyé :\njeudi 13 janvier 2022 15:13\n\n\nÀ :\nAccueil - Lucile RODRIGUES\n\n\nObjet :\nEvt : M211110545P survenu le 15/10/2021"
-                        + " - Intervention entreprise partenaire\n\n\n\n\n\nMerci de bien vouloir prendre connaissance du document ci-joint.\n\n\n\nSentiments"
-                        + "mutualistes.\n\nLa MAIF",
+                        + "\n\n\nDe :\nAccueil - Alex Dupond <accueil@test.fr>\n\n\n\nEnvoyé :\njeudi 01 janvier 2024 01:01\n\n\nÀ "
+                        + ":\nCommercial <etudes@test.fr>\n\n\nObjet :\nTR: Evt : A0000000B survenu le 01/01/2024 - Intervention entreprise"
+                        + " partenaire\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nDe :\n\n\ntest@maif.fr\n[\nmailto:test@maif.fr\n]\n\n\n\n"
+                        + "Envoyé :\njeudi 01 janvier 2024 01:01\n\n\nÀ :\nAccueil - Alex Dupond\n\n\nObjet :\nEvt : A0000000B survenu le 01/01/2024"
+                        + " - Intervention entreprise partenaire\n\n\n\n\n\nMerci de bien vouloir prendre connaissance du document ci-joint.",
                     ],
                 }
             ),
