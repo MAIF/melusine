@@ -5,11 +5,11 @@ on:
       - "v[0-9]+.[0-9]+.[0-9]+" # regex to match semantic versioning tags
 
 jobs:
-  tests:
+  main_ci:
     uses: ./.github/workflows/main.yml
   publish:
     name: publish
-    needs: [main] # require main to pass before publish runs
+    needs: [main_ci] # require main to pass before publish runs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source
