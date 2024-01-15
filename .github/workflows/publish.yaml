@@ -1,8 +1,8 @@
 name: Publish to Pypi
 on:
   push:
-#    tags:
-#      - "v[0-9]+.[0-9]+.[0-9]+" # regex to match semantic versioning tags
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+" # regex to match semantic versioning tags
 
 jobs:
   main_ci:
