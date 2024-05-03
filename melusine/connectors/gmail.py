@@ -16,70 +16,94 @@ from tqdm import tqdm
 logger = logging.getLogger(__name__)
 
 
-SCOPES: List[str] = ["https://www.googleapis.com/auth/gmail.readonly", "https://www.googleapis.com/auth/gmail.modify"]
-
-
 class GmailConnector:
     """
     Connector to Gmail Mailboxs.
     This class contains methods suited for automated emails routing.
+    A credentials.json file is needed to sign in to google. To do so, follow these steps :
+    https://medium.com/@preetipriyanka24/how-to-read-emails-from-gmail-using-gmail-api-in-python-20f7d9d09ae9
+    Please do not forget to add the mail address to the list of allowed tester if the credentials stays in testing
+
+    First use can only be:
+    ```python
+    # Assuming credentials.json is at root level
+    gc = GmailConnector()
+    # A pop up window will ask you to connect then the next connection will be:
+    gc = GmailConnector("token.json")
+    ```
     """
+
+    SCOPES: List[str] = [
+        "https://www.googleapis.com/auth/gmail.readonly",
+        "https://www.googleapis.com/auth/gmail.modify",
+    ]
 
     def __init__(
         self,
         token_json_path: Optional[str] = None,
-        routing_label: Optional[str] = None,
-        correction_label: Optional[str] = None,
         done_label: Optional[str] = None,
         target_column: str = "target",
     ):
-        self.target_column = target_column
+        """
+        Args:
+            token_json_path (Optional[str], optional): `token.json` file path created after the first connection using
+            `credentials.json`. If None, looking for `credentials.json` at root and sign in. Defaults to None.
+            done_label (Optional[str], optional): Label name for the done situation. Defaults to None.
+            target_column (str, optional): Name of the DataFrame column containing target label. Defaults to "target".
+        """
+        self.target_column: str = target_column
 
         # Connect to mailbox
         self.credentials: Credentials = self.get_credentials(token_json_path=token_json_path)
-        self.service = build("gmail", "v1", credentials=self.credentials)
+        self.service: Any = build("gmail", "v1", credentials=self.credentials)
         self.labels: List[Dict[str, str]] = self._get_labels()
 
-        # Setup correction folder and done folder
-        self.routing_label: Optional[str] = self._check_or_create_label(routing_label)
-        self.correction_label: Optional[str] = self._check_or_create_label(correction_label)
+        # Setup done label
         self.done_label: Optional[str] = self._check_or_create_label(done_label)
 
         self.mailbox_address = self.service.users().getProfile(userId="me").execute()["emailAddress"]
         logger.info(f"Connected to mailbox: {self.mailbox_address}.")
 
     def __repr__(self) -> str:
+        """
+        Returns:
+            str: Reprensentation of the object
+        """
         return (
-            f"GmailConnector(routing_label={self.routing_label}, correction_label={self.correction_label},"
-            + f" done_label={self.done_label}), connected to {self.mailbox_address}"
+            f"GmailConnector(done_label={self.done_label}, target_column={self.target_column}), "
+            + f"connected to {self.mailbox_address}"
         )
 
-    @staticmethod
-    def get_credentials(token_json_path: Optional[str] = None):
-        """TODO
+    def get_credentials(self, token_json_path: Optional[str] = None) -> Credentials:
+        """Retrieve credentials object to connect to Gmail using the `credentials.json` and generating the `token.json`
+        if needed at root path.
+        Please create json file as here https://cloud.google.com/docs/authentication/getting-started
 
         Args:
-            token_json_path (Optional[str], optional): _description_. Defaults to None.
+            token_json_path (Optional[str], optional): `token.json` file path created after the first connection using
+            `credentials.json`. Defaults to None.
 
         Returns:
-            _type_: _description_
+            Credentials: Credentials to connect to Gmail
         """
         if token_json_path is not None and os.path.exists(token_json_path):
-            creds: Credentials = Credentials.from_authorized_user_file("token.json", SCOPES)
+            creds: Credentials = Credentials.from_authorized_user_file("token.json", self.SCOPES)
             if creds.valid is False:
                 creds.refresh(Request())
             return creds
 
-        flow = InstalledAppFlow.from_client_secrets_file(
-            # your creds file here. Please create json file as here https://cloud.google.com/docs/authentication/getting-started
+        flow: InstalledAppFlow = InstalledAppFlow.from_client_secrets_file(
             "credentials.json",
-            SCOPES,
+            self.SCOPES,
         )
         creds = flow.run_local_server(port=0)
+
         # Save the credentials for the next run
         with open("token.json", "w") as token:
             token.write(creds.to_json())
+
         logger.info(f"gmail token.json saved at: {os.getcwd()}")
+        return creds
 
     def _get_labels(self) -> List[Dict]:
         """Retrieve all current labels in mailbox
@@ -164,7 +188,14 @@ class GmailConnector:
         return {"body": body, "attachments_list": attachments_list}
 
     def _extract_email_attributes(self, message_id: str) -> Dict:
-        """Return formatted attributes for the considered email
+        """Return formatted attributes for the considered email such as:
+        - `message_id` field
+        - `body` field
+        - `header` field
+        - `date` field
+        - `from` field
+        - `to` field
+        - `attachment` field
 
         Args:
             message_id (str): id of the mail to consider
@@ -198,16 +229,25 @@ class GmailConnector:
         start_date: Optional[str] = None,
         end_date: Optional[str] = None,
     ) -> pd.DataFrame:
-        """TODO
+        """Loads emails in descending date order based on target_labels. To see all available labels, use `self.labels`.
+        If two label names are defined, retrieve all emails with both labels, e.g. ["TRASH", "INBOX"] will retrieve none
+        These labels cannot be present simultaneously.
+
+        For example, to get first 10 mails received in inbox and unreaded:
+        ```python
+        gc = GmailConnector("token.json", done_label="test")
+        df = gc.get_emails(10, target_labels=["INBOX", "UNREAD"])
+        df
+        ```
 
         Args:
-            max_emails (int, optional): _description_. Defaults to 100.
-            target_labels (List[str], optional): _description_. Defaults to None.
-            start_date (Optional[str], optional): _description_. Defaults to None.
-            end_date (Optional[str], optional): _description_. Defaults to None.
+            max_emails (int, optional): Maximum number of emails to load. Defaults to 100.
+            target_labels (List[str], optional): Label names list to fetch. Defaults to None. If None, fetch INBOX.
+            start_date (Optional[str], optional): Filter date start, format YYYY/MM/DD. Defaults to None.
+            end_date (Optional[str], optional): Filter date end, format YYYY/MM/DD. Defaults to None.
 
         Returns:
-            pd.DataFrame: _description_
+            pd.DataFrame: DataFrame containing emails
         """
         logger.info("Reading new emails for mailbox")
         if target_labels is None:
@@ -234,32 +274,24 @@ class GmailConnector:
         logger.info(f"Read '{len(new_emails)}' new emails")
         return df_new_emails
 
-    def _move_to(
-        self,
-        emails_id: List[str],
-        label_to_move_on: Optional[str],
-        attribute_class_to_set_error: str,
-        func_name_error: str,
-    ):
-        """TODO
+    def move_to(self, emails_id: List[str], label_to_move_on: str) -> None:
+        """Generic method to move emails to a specified label
 
         Args:
-            emails_id (List[str]): _description_
-            label_to_move_on (Optional[str]): _description_
-            attribute_class_to_set_error (str): _description_
-            func_name_error (str): _description_
+            emails_id (List[str]): List of emails id to set the label
+            label_to_move_on (str): Label name to set
 
-        Raises:
-            AttributeError: _description_
         """
-        if label_to_move_on is None:
-            raise AttributeError(
-                f"You need to set the class attribute `{attribute_class_to_set_error}` to use `{func_name_error}`."
+        label_id: Optional[str] = next(
+            (label["id"] for label in self.labels if label["name"] == label_to_move_on), None
+        )
+        if label_id is None:
+            raise ValueError(
+                f"Label '{label_to_move_on}' does not exist in self.labels. Make sure to specified a right label name."
             )
-        label_id = next((label["id"] for label in self.labels if label["name"] == label_to_move_on), None)
-        body = {"addLabelIds": [label_id]}
         for email_id in emails_id:
-            self.service.users().messages().modify(id=email_id, userId="me", body=body).execute()
+            self.service.users().messages().modify(id=email_id, userId="me", body={"addLabelIds": [label_id]}).execute()
+
         logger.info(f"Moved {len(emails_id)} emails to {label_to_move_on} label.")
 
     def move_to_done(self, emails_id: List[str]) -> None:
@@ -268,13 +300,11 @@ class GmailConnector:
         Args:
             emails_id (List[str]): List of emails id to move to done label
         """
-        self._move_to(emails_id, self.done_label, "done_label", "move_to_done")
+        if self.done_label is None:
+            raise AttributeError("You need to set the class attribute `done_label` to use `move_to_done`.")
+        self.move_to(emails_id, self.done_label)
 
-    def route_emails(
-        self,
-        classified_emails: pd.DataFrame,
-        id_column: str = "message_id",
-    ) -> None:
+    def route_emails(self, classified_emails: pd.DataFrame, id_column: str = "message_id") -> None:
         """Function to route emails to mailbox folders.
 
         Args:
@@ -287,7 +317,7 @@ class GmailConnector:
         for label in target_labels:
             mask = classified_emails[target_column] == label
             mids_to_move = classified_emails[mask][id_column]
-            self._move_to(mids_to_move, label, label, "route_emails")
+            self.move_to(mids_to_move, label)
             logger.info(f"Moving {mids_to_move.size} emails to folder '{label}'")
 
     def send_email(self, to: Union[str, List[str]], header: str, body: str, attachments: dict) -> None:
