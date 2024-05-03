@@ -87,7 +87,7 @@ class GmailConnector:
             Credentials: Credentials to connect to Gmail
         """
         if token_json_path is not None and os.path.exists(token_json_path):
-            creds: Credentials = Credentials.from_authorized_user_file("token.json", self.SCOPES)
+            creds: Credentials = Credentials.from_authorized_user_file(token_json_path, self.SCOPES)
             if creds.valid is False:
                 creds.refresh(Request())
             return creds
@@ -154,7 +154,8 @@ class GmailConnector:
         logger.info(f"Label {label_name} has been created.")
         return label
 
-    def extract_from_parsed_mail(self, parsed_email: message.Message) -> Dict[str, Any]:
+    @staticmethod
+    def extract_from_parsed_mail(parsed_email: message.Message) -> Dict[str, Any]:
         """Extract body and attachments from the parsed email
 
         Args:
@@ -318,18 +319,19 @@ class GmailConnector:
             mask = classified_emails[target_column] == label
             mids_to_move = classified_emails[mask][id_column]
             self.move_to(mids_to_move, label)
-            logger.info(f"Moving {mids_to_move.size} emails to folder '{label}'")
+            logger.info(f"Moving {mids_to_move.size} emails to label '{label}'")
 
-    def send_email(self, to: Union[str, List[str]], header: str, body: str, attachments: dict) -> None:
+    def send_email(self, to: Union[str, List[str]], header: str, body: str, attachments: Optional[Dict] = None) -> None:
         """This method sends an email from the login address (attribute login_address).
 
         Args:
             to (Union[str, List[str]]): Address or list of addresses of email recipients
             header (str): Email header
             body (str): Email body
-            attachments (dict): Dict containing attachment names as key and attachment file contents as values.
-            Currently, the code is tested for DataFrame attachments only
+            attachments (Optional[Dict], optional): Dict containing attachment names as key and attachment
+            file contents as values. Defaults to None.
         """
+
         if isinstance(to, str):
             to = [to]
 

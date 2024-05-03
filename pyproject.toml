@@ -46,7 +46,7 @@ dynamic = ["version"]
 
 [project.optional-dependencies] # Optional
 dev = ["tox", "pre-commit", "black", "flake8", "isort", "mypy", "pytest", "coverage", "build", "ruff"]
-test = ["pytest", "coverage"]
+test = ["pytest", "coverage", "pytest-cov"]
 transformers = ["transformers>4"]
 connectors = ["exchangelib", "google-auth-oauthlib", "google-api-python-client"]
 docs = ["mkdocs", "markdown", "mkdocs-material", "mdx-include"]
