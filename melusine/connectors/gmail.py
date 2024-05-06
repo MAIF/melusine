@@ -56,12 +56,12 @@ class GmailConnector:
         # Connect to mailbox
         self.credentials: Credentials = self.get_credentials(token_json_path=token_json_path)
         self.service: Any = build("gmail", "v1", credentials=self.credentials)
-        self.labels: List[Dict[str, str]] = self._get_labels()
 
-        # Setup done label
+        # Get and setup labels
+        self.labels: List[Dict[str, str]] = self._get_labels()
         self.done_label: Optional[str] = self._check_or_create_label(done_label)
 
-        self.mailbox_address = self.service.users().getProfile(userId="me").execute()["emailAddress"]
+        self.mailbox_address: str = self.service.users().getProfile(userId="me").execute()["emailAddress"]
         logger.info(f"Connected to mailbox: {self.mailbox_address}.")
 
     def __repr__(self) -> str:
@@ -86,19 +86,21 @@ class GmailConnector:
         Returns:
             Credentials: Credentials to connect to Gmail
         """
+        # Get the token from the path
         if token_json_path is not None and os.path.exists(token_json_path):
             creds: Credentials = Credentials.from_authorized_user_file(token_json_path, self.SCOPES)
             if creds.valid is False:
                 creds.refresh(Request())
             return creds
 
+        # Ask for token to Google
         flow: InstalledAppFlow = InstalledAppFlow.from_client_secrets_file(
             "credentials.json",
             self.SCOPES,
         )
         creds = flow.run_local_server(port=0)
 
-        # Save the credentials for the next run
+        # Save the token for the next run
         with open("token.json", "w") as token:
             token.write(creds.to_json())
 
@@ -204,6 +206,8 @@ class GmailConnector:
         Returns:
             Dict: formatted output of the email
         """
+
+        # Get the raw message and create a Message object
         msg_raw: Dict[str, Any] = (
             self.service.users().messages().get(id=message_id, userId="me", format="raw").execute()
         )
@@ -261,7 +265,7 @@ class GmailConnector:
         if end_date is not None:
             q += f"before:{end_date}"
 
-        all_new_data = (
+        all_new_data: Dict[str, Any] = (
             self.service.users()
             .messages()
             .list(userId="me", maxResults=max_emails, labelIds=target_label_id, q=q)
