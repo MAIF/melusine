@@ -41,20 +41,25 @@ class GmailConnector:
     def __init__(
         self,
         token_json_path: Optional[str] = None,
+        credentials_json_path: str = "credentials.json",
         done_label: Optional[str] = None,
         target_column: str = "target",
     ):
         """
         Args:
             token_json_path (Optional[str], optional): `token.json` file path created after the first connection using
-            `credentials.json`. If None, looking for `credentials.json` at root and sign in. Defaults to None.
+            `credentials.json`. If None, looking for credentials_json_path and sign in. Defaults to None.
+            credentials_json_path (str, optional): file path for credentials.json delivered by google.
+            Defaults to credentials.json at root.
             done_label (Optional[str], optional): Label name for the done situation. Defaults to None.
             target_column (str, optional): Name of the DataFrame column containing target label. Defaults to "target".
         """
         self.target_column: str = target_column
 
         # Connect to mailbox
-        self.credentials: Credentials = self.get_credentials(token_json_path=token_json_path)
+        self.credentials: Credentials = self.get_credentials(
+            token_json_path=token_json_path, credentials_json_path=credentials_json_path
+        )
         self.service: Any = build("gmail", "v1", credentials=self.credentials)
 
         # Get and setup labels
@@ -74,12 +79,13 @@ class GmailConnector:
             + f"connected to {self.mailbox_address}"
         )
 
-    def get_credentials(self, token_json_path: Optional[str] = None) -> Credentials:
+    def get_credentials(self, credentials_json_path: str, token_json_path: Optional[str] = None) -> Credentials:
         """Retrieve credentials object to connect to Gmail using the `credentials.json` and generating the `token.json`
         if needed at root path.
         Please create json file as here https://cloud.google.com/docs/authentication/getting-started
 
         Args:
+            credentials_json_path (str): Credentials file path delivered by Google to authenticate.
             token_json_path (Optional[str], optional): `token.json` file path created after the first connection using
             `credentials.json`. Defaults to None.
 
@@ -95,7 +101,7 @@ class GmailConnector:
 
         # Ask for token to Google
         flow: InstalledAppFlow = InstalledAppFlow.from_client_secrets_file(
-            "credentials.json",
+            credentials_json_path,
             self.SCOPES,
         )
         creds = flow.run_local_server(port=0)
@@ -272,6 +278,11 @@ class GmailConnector:
             .execute()
         )
 
+        if "messages" not in all_new_data:
+            logger.info(
+                f"No emails with filters: target_labels={target_labels}, start_date={start_date}, end_date={end_date}"
+            )
+            return pd.DataFrame(columns=["message_id", "body", "header", "date", "from", "to", "attachment"])
         logger.info("Please wait while loading messages")
         new_emails: List[Dict] = [self._extract_email_attributes(x["id"]) for x in tqdm(all_new_data["messages"])]
         df_new_emails = pd.DataFrame(new_emails)
@@ -297,7 +308,7 @@ class GmailConnector:
         for email_id in emails_id:
             self.service.users().messages().modify(id=email_id, userId="me", body={"addLabelIds": [label_id]}).execute()
 
-        logger.info(f"Moved {len(emails_id)} emails to {label_to_move_on} label.")
+        logger.info(f"Moved {len(emails_id)} emails to '{label_to_move_on}' label.")
 
     def move_to_done(self, emails_id: List[str]) -> None:
         """Move emails to done label
@@ -323,7 +334,6 @@ class GmailConnector:
             mask = classified_emails[target_column] == label
             mids_to_move = classified_emails[mask][id_column]
             self.move_to(mids_to_move, label)
-            logger.info(f"Moving {mids_to_move.size} emails to label '{label}'")
 
     def send_email(self, to: Union[str, List[str]], header: str, body: str, attachments: Optional[Dict] = None) -> None:
         """This method sends an email from the login address (attribute login_address).

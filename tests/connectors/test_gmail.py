@@ -173,6 +173,19 @@ def test_gc_get_emails_complex_mail(mocked_gc, complex_email_raw, caplog):
     }
 
 
+def test_gc_get_emails_none(mocked_gc, simple_email_raw, caplog):
+    mocked_gc.service.users().messages().list.return_value = HttpRequestMock(None, {}, return_value)
+    with caplog.at_level(logging.DEBUG):
+        df = mocked_gc.get_emails(1, None, "2024/01/01", "2024/05/03")
+
+    assert "Please wait while loading messages" not in caplog.text
+    assert "No emails with filters: target_labels=" in caplog.text
+
+    assert isinstance(df, pd.DataFrame)
+    assert len(df) == 0
+    assert all([col in df.columns for col in ["message_id", "body", "header", "date", "from", "to", "attachment"]])
+
+
 @patch("builtins.input", side_effect=["y", "n"])
 def test_gc_check_or_create_label(mock_input, mocked_gc, caplog):
     mocked_gc.service.users().labels().create.return_value = HttpRequestMock(
@@ -205,7 +218,7 @@ def test_gc_move_to_done(mocked_gc, caplog):
     with caplog.at_level(logging.DEBUG):
         mocked_gc.move_to_done(["dummy_id"])
 
-    assert "Moved 1 emails to TRASH label." in caplog.text
+    assert "Moved 1 emails to 'TRASH' label." in caplog.text
 
     mocked_gc.done_label = None
     with pytest.raises(AttributeError, match="You need to set the class attribute `done_label` to use `move_to_done`."):
@@ -238,8 +251,8 @@ def test_gc_route_emails(mocked_gc, caplog):
     with caplog.at_level(logging.DEBUG):
         mocked_gc.route_emails(df)
 
-    assert "Moving 1 emails to label 'TRASH'" in caplog.text
-    assert "Moving 1 emails to label 'UNREAD'" in caplog.text
+    assert "Moved 1 emails to 'TRASH' label" in caplog.text
+    assert "Moved 1 emails to 'UNREAD' label" in caplog.text
 
 
 def test_gc_send_email(mocked_gc, fake_image, caplog):
