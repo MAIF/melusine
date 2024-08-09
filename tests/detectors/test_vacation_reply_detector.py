@@ -1,6 +1,7 @@
 """
 Unit tests of the VacationReplyDetector
 """
+
 import pandas as pd
 import pytest
 from pandas import DataFrame

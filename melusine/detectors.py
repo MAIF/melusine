@@ -5,6 +5,7 @@ Implemented classes: [ThanksDetector, VacationReplyDetector, ExpeditorDetector,
 ReplyDetector, TransferDetector, RecipientsDetector]
 
 """
+
 from typing import Any, Dict, List, Tuple
 
 from melusine.base import MelusineDetector, MelusineItem, MelusineRegex

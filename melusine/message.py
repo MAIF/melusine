@@ -5,6 +5,7 @@ An email body can contain many "messages".
 
 Implemented classes: [Message]
 """
+
 import re
 from datetime import datetime
 from typing import Iterable, List, Optional, Tuple

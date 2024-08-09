@@ -1,6 +1,7 @@
 """
 Unit test for processors.py
 """
+
 import pytest
 
 from melusine.processors import (

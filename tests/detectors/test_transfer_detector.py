@@ -2,7 +2,6 @@
 Unit tests of the TransferDetector.
 """
 
-
 import pandas as pd
 import pytest
 from pandas import DataFrame

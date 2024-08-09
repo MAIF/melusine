@@ -1,6 +1,7 @@
 """
 Module that contains utility functions for tests (in /tests).
 """
+
 from typing import Any, Dict
 
 from melusine.base import MelusineTransformer

@@ -2,6 +2,7 @@
 Unit test of the ThanksDetector.
 
 """
+
 from tempfile import TemporaryDirectory
 
 import pandas as pd
