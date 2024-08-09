@@ -20,5 +20,6 @@ Contributors
 * Sacha Samama
 * Antoine Simoulin
 * Tom Stringer
+* Mathis Nicoli
 
 To be continued ...

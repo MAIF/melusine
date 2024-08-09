@@ -59,6 +59,9 @@ test: ## run tests quickly with the default Python
 test-all: ## run tests on every Python version with tox
 	tox
 
+pytest-coverage: # run pytest coverage with term-missing
+	pytest --cov=melusine --cov-report term-missing
+
 coverage: ## check code coverage quickly with the default Python
 	coverage run --source melusine -m pytest
 	coverage report -m

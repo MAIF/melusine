@@ -1,6 +1,7 @@
 """
 Top-level package.
 """
+
 import logging
 from ctypes import CDLL, cdll
 from typing import Any, Optional
@@ -11,7 +12,7 @@ from melusine._config import config
 
 __all__ = ["config"]
 
-VERSION = (3, 0, 0)
+VERSION = (3, 1, 0)
 __version__ = ".".join(map(str, VERSION))
 
 # ------------------------------- #

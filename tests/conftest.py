@@ -1,6 +1,7 @@
 """
 Setup tests and import fixtures
 """
+
 import numpy as np
 import pytest
 
@@ -10,6 +11,7 @@ from melusine import config
 pytest_plugins = [
     "tests.fixtures.backend",
     "tests.fixtures.basic_emails",
+    "tests.fixtures.connectors",
     "tests.fixtures.docs",
     "tests.fixtures.pipelines",
     "tests.fixtures.processors",
