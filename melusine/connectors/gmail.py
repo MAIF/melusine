@@ -11,6 +11,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
@@ -158,8 +159,15 @@ class GmailConnector:
         Returns:
             Dict[str, str]: return from the api with label and its informations
         """
-        label = self.service.users().labels().create(userId="me", body=dict(name=label_name)).execute()
-        logger.info(f"Label {label_name} has been created.")
+        try:
+            label = self.service.users().labels().create(userId="me", body=dict(name=label_name)).execute()
+            logger.info(f"Label {label_name} has been created.")
+        except HttpError as error:
+            if error.resp.status == 409:  # Conflict error if label already exists
+                logger.error(f"Label '{label_name}' already exists.")
+                return {}
+            else:
+                raise
         return label
 
     @staticmethod

@@ -3,6 +3,7 @@ This module contains classes for the MelusinePipeline object.
 
 Implemented classes: [PipelineConfigurationError, MelusinePipeline]
 """
+
 from __future__ import annotations
 
 import copy

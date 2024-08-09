@@ -1,6 +1,7 @@
 """
 Unit tests of the ReplyDetector.
 """
+
 import pandas as pd
 import pytest
 from pandas import DataFrame

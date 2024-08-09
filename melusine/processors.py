@@ -18,6 +18,7 @@ Implemented classes: [
     Cleaner,
 ]
 """
+
 from __future__ import annotations
 
 import logging
@@ -1901,7 +1902,6 @@ class Cleaner(MelusineTransformer):
 
 
 class DateProcessor(MelusineTransformer):
-
     """
     Parse string date to iso format string date
     """

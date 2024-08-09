@@ -1,6 +1,7 @@
 """
 Module which handles the package configuration.
 """
+
 import copy
 import logging
 import os

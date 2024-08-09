@@ -1,6 +1,7 @@
 """
 Example script to fit a minimal preprocessing pipeline
 """
+
 import pandas as pd
 import pytest
 
