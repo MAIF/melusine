@@ -236,7 +236,7 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
             return_cols.append(self.debug_dict_col)
 
         for method in self.transform_methods:
-            logger.debug(f"Running transform for {type(self).__name__} ({method.__name__})")
+            logger.debug("Running transform for %s (%s)", type(self).__name__, getattr(method, "name", "unnamed"))
             first_arg_name: str = list(inspect.signature(method).parameters)[0]
 
             if first_arg_name == "row":
