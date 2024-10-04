@@ -19,7 +19,7 @@ import inspect
 import logging
 import re
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, Iterable, TypeVar, Union
+from typing import Any, Callable, Dict, Iterable, List, TypeVar, Union
 
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -308,7 +308,7 @@ class MissingFieldError(Exception):
     """
 
 
-MatchData = dict[str, list[dict[str, Any]]]
+MatchData = Dict[str, List[Dict[str, Any]]]
 
 
 class MelusineRegex(ABC):
@@ -530,7 +530,7 @@ class MelusineRegex(ABC):
             position: If True, print regex match start and stop positions.
         """
 
-        def _describe_match_field(match_field_data: dict[str, list[dict[str, Any]]]) -> None:
+        def _describe_match_field(match_field_data: Dict[str, List[Dict[str, Any]]]) -> None:
             """
             Format and print result description text.
 
@@ -609,7 +609,7 @@ class MelusineRegex(ABC):
         """
         return text
 
-    def post_match_hook(self, match_dict: dict[str, Any]) -> dict[str, Any]:
+    def post_match_hook(self, match_dict: Dict[str, Any]) -> Dict[str, Any]:
         """
         Hook to run after the Melusine regex match.
 
