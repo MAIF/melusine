@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Any
 
 import pytest
 
@@ -150,6 +150,42 @@ def test_default_neutral_and_negative():
     regex = SomeRegex()
     assert regex.neutral is None
     assert regex.negative is None
+
+
+class PreMatchHookVirusRegex(VirusRegex):
+
+    def pre_match_hook(self, text: str) -> str:
+        text = text.replace("virrrrus", "virus")
+        return text
+
+
+def test_pre_match_hook():
+    reg = PreMatchHookVirusRegex()
+
+    bool_match_result = reg.get_match_result("I see a virrrrus !")
+
+    assert bool_match_result is True
+
+
+class PostMatchHookVirusRegex(VirusRegex):
+
+    def post_match_hook(self, match_dict: dict[str, Any]) -> dict[str, Any]:
+        """Test custom post processing of match data"""
+        if match_dict[self.MATCH_RESULT] is True:
+            if "NEUTRAL_MEDICAL_VIRUS" in match_dict[self.NEUTRAL_MATCH_FIELD] and "NEUTRAL_INSECT" in match_dict[self.NEUTRAL_MATCH_FIELD]:
+                match_dict[self.MATCH_RESULT] = False
+
+        return match_dict
+
+
+def test_post_match_hook():
+    reg = PostMatchHookVirusRegex()
+
+    bool_match_result = reg.get_match_result("I see a virus, a corona virus and a ladybug")
+    assert bool_match_result is False
+
+    bool_match_result = reg.get_match_result("I see a virus and a ladybug")
+    assert bool_match_result is True
 
 
 class PairedMatchRegex(MelusineRegex):
