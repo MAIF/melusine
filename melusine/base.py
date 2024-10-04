@@ -308,12 +308,16 @@ class MissingFieldError(Exception):
     """
 
 
+MatchData = dict[str, list[dict[str, Any]]]
+
+
 class MelusineRegex(ABC):
     """
     Class to standardise text pattern detection using regex.
     """
 
     REGEX_FLAGS: re.RegexFlag = re.IGNORECASE | re.MULTILINE
+    PAIRED_MATCHING_PREFIX: str = "_"
 
     # Match fields
     MATCH_RESULT: str = "match_result"
@@ -562,6 +566,63 @@ class MelusineRegex(ABC):
         if match_data[self.POSITIVE_MATCH_FIELD]:
             print("The following text matched positively:")
             _describe_match_field(match_data[self.POSITIVE_MATCH_FIELD])
+
+    def apply_paired_matching(self, negative_match_data: MatchData, positive_match_data: MatchData) -> bool:
+        """
+        Check if negative match is effective in the case of paired matching.
+
+        Args:
+            negative_match_data: negative_match_data
+            positive_match_data: positive_match_data
+
+        Returns:
+            effective_negative_match: negative_match adapted for paired matching
+        """
+        effective_negative_match = False
+        if positive_match_data and negative_match_data:
+            positive_match_keys = set(positive_match_data.keys())
+
+            for key in negative_match_data:
+                if key.startswith(self.PAIRED_MATCHING_PREFIX):
+                    if key[1:] in positive_match_keys:
+                        effective_negative_match = True
+                else:
+                    effective_negative_match = True
+
+        return effective_negative_match
+
+    def pre_match_hook(self, text: str) -> str:
+        """
+        Hook to run before the Melusine regex match.
+
+        Args:
+            text: input text.
+
+        Returns:
+            _: Modified text.
+        """
+        return text
+
+    def post_match_hook(self, match_dict: dict[str, Any]) -> dict[str, Any]:
+        """
+        Hook to run after the Melusine regex match.
+
+        Args:
+            match_dict: Match results.
+
+        Returns:
+            _: Modified match results.
+        """
+
+        # Paired matching
+        negative_match = self.apply_paired_matching(
+            match_dict[self.NEGATIVE_MATCH_FIELD], match_dict[self.POSITIVE_MATCH_FIELD]
+        )
+        positive_match = bool(match_dict[self.POSITIVE_MATCH_FIELD])
+
+        match_dict[self.MATCH_RESULT] = positive_match and not negative_match
+
+        return match_dict
 
     def test(self) -> None:
         """

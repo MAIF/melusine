@@ -46,13 +46,12 @@ class VirusRegex(MelusineRegex):
 
 def test_erroneous_substitution_pattern():
     with pytest.raises(ValueError):
-        regex = VirusRegex(substitution_pattern="12345")
+        _ = VirusRegex(substitution_pattern="12345")
 
 
 def test_method_test():
     regex = VirusRegex()
     regex.test()
-    assert True
 
 
 def test_match_method():
@@ -94,7 +93,7 @@ def test_describe_method(capfd):
 
     # Negative match on bug (group NEGATIVE_BUG) and ignore ladybug and corona virus
     regex.describe("The computer virus in the ladybug software caused a bug in the corona virus dashboard")
-    out, err = capfd.readouterr()
+    out, _ = capfd.readouterr()
     assert "NEGATIVE_BUG" in out
     assert "start" not in out
 
@@ -103,18 +102,18 @@ def test_describe_method(capfd):
         "The computer virus in the ladybug software caused a bug in the corona virus dashboard",
         position=True,
     )
-    out, err = capfd.readouterr()
+    out, _ = capfd.readouterr()
     assert "match result is : NEGATIVE" in out
     assert "NEGATIVE_BUG" in out
     assert "start" in out
 
     regex.describe("This is a dangerous virus")
-    out, err = capfd.readouterr()
+    out, _ = capfd.readouterr()
     assert "match result is : POSITIVE" in out
     assert "start" not in out
 
     regex.describe("Nada")
-    out, err = capfd.readouterr()
+    out, _ = capfd.readouterr()
     assert "The input text did not match anything" in out
 
 
@@ -151,3 +150,45 @@ def test_default_neutral_and_negative():
     regex = SomeRegex()
     assert regex.neutral is None
     assert regex.negative is None
+
+
+class PairedMatchRegex(MelusineRegex):
+    """
+    Test paired matching.
+    """
+
+    @property
+    def positive(self) -> Union[str, Dict[str, str]]:
+        return {
+            "test_1": r"pos_pattern_1",
+            "test_2": r"pos_pattern_2",
+        }
+
+    @property
+    def negative(self) -> Optional[Union[str, Dict[str, str]]]:
+        return {
+            "_test_1": r"neg_pattern_1",
+            "generic": r"neg_pattern_2",
+        }
+
+    @property
+    def match_list(self) -> List[str]:
+        return [
+            "Test pos_pattern_1",
+            "pos_pattern_2",
+            "pos_pattern_2 and neg_pattern_1",
+        ]
+
+    @property
+    def no_match_list(self) -> List[str]:
+        return [
+            "test",
+            "Test pos_pattern_1 and neg_pattern_1",
+            "pos_pattern_2 and neg_pattern_2",
+            "pos_pattern_1 and neg_pattern_2",
+        ]
+
+
+def test_paired_matching_test():
+    regex = PairedMatchRegex()
+    regex.test()
