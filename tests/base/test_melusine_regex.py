@@ -170,9 +170,9 @@ class PostMatchHookVirusRegex(VirusRegex):
     def post_match_hook(self, match_dict: Dict[str, Any]) -> Dict[str, Any]:
         """Test custom post processing of match data"""
         if (
-                match_dict[self.MATCH_RESULT] is True
-                and "NEUTRAL_MEDICAL_VIRUS" in match_dict[self.NEUTRAL_MATCH_FIELD]
-                and "NEUTRAL_INSECT" in match_dict[self.NEUTRAL_MATCH_FIELD]
+            match_dict[self.MATCH_RESULT] is True
+            and "NEUTRAL_MEDICAL_VIRUS" in match_dict[self.NEUTRAL_MATCH_FIELD]
+            and "NEUTRAL_INSECT" in match_dict[self.NEUTRAL_MATCH_FIELD]
         ):
             match_dict[self.MATCH_RESULT] = False
 
