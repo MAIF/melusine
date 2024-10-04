@@ -487,6 +487,9 @@ class MelusineRegex(ABC):
         Returns:
             _: Regex match results.
         """
+        # Apply pre match hook
+        text = self.pre_match_hook(text)
+
         match_dict = {
             self.MATCH_RESULT: False,
             self.NEUTRAL_MATCH_FIELD: {},
@@ -512,6 +515,9 @@ class MelusineRegex(ABC):
         match_dict[self.POSITIVE_MATCH_FIELD] = positive_match_data
 
         match_dict[self.MATCH_RESULT] = positive_match and not negative_match
+
+        # Apply post match hook
+        match_dict = self.post_match_hook(match_dict)
 
         return match_dict
 
