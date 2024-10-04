@@ -153,7 +153,6 @@ def test_default_neutral_and_negative():
 
 
 class PreMatchHookVirusRegex(VirusRegex):
-
     def pre_match_hook(self, text: str) -> str:
         text = text.replace("virrrrus", "virus")
         return text
@@ -168,12 +167,14 @@ def test_pre_match_hook():
 
 
 class PostMatchHookVirusRegex(VirusRegex):
-
     def post_match_hook(self, match_dict: Dict[str, Any]) -> Dict[str, Any]:
         """Test custom post processing of match data"""
-        if match_dict[self.MATCH_RESULT] is True:
-            if "NEUTRAL_MEDICAL_VIRUS" in match_dict[self.NEUTRAL_MATCH_FIELD] and "NEUTRAL_INSECT" in match_dict[self.NEUTRAL_MATCH_FIELD]:
-                match_dict[self.MATCH_RESULT] = False
+        if (
+                match_dict[self.MATCH_RESULT] is True
+                and "NEUTRAL_MEDICAL_VIRUS" in match_dict[self.NEUTRAL_MATCH_FIELD]
+                and "NEUTRAL_INSECT" in match_dict[self.NEUTRAL_MATCH_FIELD]
+        ):
+            match_dict[self.MATCH_RESULT] = False
 
         return match_dict
 

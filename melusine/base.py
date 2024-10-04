@@ -530,7 +530,7 @@ class MelusineRegex(ABC):
             position: If True, print regex match start and stop positions.
         """
 
-        def _describe_match_field(match_field_data: Dict[str, List[Dict[str, Any]]]) -> None:
+        def _describe_match_field(match_field_data: dict[str, list[dict[str, Any]]]) -> None:
             """
             Format and print result description text.
 
@@ -609,7 +609,7 @@ class MelusineRegex(ABC):
         """
         return text
 
-    def post_match_hook(self, match_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def post_match_hook(self, match_dict: dict[str, Any]) -> dict[str, Any]:
         """
         Hook to run after the Melusine regex match.
 
