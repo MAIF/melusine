@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import pytest
 
@@ -46,13 +46,12 @@ class VirusRegex(MelusineRegex):
 
 def test_erroneous_substitution_pattern():
     with pytest.raises(ValueError):
-        regex = VirusRegex(substitution_pattern="12345")
+        _ = VirusRegex(substitution_pattern="12345")
 
 
 def test_method_test():
     regex = VirusRegex()
     regex.test()
-    assert True
 
 
 def test_match_method():
@@ -94,7 +93,7 @@ def test_describe_method(capfd):
 
     # Negative match on bug (group NEGATIVE_BUG) and ignore ladybug and corona virus
     regex.describe("The computer virus in the ladybug software caused a bug in the corona virus dashboard")
-    out, err = capfd.readouterr()
+    out, _ = capfd.readouterr()
     assert "NEGATIVE_BUG" in out
     assert "start" not in out
 
@@ -103,18 +102,18 @@ def test_describe_method(capfd):
         "The computer virus in the ladybug software caused a bug in the corona virus dashboard",
         position=True,
     )
-    out, err = capfd.readouterr()
+    out, _ = capfd.readouterr()
     assert "match result is : NEGATIVE" in out
     assert "NEGATIVE_BUG" in out
     assert "start" in out
 
     regex.describe("This is a dangerous virus")
-    out, err = capfd.readouterr()
+    out, _ = capfd.readouterr()
     assert "match result is : POSITIVE" in out
     assert "start" not in out
 
     regex.describe("Nada")
-    out, err = capfd.readouterr()
+    out, _ = capfd.readouterr()
     assert "The input text did not match anything" in out
 
 
@@ -151,3 +150,82 @@ def test_default_neutral_and_negative():
     regex = SomeRegex()
     assert regex.neutral is None
     assert regex.negative is None
+
+
+class PreMatchHookVirusRegex(VirusRegex):
+    def pre_match_hook(self, text: str) -> str:
+        text = text.replace("virrrrus", "virus")
+        return text
+
+
+def test_pre_match_hook():
+    reg = PreMatchHookVirusRegex()
+
+    bool_match_result = reg.get_match_result("I see a virrrrus !")
+
+    assert bool_match_result is True
+
+
+class PostMatchHookVirusRegex(VirusRegex):
+    def post_match_hook(self, match_dict: Dict[str, Any]) -> Dict[str, Any]:
+        """Test custom post processing of match data"""
+        if (
+            match_dict[self.MATCH_RESULT] is True
+            and "NEUTRAL_MEDICAL_VIRUS" in match_dict[self.NEUTRAL_MATCH_FIELD]
+            and "NEUTRAL_INSECT" in match_dict[self.NEUTRAL_MATCH_FIELD]
+        ):
+            match_dict[self.MATCH_RESULT] = False
+
+        return match_dict
+
+
+def test_post_match_hook():
+    reg = PostMatchHookVirusRegex()
+
+    bool_match_result = reg.get_match_result("I see a virus, a corona virus and a ladybug")
+    assert bool_match_result is False
+
+    bool_match_result = reg.get_match_result("I see a virus and a ladybug")
+    assert bool_match_result is True
+
+
+class PairedMatchRegex(MelusineRegex):
+    """
+    Test paired matching.
+    """
+
+    @property
+    def positive(self) -> Union[str, Dict[str, str]]:
+        return {
+            "test_1": r"pos_pattern_1",
+            "test_2": r"pos_pattern_2",
+        }
+
+    @property
+    def negative(self) -> Optional[Union[str, Dict[str, str]]]:
+        return {
+            "_test_1": r"neg_pattern_1",
+            "generic": r"neg_pattern_2",
+        }
+
+    @property
+    def match_list(self) -> List[str]:
+        return [
+            "Test pos_pattern_1",
+            "pos_pattern_2",
+            "pos_pattern_2 and neg_pattern_1",
+        ]
+
+    @property
+    def no_match_list(self) -> List[str]:
+        return [
+            "test",
+            "Test pos_pattern_1 and neg_pattern_1",
+            "pos_pattern_2 and neg_pattern_2",
+            "pos_pattern_1 and neg_pattern_2",
+        ]
+
+
+def test_paired_matching_test():
+    regex = PairedMatchRegex()
+    regex.test()
