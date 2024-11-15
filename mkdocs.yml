@@ -15,6 +15,7 @@ theme:
     - content.code.select
     - announce.dismiss
     - navigation.tabs
+    - content.code.annotate
 
 nav:
   - Intro:
