@@ -28,7 +28,7 @@ class SpellRegex(MelusineRegex):
     def match_list(self) -> List[str]:
         return [
             "Avada Kedavra is a spell used by Lord Voldemort",
-            "And then, you know me, I was not gonna let it pass so I told themg : You shall not pass and obviously everyone clapped",
+            "And then, you know me, I was not gonna let it pass so I told them : You shall not pass and obviously everyone clapped",
         ]
 
     @property # (2)!
