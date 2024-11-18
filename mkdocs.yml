@@ -15,6 +15,7 @@ theme:
     - content.code.select
     - announce.dismiss
     - navigation.tabs
+    - content.code.annotate
 
 nav:
   - Intro:
@@ -31,6 +32,7 @@ nav:
     - tutorials/05b_MelusineDetectorsAdvanced.md
     - tutorials/06_Configurations.md
     - tutorials/07_BasicClassification.md
+    - tutorials/08_MelusineRegex.md
 #  - Advanced Tutorials:
 #    - advanced/ContentTagger.md
 #    - advanced/CustomDetector.md
