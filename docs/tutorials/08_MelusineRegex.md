@@ -203,15 +203,15 @@ class AnnoyingEmailsRegex(MelusineRegex):
     @property
     def match_list(self) -> List[str]:
         return [
-            "Avada Kedavra is a spell used by Lord Voldemort", # (1)!
-            "Erroneous example: This will not match!", # (2)!
+            "Avada Kedavra is a spell used by Lord Voldemort",  # (1)!
+            "Erroneous example: This will not match!",  # (2)!
         ]
 
     @property
     def no_match_list(self) -> List[str]:
         return ["Abracadabra, here I am", "I told them not to pass"]
         
-regex = AnnoyingEmailsRegex() # (3)!
+regex = AnnoyingEmailsRegex()  # (3)!
 ```
 
 1. This example is aligned with the regex (activates a positive pattern and doesn't trigger any negative pattern).
