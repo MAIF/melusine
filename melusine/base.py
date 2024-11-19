@@ -338,6 +338,8 @@ class MelusineRegex(ABC):
         self.substitution_pattern = substitution_pattern
         self.default_match_group = default_match_group
 
+        self.test()
+
     @property
     def regex_name(self) -> str:
         """
