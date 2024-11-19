@@ -1,0 +1,934 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A framework for automated email qualification">
+      
+      
+      
+        <link rel="canonical" href="https://maif.github.io/melusine/advanced/GmailConnector/">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.19">
+    
+    
+      
+        <title>Connect Melusine to a Gmail Mailbox - Melusine</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.eebd395e.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#connect-melusine-to-a-gmail-mailbox" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Melusine" class="md-header__button md-logo" aria-label="Melusine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Melusine
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Connect Melusine to a Gmail Mailbox
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/MAIF/melusine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MAIF/melusine
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        Intro
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../history/history/" class="md-tabs__link">
+        Project history
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tutorials/00_GettingStarted/" class="md-tabs__link">
+        Tutorials
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../contribute/how_to_contribute/" class="md-tabs__link">
+        Contributions
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Melusine" class="md-nav__button md-logo" aria-label="Melusine" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Melusine
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/MAIF/melusine" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MAIF/melusine
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+          Intro
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_1">
+          <span class="md-nav__icon md-icon"></span>
+          Intro
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Welcome to Melusine
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          Project history
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Project history
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../history/history/" class="md-nav__link">
+        Project History
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/00_GettingStarted/" class="md-nav__link">
+        Getting started with Melusine
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/05a_MelusineDetectors/" class="md-nav__link">
+        Melusine Detectors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/05b_MelusineDetectorsAdvanced/" class="md-nav__link">
+        Advanced Melusine Detectors
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/06_Configurations/" class="md-nav__link">
+        Configurations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/07_BasicClassification/" class="md-nav__link">
+        Zero Shot Classification
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/08_MelusineRegex/" class="md-nav__link">
+        Melusine Regexes
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          Contributions
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Contributions
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contribute/how_to_contribute/" class="md-nav__link">
+        How to Contribute
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#first-use" class="md-nav__link">
+    First use
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-emails" class="md-nav__link">
+    Get emails
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-label" class="md-nav__link">
+    Create label
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#route-emails" class="md-nav__link">
+    Route emails
+  </a>
+  
+    <nav class="md-nav" aria-label="Route emails">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#route-using-melusine-output" class="md-nav__link">
+    Route using Melusine output
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#route-one-by-one-not-recommanded" class="md-nav__link">
+    Route one by one (not recommanded)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="connect-melusine-to-a-gmail-mailbox">Connect Melusine to a Gmail Mailbox</h1>
+<p>The Gmail connector has been developed to make it easier to get started with Melusine, by connecting directly to your mailbox.
+The <code>GmailConnector</code> class allows:</p>
+<ul>
+<li>connect to your Gmail inbox</li>
+<li>retrieve the latest messages, filtering by date and labels</li>
+<li>extract relevant information from an e-mail, including attachments</li>
+<li>move messages individually into labels</li>
+<li>route an entire dataframe of e-mails to new labels, according to your detected use cases</li>
+<li>send emails</li>
+</ul>
+<h2 id="installation">Installation</h2>
+<p>First make sure to have a Gmail account and follow this <a href="https://medium.com/@preetipriyanka24/how-to-read-emails-from-gmail-using-gmail-api-in-python-20f7d9d09ae9">medium tutorial</a> to get your <code>credentials.json</code> file or follow as below.</p>
+<details class="note">
+<summary>Steps to create your credentials file from the medium post</summary>
+<ul>
+<li>Sign in to <a href="https://console.cloud.google.com/">Google Cloud console</a> and create a New Project or continue with an existing project.</li>
+<li>Go to <strong>APIs and Services</strong>.</li>
+<li>Go to <strong>Enable APIs and Services</strong>, enable Gmail API for the selected project.</li>
+<li>Clicking on <strong>OAuth Consent Screen</strong> to configure the content screen.</li>
+<li>Enter the Application name and save it.</li>
+<li>Now go to <strong>Credentials</strong>.</li>
+<li>Click on Create credentials, and go to <strong>OAuth Client ID</strong>.<ul>
+<li>Choose application type as Desktop Application.</li>
+<li>Enter the Application name, and click on the Create button.</li>
+<li>The Client ID will be created. Download it to your computer and save it as credentials.json</li>
+</ul>
+</li>
+<li>If the App is still in Testing mode, go to <strong>OAuth Consent Screen</strong> and add your gmail address to <strong>Test users</strong>.</li>
+</ul>
+</details>
+<p>Once your <code>credentials.json</code> created, save it to root for the first use.</p>
+<h2 id="usage">Usage</h2>
+<h3 id="first-use">First use</h3>
+<p>For the first use, a <code>token.json</code> will be created, save it. You will reuse it to sign in.</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">melusine.connectors.gmail</span> <span class="kn">import</span> <span class="n">GmailConnector</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span> <span class="nn">logging</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Set up logging</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">ch</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">ch</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">connector_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;melusine.connectors.gmail&quot;</span><span class="p">)</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">connector_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="n">connector_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="n">connector</span> <span class="o">=</span> <span class="n">GmailConnector</span><span class="p">(</span><span class="n">credentials_json_path</span><span class="o">=</span><span class="s2">&quot;/Users/xxxxx/melusine/credentials.json&quot;</span><span class="p">)</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="c1"># &gt;&gt;&gt; 2024-05-06 11:18:58,636 - melusine.connectors.gmail - INFO - gmail token.json saved at: /Users/xxxxx/melusine</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="c1"># &gt;&gt;&gt; 2024-05-06 11:18:58,920 - melusine.connectors.gmail - INFO - Connected to mailbox: xxxxxxxxxx@gmail.com.</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="c1"># Next usage will then be:</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="n">connector</span> <span class="o">=</span> <span class="n">GmailConnector</span><span class="p">(</span><span class="n">token_json_path</span><span class="o">=</span><span class="s2">&quot;/Users/xxxxx/melusine/token.json&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>A pop up window from google will ask you to choose your gmail account to sign in. If the app is still in testing mode, click on <strong>Continue</strong>.
+Then select all boxes to allow the credentials for read and modify rights, continue and close the window.</p>
+</div>
+<h3 id="get-emails">Get emails</h3>
+<p>We have emails in the box to consider. These mails should either be put in <strong>Melusine</strong> label because they ask for something or in the <strong>TRASH</strong> label. Let's get the five last emails.</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span> <span class="nn">melusine.connectors.gmail</span> <span class="kn">import</span> <span class="n">GmailConnector</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">connector</span> <span class="o">=</span> <span class="n">GmailConnector</span><span class="p">(</span><span class="n">token_json_path</span><span class="o">=</span><span class="s2">&quot;/Users/xxxxx/Desktop/melusine/token.json&quot;</span><span class="p">,</span> <span class="n">done_label</span><span class="o">=</span><span class="s2">&quot;TRASH&quot;</span><span class="p">)</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">df</span> <span class="o">=</span> <span class="n">connector</span><span class="o">.</span><span class="n">get_emails</span><span class="p">(</span><span class="n">max_emails</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="c1"># equivalent to: </span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1"># df = connector.get_emails(max_emails=5, target_labels= [&quot;INBOX&quot;])</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>message_id</th>
+<th>body</th>
+<th>header</th>
+<th>date</th>
+<th>from</th>
+<th>to</th>
+<th>attachment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>12456789</td>
+<td>This is a an example</td>
+<td>Demo1</td>
+<td>Mon, 13 May 2024 07:31:09 +0000</td>
+<td><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#116;&#101;&#115;&#116;&#64;&#101;&#120;&#97;&#109;&#112;&#108;&#101;&#46;&#99;&#111;&#109;">&#116;&#101;&#115;&#116;&#64;&#101;&#120;&#97;&#109;&#112;&#108;&#101;&#46;&#99;&#111;&#109;</a></td>
+<td><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#109;&#121;&#98;&#111;&#120;&#64;&#109;&#101;&#108;&#117;&#115;&#105;&#110;&#101;&#46;&#99;&#111;&#109;">&#109;&#121;&#98;&#111;&#120;&#64;&#109;&#101;&#108;&#117;&#115;&#105;&#110;&#101;&#46;&#99;&#111;&#109;</a></td>
+<td>[]</td>
+</tr>
+<tr>
+<td>2</td>
+<td>987654321</td>
+<td>I am very happy of this Melusine connector</td>
+<td>Awesome connector!!</td>
+<td>Mon, 06 May 2024 10:55:22 +0000</td>
+<td><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#99;&#111;&#110;&#110;&#101;&#99;&#116;&#105;&#110;&#103;&#64;&#112;&#101;&#111;&#112;&#108;&#101;&#46;&#99;&#111;&#109;">&#99;&#111;&#110;&#110;&#101;&#99;&#116;&#105;&#110;&#103;&#64;&#112;&#101;&#111;&#112;&#108;&#101;&#46;&#99;&#111;&#109;</a></td>
+<td><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#109;&#121;&#98;&#111;&#120;&#64;&#109;&#101;&#108;&#117;&#115;&#105;&#110;&#101;&#46;&#99;&#111;&#109;">&#109;&#121;&#98;&#111;&#120;&#64;&#109;&#101;&#108;&#117;&#115;&#105;&#110;&#101;&#46;&#99;&#111;&#109;</a></td>
+<td>[]</td>
+</tr>
+<tr>
+<td>3</td>
+<td>147258369</td>
+<td>Does Melusine is free ?</td>
+<td>Impossible to believe</td>
+<td>Thu, 02 May 2024 12:40:28 +0000</td>
+<td><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#109;&#101;&#108;&#117;&#115;&#105;&#110;&#101;&#95;&#102;&#97;&#110;&#64;&#109;&#97;&#105;&#102;&#46;&#99;&#111;&#109;">&#109;&#101;&#108;&#117;&#115;&#105;&#110;&#101;&#95;&#102;&#97;&#110;&#64;&#109;&#97;&#105;&#102;&#46;&#99;&#111;&#109;</a></td>
+<td><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#109;&#121;&#98;&#111;&#120;&#64;&#109;&#101;&#108;&#117;&#115;&#105;&#110;&#101;&#46;&#99;&#111;&#109;">&#109;&#121;&#98;&#111;&#120;&#64;&#109;&#101;&#108;&#117;&#115;&#105;&#110;&#101;&#46;&#99;&#111;&#109;</a></td>
+<td>[]</td>
+</tr>
+<tr>
+<td>4</td>
+<td>741852963</td>
+<td>Hello World!</td>
+<td>print</td>
+<td>Mon, 29 Apr 2024 16:27:55 +0000</td>
+<td><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#116;&#101;&#115;&#116;&#64;&#116;&#101;&#115;&#116;&#46;&#99;&#111;&#109;">&#116;&#101;&#115;&#116;&#64;&#116;&#101;&#115;&#116;&#46;&#99;&#111;&#109;</a></td>
+<td><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#109;&#121;&#98;&#111;&#120;&#64;&#109;&#101;&#108;&#117;&#115;&#105;&#110;&#101;&#46;&#99;&#111;&#109;">&#109;&#121;&#98;&#111;&#120;&#64;&#109;&#101;&#108;&#117;&#115;&#105;&#110;&#101;&#46;&#99;&#111;&#109;</a></td>
+<td>[]</td>
+</tr>
+<tr>
+<td>5</td>
+<td>951753467</td>
+<td>Python is lovely</td>
+<td>PEP</td>
+<td>Thu, 25 Apr 2024 15:28:07 +0000</td>
+<td><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#112;&#121;&#116;&#104;&#111;&#110;&#64;&#102;&#97;&#110;&#46;&#99;&#111;&#109;">&#112;&#121;&#116;&#104;&#111;&#110;&#64;&#102;&#97;&#110;&#46;&#99;&#111;&#109;</a></td>
+<td><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#109;&#121;&#98;&#111;&#120;&#64;&#109;&#101;&#108;&#117;&#115;&#105;&#110;&#101;&#46;&#99;&#111;&#109;">&#109;&#121;&#98;&#111;&#120;&#64;&#109;&#101;&#108;&#117;&#115;&#105;&#110;&#101;&#46;&#99;&#111;&#109;</a></td>
+<td>[]</td>
+</tr>
+</tbody>
+</table>
+<p>And that's it, you have your last 5 mails from the INBOX!</p>
+<div class="admonition info">
+<p class="admonition-title">Filters</p>
+<p>Filters can be used to get emails from specific labels. For example how about retrieveing emails unreaded in inbox from the last week?
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">df</span> <span class="o">=</span> <span class="n">connector</span><span class="o">.</span><span class="n">get_emails</span><span class="p">(</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    <span class="n">max_emails</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">target_labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;INBOX&quot;</span><span class="p">,</span> <span class="s2">&quot;UNREAD&quot;</span><span class="p">],</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">start_date</span><span class="o">=</span><span class="s2">&quot;2024/05/06&quot;</span><span class="p">,</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">end_date</span><span class="o">=</span><span class="s2">&quot;2024/05/12&quot;</span><span class="p">,</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="p">)</span>
+</span></code></pre></div></p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Date format</p>
+<p>When using <code>start_date</code> and <code>end_date</code> from <code>get_emails</code>, the format of the dates needs to be <code>YYYY/MM/DD</code> eg <strong>2024/03/31</strong>.</p>
+</div>
+<h3 id="create-label">Create label</h3>
+<p>To route emails to labels, they must exist. Using the example above, let's create the <strong>Melusine</strong> label.</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">connector</span><span class="o">.</span><span class="n">create_label</span><span class="p">(</span><span class="s2">&quot;Melusine&quot;</span><span class="p">)</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1"># &gt;&gt;&gt; 2024-05-13 10:41:56,406 - melusine.connectors.gmail - INFO - Label Melusine has been created.</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># &gt;&gt;&gt; {&#39;id&#39;: &#39;Label_4&#39;, &#39;name&#39;: &#39;Melusine&#39;, &#39;messageListVisibility&#39;: &#39;show&#39;, &#39;labelListVisibility&#39;: &#39;labelShow&#39;}</span>
+</span></code></pre></div>
+<p>The label has been created and it's id is <code>Label_4</code>.</p>
+<h3 id="route-emails">Route emails</h3>
+<p>There are two ways of routing emails, either individually using <code>move_to</code> or via the <code>route_emails</code> method, which takes as input a pandas data frame resulting from the application of the Melusine framework.</p>
+<h4 id="route-using-melusine-output">Route using Melusine output</h4>
+<p>Let's consider the same data frame, but with Melusine feedback to route each email via two detectors: <strong>TRASH</strong> and <strong>Melusine</strong>.
+The column of interest is <code>target.</code> and <code>classified_df</code> is:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>message_id</th>
+<th>body</th>
+<th>...</th>
+<th>attachment</th>
+<th>target</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>12456789</td>
+<td>This is a an example</td>
+<td>...</td>
+<td>[]</td>
+<td>TRASH</td>
+</tr>
+<tr>
+<td>2</td>
+<td>987654321</td>
+<td>I am very happy of this Melusine connector</td>
+<td>...</td>
+<td>[]</td>
+<td>Melusine</td>
+</tr>
+<tr>
+<td>3</td>
+<td>147258369</td>
+<td>Does Melusine is free ?</td>
+<td>...</td>
+<td>[]</td>
+<td>Melusine</td>
+</tr>
+<tr>
+<td>4</td>
+<td>741852963</td>
+<td>Hello World!</td>
+<td>...</td>
+<td>[]</td>
+<td>TRASH</td>
+</tr>
+<tr>
+<td>5</td>
+<td>951753467</td>
+<td>Python is lovely</td>
+<td>...</td>
+<td>[]</td>
+<td>TRASH</td>
+</tr>
+</tbody>
+</table>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">connector</span><span class="o">.</span><span class="n">route_emails</span><span class="p">(</span><span class="n">classified_emails</span><span class="o">=</span><span class="n">classified_df</span><span class="p">)</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1"># &gt;&gt;&gt; 2024-05-13 10:48:43,752 - melusine.connectors.gmail - INFO - Moved 3 emails to &#39;TRASH&#39; label</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># &gt;&gt;&gt; 2024-05-13 10:48:44,110 - melusine.connectors.gmail - INFO - Moved 2 emails to &#39;Melusine&#39; label</span>
+</span></code></pre></div>
+<h4 id="route-one-by-one-not-recommanded">Route one by one (not recommanded)</h4>
+<p>Considering the above data frame, the first emails is not related to Melusine so let's move it to trash. Conversely, the second evokes Melusine and should have the <strong>Melusine</strong> label.</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># First email</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1"># as done_label is &quot;TRASH&quot;</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">connector</span><span class="o">.</span><span class="n">move_to_done</span><span class="p">(</span><span class="n">emails_id</span><span class="o">=</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message_id</span><span class="p">])</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># &gt;&gt;&gt; 2024-05-13 10:48:58,870 - melusine.connectors.gmail - INFO - Moved 1 emails to &#39;TRASH&#39; label</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="c1"># Second email</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">connector</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">emails_id</span><span class="o">=</span><span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">message_id</span><span class="p">],</span> <span class="n">label_to_move_on</span><span class="o">=</span><span class="s2">&quot;MELUSINE&quot;</span><span class="p">)</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="c1"># &gt;&gt;&gt; 2024-05-13 10:48:59,110 - melusine.connectors.gmail - INFO - Moved 1 emails to &#39;Melusine&#39; label</span>
+</span></code></pre></div>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>You can route multiple emails since <code>emails_id</code> from <code>move_to</code> and <code>move_to_done</code> is a list.</p>
+</div>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var tab,labels=set.querySelector(".tabbed-labels");for(tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.tabs.link", "content.code.annotate", "content.code.copy", "content.code.select", "announce.dismiss", "navigation.tabs", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.220ee61c.min.js"></script>
+      
+    
+  </body>
+</html>

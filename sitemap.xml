@@ -2,87 +2,97 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://maif.github.io/melusine/</loc>
-         <lastmod>2024-01-17</lastmod>
+         <lastmod>2024-11-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maif.github.io/melusine/advanced/ContentTagger/</loc>
-         <lastmod>2024-01-17</lastmod>
+         <lastmod>2024-11-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maif.github.io/melusine/advanced/CustomDetector/</loc>
-         <lastmod>2024-01-17</lastmod>
+         <lastmod>2024-11-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maif.github.io/melusine/advanced/ExchangeConnector/</loc>
-         <lastmod>2024-01-17</lastmod>
+         <lastmod>2024-11-19</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://maif.github.io/melusine/advanced/GmailConnector/</loc>
+         <lastmod>2024-11-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maif.github.io/melusine/advanced/PreTrainedModelsHF/</loc>
-         <lastmod>2024-01-17</lastmod>
+         <lastmod>2024-11-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maif.github.io/melusine/contribute/how_to_contribute/</loc>
-         <lastmod>2024-01-17</lastmod>
+         <lastmod>2024-11-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maif.github.io/melusine/history/history/</loc>
-         <lastmod>2024-01-17</lastmod>
+         <lastmod>2024-11-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maif.github.io/melusine/philosophy/philosophy/</loc>
-         <lastmod>2024-01-17</lastmod>
+         <lastmod>2024-11-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maif.github.io/melusine/tutorials/00_GettingStarted/</loc>
-         <lastmod>2024-01-17</lastmod>
+         <lastmod>2024-11-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maif.github.io/melusine/tutorials/01_MelusinePipeline/</loc>
-         <lastmod>2024-01-17</lastmod>
+         <lastmod>2024-11-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maif.github.io/melusine/tutorials/02_MelusineTransformers/</loc>
-         <lastmod>2024-01-17</lastmod>
+         <lastmod>2024-11-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maif.github.io/melusine/tutorials/03_MelusineRegex/</loc>
-         <lastmod>2024-01-17</lastmod>
+         <lastmod>2024-11-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maif.github.io/melusine/tutorials/04_UsingModels/</loc>
-         <lastmod>2024-01-17</lastmod>
+         <lastmod>2024-11-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maif.github.io/melusine/tutorials/05a_MelusineDetectors/</loc>
-         <lastmod>2024-01-17</lastmod>
+         <lastmod>2024-11-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maif.github.io/melusine/tutorials/05b_MelusineDetectorsAdvanced/</loc>
-         <lastmod>2024-01-17</lastmod>
+         <lastmod>2024-11-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maif.github.io/melusine/tutorials/06_Configurations/</loc>
-         <lastmod>2024-01-17</lastmod>
+         <lastmod>2024-11-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://maif.github.io/melusine/tutorials/07_BasicClassification/</loc>
-         <lastmod>2024-01-17</lastmod>
+         <lastmod>2024-11-19</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://maif.github.io/melusine/tutorials/08_MelusineRegex/</loc>
+         <lastmod>2024-11-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
