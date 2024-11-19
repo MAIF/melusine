@@ -12,7 +12,7 @@ There are some things you want sent directly to the trash:
 
 So you heat up your cauldron and start by cooking the following `MelusineRegex`
 
-``` python
+``` python hl_lines="6-11"
 from melusine.base import MelusineRegex
 
 
@@ -60,7 +60,7 @@ The thing is, our email actually came from the Magical Portal Society and was pr
 
 ## Using both negative and positive matches
 
-``` python
+``` python hl_lines="13-17"
 from melusine.base import MelusineRegex
 
 
@@ -102,67 +102,6 @@ print(to_delete_detection[MelusineRegex.MATCH_RESULT])  # (1)!
 ```
 
 1. Prints `False`
-
-## Even more advanced use case with "neutral"
-
-As a fairy preserving the balance of the world and all, another case you would like to handle is differentiating your colleague Ifrit's emails between dangerous or not.
-Contrarly to him you actually like the not-yet-totally-burning state of the world and would rather keep it that way.
-
-But you cannot afford to go all-in everytime he jokingly sends false alarms emails. 
-
-The good thing is that Ifrit is a bit of a dummy: 
-
-* whevener he wants to burn the world for real and needs to be stopped he sends you an email with his intentions.
-* if he is actually joking, the emails uses contractions which make his intentions super easy to guess (he is not just "a bit" of a dummy, he can be plain stupid sometimes).
-
-That is were neutral regex can be of use. Whenever a neutral regex is matched, it is neutralized: all the match content is "blurred" and won't match anything later.
-
-
-```python
-class IfritAlertRegex(MelusineRegex):
-
-    @property
-    def positive(self) -> Union[str, Dict[str, str]]:
-        return dict(
-            WORLD_MIGHT_BURN_1=r"see (the world|everything) (burn|in flames)",
-            WORLD_MIGHT_BURN_2=r"make (the world|everything) (burn|in flames)",
-        )
-
-    @property
-    def neutral(self) -> Union[str, Dict[str, str]]:
-        return dict(
-            WORLD_WONT_BURN_1=r"I wanna see (the world|everything) (burn|in flames)",
-            WORLD_WONT_BURN_2=r"Imma make (the world|everything) (burn|in flames)",
-            WORLD_WONT_BURN_3=r"I wanna make (the world|everything) (burn|in flames)",
-        )
-
-    @property
-    def match_list(self) -> List[str]:
-        return [
-            "I want to see the world burn",
-            "Let us make the world burn, shall we",
-            "I wanna make the world burn and see everything in flames",  # (1)!
-        ]
-
-    @property
-    def no_match_list(self) -> List[str]:
-        return ["I wanna see the world burn", "Imma make everything in flames"]
-```
-
-1. In this specific case, neutral will come into action first and blur "I wanna make the world burn" but "see everything burn" will still match
-
-`get_match_result` return based on which regex matches (if there is no positive match beside neutralized ones)
-
-| Neutral matches | Positive matches | Negative matches  | Result  |
-|-----------------|------------------|-------------------|---------|
-| True            | True             | True              |False    |
-| False           | True             | True              |False    |
-| True            | False            | True              |False    |
-| True            | True             | False             |True     |
-| True            | False            | False             |False    |
-| False           | True             | False             |True     |
-| False           | False            | True              |False    |
-| False           | False            | False             |False    |
 
 ## Preprocessing
 
@@ -239,10 +178,101 @@ Which will print:
 
 ## Examples list
 
-As we mentionned earlier, the MelusineRegex cannot work without examples of matches and no matches lists.
+Fairies social life can be hectic resulting in a variety of emails from all kinds of creatures.
+Like most magical artefacts, regexes can be quite obscure and hard to decipher.
+This is where the `match_list` and `no_match_list` properties come in handy:  
 
-This makes the regex easier to share as the one developping it can offer examples and a newcomer on the project can quickly grasp the point of the regex.
+* Examples in the `match_list` should activate the MelusineRegex
+* Examples in the `no_match_list` should not activate the MelusineRegex
+
+The `test` method will be run at instanciation to check if the regex is working as intended.
 
 ``` python
-to_delete_regex.match_list
+from melusine.base import MelusineRegex
+
+
+class AnnoyingEmailsRegex(MelusineRegex):
+
+    @property
+    def positive(self) -> Union[str, Dict[str, str]]:
+        return dict(
+            VOLDY_BEING_VOLDY="Avada Kedavra",
+            GANDALF_BEING_GANDALF="You shall not pass",
+        )
+
+    @property
+    def match_list(self) -> List[str]:
+        return [
+            "Avada Kedavra is a spell used by Lord Voldemort",  # (1)!
+            "Erroneous example: This will not match!",  # (2)!
+        ]
+
+    @property
+    def no_match_list(self) -> List[str]:
+        return ["Abracadabra, here I am", "I told them not to pass"]
+
+
+regex = AnnoyingEmailsRegex()  # (3)!
 ```
+
+1. This example is aligned with the regex (activates a positive pattern and doesn't trigger any negative pattern).
+2. This example is not aligned with the regex (doesn't activate any positive pattern).
+3. This will raise an error as the second example in the `match_list` will not match.
+
+
+## Even more advanced use case with "neutral"
+
+As a fairy preserving the balance of the world and all, another case you would like to handle is differentiating your colleague Ifrit's emails between dangerous or not.
+Contrarly to him you actually like the not-yet-totally-burning state of the world and would rather keep it that way.
+
+But you cannot afford to go all-in everytime he jokingly sends false alarms emails. 
+
+The good thing is that Ifrit is a bit of a dummy: 
+
+* whevener he wants to burn the world for real and needs to be stopped he sends you an email with his intentions.
+* if he is actually joking, the emails uses contractions which make his intentions super easy to guess (he is not just "a bit" of a dummy, he can be plain stupid sometimes).
+
+That is were neutral regex can be of use. Whenever a neutral regex is matched, it is neutralized: all the match content is "blurred" and won't match anything later.
+
+
+```python
+class IfritAlertRegex(MelusineRegex):
+
+    @property
+    def positive(self) -> Union[str, Dict[str, str]]:
+        return dict(
+            WORLD_MIGHT_BURN_1=r"see (the world|everything) (burn|in flames)",
+            WORLD_MIGHT_BURN_2=r"make (the world|everything) (burn|in flames)",
+        )
+
+    @property
+    def neutral(self) -> Union[str, Dict[str, str]]:
+        return dict(
+            WORLD_WONT_BURN_1=r"I wanna see (the world|everything) (burn|in flames)",
+            WORLD_WONT_BURN_2=r"Imma make (the world|everything) (burn|in flames)",
+            WORLD_WONT_BURN_3=r"I wanna make (the world|everything) (burn|in flames)",
+        )
+
+    @property
+    def match_list(self) -> List[str]:
+        return [
+            "I want to see the world burn",
+            "Let us make the world burn, shall we",
+            "I wanna make the world burn and see everything in flames",  # (1)!
+        ]
+
+    @property
+    def no_match_list(self) -> List[str]:
+        return ["I wanna see the world burn", "Imma make everything in flames"]
+```
+
+1. In this specific case, neutral will come into action first and blur "I wanna make the world burn" but "see everything burn" will still match
+
+## Conclusion
+
+* The `MelusineRegex` class is a convenient tool to keep regexes clean, documented and easy to use.    
+* Advanced features like "pre" and "post" match hooks bring flexibility to accommodate exotic use cases.  
+* The `match_list` and `no_match_list` help onboard newcomers on what the regex does.  
+* The `test` method is a great way to ensure the regex is working as intended.  
+
+Now you can go back to your fairy duties and let the regex do the heavy lifting for you.

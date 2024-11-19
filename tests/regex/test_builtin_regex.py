@@ -8,18 +8,15 @@ from melusine.regex import (
 
 
 def test_reply_regex():
-    regex = ReplyRegex()
-    regex.test()
+    _ = ReplyRegex()
 
 
 def test_thanks_regex():
-    regex = ThanksRegex()
-    regex.test()
+    _ = ThanksRegex()
 
 
 def test_transfer_regex():
-    regex = TransferRegex()
-    regex.test()
+    _ = TransferRegex()
 
 
 def test_vacation_reply_regex():
