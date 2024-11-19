@@ -210,7 +210,8 @@ class AnnoyingEmailsRegex(MelusineRegex):
     @property
     def no_match_list(self) -> List[str]:
         return ["Abracadabra, here I am", "I told them not to pass"]
-        
+
+
 regex = AnnoyingEmailsRegex()  # (3)!
 ```
 
