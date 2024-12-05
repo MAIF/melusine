@@ -746,7 +746,6 @@ class BaseContentTagger(MelusineTransformer):
         default_tag: str = "BODY",
         valid_part_regex: str = r"[a-z0-9?]",
         default_regex_flag: int = re.IGNORECASE,
-        post_process: bool = True,
         text_attribute: str = "text",
     ):
         """
@@ -783,9 +782,6 @@ class BaseContentTagger(MelusineTransformer):
 
         # Set text attribute
         self.text_attribute = text_attribute
-
-        # Activate post-processing
-        self.post_process = post_process
 
         # Pattern to split text into sentences (=parts)
         self.split_pattern = self.compile_split_pattern()
@@ -933,8 +929,6 @@ class BaseContentTagger(MelusineTransformer):
                 regex = re.compile(regex, flags=self.default_regex_flag)
             except re.error:
                 raise ValueError(f"Invalid regex for tag {tag}:\n{regex}")
-        elif isinstance(regex, re.Pattern):
-            pass
         else:
             raise ValueError(
                 f"Tag {tag} does not return any of the supported types : "
@@ -964,10 +958,6 @@ class BaseContentTagger(MelusineTransformer):
         tags = list()
         for part in parts:
             tags.append(self.tag_part(part))
-
-        # Post process tags
-        if self.post_process:
-            tags = self.post_process_tags(tags)
 
         return tags
 
@@ -1045,7 +1035,7 @@ class BaseContentTagger(MelusineTransformer):
 
         return clean_parts
 
-    def tag_part(self, part: str) -> tuple[str, str]:
+    def tag_part(self, part: str) -> dict[str, Any]:
         """
         Method to apply tagging on a text chunk (sentence/part).
 
@@ -1056,20 +1046,39 @@ class BaseContentTagger(MelusineTransformer):
 
         Returns
         -------
-        match_tag: str
-            Output tag
-        part: str
-            Original text
+        _: tag data such as text, base_tag_list or base_tag
         """
-        match_tag = self.default_tag
-
+        match_tag_list = []
         for tag, regex in self.regex_dict.items():
             match = regex.match(part)
             if match:
-                match_tag = tag
-                break
+                match_tag_list.append(tag)
 
-        return match_tag, part
+        if not match_tag_list:
+            match_tag_list.append(self.default_tag)
+
+        return {
+            "base_text": part,
+            "base_tag_list": match_tag_list,
+            "base_tag": self.get_base_tag(match_tag_list),
+        }
+
+    def get_base_tag(self, match_tag_list: list[str]) -> str:
+        """
+        Given a list of tags, return the base tag using the hierarchy from the tag_list attribute.
+
+        Parameters
+        ----------
+        match_tag_list: List of tags found in the text.
+
+        Returns
+        -------
+        _: Base tag
+        """
+        for tag in self.tag_list:
+            if tag in match_tag_list:
+                return tag
+        return self.default_tag
 
     @staticmethod
     def word_block(n_words: int, word_character_only: bool = False) -> str:
@@ -1153,21 +1162,6 @@ class BaseContentTagger(MelusineTransformer):
 
         return matching_regex_list
 
-    @abstractmethod
-    def post_process_tags(self, tags: list[tuple[str, str]]) -> list[tuple[str, str]]:
-        """
-        Method to apply tagging rules posterior to the standard regex tagging.
-
-        Parameters
-        ----------
-        tags: list[tuple[str, str]]
-            Original tags
-
-        Returns
-        -------
-        _: list[tuple[str, str]]
-            Post-processed tags
-        """
 
 
 class ContentTagger(BaseContentTagger):
@@ -1554,39 +1548,70 @@ class ContentTagger(BaseContentTagger):
             r"^[A-Za-z]+(?: [A-Za-z]+)*, le \d{1,2} [A-Za-z]+ \d{4}.{,3}$",
         ]
 
-    def post_process_tags(self, tags: list[tuple[str, str]]) -> list[tuple[str, str]]:
+
+class RefinedTagger(MelusineTransformer):
+    BASE_TAG_KEY = "base_tag"
+    REFINED_TAG_KEY = "refined_tag"
+
+    def __init__(
+            self,
+            input_columns: str = "messages",
+            output_columns: str = "messages",
+            default_tag: str = "BODY"
+    ):
+        """
+        Parameters
+        ----------
+        input_columns: str
+            Input columns for the transform operation
+        output_columns: str
+            Outputs columns for the transform operation
+        default_tag: str
+            Default tag to apply to untagged text
+        """
+        self.default_tag = default_tag
+
+        super().__init__(
+            input_columns=input_columns,
+            output_columns=output_columns,
+            func=self.post_process_messages,
+        )
+
+    def post_process_messages(self, messages: list[Message]) -> list[Message]:
         """
         Method to apply tagging rules posterior to the standard regex tagging.
 
         Parameters
         ----------
-        tags: list[tuple[str, str]]
-            Original tags
+        messages: list of messages
 
         Returns
         -------
-        _: list[tuple[str, str]]
-            Post-processed tags
+        messages: list of messages post-processed
         """
+        for message in messages:
+            message.tags = self.post_process_tags(message.tags)
+
+        return messages
+
+    def post_process_tags(self, tags: list[dict[str, Any]]) -> list[dict[str, Any]]:
         # Signature lines containing first/last name
         tags = self.detect_name_signature(tags)
 
         return tags
 
-    def detect_name_signature(self, tags: list[tuple[str, str]]) -> list[tuple[str, str]]:
+    def detect_name_signature(self, tags: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """
         Method to detect lines containing First name / Surname
         Ex: Mr Joe Dupond
 
         Parameters
         ----------
-        tags: list[tuple[str, str]]
-            Original tags
+        tags: Original tags
 
         Returns
         -------
-        _: list[tuple[str, str]]
-            Post processed tags
+        _: Post processed tags
         """
         # First name / Last name Signatures
         capitalized_words: str = r"[A-Z][-'A-za-zÀ-ÿ]{,10}"
@@ -1599,18 +1624,19 @@ class ContentTagger(BaseContentTagger):
         # Forbidden words (lowercase)
         forbidden_words: set[str] = {"urgent", "attention"}
 
-        new_tags: list[tuple[str, str]] = list()
-        for tag, text in tags:
+        for tag_data in tags:
+            tag = tag_data[self.BASE_TAG_KEY]
             if tag == self.default_tag:
+                text = tag_data[self.BASE_TAG_KEY]
                 match = re.match(line_with_name, text)
                 has_forbidden_words: bool = bool(forbidden_words.intersection(text.lower().split()))
 
                 if match and not has_forbidden_words:
                     tag = "SIGNATURE_NAME"
 
-            new_tags.append((tag, text))
+            tag_data[self.REFINED_TAG_KEY] = tag
 
-        return new_tags
+        return tags
 
 
 class TransferredEmailProcessor(MelusineTransformer):

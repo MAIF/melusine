@@ -8,7 +8,7 @@ Implemented classes: [Message]
 
 import re
 from datetime import datetime
-from typing import Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from melusine import config
 
@@ -20,6 +20,8 @@ class Message:
 
     DEFAULT_STR_LINE_LENGTH = 120
     DEFAULT_STR_TAG_NAME_LENGTH = 22
+    MAIN_TAG_TYPE = "refined_tag"
+    FALLBACK_TAG_TYPE = "base_tag"
 
     def __init__(
         self,
@@ -29,7 +31,7 @@ class Message:
         date: Optional[datetime] = None,
         text_from: str = "",
         text_to: Optional[str] = None,
-        tags: Optional[List[Tuple[str, str]]] = None,
+        tags: Optional[List[Dict[str, Any]]] = None,
     ):
         """
         Attributes initialization.
@@ -84,8 +86,11 @@ class Message:
             return config["message"].get("str_line_length", self.DEFAULT_STR_LINE_LENGTH)
 
     def extract_parts(
-        self, target_tags: Optional[Iterable[str]] = None, stop_at: Optional[Iterable[str]] = None
-    ) -> List[Tuple[str, str]]:
+        self,
+        target_tags: Optional[Iterable[str]] = None,
+        stop_at: Optional[Iterable[str]] = None,
+        tag_type: str = MAIN_TAG_TYPE,
+    ) -> List[Dict[str, Any]]:
         """
         Function to extract target tags from the message.
 
@@ -95,17 +100,23 @@ class Message:
             Tags to be extracted.
         stop_at:
             Tags for which extraction should stop.
+        tag_type:
+            Type of tags to consider.
 
         Returns
         -------
-        _: List[Tuple[str, str]]
-            List of extracted tags.
+        _: List of extracted tags.
         """
         if not self.tags:
             return []
 
         # List of tags in the message
-        tag_name_list: List[str] = [x[0] for x in self.tags]
+        try:
+            tag_name_list: List[str] = [x[tag_type] for x in self.tags]
+        # If tag_type is not available, fall back on base_tag
+        except KeyError:
+            tag_type = self.FALLBACK_TAG_TYPE
+            tag_name_list: List[str] = [x[tag_type] for x in self.tags]
 
         if target_tags is None:
             target_tags = tag_name_list
@@ -122,11 +133,14 @@ class Message:
         else:
             effective_tags = self.tags
 
-        return [x for x in effective_tags if x[0] in target_tags]
+        return [x for x in effective_tags if x[tag_type] in target_tags]
 
     def extract_last_body(
-        self, target_tags: Iterable[str] = ("BODY",), stop_at: Iterable[str] = ("GREETINGS",)
-    ) -> List[Tuple[str, str]]:
+        self,
+        target_tags: Iterable[str] = ("BODY",),
+        stop_at: Iterable[str] = ("GREETINGS",),
+        tag_type: str = MAIN_TAG_TYPE
+    ) -> List[Dict[str, Any]]:
         """
         Extract the BODY parts of the last message in the email.
 
@@ -134,17 +148,19 @@ class Message:
         ----------
         target_tags: Iterable[str]
         stop_at: Iterable[str]
+        tag_type: Type of tags to consider.
 
         Returns
         -------
         _: List[Tuple[str, str]]
         """
-        return self.extract_parts(target_tags=target_tags, stop_at=stop_at)
+        return self.extract_parts(target_tags=target_tags, stop_at=stop_at, tag_type=tag_type)
 
     def has_tags(
         self,
         target_tags: Iterable[str] = ("BODY",),
         stop_at: Optional[Iterable[str]] = None,
+        tag_type: str = MAIN_TAG_TYPE,
     ) -> bool:
         """
         Function to check if input tags are present in the message.
@@ -155,6 +171,8 @@ class Message:
             Tags of interest.
         stop_at:
             Tags for which extraction should stop.
+        tag_type:
+            Type of tags to consider.
 
         Returns
         -------
@@ -168,7 +186,12 @@ class Message:
             stop_at = set()
 
         found: bool = False
-        for tag, _ in self.tags:
+        for tag_data in self.tags:
+            try:
+                tag = tag_data[tag_type]
+            except KeyError:
+                tag = tag_data[self.FALLBACK_TAG_TYPE]
+
             # Check if tag in tags of interest
             if tag in target_tags:
                 found = True
@@ -180,7 +203,7 @@ class Message:
 
         return found
 
-    def format_tags(self) -> str:
+    def format_tags(self, tag_type: str = MAIN_TAG_TYPE) -> str:
         """
         Create a pretty formatted representation of text and their associated tags.
 
@@ -192,7 +215,12 @@ class Message:
         else:
             tag_text_length = self.str_line_length - self.str_tag_name_length
             text = ""
-            for tag_name, tag_text in self.tags:
+            for tag_data in self.tags:
+                try:
+                    tag_name = tag_data[tag_type]
+                except KeyError:
+                    tag_name = tag_data[self.FALLBACK_TAG_TYPE]
+                tag_text = tag_data["base_text"]
                 text += tag_text.ljust(tag_text_length, ".") + tag_name.rjust(self.str_tag_name_length, ".") + "\n"
 
         return text.strip()
