@@ -139,7 +139,7 @@ class Message:
         self,
         target_tags: Iterable[str] = ("BODY",),
         stop_at: Iterable[str] = ("GREETINGS",),
-        tag_type: str = MAIN_TAG_TYPE
+        tag_type: str = MAIN_TAG_TYPE,
     ) -> List[Dict[str, Any]]:
         """
         Extract the BODY parts of the last message in the email.

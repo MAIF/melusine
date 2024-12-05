@@ -1163,7 +1163,6 @@ class BaseContentTagger(MelusineTransformer):
         return matching_regex_list
 
 
-
 class ContentTagger(BaseContentTagger):
     """
     Class to add tags to a text.
@@ -1553,12 +1552,7 @@ class RefinedTagger(MelusineTransformer):
     BASE_TAG_KEY = "base_tag"
     REFINED_TAG_KEY = "refined_tag"
 
-    def __init__(
-            self,
-            input_columns: str = "messages",
-            output_columns: str = "messages",
-            default_tag: str = "BODY"
-    ):
+    def __init__(self, input_columns: str = "messages", output_columns: str = "messages", default_tag: str = "BODY"):
         """
         Parameters
         ----------
