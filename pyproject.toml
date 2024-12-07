@@ -12,7 +12,7 @@ authors = [
 ]
 description = "Melusine is a high-level library for emails processing"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10,<3.11"
 keywords = ["nlp", "email", "courriel", "text", "data-science", "machine-learning", "natural-language-processing"]
 license = {text = "Apache Software License 2.0"}
 classifiers = [
@@ -42,12 +42,14 @@ dependencies = [
     "tqdm>=4.34",
     "omegaconf>=2.0",
 ]
+
 dynamic = ["version"]
 
 [project.optional-dependencies] # Optional
-dev = ["tox", "pre-commit", "black", "flake8", "isort", "mypy", "pytest", "coverage", "build", "ruff"]
+dev = ["tox", "pre-commit", "black", "flake8", "isort", "mypy", "pytest", "coverage", "build", "ruff" ]
 test = ["pytest", "coverage", "pytest-cov", "google-auth-oauthlib", "google-api-python-client"]
-transformers = ["transformers>4"]
+transformers = ["transformers>4" ]
+torch-cpu = ["torch>=2.0.0"]
 connectors = ["exchangelib", "google-auth-oauthlib", "google-api-python-client"]
 docs = ["mkdocs", "markdown", "mkdocs-material", "mdx-include"]
 
