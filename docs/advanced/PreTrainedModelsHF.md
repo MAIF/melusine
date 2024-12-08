@@ -79,9 +79,10 @@ class MelusineTransformerDetector(BaseMelusineDetector, ABC):
 ```
 
 **The detection method can be one of the following three**
-    * Purely deterministic : using the Melusine_regex fonctionality
-    * Machine learning-based detection : using Hugging-Face models
-    * Combining deterministic and machine-learning based methods
+
+* Purely deterministic : using the Melusine_regex fonctionality
+* Machine learning-based detection : using Hugging-Face models
+* Combining deterministic and machine-learning based methods
 
 
 
@@ -105,7 +106,7 @@ class MelusineTransformerDetector(BaseMelusineDetector, ABC):
 * In order to detect dissatisfaction emotions by regex, a DissatisfactionRegex class inheriting from melusineregex is required.
 
 The implemntation can be found in here ! (melusine/regex/dissatisfaction_regex.py)
-After constructing the DissatisfactionRegex class , the by_regex_detect method could be implemented as demonstrated in the DissatisfactionDetector
+After constructing the DissatisfactionRegex class , the by_regex_detect method could be implemented as demonstrated in the DissatisfactionDetector! (huggingface/detectors.py/)
 
 
 ## The Machine Learning Approach to Detect Dissatisfaction: Two Methods
@@ -122,8 +123,8 @@ The model can be loaded directly from the Hugging Face platform, along with its 
 
     Fine-tuning approaches:
 
-        1- **Full Fine-tuning** : Updates all layers of the model in an autoregressive manner.
-        2- **LoRA's PEFT (Parameter-Efficient Fine-Tuning)** : A more efficient and optimized method that reduces computational cost while achieving excellent results.
+    1- **Full Fine-tuning** : Updates all layers of the model in an autoregressive manner.
+    2- **LoRA's PEFT (Parameter-Efficient Fine-Tuning)** : A more efficient and optimized method that reduces computational cost while achieving excellent results.
 
         
 Fine-tuning allows customization of the model for specific tasks, improving its performance on datasets relevant to dissatisfaction detection.
@@ -185,7 +186,7 @@ def predict(self, text: str) -> Tuple[List, List]:
 
        
 
-The by_ml_detect function applies the model on a dataset that provides the model tokenized inputs and returns both the predictions outputs and the scores outputs. A certain threshold could be then defined in the detector configuration. The resulting prediction based on the score's validity and its threshold-crossing.
+The by_ml_detect function applies the model on a the input text. It returns both the predictions outputs and the scores outputs. A certain threshold could be then defined in the detector configuration so that the resulting prediction would be based on the score's validity and its threshold-crossing.
  
 
 ```python
@@ -255,3 +256,5 @@ def post_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineIt
     row[self.result_column] = deterministic_result or ml_result
     return row
 ```
+
+
