@@ -12,7 +12,7 @@ authors = [
 ]
 description = "Melusine is a high-level library for emails processing"
 readme = "README.md"
-requires-python = ">=3.10,<3.11"
+requires-python = ">=3.10,<3.13"
 keywords = ["nlp", "email", "courriel", "text", "data-science", "machine-learning", "natural-language-processing"]
 license = {text = "Apache Software License 2.0"}
 classifiers = [

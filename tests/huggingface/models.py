@@ -2,12 +2,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import torch
-from google.oauth2.credentials import Credentials
-from googleapiclient.http import HttpRequestMock
 
 from hugging_face.detectors import DissatisfactionDetector
 from hugging_face.models.model import TextClassifier
-from melusine.connectors.gmail import GmailConnector
 
 
 def return_value(resp, content):
