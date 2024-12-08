@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional, Tuple
 
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
@@ -55,7 +55,7 @@ class TextClassifier:
                 pretrained_model_name_or_path=self.model_name_or_path, num_labels=2
             )
 
-    def predict(self, text) -> tuple[list, list]:
+    def predict(self, text) -> Tuple[List, List]:
         """
         Apply model and get prediction
         Parameters
