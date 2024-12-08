@@ -62,13 +62,11 @@ Suitable models include: camembert and distil-camembert.
 
   
 
-**Implementing solution : distil-camembert Models**
+**Implementing solution**
 
-As usual , the detector can be implemented this way , inheriting from a **MelusineTransformerDetector** base class.
-The detector adheres to the standard structure of a Melusine detector, with the addition of a method enabling machine learning-based detection.
-The MelusineTransformerDetector class has multiple defined methods as demonstrated below
+As usual , the detector inherites from a **MelusineTransformerDetector** base class, adheres to the standard structure of a Melusine detector, with the addition of a method enabling machine learning-based detection.
+The MelusineTransformerDetector class has one additional defined method **by_ml_detect** as demonstrated below
 
-  
 
 ``` python
 class MelusineTransformerDetector(BaseMelusineDetector, ABC):
@@ -159,7 +157,7 @@ class MelusineTransformerDetector(BaseMelusineDetector, ABC):
     * The Hugging Face Trainer API
     * PyTorch Lightning (https://lightning.ai/docs/pytorch/stable/)
 
-    > Fine-tuning approaches:
+    Fine-tuning approaches:
 
         1- **Full Fine-tuning** : Updates all layers of the model in an autoregressive manner.
         2- **LoRA's PEFT (Parameter-Efficient Fine-Tuning)** : A more efficient and optimized method that reduces computational cost while achieving excellent results.
@@ -225,9 +223,7 @@ def predict(self, text: str) -> Tuple[List, List]:
        
 
 The by_ml_detect function applies the model on a dataset that provides the model tokenized inputs and returns both the predictions outputs and the scores outputs. A certain threshold could be then defined in the detector configuration. The resulting prediction based on the score's validity and its threshold-crossing.
-
-        
-        
+ 
 
 ```python
 def by_ml_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
