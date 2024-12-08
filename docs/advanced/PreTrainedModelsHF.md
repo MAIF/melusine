@@ -13,55 +13,18 @@ Renowned for its user-friendly interface and extensive collection of pre-trained
 
 **Melusine** provides an exceptional framework for streamlining and optimizing email workflows with remarkable efficiency. Its flexible architecture allows seamless integration of machine learning models into its detectors, as demonstrated in the Hugging Face folder, enabling users to harness advanced AI capabilities for enhanced performance.
 
-  
+### Tutorial : Dissatisfaction detection using Hugging-face models
 
-## Tutorial : Dissatisfaction detection using Hugging-face models
-
-
-### How to leverage these models within the Melusine framework to build:
-
-
-1.  **Custom Email Classifiers**:
-
-    Use pre-trained models from Hugging Face, such as BERT or DistilBERT, to classify emails into custom categories. Integrate these models into Melusine's workflow to improve sorting, spam detection, or customer inquiry prioritization.
-
-2.  **Named Entity Recognition (NER) for Emails**:
-
-    Incorporate Hugging Face's NER models to extract key information such as names, dates, or invoice numbers from email bodies. This integration can automate data extraction, reducing manual effort and errors.
-
-3.  **Sentiment Analysis for Customer Feedback**:
-
-    Implement sentiment analysis models to assess the tone of customer emails.
-
-    * Classifications such as dissatisfaction or happiness could be assessed and integrated into specialised melusine detectors.
-
-    * Prioritizing urgent issues or to monitor overall customer satisfaction trends.
-
-4.  **Topic Modeling for Email Segmentation**:
-
-    Leverage pre-trained topic modeling transformers to group emails by subject or theme. This enables businesses to analyze email traffic patterns and identify frequently discussed topics.
-
-5.  **Automated Email Responses or Automated summaires**:
-
-    Utilize text generation models like GPT-2 or GPT-3 to draft automated, context-aware email replies. Integrate these models into Melusine to improve response times and maintain professional communication.
-
-6.  **Language Translation for Multilingual Support**:
-
-    Enhance Melusine's capabilities by adding Hugging Face's translation models to convert emails into multiple languages. This feature is invaluable for global teams handling diverse customers.
-
-  
-
-By seamlessly integrating these models into the Melusine framework, businesses can unlock advanced email processing capabilities, streamline workflows, and enhance productivity across their operations. Transformers-based models from Hugging Face can significantly enhance detection capabilities and act as a complementary approach to strengthen prediction results which is the goal of this tutorial :
-
-  
+Whether it's utilizing pre-trained models from Hugging Face, such as BERT or DistilBERT, for email classification, integrating Named Entity Recognition (NER) models to extract key information, leveraging topic modeling transformers to organize emails by themes, or using language translation models to convert emails into multiple languages, all of these capabilities are seamlessly achievable through the Melusine framework.
+   
+By seamlessly integrating these models into the Melusine framework, businesses can unlock advanced email processing capabilities, streamline workflows, and enhance productivity across their operations. Transformers-based models from Hugging Face can significantly enhance detection capabilities and act as a complementary approach to strengthen prediction.
+The integration of these advanced transformations is primarily facilitated through **Melusine detectors**.
 
 **model selection**
 
-The selection of a model depends on the specific detection task. For example, **Sentiment detection in French text**
-Suitable models include: camembert and distil-camembert.
+The selection of a model depends on the specific detection task. For example, **Sentiment detection in French text** suitable models includes camembert and distil-camembert.
 
   
-
 **Implementing solution**
 
 As usual , the detector inherites from a **MelusineTransformerDetector** base class, adheres to the standard structure of a Melusine detector, with the addition of a method enabling machine learning-based detection.
