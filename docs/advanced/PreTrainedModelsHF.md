@@ -55,14 +55,14 @@ By seamlessly integrating these models into the Melusine framework, businesses c
 
   
 
-> model selection
+**model selection**
 
 The selection of a model depends on the specific detection task. For example, **Sentiment detection in French text**
 Suitable models include: camembert and distil-camembert.
 
   
 
-> Implementing solution : distil-camembert Models
+**Implementing solution : distil-camembert Models**
 
 As usual , the detector can be implemented this way , inheriting from a **MelusineTransformerDetector** base class.
 The detector adheres to the standard structure of a Melusine detector, with the addition of a method enabling machine learning-based detection.
@@ -117,12 +117,10 @@ class MelusineTransformerDetector(BaseMelusineDetector, ABC):
         """What needs to be done after detection (e.g., mapping columns)."""
 ```
 
-
-> The detection method can be one of the following three :
-
-        * Purely deterministic : using the Melusine_regex fonctionality
-        * Machine learning-based detection : using Hugging-Face models
-        * Combining deterministic and machine-learning based methods
+**The detection method can be one of the following three**
+    * Purely deterministic : using the Melusine_regex fonctionality
+    * Machine learning-based detection : using Hugging-Face models
+    * Combining deterministic and machine-learning based methods
 
 
 
