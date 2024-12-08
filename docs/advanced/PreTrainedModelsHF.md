@@ -1,318 +1,253 @@
-# Use pre-trained models from HuggingFace in the Melusine framework
+# HuggingFace's pre-trained models in the Melusine framework
+
+  
+
+[HuggingFace](https://huggingface.co/)
 
 
-> The Hugging Face library has become an invaluable resource in the data science field, offering easy-to-use models that excel across a variety of natural language processing (NLP) tasks.
+The Hugging Face library has revolutionized the landscape of natural language processing (NLP) and beyond, redefining the boundaries of what's possible in NLP and other domains and establishing itself as an indispensable tool for researchers, data scientists, and developers. By bridging the gap between cutting-edge research and practical implementation, Hugging Face not only simplifies the complexities of model deployment but also fosters innovation across industries, enabling applications that were once considered out of reach.
 
-# How to leverage these models within the Melusine framework to build:
+  
 
-* A powerful processor using model embeddings.
-* An intelligent detector utilizing fine-tuned model layers.
+Renowned for its user-friendly interface and extensive collection of pre-trained models, Hugging Face empowers users to tackle a diverse range of tasks from text classification and sentiment analysis to machine translation and question answering. The library's versatility and adaptability make it a cornerstone in modern AI development, providing accurate and efficient models.
 
-Transformers-based models from Hugging Face can significantly enhance detection capabilities and act as a complementary approach to strengthen prediction results.
+  
 
-## How to Choose and Use Models
+**Melusine** provides an exceptional framework for streamlining and optimizing email workflows with remarkable efficiency. Its flexible architecture allows seamless integration of machine learning models into its detectors, as demonstrated in the Hugging Face folder, enabling users to harness advanced AI capabilities for enhanced performance.
 
-The selection of a model depends on the specific detection task. For example:
+  
 
-    **Sentiment detection in French text/emails:** 
-    Suitable models include: camembert-base, distil-camembert-base, or distil-camembert-base.
-    These models can be seamlessly integrated into your workflow to enhance predictions and optimize detection outcomes.
+## Tutorial : Dissatisfaction detection using Hugging-face models
 
+### How to leverage these models within the Melusine framework to build:
 
+  
 
-# Implementing solution : distil-camembert Models 
-As usual , the detector can be implemented this way , inheriting the MelusineTransformerDetector detector base class 
+1.  **Custom Email Classifiers**:
 
-```python
-class DissatisfactionDetector(MelusineTransformerDetector):
+Use pre-trained models from Hugging Face, such as BERT or DistilBERT, to classify emails into custom categories. Integrate these models into Melusine's workflow to improve sorting, spam detection, or customer inquiry prioritization.
+
+2.  **Named Entity Recognition (NER) for Emails**:
+
+Incorporate Hugging Face's NER models to extract key information such as names, dates, or invoice numbers from email bodies. This integration can automate data extraction, reducing manual effort and errors.
+
+3.  **Sentiment Analysis for Customer Feedback**:
+
+Implement sentiment analysis models to assess the tone of customer emails.
+
+* Classifications such as dissatisfaction or happiness could be assessed and integrated into specialised melusine detectors.
+
+* Prioritizing urgent issues or to monitor overall customer satisfaction trends.
+
+4.  **Topic Modeling for Email Segmentation**:
+
+Leverage pre-trained topic modeling transformers to group emails by subject or theme. This enables businesses to analyze email traffic patterns and identify frequently discussed topics.
+
+5.  **Automated Email Responses or Automated summaires**:
+
+Utilize text generation models like GPT-2 or GPT-3 to draft automated, context-aware email replies. Integrate these models into Melusine to improve response times and maintain professional communication.
+
+6.  **Language Translation for Multilingual Support**:
+
+Enhance Melusine's capabilities by adding Hugging Face's translation models to convert emails into multiple languages. This feature is invaluable for global teams handling diverse customers.
+
+  
+
+By seamlessly integrating these models into the Melusine framework, businesses can unlock advanced email processing capabilities, streamline workflows, and enhance productivity across their operations. Transformers-based models from Hugging Face can significantly enhance detection capabilities and act as a complementary approach to strengthen prediction results which is the goal of this tutorial :
+
+  
+
+> model selection
+
+  
+The selection of a model depends on the specific detection task. For example, **Sentiment detection in French text**
+Suitable models include: camembert and distil-camembert.
+
+  
+
+> Implementing solution : distil-camembert Models
+
+  
+
+As usual , the detector can be implemented this way , inheriting from a **MelusineTransformerDetector** base class.
+
+The detector adheres to the standard structure of a Melusine detector, with the addition of a method enabling machine learning-based detection.
+
+The MelusineTransformerDetector class has multiple defined methods as demonstrated below
+
+  
+
+``` python
+class MelusineTransformerDetector(BaseMelusineDetector, ABC):
     """
-    Class to detect emails containing only dissatisfaction text.
-
-    Ex:
-    Merci à vous,
-    Cordialement
-    """
-
-    # Class constants
-    BODY_PART: str = "BODY"
-    DISSATISFACTION_PART: str = "DISSATISFACTION"
-
-    # Intermediate columns
-    THANKS_TEXT_COL: str = "thanks_text"
-    THANKS_PARTS_COL: str = "thanks_parts"
-    HAS_BODY: str = "has_body"
-    THANKS_MATCH_COL: str = "thanks_match"
-
-    def __init__(
-        self,
-        messages_column: str = "messages",
-        name: str = "dissatisfaction",
-    ) -> None:
-        """
-        Attributes initialization.
-
-        Parameters
-        ----------
-        messages_column: str
-            Name of the column containing the messages.
-
-        name: str
-            Name of the detector.
-        """
-
-        # Input columns
-        self.messages_column = messages_column
-        input_columns: List[str] = [self.messages_column]
-
-        # Output columns
-        self.result_column = f"{name}_result"
-        output_columns: List[str] = [self.result_column]
-
-        # Detection regex
-        self.thanks_regex: MelusineRegex = ThanksRegex()
-
-        super().__init__(
-            name=name,
-            input_columns=input_columns,
-            output_columns=output_columns,
-        )
-        self.complex_regex_key: str
-```
-
-> The pre_detect method allows to preprocess the data into the type of model inputs . 
-
-```python
-def pre_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-    """
-    Extract text to analyse.
-
-    Parameters
-    ----------
-    row: MelusineItem
-        Content of an email.
-    debug_mode: bool
-        Debug mode activation flag.
-
-    Returns
-    -------
-    row: MelusineItem
-        Updated row.
-    """
-    # Check if a BODY part is present in the last message
-    has_body: bool = row[self.messages_column][0].has_tags(
-        target_tags={self.BODY_PART}, stop_at={self.GREETINGS_PART}
-    )
-
-    # Extract the DISSATISFACTION part in the last message
-    dissatisfaction_parts: List[Tuple[str, str]] = row[self.messages_column][
-        0
-    ].extract_parts(target_tags={self.DISSATISFACTION_PART})
-
-    # Compute DISSATISFACTION text
-    if not dissatisfaction_parts:
-        dissatisfaction_text: str = ""
-    else:
-        dissatisfaction_text = "\n".join(x[1] for x in dissatisfaction_parts)
-
-    # Save debug data
-    if debug_mode:
-        debug_dict = {
-            self.DISSATISFACTION_PARTS_COL: dissatisfaction_parts,
-            self.DISSATISFACTION_TEXT_COL: dissatisfaction_text,
-            self.HAS_BODY: has_body,
-        }
-        row[self.debug_dict_col].update(debug_dict)
-
-    # Create new columns
-    row[self.DISSATISFACTION_TEXT_COL] = dissatisfaction_text
-    row[self.HAS_BODY] = has_body
-
-    return row
-```
-> The detection method can be one of the following three : 
-    * deterministic only : using Melusine_regex :
-    * Machine learning based only : using HF models
-    * both are combined to one final output : the detection result 
-
-
-* A dissatisfaction_regex MUST BE CREATED WITH DIFFERENT REGEX USEFUL TO DETECT DISSATISFACTION 
-
-```python 
-from typing import Dict, List, Optional, Union
-from melusine.base import MelusineRegex
-
-
-class DissatisfactionRegex(MelusineRegex):
-    """
-    Detect thanks patterns such as "merci".
+    Defines an interface for detectors.
+    All detectors used in a MelusinePipeline should inherit from the MelusineDetector class and
+    implement the abstract methods.
+    This ensures homogeneous coding style throughout the application.
+    Alternatively, melusine user's can define their own Interface (inheriting from the BaseMelusineDetector)
+    to suit their needs.
     """
 
     @property
-    def positive(self) -> Union[str, Dict[str, str]]:
+    def transform_methods(self) -> list[Callable]:
         """
-        Define regex patterns required to activate the MelusineRegex.
+        Specify the sequence of methods to be called by the transform method.
 
-        Returns:
-            _: Regex pattern or dict of regex patterns.
-        """
-
-        return r"\b(j'en ai marre|c'est nul|trop déçu|décevant|inadmissible|insupportable|intolérable|honteux|lamentable|catastrophe)\b"
-
-    @property
-    def neutral(self) -> Optional[Union[str, Dict[str, str]]]:
-        """
-        Define regex patterns to be ignored when running detection.
-
-        Returns:
-            _: Regex pattern or dict of regex patterns.
-        """
-        return None
-
-    @property
-    def negative(self) -> Optional[Union[str, Dict[str, str]]]:
-        """
-        Define regex patterns prohibited to activate the MelusineRegex.
-
-        Returns:
-            _: Regex pattern or dict of regex patterns.
-        """
-        return None
-
-    @property
-    def match_list(self) -> List[str]:
-        """
-        List of texts that should activate the MelusineRegex.
-
-        Returns:
-            _: List of texts.
+        Returns
+        -------
+        _: list[Callable]
+            List of  methods to be called by the transform method.
         """
         return [
-            "complétement insatisfait de ce que vous faites",
+            self.pre_detect,
+            self.by_regex_detect,
+            self.by_ml_detect,
+            self.post_detect,
         ]
 
-    @property
-    def no_match_list(self) -> List[str]:
-        """
-        List of texts that should NOT activate the MelusineRegex.
+    @abstractmethod
+    def pre_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
+        """What needs to be done before detection."""
 
-        Returns:
-            _: List of texts.
-        """
-        return []
+    @abstractmethod
+    def by_regex_detect(
+        self, row: MelusineItem, debug_mode: bool = False
+    ) -> MelusineItem:
+        """Run detection."""
+
+    @abstractmethod
+    def by_ml_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
+        """Run detection."""
+
+    @abstractmethod
+    def post_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
+        """What needs to be done after detection (e.g., mapping columns)."""
 ```
-After constructing the DissatisfactionRegex class , the by_regex_detect method could be defined 
-```python
-def by_regex_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-    """
-    Use regex to detect dissatisfaction.
 
-    Parameters
-    ----------
-    row: MelusineItem
-        Content of an email.
-    debug_mode: bool
-        Debug mode activation flag.
+> The detection method can be one of the following three :
 
-    Returns
-    -------
-    row: MelusineItem
-        Updated row.
-    """
-    debug_info: Dict[str, Any] = {}
+        *  purely deterministic : using the Melusine_regex fonctionality
+        * Machine learning-based detection : using Hugging-Face models
+        * Combining deterministic and machine-learning based methods
 
-    text: str = row[self.DISSATISFACTION_TEXT_COL]
 
-    detection_data = self.dissatisfaction_regex(text)
-    detection_result = detection_data[self.dissatisfaction_regex.MATCH_RESULT]
 
-    # Save debug data
-    if debug_mode:
-        debug_info[self.dissatisfaction_regex.regex_name] = detection_data
-        row[self.debug_dict_col].update(debug_info)
+```mermaid
 
-    # Create new columns
-    row[self.DISSATISFACTION_BY_REGEX_MATCH_COL] = detection_result
+                    graph LR
 
-    return row
+                    A[PRE-DETECT] -- deterministic --> B(by_regex_detect)
+
+                    A -- machine-learning based --> C( by_ml_detect)
+
+                    A -- combined methods --> D( by_regex_detect & by_ml_detect)
+
+                    B --> E[POST-DETECT]
+                    C --> E
+                    D --> E
+
 ```
+
+  
+  
+
+* In order to detect dissatisfaction emotions by regex, a DissatisfactionRegex class inheriting from melusineregex is required.
+
+        The implemntation can be found in here ! (melusine/regex/dissatisfaction_regex.py)
+
+        After constructing the DissatisfactionRegex class , the by_regex_detect method could be implemented as demonstrated in the DissatisfactionDetector
+
+  
+  
 
 ## The Machine Learning Approach to Detect Dissatisfaction: Two Methods
+
     * Using a Pre-trained Model Directly
-        The distil-camembert-base model can be loaded directly from the Hugging Face platform, along with its tokenizer, for immediate use in detecting dissatisfaction.
 
-    * Fine-tuning the Model
-        A pre-trained model can be fine-tuned using various methods, including:
+        In rhis case a hf-token is required as menshioned in the model class.
 
-        The Hugging Face Trainer API or PyTorch Lightning.
-    
-> Fine-tuning approaches:
-    1- Full Fine-tuning: Updates all layers of the model in an autoregressive manner.
-    2-  LoRA's PEFT (Parameter-Efficient Fine-Tuning): A more efficient and optimized method that reduces computational cost while achieving excellent results.
+        The model can be loaded directly from the Hugging Face platform, along with its tokenizer, for immediate use in detecting dissatisfaction.
 
-Fine-tuning allows customization of the model for specific tasks, improving its performance on datasets relevant to dissatisfaction detection.
+        
+        * Fine-tuning the Model : A pre-trained model can be fine-tuned using various methods, including:
 
-> Why distil-camembert-base?
-Numerous studies and practical implementations have demonstrated that distil-camembert-base is a highly effective model for sentiment analysis and detecting dissatisfaction, particularly in tasks involving French text.
-The model
+                * The Hugging Face Trainer API
 
-```python
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
-from torch.nn.functional import softmax
+                * PyTorch Lightning (https://lightning.ai/docs/pytorch/stable/)
 
+            > Fine-tuning approaches:
 
-def load_hfmodel(self, model_name="distilcamembert-base") -> None:
-    """
-    GET Distil-camembert-base from HF
-    Parameters
-    ----------
-    row: MelusineItem
-        Content of an email.
-    debug_mode: bool
-        Debug mode activation flag.
+                1- Full Fine-tuning: Updates all layers of the model in an autoregressive manner.
 
-    Returns
-    -------
-    row: MelusineItem
+                2- LoRA's PEFT (Parameter-Efficient Fine-Tuning): A more efficient and optimized method that reduces computational cost while achieving excellent results.
+
+        
+
+        Fine-tuning allows customization of the model for specific tasks, improving its performance on datasets relevant to dissatisfaction detection.
+
+        A fine-tuned model could be then locally stored and loaded from path.
+
+        
+        
+
+    ```python
+    def load_hfmodel(self, model_name="distilcamembert-base") -> None:
+        """
+        GET Distil-camembert-base from HF
+        Parameters
+
+        ----------
+
+        row: MelusineItem Content of an email.
+        debug_mode: bool Debug mode activation flag.
+        Returns
+
+        -------
+
+        row: MelusineItem
         Updated row.
-    """
 
-    self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-    self.model = AutoModelForSequenceClassification.from_pretrained(
-        model_name, num_labels=5
-    )  # Adjust num_labels for your classification task
+        """
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModelForSequenceClassification.from_pretrained(
+            model_name, num_labels=2
+        )
 
-    def predict_fn(self, text) -> List:
+
+    def predict(self, text: str) -> Tuple[List, List]:
         """
         Apply model and get prediction
         Parameters
         ----------
-        row: MelusineItem
-            Content of an email.
-        debug_mode: bool
-            Debug mode activation flag.
-
+        text: str
+            Email text
         Returns
         -------
         row: MelusineItem
             Updated row.
         """
 
-        inputs = self.tokenizer(
-            text, padding=True, truncation=True, return_tensors="pt"
-        )
+        inputs = self.tokenizer(text, padding=True, truncation=True, return_tensors="pt")
         # Forward pass through the model
         outputs = self.model(**inputs)
-
+        # Extract logits
+        self.logits = outputs.logits
         # Convert logits to probabilities using softmax
-        probs = softmax(logits, dim=1)
-
-        # Get predictions (the class index with the highest probability)
-        predictions = probs.argmax(dim=1).tolist()
-
-        # Get confidence scores for the predicted classes
-        scores = probs.max(dim=1).values.tolist()
+        probs = torch.nn.functional.softmax(self.logits, dim=-1)
+        probs = probs.detach().cpu().numpy()
+        # Convert predictions and scores to lists
+        predictions = probs.argmax(axis=1).tolist()
+        scores = probs.max(axis=1).tolist()
         return predictions, scores
+    ```
 
+       
+    The by_ml_detect function applies the model on a dataset that provides the model tokenized inputs and returns both the predictions outputs and the scores outputs. A certain threshold could be then defined in the detector configuration. The resulting prediction based on the score's validity and its threshold-crossing.
+
+        
+        
+
+    ```python
     def by_ml_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
         """
         Use machine learning model to detect dissatisfaction.
@@ -329,11 +264,14 @@ def load_hfmodel(self, model_name="distilcamembert-base") -> None:
         row: MelusineItem
             Updated row.
         """
+
+        predictions, scores = self.melusine_model.predict(row[self.CONST_TEXT_COL_NAME])
         debug_info: Dict[str, Any] = {}
-        (
-            row[self.DISSATISFACTION_ML_MATCH_COL],
-            row[self.DISSATISFACTION_ML_SCORE_COL],
-        ) = self.predict_fn(row[self.DISSATISFACTION_TEXT_COL])
+
+        row[self.DISSATISFACTION_ML_MATCH_COL], row[self.DISSATISFACTION_ML_SCORE_COL] = (
+            bool(predictions[0]),
+            scores[0],
+        )
         # Save debug data
         if debug_mode:
             debug_info[self.DISSATISFACTION_ML_MATCH_COL] = row[
@@ -344,37 +282,40 @@ def load_hfmodel(self, model_name="distilcamembert-base") -> None:
             ]
             row[self.debug_dict_col].update(debug_info)
         return row
-```
+    ```
 
+        
+        
 
-> The final detection result could be defined in the **post_detect** method using a predefined condition. 
-> [! Example ]
-> condition :  by_regex_detect OR (by_ml_detect and by_ml_detect.score > .9)
- 
+    > The final detection result could be defined in the **post_detect** method using a predefined condition.
+    > [! Example ]
+    > condition : by_regex_detect OR (by_ml_detect and by_ml_detect.score > .9)
 
-```python
-def post_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-    """
-    Apply final eligibility rules.
+        
 
-    Parameters
-    ----------
-    row: MelusineItem
-        Content of an email.
-    debug_mode: bool
-        Debug mode activation flag.
+    ```python
+    def post_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
+        """
+        Apply final eligibility rules.
 
-    Returns
-    -------
-    row: MelusineItem
-        Updated row.
-    """
+        Parameters
+        ----------
+        row: MelusineItem
+            Content of an email.
+        debug_mode: bool
+            Debug mode activation flag.
 
-    # Match on thanks regex & Does not contain a body
-    row[self.result_column] = (
-        row[self.DISSATISFACTION_ML_SCORE_COL] > 0.9
-        and row[self.DISSATISFACTION_ML_MATCH_COL]
-    ) or row[self.DISSATISFACTION_BY_REGEX_MATCH_COL]
+        Returns
+        -------
+        row: MelusineItem
+            Updated row.
+        """
 
-    return row
-```
+        # Match on thanks regex & Does not contain a body
+        ml_result = (row[self.DISSATISFACTION_ML_SCORE_COL] > 0.9) and row[
+            self.DISSATISFACTION_ML_MATCH_COL
+        ]
+        deterministic_result = row[self.DISSATISFACTION_BY_REGEX_MATCH_COL]
+        row[self.result_column] = deterministic_result or ml_result
+        return row
+    ```

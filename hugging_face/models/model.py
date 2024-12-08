@@ -12,11 +12,12 @@ class TextClassifier:
         Apply model and get prediction
         Parameters
         ----------
-        row: MelusineItem
-            Content of an email.
-        debug_mode: bool
-            Debug mode activation flag.
-
+        tokenizer_name_or_path: str
+            tokenizer name or path .
+        model_name_or_path: str
+            model name or path.
+        token: Optional[str]
+            hugging-face pass
         Returns
         -------
         row: MelusineItem
@@ -27,20 +28,15 @@ class TextClassifier:
         self.hf_token = token
         self.load_model()
 
-    def load_model(self):
+    def load_model(self) -> None:
         """
         Apply model and get prediction
         Parameters
         ----------
-        row: MelusineItem
-            Content of an email.
-        debug_mode: bool
-            Debug mode activation flag.
 
         Returns
         -------
-        row: MelusineItem
-            Updated row.
+        None
         """
         if self.hf_token:
             self.tokenizer = AutoTokenizer.from_pretrained(
@@ -58,17 +54,14 @@ class TextClassifier:
     def predict(self, text) -> Tuple[List, List]:
         """
         Apply model and get prediction
-        Parameters
-        ----------
-        row: MelusineItem
-            Content of an email.
-        debug_mode: bool
-            Debug mode activation flag.
-
-        Returns
-        -------
-        row: MelusineItem
-            Updated row.
+                Parameters
+                ----------
+                text: str
+                    Email text
+                Returns
+                -------
+                predictions, scores: Tuple[List, List]
+                    Model output post softmax appliance
         """
 
         inputs = self.tokenizer(text, padding=True, truncation=True, return_tensors="pt")

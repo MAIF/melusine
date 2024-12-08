@@ -15,10 +15,10 @@ from melusine.regex import DissatisfactionRegex
 
 class DissatisfactionDetector(MelusineTransformerDetector):
     """
-    Class to detect emails containing only dissatisfaction text.
+    Class to detect emails containing dissatisfaction emotion.
 
     Ex:
-    Merci à vous,
+    je vous deteste,
     Cordialement
     """
 
@@ -46,11 +46,18 @@ class DissatisfactionDetector(MelusineTransformerDetector):
 
         Parameters
         ----------
-        messages_column: str
-            Name of the column containing the messages.
-
+        text_column: str
+            Name of the column containing the email text.
         name: str
             Name of the detector.
+        tokenizer_name_or_path: str
+            Name of model or path of the tokenizer.
+        model_name_or_path: str
+            Name of path of the model.
+        text_column: str
+            Name of the column containing the email text.
+        token: Optional[str]
+            hugging-face token .
         """
 
         # Input columns
