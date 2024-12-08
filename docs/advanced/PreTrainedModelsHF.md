@@ -141,16 +141,16 @@ class MelusineTransformerDetector(BaseMelusineDetector, ABC):
   
 * In order to detect dissatisfaction emotions by regex, a DissatisfactionRegex class inheriting from melusineregex is required.
 
-        The implemntation can be found in here ! (melusine/regex/dissatisfaction_regex.py)
-        After constructing the DissatisfactionRegex class , the by_regex_detect method could be implemented as demonstrated in the DissatisfactionDetector
+The implemntation can be found in here ! (melusine/regex/dissatisfaction_regex.py)
+After constructing the DissatisfactionRegex class , the by_regex_detect method could be implemented as demonstrated in the DissatisfactionDetector
 
 
 ## The Machine Learning Approach to Detect Dissatisfaction: Two Methods
 
 
 * Using a Pre-trained Model Directly
-        In this case a hf-token is required as menshioned in the model class.
-        The model can be loaded directly from the Hugging Face platform, along with its tokenizer, for immediate use in detecting dissatisfaction.
+In this case a hf-token is required as menshioned in the model class.
+The model can be loaded directly from the Hugging Face platform, along with its tokenizer, for immediate use in detecting dissatisfaction.
 
 * Fine-tuning the Model : A pre-trained model can be fine-tuned using various methods, including:
 
