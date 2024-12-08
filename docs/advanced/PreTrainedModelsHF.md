@@ -7,8 +7,6 @@
 
 The Hugging Face library has revolutionized the landscape of natural language processing (NLP) and beyond, redefining the boundaries of what's possible in NLP and other domains and establishing itself as an indispensable tool for researchers, data scientists, and developers. By bridging the gap between cutting-edge research and practical implementation, Hugging Face not only simplifies the complexities of model deployment but also fosters innovation across industries, enabling applications that were once considered out of reach.
 
-  
-
 Renowned for its user-friendly interface and extensive collection of pre-trained models, Hugging Face empowers users to tackle a diverse range of tasks from text classification and sentiment analysis to machine translation and question answering. The library's versatility and adaptability make it a cornerstone in modern AI development, providing accurate and efficient models.
 
   
@@ -19,9 +17,9 @@ Renowned for its user-friendly interface and extensive collection of pre-trained
 
 ## Tutorial : Dissatisfaction detection using Hugging-face models
 
+
 ### How to leverage these models within the Melusine framework to build:
 
-  
 
 1.  **Custom Email Classifiers**:
 
@@ -150,8 +148,6 @@ class MelusineTransformerDetector(BaseMelusineDetector, ABC):
         The implemntation can be found in here ! (melusine/regex/dissatisfaction_regex.py)
         After constructing the DissatisfactionRegex class , the by_regex_detect method could be implemented as demonstrated in the DissatisfactionDetector
 
-  
-  
 
 ## The Machine Learning Approach to Detect Dissatisfaction: Two Methods
 
@@ -163,14 +159,12 @@ class MelusineTransformerDetector(BaseMelusineDetector, ABC):
 * Fine-tuning the Model : A pre-trained model can be fine-tuned using various methods, including:
 
     * The Hugging Face Trainer API
-
     * PyTorch Lightning (https://lightning.ai/docs/pytorch/stable/)
 
     > Fine-tuning approaches:
 
-        1- Full Fine-tuning: Updates all layers of the model in an autoregressive manner.
-
-        2- LoRA's PEFT (Parameter-Efficient Fine-Tuning): A more efficient and optimized method that reduces computational cost while achieving excellent results.
+        1- **Full Fine-tuning** : Updates all layers of the model in an autoregressive manner.
+        2- **LoRA's PEFT (Parameter-Efficient Fine-Tuning)** : A more efficient and optimized method that reduces computational cost while achieving excellent results.
 
         
 Fine-tuning allows customization of the model for specific tasks, improving its performance on datasets relevant to dissatisfaction detection.
@@ -274,14 +268,10 @@ def by_ml_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineI
     return row
 ```
 
-        
-        
-
-> The final detection result could be defined in the **post_detect** method using a predefined condition.
-> [! Example ] :  condition : by_regex_detect OR (by_ml_detect and by_ml_detect.score > .9)
+The final detection result could be defined in the **post_detect** method using a predefined condition.
+[! Example ] :  condition : by_regex_detect OR (by_ml_detect and by_ml_detect.score > .9)
 
         
-
 ```python
 def post_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
     """
