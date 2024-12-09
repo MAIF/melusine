@@ -12,6 +12,9 @@ preprocessing_pipeline:
   - class_name: ContentTagger
     config_key: content_tagger
     module: melusine.processors
+  - class_name: RefinedTagger
+    config_key: refined_tagger
+    module: melusine.processors
   - class_name: TransferredEmailProcessor
     config_key: transferred_email_processor
     module: melusine.processors

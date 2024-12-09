@@ -25,7 +25,7 @@ import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 
 from melusine.backend import backend
-from melusine.io import IoMixin
+from melusine.io_mixin import IoMixin
 
 logger = logging.getLogger(__name__)
 

@@ -53,11 +53,22 @@ testcase_initial_cleaning_1 = dict(
     content_tagger_expected={
         "messages.tags": [
             [
-                ("HELLO", "BonJour wORLD"),
-                ("BODY", "L'orem"),
-                ("BODY", "Ip-sum"),
-                ("BODY", "Lo_rem"),
-                ("BODY", "ip.sum."),
+                {"base_text": "BonJour wORLD", "base_tag": "HELLO", "base_tag_list": ["HELLO"]},
+                {"base_text": "L'orem", "base_tag": "BODY", "base_tag_list": ["BODY"]},
+                {"base_text": "Ip-sum", "base_tag": "BODY", "base_tag_list": ["BODY"]},
+                {"base_text": "Lo_rem", "base_tag": "BODY", "base_tag_list": ["BODY"]},
+                {"base_text": "ip.sum.", "base_tag": "BODY", "base_tag_list": ["BODY"]},
+            ],
+        ],
+    },
+    refined_tagger_expected={
+        "messages.tags": [
+            [
+                {"base_text": "BonJour wORLD", "base_tag": "HELLO", "base_tag_list": ["HELLO"], "refined_tag": "HELLO"},
+                {"base_text": "L'orem", "base_tag": "BODY", "base_tag_list": ["BODY"], "refined_tag": "BODY"},
+                {"base_text": "Ip-sum", "base_tag": "BODY", "base_tag_list": ["BODY"], "refined_tag": "BODY"},
+                {"base_text": "Lo_rem", "base_tag": "BODY", "base_tag_list": ["BODY"], "refined_tag": "BODY"},
+                {"base_text": "ip.sum.", "base_tag": "BODY", "base_tag_list": ["BODY"], "refined_tag": "BODY"},
             ],
         ],
     },
@@ -116,19 +127,91 @@ testcase_segmentation1 = dict(
     content_tagger_expected={
         "messages.tags": [
             [
-                ("HELLO", "Bonjour,"),
-                ("BODY", "Vous trouverez ci-joint l'attestation"),
-                ("BODY", "Merci de me confirmer la bonne réception de ce message."),
-                ("THANKS", "Vous en remerciant par avance."),
-                ("GREETINGS", "Cordialement,"),
-                ("SIGNATURE_NAME", "Jean Dupont"),
+                {"base_text": "Bonjour,", "base_tag": "HELLO", "base_tag_list": ["HELLO"]},
+                {"base_text": "Vous trouverez ci-joint l'attestation", "base_tag": "BODY", "base_tag_list": ["BODY"]},
+                {
+                    "base_text": "Merci de me confirmer la bonne réception de ce message.",
+                    "base_tag": "BODY",
+                    "base_tag_list": ["BODY"],
+                },
+                {"base_text": "Vous en remerciant par avance.", "base_tag": "THANKS", "base_tag_list": ["THANKS"]},
+                {"base_text": "Cordialement,", "base_tag": "GREETINGS", "base_tag_list": ["GREETINGS"]},
+                {"base_text": "Jean Dupont", "base_tag": "BODY", "base_tag_list": ["BODY"]},
             ],
             [
-                ("HELLO", "Bonjour,"),
-                ("BODY", "Veuillez trouver ci-jointe la lettre"),
-                ("FOOTER", "La visualisation des fichiers PDF nécessite Adobe Reader."),
-                ("GREETINGS", "Sentiments mutualistes."),
-                ("SIGNATURE_NAME", "La MAIF"),
+                {"base_text": "Bonjour,", "base_tag": "HELLO", "base_tag_list": ["HELLO"]},
+                {"base_text": "Veuillez trouver ci-jointe la lettre", "base_tag": "BODY", "base_tag_list": ["BODY"]},
+                {
+                    "base_text": "La visualisation des fichiers PDF nécessite Adobe Reader.",
+                    "base_tag": "FOOTER",
+                    "base_tag_list": ["FOOTER"],
+                },
+                {"base_text": "Sentiments mutualistes.", "base_tag": "GREETINGS", "base_tag_list": ["GREETINGS"]},
+                {"base_text": "La MAIF", "base_tag": "BODY", "base_tag_list": ["BODY"]},
+            ],
+        ],
+    },
+    refined_tagger_expected={
+        "messages.tags": [
+            [
+                {"base_text": "Bonjour,", "base_tag": "HELLO", "base_tag_list": ["HELLO"], "refined_tag": "HELLO"},
+                {
+                    "base_text": "Vous trouverez ci-joint l'attestation",
+                    "base_tag": "BODY",
+                    "base_tag_list": ["BODY"],
+                    "refined_tag": "BODY",
+                },
+                {
+                    "base_text": "Merci de me confirmer la bonne réception de ce message.",
+                    "base_tag": "BODY",
+                    "base_tag_list": ["BODY"],
+                    "refined_tag": "BODY",
+                },
+                {
+                    "base_text": "Vous en remerciant par avance.",
+                    "base_tag": "THANKS",
+                    "base_tag_list": ["THANKS"],
+                    "refined_tag": "THANKS",
+                },
+                {
+                    "base_text": "Cordialement,",
+                    "base_tag": "GREETINGS",
+                    "base_tag_list": ["GREETINGS"],
+                    "refined_tag": "GREETINGS",
+                },
+                {
+                    "base_text": "Jean Dupont",
+                    "base_tag": "BODY",
+                    "base_tag_list": ["BODY"],
+                    "refined_tag": "SIGNATURE_NAME",
+                },
+            ],
+            [
+                {"base_text": "Bonjour,", "base_tag": "HELLO", "base_tag_list": ["HELLO"], "refined_tag": "HELLO"},
+                {
+                    "base_text": "Veuillez trouver ci-jointe la lettre",
+                    "base_tag": "BODY",
+                    "base_tag_list": ["BODY"],
+                    "refined_tag": "BODY",
+                },
+                {
+                    "base_text": "La visualisation des fichiers PDF nécessite Adobe Reader.",
+                    "base_tag": "FOOTER",
+                    "base_tag_list": ["FOOTER"],
+                    "refined_tag": "FOOTER",
+                },
+                {
+                    "base_text": "Sentiments mutualistes.",
+                    "base_tag": "GREETINGS",
+                    "base_tag_list": ["GREETINGS"],
+                    "refined_tag": "GREETINGS",
+                },
+                {
+                    "base_text": "La MAIF",
+                    "base_tag": "BODY",
+                    "base_tag_list": ["BODY"],
+                    "refined_tag": "SIGNATURE_NAME",
+                },
             ],
         ],
     },
@@ -162,16 +245,50 @@ testcase_segmentation2 = dict(
     content_tagger_expected={
         "messages.tags": [
             [
-                ("HELLO", "Bonjour"),
-                (
-                    "BODY",
-                    "Pouvez-vous me transmettre deux attestations au nom de mes enfants",
-                ),
-                ("BODY", "- Jane Dupond"),
-                ("BODY", "- Joe Dupond"),
-                ("THANKS", "Merci par avance"),
-                ("GREETINGS", "Cordialement"),
-                ("SIGNATURE_NAME", "Mr Jean Dupond"),
+                {"base_text": "Bonjour", "base_tag": "HELLO", "base_tag_list": ["HELLO"]},
+                {
+                    "base_text": "Pouvez-vous me transmettre deux attestations au nom de mes enfants",
+                    "base_tag": "BODY",
+                    "base_tag_list": ["BODY"],
+                },
+                {"base_text": "- Jane Dupond", "base_tag": "BODY", "base_tag_list": ["BODY"]},
+                {"base_text": "- Joe Dupond", "base_tag": "BODY", "base_tag_list": ["BODY"]},
+                {"base_text": "Merci par avance", "base_tag": "THANKS", "base_tag_list": ["THANKS"]},
+                {"base_text": "Cordialement", "base_tag": "GREETINGS", "base_tag_list": ["GREETINGS"]},
+                {"base_text": "Mr Jean Dupond", "base_tag": "BODY", "base_tag_list": ["BODY"]},
+            ]
+        ],
+    },
+    refined_tagger_expected={
+        "messages.tags": [
+            [
+                {"base_text": "Bonjour", "base_tag": "HELLO", "base_tag_list": ["HELLO"], "refined_tag": "HELLO"},
+                {
+                    "base_text": "Pouvez-vous me transmettre deux attestations au nom de mes enfants",
+                    "base_tag": "BODY",
+                    "base_tag_list": ["BODY"],
+                    "refined_tag": "BODY",
+                },
+                {"base_text": "- Jane Dupond", "base_tag": "BODY", "base_tag_list": ["BODY"], "refined_tag": "BODY"},
+                {"base_text": "- Joe Dupond", "base_tag": "BODY", "base_tag_list": ["BODY"], "refined_tag": "BODY"},
+                {
+                    "base_text": "Merci par avance",
+                    "base_tag": "THANKS",
+                    "base_tag_list": ["THANKS"],
+                    "refined_tag": "THANKS",
+                },
+                {
+                    "base_text": "Cordialement",
+                    "base_tag": "GREETINGS",
+                    "base_tag_list": ["GREETINGS"],
+                    "refined_tag": "GREETINGS",
+                },
+                {
+                    "base_text": "Mr Jean Dupond",
+                    "base_tag": "BODY",
+                    "base_tag_list": ["BODY"],
+                    "refined_tag": "SIGNATURE_NAME",
+                },
             ]
         ],
     },
@@ -276,8 +393,8 @@ testcase_segmentation6 = dict(
     content_tagger_expected={
         "messages.tags": [
             [
-                ("THANKS", "Bonjour et merci"),
-                ("GREETINGS", "Cordialement"),
+                {"base_text": "Bonjour et merci", "base_tag": "THANKS", "base_tag_list": ["THANKS", "HELLO"]},
+                {"base_text": "Cordialement", "base_tag": "GREETINGS", "base_tag_list": ["GREETINGS"]},
             ]
         ],
     },

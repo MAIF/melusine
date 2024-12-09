@@ -16,7 +16,7 @@ from melusine import config
 from melusine.backend import backend
 from melusine.backend.base_backend import Any
 from melusine.base import MelusineTransformer
-from melusine.io import IoMixin
+from melusine.io_mixin import IoMixin
 
 T = TypeVar("T")
 
