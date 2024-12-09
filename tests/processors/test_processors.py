@@ -161,7 +161,7 @@ def test_segmenter(input_text, expected_messages):
         ),
         (
             [
-                Message(meta="", text="Merci", tags=[("THANKS", "Merci")]),
+                Message(meta="", text="Merci", tags=[{"base_tag": "THANKS", "base_text": "Merci"}]),
             ],
             "Merci",
         ),
@@ -184,9 +184,21 @@ def test_text_extractor_error():
 def test_text_extractor_multiple_messages():
     """Unit test"""
     message_list = [
-        Message(meta="", text="", tags=[("BODY", "A"), ("GREETINGS", "G"), ("BODY", "A")]),
-        Message(meta="", text="", tags=[("BODY", "B"), ("BODY", "B"), ("BODY", "B")]),
-        Message(meta="", text="", tags=[("GREETINGS", "G"), ("BODY", "C"), ("BODY", "C")]),
+        Message(meta="", text="", tags=[
+            {"base_text": "A", "base_tag": "BODY"},
+            {"base_text": "G", "base_tag": "GREETINGS"},
+            {"base_text": "A", "base_tag": "BODY"},
+        ]),
+        Message(meta="", text="", tags=[
+            {"base_text": "B", "base_tag": "BODY"},
+            {"base_text": "B", "base_tag": "BODY"},
+            {"base_text": "B", "base_tag": "BODY"},
+        ]),
+        Message(meta="", text="", tags=[
+            {"base_text": "G", "base_tag": "GREETINGS"},
+            {"base_text": "C", "base_tag": "BODY"},
+            {"base_text": "C", "base_tag": "BODY"},
+        ]),
     ]
     expected_output = "A\nB\nB\nB"
 
@@ -206,8 +218,15 @@ def test_text_extractor_with_tags():
         Message(meta="", text="Bonjour\nblahblah\nMerci"),
         Message(meta="", text="Bonjour2\nMerci2"),
     ]
-    input_message_list[0].tags = [("HELLO", "Bonjour"), ("CUSTOM_TAG", "blahblah"), ("THANKS", "Merci")]
-    input_message_list[1].tags = [("HELLO", "Bonjour2"), ("THANKS", "Merci2")]
+    input_message_list[0].tags = [
+        {"base_text": "Bonjour", "base_tag": "HELLO"},
+        {"base_text": "blahblah", "base_tag": "CUSTOM_TAG"},
+        {"base_text": "Merci", "base_tag": "THANKS"},
+    ]
+    input_message_list[1].tags = [
+        {"base_text": "Bonjour2", "base_tag": "HELLO"},
+        {"base_text": "Merci2", "base_tag": "THANKS"},
+    ]
 
     extractor = TextExtractor(
         output_columns="text",
@@ -331,7 +350,9 @@ def test_date_processor(date_str: str, expected_iso_format: str) -> None:
                     "A: avocats@test.fr; BOB Morane <bob.morane@test.fr>\n"
                     "Objet: dossier Test ,\n",
                     text="bla bla bla",
-                    tags=[("BODY", "bla bla bla")],
+                    tags=[
+                        {"base_text": "bla bla bla", "base_tag": "BODY"},
+                    ],
                 )
             ],
             "('FOOTER', 'SIGNATURE')",
@@ -345,7 +366,9 @@ def test_date_processor(date_str: str, expected_iso_format: str) -> None:
                 Message(
                     meta="",
                     text="Envoyé depuis mon Iphone",
-                    tags=[("FOOTER", "Envoyé depuis mon Iphone")],
+                    tags=[
+                        {"base_text": "Envoyé depuis mon Iphone", "base_tag": "FOOTER"},
+                    ]
                 ),
                 Message(
                     meta="De: test.test@test.fr <test.test@test.fr>\n"
@@ -353,7 +376,9 @@ def test_date_processor(date_str: str, expected_iso_format: str) -> None:
                     "A: avocats@test.fr; BOB Morane <bob.morane@test.fr>\n"
                     "Objet: dossier Test ,\n",
                     text="bla bla bla",
-                    tags=[("BODY", "bla bla bla")],
+                    tags=[
+                        {"base_text": "bla bla bla", "base_tag": "BODY"},
+                    ],
                 ),
             ],
             "('FOOTER', 'SIGNATURE')",
@@ -368,14 +393,16 @@ def test_date_processor(date_str: str, expected_iso_format: str) -> None:
                     meta="",
                     text="Jane Doe\n4 rue des oliviers 75001 Ville",
                     tags=[
-                        ("SIGNATURE", "4 rue des oliviers 75001 Ville"),
+                        {"base_text": "4 rue des oliviers 75001 Ville", "base_tag": "SIGNATURE"},
                     ],
                 ),
                 Message(
                     meta="De :\ntest.test42@test.fr\nEnvoyé :\nvendredi 03 mars 2023 14:28\nÀ :"
                     "\nana@test.fr\nObjet :\nTEST",
                     text="bla bla bla",
-                    tags=[("BODY", "bla bla bla")],
+                    tags=[
+                        {"base_text": "bla bla bla", "base_tag": "BODY"},
+                    ],
                 ),
             ],
             "('FOOTER', 'SIGNATURE')",
@@ -390,15 +417,17 @@ def test_date_processor(date_str: str, expected_iso_format: str) -> None:
                     meta="",
                     text="Jane Doe\n4 rue des oliviers 75001 Ville",
                     tags=[
-                        ("SIGNATURE_NAME", "Jane Doe"),
-                        ("SIGNATURE", "4 rue des oliviers 75001 Ville"),
+                        {"base_text": "Jane Doe", "base_tag": "SIGNATURE_NAME"},
+                        {"base_text": "4 rue des oliviers 75001 Ville", "base_tag": "SIGNATURE"},
                     ],
                 ),
                 Message(
                     meta="De :\ntest.test42@test.fr\nEnvoyé :\nvendredi 03 mars 2023 14:28\nÀ :"
                     "\nana@test.fr\nObjet :\nTEST",
                     text="bla bla bla",
-                    tags=[("BODY", "bla bla bla")],
+                    tags=[
+                        {"base_text": "bla bla bla", "base_tag": "BODY"},
+                    ],
                 ),
             ],
             "('FOOTER', 'SIGNATURE')",
@@ -415,7 +444,9 @@ def test_date_processor(date_str: str, expected_iso_format: str) -> None:
                         "À:\nbob@test.fr\nObjet:\nTR : 1223456"
                     ),
                     text="bla bla bla",
-                    tags=[("BODY", "bla bla bla")],
+                    tags=[
+                        {"base_text": "bla bla bla", "base_tag": "BODY"},
+                    ],
                 ),
             ],
             "('FOOTER', 'SIGNATURE')",
@@ -432,7 +463,9 @@ def test_date_processor(date_str: str, expected_iso_format: str) -> None:
                         "À:\nbob@test.fr\nObjet:\nTR : 1223456"
                     ),
                     text="bla bla bla",
-                    tags=[("BODY", "bla bla bla")],
+                    tags=[
+                        {"base_text": "bla bla bla", "base_tag": "BODY"},
+                    ],
                 ),
             ],
             "('FOOTER', 'SIGNATURE')",
@@ -446,7 +479,9 @@ def test_date_processor(date_str: str, expected_iso_format: str) -> None:
                 Message(
                     meta=("Le 2 mars 2023 à 18:18, Bob <test.test.test@test.fr> a écrit :"),
                     text="bla bla bla",
-                    tags=[("BODY", "bla bla bla")],
+                    tags=[
+                        {"base_text": "bla bla bla", "base_tag": "BODY"},
+                    ],
                 ),
             ],
             "('FOOTER', 'SIGNATURE')",
@@ -460,7 +495,9 @@ def test_date_processor(date_str: str, expected_iso_format: str) -> None:
                 Message(
                     meta=("Le 01/01/2001 11:14, test.test.test@test.fr a écrit :"),
                     text="bla bla bla",
-                    tags=[("BODY", "bla bla bla")],
+                    tags=[
+                        {"base_text": "bla bla bla", "base_tag": "BODY"},
+                    ],
                 ),
             ],
             "('FOOTER', 'SIGNATURE')",
@@ -474,7 +511,9 @@ def test_date_processor(date_str: str, expected_iso_format: str) -> None:
                 Message(
                     meta=("Le 01/01/2001 11:14, test.test.test@test.fr a écrit :"),
                     text="bla bla bla",
-                    tags=[("BODY", "bla bla bla")],
+                    tags=[
+                        {"base_text": "bla bla bla", "base_tag": "BODY"},
+                    ],
                 ),
             ],
             "('FOOTER', 'SIGNATURE')",
@@ -488,7 +527,9 @@ def test_date_processor(date_str: str, expected_iso_format: str) -> None:
                 Message(
                     meta="",
                     text="Jane Doe\n4 rue des oliviers 75001 Ville",
-                    tags=[("SIGNATURE", "Jane Doe\n4 rue des oliviers 75001 Ville")],
+                    tags=[
+                        {"base_text": "Jane Doe\n4 rue des oliviers 75001 Ville", "base_tag": "SIGNATURE"},
+                    ],
                 ),
                 Message(
                     meta="De: test.test@test.fr <test.test@test.fr>\n"
@@ -496,7 +537,9 @@ def test_date_processor(date_str: str, expected_iso_format: str) -> None:
                     "A: avocats@test.fr; BOB Morane <bob.morane@test.fr>\n"
                     "Objet: dossier Test ,\n",
                     text="bla bla bla",
-                    tags=[("BODY", "bla bla bla")],
+                    tags=[
+                        {"base_text": "bla bla bla", "base_tag": "BODY"},
+                    ],
                 ),
             ],
             "('FOOTER',)",
@@ -510,7 +553,9 @@ def test_date_processor(date_str: str, expected_iso_format: str) -> None:
                 Message(
                     meta="",
                     text="J'entends le loup, le renard et la belette",
-                    tags=[("BODY", "J'entends le loup, le renard et la belette")],
+                    tags=[
+                        {"base_text": "J'entends le loup, le renard et la belette", "base_tag": "BODY"},
+                    ],
                 ),
                 Message(
                     meta="De: test.test@test.fr <test.test@test.fr>\n"
@@ -518,7 +563,9 @@ def test_date_processor(date_str: str, expected_iso_format: str) -> None:
                     "A: avocats@test.fr; BOB Morane <bob.morane@test.fr>\n"
                     "Objet: dossier Test ,\n",
                     text="bla bla bla",
-                    tags=[("BODY", "bla bla bla")],
+                    tags=[
+                        {"base_text": "bla bla bla", "base_tag": "BODY"},
+                    ],
                 ),
             ],
             "('FOOTER', 'SIGNATURE')",
@@ -532,7 +579,9 @@ def test_date_processor(date_str: str, expected_iso_format: str) -> None:
                 Message(
                     meta="",
                     text="",
-                    tags=[("BODY", "")],
+                    tags=[
+                        {"base_text": "", "base_tag": "BODY"},
+                    ],
                 ),
             ],
             "('FOOTER', 'SIGNATURE')",
@@ -546,12 +595,16 @@ def test_date_processor(date_str: str, expected_iso_format: str) -> None:
                 Message(
                     meta="",
                     text="Envoyé de mon iPhone",
-                    tags=[("FOOTER", "bla 1")],
+                    tags=[
+                        {"base_text": "bla 1", "base_tag": "FOOTER"},
+                    ],
                 ),
                 Message(
                     meta="Nothing useful",
                     text="bla 2",
-                    tags=[("BODY", "bla 2")],
+                    tags=[
+                        {"base_text": "bla 2", "base_tag": "BODY"},
+                    ],
                 ),
             ],
             "('FOOTER', 'SIGNATURE')",

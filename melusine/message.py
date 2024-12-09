@@ -8,7 +8,7 @@ Implemented classes: [Message]
 
 import re
 from datetime import datetime
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional
 
 from melusine import config
 
@@ -22,6 +22,7 @@ class Message:
     DEFAULT_STR_TAG_NAME_LENGTH = 22
     MAIN_TAG_TYPE = "refined_tag"
     FALLBACK_TAG_TYPE = "base_tag"
+    MAIN_TEXT_TYPE = "base_text"
 
     def __init__(
         self,
@@ -65,6 +66,9 @@ class Message:
         self.clean_header: str = ""
         self.clean_text: str = ""
 
+        self.effective_tag_key = "base_tag"
+        self.effective_text_key = "base_text"
+
     @property
     def str_tag_name_length(self) -> int:
         """
@@ -89,7 +93,7 @@ class Message:
         self,
         target_tags: Optional[Iterable[str]] = None,
         stop_at: Optional[Iterable[str]] = None,
-        tag_type: str = MAIN_TAG_TYPE,
+        tag_type: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """
         Function to extract target tags from the message.
@@ -110,13 +114,11 @@ class Message:
         if not self.tags:
             return []
 
+        if tag_type is None:
+            tag_type = self.effective_tag_key
+
         # List of tags in the message
-        try:
-            tag_name_list: List[str] = [x[tag_type] for x in self.tags]
-        # If tag_type is not available, fall back on base_tag
-        except KeyError:
-            tag_type = self.FALLBACK_TAG_TYPE
-            tag_name_list: List[str] = [x[tag_type] for x in self.tags]
+        tag_name_list: List[str] = [x[tag_type] for x in self.tags]
 
         if target_tags is None:
             target_tags = tag_name_list
@@ -135,11 +137,42 @@ class Message:
 
         return [x for x in effective_tags if x[tag_type] in target_tags]
 
+    def extract_text(
+        self,
+        target_tags: Optional[Iterable[str]] = None,
+        stop_at: Optional[Iterable[str]] = None,
+        tag_type: Optional[str] = None,
+        text_type: str = MAIN_TEXT_TYPE,
+        separator: str = "\n",
+    ) -> str:
+        """
+        Function to extract target tags from the message.
+
+        Parameters
+        ----------
+        target_tags:
+            Tags to be extracted.
+        stop_at:
+            Tags for which extraction should stop.
+        tag_type:
+            Type of tags to consider.
+        text_type:
+            Type of text to consider
+        separator:
+            Separator to join the extracted texts.
+
+        Returns
+        -------
+        _: List of extracted tags.
+        """
+        parts = self.extract_parts(target_tags=target_tags, stop_at=stop_at, tag_type=tag_type)
+        return separator.join([x[text_type] for x in parts])
+
     def extract_last_body(
         self,
         target_tags: Iterable[str] = ("BODY",),
         stop_at: Iterable[str] = ("GREETINGS",),
-        tag_type: str = MAIN_TAG_TYPE,
+        tag_type: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """
         Extract the BODY parts of the last message in the email.
@@ -160,7 +193,7 @@ class Message:
         self,
         target_tags: Iterable[str] = ("BODY",),
         stop_at: Optional[Iterable[str]] = None,
-        tag_type: str = MAIN_TAG_TYPE,
+        tag_type: Optional[str] = None,
     ) -> bool:
         """
         Function to check if input tags are present in the message.
@@ -181,6 +214,9 @@ class Message:
         """
         if self.tags is None:
             return False
+
+        if tag_type is None:
+            tag_type = self.effective_tag_key
 
         if not stop_at:
             stop_at = set()

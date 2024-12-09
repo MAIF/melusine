@@ -1,8 +1,8 @@
 import pytest
 
 from melusine import config
-from melusine.io import IoMixin
-from melusine.io._classes import InitError
+from melusine.io_mixin import IoMixin
+from melusine.io_mixin._classes import InitError
 
 
 class FakeClass(IoMixin):

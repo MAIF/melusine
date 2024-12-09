@@ -27,10 +27,6 @@ class IoMixin:
     Defines generic load methods.
     """
 
-    def __init__(self, **kwargs: Any):
-        """Initialize attribute."""
-        self.json_exclude_list: list[str] = ["_func", "json_exclude_list"]
-
     @classmethod
     def from_config(
         cls: type[T],

@@ -32,12 +32,12 @@ def test_instanciation():
                                 text="Bonjour, je vous confirme l'annulation du rdv du 01/01/2022 "
                                 + "à 16h. Bien cordialement, John Smith.",
                                 tags=[
-                                    ("HELLO", "Bonjour,"),
-                                    (
-                                        "BODY",
-                                        "je vous confirme l'annulation du rdv du 01/01/2022 à 16h.",
-                                    ),
-                                    ("GREETINGS", "Bien cordialement, John Smith."),
+                                    {"base_tag": "HELLO", "base_text": "Bonjour,"},
+                                    {
+                                        "base_tag": "BODY",
+                                        "base_text": "je vous confirme l'annulation du rdv du 01/01/2022 à 16h."
+                                    },
+                                    {"base_tag": "GREETINGS", "base_text": "Bien cordialement, John Smith."},
                                 ],
                             )
                         ]
@@ -55,12 +55,12 @@ def test_instanciation():
                                 text="Bonjour, \nActuellement en conge je prendrai connaissance"
                                 + " de votre message ulterieurement.\nCordialement,",
                                 tags=[
-                                    ("HELLO", "Bonjour,"),
-                                    (
-                                        "BODY",
-                                        "Actuellement en conge je prendrai connaissance de votre message ulterieurement.",
-                                    ),
-                                    ("GREETINGS", "Cordialement, "),
+                                    {"base_tag": "HELLO", "base_text": "Bonjour,"},
+                                    {
+                                        "base_tag": "BODY",
+                                        "base_text": "Actuellement en conge je prendrai connaissance de votre message ulterieurement."
+                                    },
+                                    {"base_tag": "GREETINGS", "base_text": "Cordialement, "},
                                 ],
                             )
                         ]
@@ -73,8 +73,6 @@ def test_instanciation():
 )
 def test_transform(df, good_result):
     """Unit test of the transform() method."""
-    df_copy = df.copy()
-
     message_column = "messages"
 
     detector = VacationReplyDetector(
@@ -100,12 +98,12 @@ def test_transform(df, good_result):
                                 text="Bonjour, \nActuellement en conge je prendrai connaissance"
                                 + " de votre message ulterieurement.\nCordialement,",
                                 tags=[
-                                    ("HELLO", "Bonjour,"),
-                                    (
-                                        "BODY",
-                                        "Actuellement en conge je prendrai connaissance de votre message ulterieurement.",
-                                    ),
-                                    ("GREETINGS", "Cordialement, "),
+                                    {"base_tag": "HELLO", "base_text": "Bonjour,"},
+                                    {
+                                        "base_tag": "BODY",
+                                        "base_text": "Actuellement en conge je prendrai connaissance de votre message ulterieurement."
+                                    },
+                                    {"base_tag": "GREETINGS", "base_text": "Cordialement, "},
                                 ],
                             )
                         ]
@@ -114,12 +112,6 @@ def test_transform(df, good_result):
             ),
             True,
             {
-                "parts": [
-                    (
-                        "BODY",
-                        "Actuellement en conge je prendrai connaissance de votre message ulterieurement.",
-                    )
-                ],
                 "text": "Actuellement en conge je prendrai connaissance de votre message ulterieurement.",
                 "VacationReplyRegex": {
                     "match_result": True,
@@ -138,8 +130,6 @@ def test_transform(df, good_result):
 )
 def test_transform_debug_mode(df, good_detection_result, good_debug_info):
     """Unit test of the debug mode."""
-    df_copy = df.copy()
-
     messages_column = "messages"
 
     detector = VacationReplyDetector(
