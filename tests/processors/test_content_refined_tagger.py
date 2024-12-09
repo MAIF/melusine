@@ -3,14 +3,14 @@ import re
 import pytest
 
 from melusine.message import Message
-from melusine.processors import BaseContentTagger, ContentTagger, Tag, RefinedTagger
+from melusine.processors import BaseContentTagger, ContentTagger, RefinedTagger, Tag
 
 
 def test_content_tagger():
     # Text segments (= individual messages in an email conversation)
     text_segments = [
         "Envoye de mon iphone",
-        ("Bonjour Mme X,\nSuite a blh blah blah\nBien cordialement\nJane Dupond\n(See attached file: flex.jpg)"),
+        "Bonjour Mme X,\nSuite a blh blah blah\nBien cordialement\nJane Dupond\n(See attached file: flex.jpg)",
         (
             "Bonjour,\nVeuillez trouver ci-joint blah\n"
             "Merci d'avance,\nCordialement,\n"
@@ -35,8 +35,10 @@ def test_content_tagger():
             {"base_text": "Veuillez trouver ci-joint blah", "base_tag": "BODY"},
             {"base_text": "Merci d'avance,", "base_tag": "THANKS"},
             {"base_text": "Cordialement,", "base_tag": "GREETINGS"},
-            {"base_text": "Toute modification, edition, utilisation ou diffusion non autorisee est interdite",
-             "base_tag": "FOOTER"},
+            {
+                "base_text": "Toute modification, edition, utilisation ou diffusion non autorisee est interdite",
+                "base_tag": "FOOTER",
+            },
         ],
     ]
 
@@ -125,12 +127,18 @@ def test_content_tagger_split_text(text, expected_parts):
             ),
             [
                 {"base_text": "Bonjour,", "base_tag": "HELLO", "refined_tag": "HELLO"},
-                {"base_text": "Suite a notre intervention du 16.02.22 , un taux d'humidité de 50% a été relevé.",
-                 "base_tag": "BODY", "refined_tag": "BODY"},
+                {
+                    "base_text": "Suite a notre intervention du 16.02.22 , un taux d'humidité de 50% a été relevé.",
+                    "base_tag": "BODY",
+                    "refined_tag": "BODY",
+                },
                 {"base_text": "Cordialement.", "base_tag": "GREETINGS", "refined_tag": "GREETINGS"},
                 {"base_text": "177, rue de la fée - 75000 Paris.", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
-                {"base_text": "Horaires : du lundi au jeudi de 08h00 à 16h30 et le vendredi de 08h00 à 16h00.",
-                 "base_tag": "BODY", "refined_tag": "BODY"},
+                {
+                    "base_text": "Horaires : du lundi au jeudi de 08h00 à 16h30 et le vendredi de 08h00 à 16h00.",
+                    "base_tag": "BODY",
+                    "refined_tag": "BODY",
+                },
                 {"base_text": "Tel : 01.45.53.11.33", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
             ],
         ),
@@ -143,7 +151,11 @@ def test_content_tagger_split_text(text, expected_parts):
             ),
             [
                 {"base_text": "bonjour", "base_tag": "HELLO", "refined_tag": "HELLO"},
-                {"base_text": "15 jours après les premières réparations, un défaut a été détecté.", "base_tag": "BODY", "refined_tag": "BODY"},
+                {
+                    "base_text": "15 jours après les premières réparations, un défaut a été détecté.",
+                    "base_tag": "BODY",
+                    "refined_tag": "BODY",
+                },
                 {"base_text": "Bien à vous", "base_tag": "GREETINGS", "refined_tag": "GREETINGS"},
                 {"base_text": "Britney Spears", "base_tag": "BODY", "refined_tag": "SIGNATURE_NAME"},
             ],
@@ -173,7 +185,9 @@ def test_content_tagger_split_text(text, expected_parts):
             [
                 {
                     "base_text": "Merci de me faire suivre les docs à ma nouvelle adresse qui est 0 rue du parc, 75000 Paris.",
-                    "base_tag": "BODY", "refined_tag": "BODY"},
+                    "base_tag": "BODY",
+                    "refined_tag": "BODY",
+                },
                 {"base_text": "Merci d'avance.", "base_tag": "THANKS", "refined_tag": "THANKS"},
                 {"base_text": "Acceptez notre salutation,", "base_tag": "GREETINGS", "refined_tag": "GREETINGS"},
             ],
@@ -194,7 +208,11 @@ def test_content_tagger_split_text(text, expected_parts):
             ),
             [
                 {"base_text": "Bonjour", "base_tag": "HELLO", "refined_tag": "HELLO"},
-                {"base_text": "Je vous relance concernant ma télévision avec le devis en PJ.", "base_tag": "BODY", "refined_tag": "BODY"},
+                {
+                    "base_text": "Je vous relance concernant ma télévision avec le devis en PJ.",
+                    "base_tag": "BODY",
+                    "refined_tag": "BODY",
+                },
                 {"base_text": "Désolé pour la qualité.", "base_tag": "BODY", "refined_tag": "BODY"},
                 {"base_text": "Je l'ai envoyé à partir de mon ordi.", "base_tag": "BODY", "refined_tag": "BODY"},
                 {"base_text": "Excellente journée à vous,", "base_tag": "HELLO", "refined_tag": "HELLO"},
@@ -220,7 +238,11 @@ def test_content_tagger_split_text(text, expected_parts):
         (
             "Impeccable, je vous remercie beaucoup pour votre rapidité.\nObtenir\nOutlook pour Android",
             [
-                {"base_text": "Impeccable, je vous remercie beaucoup pour votre rapidité.", "base_tag": "THANKS", "refined_tag": "THANKS"},
+                {
+                    "base_text": "Impeccable, je vous remercie beaucoup pour votre rapidité.",
+                    "base_tag": "THANKS",
+                    "refined_tag": "THANKS",
+                },
                 {"base_text": "Obtenir", "base_tag": "FOOTER", "refined_tag": "FOOTER"},
                 {"base_text": "Outlook pour Android", "base_tag": "FOOTER", "refined_tag": "FOOTER"},
             ],
@@ -232,7 +254,11 @@ def test_content_tagger_split_text(text, expected_parts):
             ),
             [
                 {"base_text": "Cher Monsieur,", "base_tag": "HELLO", "refined_tag": "HELLO"},
-                {"base_text": "Je vous confirme la bonne réception de votre précédent email.", "base_tag": "BODY", "refined_tag": "BODY"},
+                {
+                    "base_text": "Je vous confirme la bonne réception de votre précédent email.",
+                    "base_tag": "BODY",
+                    "refined_tag": "BODY",
+                },
                 {"base_text": "Je vous en remercie.", "base_tag": "THANKS", "refined_tag": "THANKS"},
                 {"base_text": "Bien cordialement,", "base_tag": "GREETINGS", "refined_tag": "GREETINGS"},
                 {"base_text": "John Smith", "base_tag": "BODY", "refined_tag": "SIGNATURE_NAME"},
@@ -250,10 +276,16 @@ def test_content_tagger_split_text(text, expected_parts):
                 {"base_text": "URGENT URGENT", "base_tag": "BODY", "refined_tag": "BODY"},
                 {
                     "base_text": "Merci de me faire suivre les docs à ma nouvelle adresse qui est 0 rue du parc, 75000 Paris.",
-                    "base_tag": "BODY", "refined_tag": "BODY"},
+                    "base_tag": "BODY",
+                    "refined_tag": "BODY",
+                },
                 {"base_text": "Merci d'avance.", "base_tag": "THANKS", "refined_tag": "THANKS"},
                 {"base_text": "Recevez nos salutations,", "base_tag": "GREETINGS", "refined_tag": "GREETINGS"},
-                {"base_text": "Vous en souhaitant bonne réception", "base_tag": "GREETINGS", "refined_tag": "GREETINGS"},
+                {
+                    "base_text": "Vous en souhaitant bonne réception",
+                    "base_tag": "GREETINGS",
+                    "refined_tag": "GREETINGS",
+                },
             ],
         ),
         pytest.param(
@@ -303,7 +335,11 @@ def test_content_tagger_split_text(text, expected_parts):
         (
             "\nBonjour Monsieur Stanislas von den hoeggenboord\n\nbien à toi\nJ.  Smith\nChargé de clientèle",
             [
-                {"base_text": "Bonjour Monsieur Stanislas von den hoeggenboord", "base_tag": "HELLO", "refined_tag": "HELLO"},
+                {
+                    "base_text": "Bonjour Monsieur Stanislas von den hoeggenboord",
+                    "base_tag": "HELLO",
+                    "refined_tag": "HELLO",
+                },
                 {"base_text": "bien à toi", "base_tag": "GREETINGS", "refined_tag": "GREETINGS"},
                 {"base_text": "J. Smith", "base_tag": "BODY", "refined_tag": "SIGNATURE_NAME"},
                 {"base_text": "Chargé de clientèle", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
@@ -323,7 +359,11 @@ def test_content_tagger_split_text(text, expected_parts):
                 {"base_text": "5bis rue Patrick Sebastien", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
                 {"base_text": "6-8 cours mirabeau", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
                 {"base_text": "7 ter place du dahu", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
-                {"base_text": "8 de la rue très longue qui ne doit pas être taggée signature", "base_tag": "BODY", "refined_tag": "BODY"},
+                {
+                    "base_text": "8 de la rue très longue qui ne doit pas être taggée signature",
+                    "base_tag": "BODY",
+                    "refined_tag": "BODY",
+                },
             ],
         ),
         (
@@ -339,7 +379,9 @@ def test_content_tagger_split_text(text, expected_parts):
                 {"base_text": "Bonjour,", "base_tag": "HELLO", "refined_tag": "HELLO"},
                 {
                     "base_text": "Je vous informe que je vais accepter la proposition de L , à savoir le paiement d'une indemnité forfaitaire de résiliation du CCMI de 4000 € TTC pour clore cette affaire.",
-                    "base_tag": "BODY", "refined_tag": "BODY"},
+                    "base_tag": "BODY",
+                    "refined_tag": "BODY",
+                },
                 {"base_text": "Cordialement.", "base_tag": "GREETINGS", "refined_tag": "GREETINGS"},
                 {"base_text": "Bob Smith", "base_tag": "BODY", "refined_tag": "SIGNATURE_NAME"},
             ],
@@ -359,13 +401,23 @@ def test_content_tagger_split_text(text, expected_parts):
             ),
             [
                 {"base_text": "Monsieur Bob Smith", "base_tag": "HELLO", "refined_tag": "HELLO"},
-                {"base_text": "Adresse mail : BobSmith90@gmail.com", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
+                {
+                    "base_text": "Adresse mail : BobSmith90@gmail.com",
+                    "base_tag": "SIGNATURE",
+                    "refined_tag": "SIGNATURE",
+                },
                 {"base_text": "Lucy Ange", "base_tag": "BODY", "refined_tag": "SIGNATURE_NAME"},
                 {"base_text": "Bonjour Monsieur,", "base_tag": "HELLO", "refined_tag": "HELLO"},
                 {
                     "base_text": "Suite à notre entretien téléphonique de ce matin, et au message que vous m'avez envoyé sur ma messagerie, je voudrais effectuer la réparation du véhicule Renault Twingo dans un garage partenaire de la Maif situé, si c'est possible.",
-                    "base_tag": "BODY", "refined_tag": "BODY"},
-                {"base_text": "Dans l'attente de votre réponse et en vous remerciant par avance,", "base_tag": "BODY", "refined_tag": "BODY"},
+                    "base_tag": "BODY",
+                    "refined_tag": "BODY",
+                },
+                {
+                    "base_text": "Dans l'attente de votre réponse et en vous remerciant par avance,",
+                    "base_tag": "BODY",
+                    "refined_tag": "BODY",
+                },
                 {"base_text": "Monsieur Bob Smith", "base_tag": "HELLO", "refined_tag": "HELLO"},
                 {"base_text": "Envoyé à partir de", "base_tag": "FOOTER", "refined_tag": "FOOTER"},
                 {"base_text": "Courrier", "base_tag": "FOOTER", "refined_tag": "FOOTER"},
@@ -395,12 +447,16 @@ def test_content_tagger_split_text(text, expected_parts):
                 {"base_text": "J’espère que vous allez bien.", "base_tag": "BODY", "refined_tag": "BODY"},
                 {
                     "base_text": "Pour faire suite à mon mail du 21 février 2023, je me permets de revenir vers vous pour avoir votre avis sur le devis que j’ai demandé auprès d’un enquêteur.",
-                    "base_tag": "BODY", "refined_tag": "BODY"},
+                    "base_tag": "BODY",
+                    "refined_tag": "BODY",
+                },
                 {"base_text": "Voici son retour :", "base_tag": "BODY", "refined_tag": "BODY"},
                 {"base_text": "Qu’en pensez-vous svp ?", "base_tag": "BODY", "refined_tag": "BODY"},
                 {
                     "base_text": "Je reste à votre disposition pour tout complément d’information et vous remercie de l’intérêt que vous porterez à ma demande,",
-                    "base_tag": "BODY", "refined_tag": "BODY"},
+                    "base_tag": "BODY",
+                    "refined_tag": "BODY",
+                },
                 {"base_text": "Bien Cordialement,", "base_tag": "GREETINGS", "refined_tag": "GREETINGS"},
                 {"base_text": "Bob Smith", "base_tag": "BODY", "refined_tag": "SIGNATURE_NAME"},
                 {"base_text": "Tél.", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
@@ -417,12 +473,26 @@ def test_content_tagger_split_text(text, expected_parts):
                 {"base_text": "cordialement", "base_tag": "GREETINGS", "refined_tag": "GREETINGS"},
                 {"base_text": "Contact e-mail", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
                 {"base_text": "Contact téléphone", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
-                {"base_text": "01 23 45 67 89 / abcabc@hotmail.fr", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
-                {"base_text": "Torroella de Montgri, le 5 avril 2023", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
+                {
+                    "base_text": "01 23 45 67 89 / abcabc@hotmail.fr",
+                    "base_tag": "SIGNATURE",
+                    "refined_tag": "SIGNATURE",
+                },
+                {
+                    "base_text": "Torroella de Montgri, le 5 avril 2023",
+                    "base_tag": "SIGNATURE",
+                    "refined_tag": "SIGNATURE",
+                },
                 {
                     "base_text": "Les formats de fichiers acceptés sont : PDF, DOC, DOCX, JPEG, JPG, TIFF, TXT, ODT, XLS, XLSX",
-                    "base_tag": "FOOTER", "refined_tag": "FOOTER"},
-                {"base_text": "Tout autre format de fichiers ne sera pas transmis au dossier", "base_tag": "FOOTER", "refined_tag": "FOOTER"},
+                    "base_tag": "FOOTER",
+                    "refined_tag": "FOOTER",
+                },
+                {
+                    "base_text": "Tout autre format de fichiers ne sera pas transmis au dossier",
+                    "base_tag": "FOOTER",
+                    "refined_tag": "FOOTER",
+                },
             ],
             id="diverse_signature_patterns",
         ),
@@ -439,12 +509,24 @@ def test_content_tagger_split_text(text, expected_parts):
                 {"base_text": "J. Smith", "base_tag": "BODY", "refined_tag": "SIGNATURE_NAME"},
                 {"base_text": "01 23 45 67 89", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
                 {"base_text": "Secrétaire en charge des avions", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
-                {"base_text": "Business Analyst – Tribu Sinistres – Squad Flux Entrants", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
-                {"base_text": "Société nationale des chemins de fer", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
+                {
+                    "base_text": "Business Analyst – Tribu Sinistres – Squad Flux Entrants",
+                    "base_tag": "SIGNATURE",
+                    "refined_tag": "SIGNATURE",
+                },
+                {
+                    "base_text": "Société nationale des chemins de fer",
+                    "base_tag": "SIGNATURE",
+                    "refined_tag": "SIGNATURE",
+                },
                 {"base_text": "Conseiller MAIF", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
                 {"base_text": "Gestionnaire sinistre - C99G", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
                 {"base_text": "Service des lettres anonymes", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
-                {"base_text": "Technicienne de gestion - EQUIPE ABC", "base_tag": "SIGNATURE", "refined_tag": "SIGNATURE"},
+                {
+                    "base_text": "Technicienne de gestion - EQUIPE ABC",
+                    "base_tag": "SIGNATURE",
+                    "refined_tag": "SIGNATURE",
+                },
             ],
             id="signature_jobs",
         ),
@@ -457,8 +539,11 @@ def test_content_tagger_split_text(text, expected_parts):
                 {"base_text": "bonjour", "base_tag": "HELLO", "refined_tag": "HELLO"},
                 {"base_text": "mon body", "base_tag": "BODY", "refined_tag": "BODY"},
                 {"base_text": "Cordialement", "base_tag": "GREETINGS", "refined_tag": "GREETINGS"},
-                {"base_text": "analyste -------------------------------------- test test test test test test test",
-                 "base_tag": "BODY", "refined_tag": "BODY"},
+                {
+                    "base_text": "analyste -------------------------------------- test test test test test test test",
+                    "base_tag": "BODY",
+                    "refined_tag": "BODY",
+                },
             ],
             id="check_catastrophic_backtracking",
         ),

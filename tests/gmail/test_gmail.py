@@ -3,11 +3,10 @@ import os
 import pytest
 
 import pandas as pd
-from unittest.mock import MagicMock, patch
-
 
 HttpRequestMock = pytest.importorskip('googleapiclient.http.HttpRequestMock')
 from google.oauth2.credentials import Credentials
+from unittest.mock import MagicMock, patch
 from melusine.connectors.gmail import GmailConnector
 
 

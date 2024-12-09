@@ -17,7 +17,6 @@ from melusine.base import MelusineRegex
 
 
 class AnnoyingEmailsRegex(MelusineRegex):
-
     @property
     def positive(self) -> Union[str, Dict[str, str]]:
         return dict(
@@ -65,7 +64,6 @@ from melusine.base import MelusineRegex
 
 
 class AnnoyingEmailsRegex(MelusineRegex):
-
     @property
     def positive(self) -> Union[str, Dict[str, str]]:
         return dict(
@@ -192,7 +190,6 @@ from melusine.base import MelusineRegex
 
 
 class AnnoyingEmailsRegex(MelusineRegex):
-
     @property
     def positive(self) -> Union[str, Dict[str, str]]:
         return dict(
@@ -237,7 +234,6 @@ That is were neutral regex can be of use. Whenever a neutral regex is matched, i
 
 ```python
 class IfritAlertRegex(MelusineRegex):
-
     @property
     def positive(self) -> Union[str, Dict[str, str]]:
         return dict(

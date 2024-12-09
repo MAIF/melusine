@@ -35,7 +35,7 @@ def test_instanciation():
                                     {"base_tag": "HELLO", "base_text": "Bonjour,"},
                                     {
                                         "base_tag": "BODY",
-                                        "base_text": "je vous confirme l'annulation du rdv du 01/01/2022 à 16h."
+                                        "base_text": "je vous confirme l'annulation du rdv du 01/01/2022 à 16h.",
                                     },
                                     {"base_tag": "GREETINGS", "base_text": "Bien cordialement, John Smith."},
                                 ],
@@ -58,7 +58,7 @@ def test_instanciation():
                                     {"base_tag": "HELLO", "base_text": "Bonjour,"},
                                     {
                                         "base_tag": "BODY",
-                                        "base_text": "Actuellement en conge je prendrai connaissance de votre message ulterieurement."
+                                        "base_text": "Actuellement en conge je prendrai connaissance de votre message ulterieurement.",
                                     },
                                     {"base_tag": "GREETINGS", "base_text": "Cordialement, "},
                                 ],
@@ -101,7 +101,7 @@ def test_transform(df, good_result):
                                     {"base_tag": "HELLO", "base_text": "Bonjour,"},
                                     {
                                         "base_tag": "BODY",
-                                        "base_text": "Actuellement en conge je prendrai connaissance de votre message ulterieurement."
+                                        "base_text": "Actuellement en conge je prendrai connaissance de votre message ulterieurement.",
                                     },
                                     {"base_tag": "GREETINGS", "base_text": "Cordialement, "},
                                 ],

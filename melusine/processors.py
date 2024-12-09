@@ -1556,6 +1556,7 @@ class RefinedTagger(MelusineTransformer):
     """
     Post-processing class to refine initial tags.
     """
+
     def __init__(
         self,
         input_columns: str = "messages",

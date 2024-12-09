@@ -111,10 +111,7 @@ def test_thanks_detector_missing_field(thanks_detector_df):
             ],
             False,
             "Merci\nMerci a vous",
-            [
-                {"base_text": "Merci", "base_tag": "THANKS"},
-                {"base_text": "Merci a vous", "base_tag": "THANKS"}
-            ],
+            [{"base_text": "Merci", "base_tag": "THANKS"}, {"base_text": "Merci a vous", "base_tag": "THANKS"}],
         ),
     ],
 )

@@ -184,21 +184,33 @@ def test_text_extractor_error():
 def test_text_extractor_multiple_messages():
     """Unit test"""
     message_list = [
-        Message(meta="", text="", tags=[
-            {"base_text": "A", "base_tag": "BODY"},
-            {"base_text": "G", "base_tag": "GREETINGS"},
-            {"base_text": "A", "base_tag": "BODY"},
-        ]),
-        Message(meta="", text="", tags=[
-            {"base_text": "B", "base_tag": "BODY"},
-            {"base_text": "B", "base_tag": "BODY"},
-            {"base_text": "B", "base_tag": "BODY"},
-        ]),
-        Message(meta="", text="", tags=[
-            {"base_text": "G", "base_tag": "GREETINGS"},
-            {"base_text": "C", "base_tag": "BODY"},
-            {"base_text": "C", "base_tag": "BODY"},
-        ]),
+        Message(
+            meta="",
+            text="",
+            tags=[
+                {"base_text": "A", "base_tag": "BODY"},
+                {"base_text": "G", "base_tag": "GREETINGS"},
+                {"base_text": "A", "base_tag": "BODY"},
+            ],
+        ),
+        Message(
+            meta="",
+            text="",
+            tags=[
+                {"base_text": "B", "base_tag": "BODY"},
+                {"base_text": "B", "base_tag": "BODY"},
+                {"base_text": "B", "base_tag": "BODY"},
+            ],
+        ),
+        Message(
+            meta="",
+            text="",
+            tags=[
+                {"base_text": "G", "base_tag": "GREETINGS"},
+                {"base_text": "C", "base_tag": "BODY"},
+                {"base_text": "C", "base_tag": "BODY"},
+            ],
+        ),
     ]
     expected_output = "A\nB\nB\nB"
 
@@ -368,7 +380,7 @@ def test_date_processor(date_str: str, expected_iso_format: str) -> None:
                     text="Envoyé depuis mon Iphone",
                     tags=[
                         {"base_text": "Envoyé depuis mon Iphone", "base_tag": "FOOTER"},
-                    ]
+                    ],
                 ),
                 Message(
                     meta="De: test.test@test.fr <test.test@test.fr>\n"
