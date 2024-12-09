@@ -1,12 +1,13 @@
 import logging
 import os
-import pytest
 
 import pandas as pd
+import pytest
 
 HttpRequestMock = pytest.importorskip('googleapiclient.http.HttpRequestMock')
-from google.oauth2.credentials import Credentials
+Credentials = pytest.importorskip('google.oauth2.credentials.Credentials')
 from unittest.mock import MagicMock, patch
+
 from melusine.connectors.gmail import GmailConnector
 
 
@@ -313,4 +314,4 @@ def test_gc_send_email(mocked_gc, fake_image, caplog):
             {"attachment.jpg": fake_image},
         )
 
-    assert "Email sent to melusine_testing@yopmail.com, Message Id: 12456"  in caplog.text
+    assert "Email sent to melusine_testing@yopmail.com, Message Id: 12456" in caplog.text
