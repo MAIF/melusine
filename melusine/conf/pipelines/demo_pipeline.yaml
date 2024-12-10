@@ -12,6 +12,9 @@ demo_pipeline:
   - class_name: ContentTagger
     config_key: content_tagger
     module: melusine.processors
+  - class_name: RefinedTagger
+    config_key: refined_tagger
+    module: melusine.processors
   - class_name: TextExtractor
     config_key: text_extractor
     module: melusine.processors

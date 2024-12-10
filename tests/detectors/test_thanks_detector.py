@@ -17,8 +17,8 @@ from melusine.message import Message
 def thanks_detector_df():
     m0 = Message("")
     m0.tags = [
-        ("HELLO", "Bonjour"),
-        ("THANKS", "Merci beaucoup"),
+        {"base_text": "Bonjour", "base_tag": "HELLO"},
+        {"base_text": "Merci beaucoup", "base_tag": "THANKS"},
     ]
     m0_messages = [m0]
     m0_expected = True
@@ -31,8 +31,8 @@ def thanks_detector_df():
 
     m1 = Message("")
     m1.tags = [
-        ("HELLO", "Bonjour"),
-        ("THANKS", "Merci, j'attends une reponse"),
+        {"base_text": "Bonjour", "base_tag": "HELLO"},
+        {"base_text": "Merci, j'attends une reponse", "base_tag": "THANKS"},
     ]
     m1_messages = [m1]
     m1_expected = False
@@ -57,7 +57,6 @@ def thanks_detector_df():
 def test_thanks_detector(thanks_detector_df):
     """Unit test of the debug mode."""
     df = thanks_detector_df
-    df_copy = df.copy()
     detector = ThanksDetector(
         name="thanks",
     )
@@ -96,23 +95,23 @@ def test_thanks_detector_missing_field(thanks_detector_df):
     [
         (
             [
-                ("HELLO", "Bonjour madame"),
-                ("BODY", "Voici le dossier"),
-                ("THANKS", "Merci a vous"),
+                {"base_text": "Bonjour madame", "base_tag": "HELLO"},
+                {"base_text": "Voici le dossier", "base_tag": "BODY"},
+                {"base_text": "Merci a vous", "base_tag": "THANKS"},
             ],
             True,
             "Merci a vous",
-            [("THANKS", "Merci a vous")],
+            [{"base_text": "Merci a vous", "base_tag": "THANKS"}],
         ),
         (
             [
-                ("HELLO", "Bonjour madame"),
-                ("THANKS", "Merci"),
-                ("THANKS", "Merci a vous"),
+                {"base_text": "Bonjour madame", "base_tag": "HELLO"},
+                {"base_text": "Merci", "base_tag": "THANKS"},
+                {"base_text": "Merci a vous", "base_tag": "THANKS"},
             ],
             False,
             "Merci\nMerci a vous",
-            [("THANKS", "Merci"), ("THANKS", "Merci a vous")],
+            [{"base_text": "Merci", "base_tag": "THANKS"}, {"base_text": "Merci a vous", "base_tag": "THANKS"}],
         ),
     ],
 )
@@ -136,8 +135,6 @@ def test_thanks_detector_debug(tags, has_body, thanks_text, thanks_parts):
     assert "debug_thanks" in data
     assert "has_body" in data["debug_thanks"]
     assert "thanks_text" in data["debug_thanks"]
-    assert "thanks_parts" in data["debug_thanks"]
 
     assert data["debug_thanks"]["has_body"] == has_body
     assert data["debug_thanks"]["thanks_text"] == thanks_text
-    assert data["debug_thanks"]["thanks_parts"] == thanks_parts

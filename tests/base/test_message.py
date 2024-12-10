@@ -19,9 +19,9 @@ def test_message_repr():
 def test_message_has_tags():
     message = Message(text="Hello")
     message.tags = [
-        ("HELLO", "Bonjour"),
-        ("BODY", "Pouvez-vous"),
-        ("GREETINGS", "Cordialement"),
+        {"base_text": "Bonjour", "base_tag": "HELLO"},
+        {"base_text": "Pouvez-vous", "base_tag": "BODY"},
+        {"base_text": "Cordialement", "base_tag": "GREETINGS"},
     ]
 
     assert not message.has_tags(target_tags=["FOOTER"])
@@ -32,9 +32,9 @@ def test_message_has_tags():
 def test_message_has_tags_stop_at():
     message = Message(text="Hello")
     message.tags = [
-        ("HELLO", "Bonjour"),
-        ("GREETINGS", "Cordialement"),
-        ("BODY", "Blah Blah Blah"),
+        {"base_text": "Bonjour", "base_tag": "HELLO"},
+        {"base_text": "Cordialement", "base_tag": "GREETINGS"},
+        {"base_text": "Blah Blah Blah", "base_tag": "BODY"},
     ]
 
     assert not message.has_tags(target_tags=["BODY"], stop_at=["GREETINGS"])
@@ -49,25 +49,25 @@ def test_message_has_tags_no_tags():
 def test_message_extract_parts():
     message = Message(text="Hello")
     message.tags = [
-        ("HELLO", "Bonjour"),
-        ("BODY", "Pouvez-vous"),
-        ("GREETINGS", "Cordialement"),
+        {"base_text": "Bonjour", "base_tag": "HELLO"},
+        {"base_text": "Pouvez-vous", "base_tag": "BODY"},
+        {"base_text": "Cordialement", "base_tag": "GREETINGS"},
     ]
 
-    assert message.extract_parts(target_tags={"BODY"}) == [("BODY", "Pouvez-vous")]
+    assert message.extract_parts(target_tags={"BODY"}) == [{"base_text": "Pouvez-vous", "base_tag": "BODY"}]
     assert message.extract_parts(target_tags=["GREETINGS", "HELLO"]) == [
-        ("HELLO", "Bonjour"),
-        ("GREETINGS", "Cordialement"),
+        {"base_text": "Bonjour", "base_tag": "HELLO"},
+        {"base_text": "Cordialement", "base_tag": "GREETINGS"},
     ]
 
 
 def test_message_extract_parts_stop():
     message = Message(text="Hello")
     message.tags = [
-        ("HELLO", "Bonjour"),
-        ("FOOTER", "Envoyé depuis mon Iphone"),
-        ("GREETINGS", "Cordialement"),
-        ("BODY", "Blah Blah Blah"),
+        {"base_text": "Bonjour", "base_tag": "HELLO"},
+        {"base_text": "Envoyé depuis mon Iphone", "base_tag": "FOOTER"},
+        {"base_text": "Cordialement", "base_tag": "GREETINGS"},
+        {"base_text": "Blah Blah Blah", "base_tag": "BODY"},
     ]
 
     extracted = message.extract_parts(target_tags=["BODY"], stop_at=["FOOTER", "GREETINGS"])
@@ -84,21 +84,21 @@ def test_message_extract_parts_no_tags():
 def test_message_extract_last_body():
     message = Message(text="Hello")
     message.tags = [
-        ("HELLO", "Bonjour"),
-        ("BODY", "Pouvez-vous"),
-        ("GREETINGS", "Cordialement"),
+        {"base_text": "Bonjour", "base_tag": "HELLO"},
+        {"base_text": "Pouvez-vous", "base_tag": "BODY"},
+        {"base_text": "Cordialement", "base_tag": "GREETINGS"},
     ]
 
-    assert message.extract_last_body() == [("BODY", "Pouvez-vous")]
+    assert message.extract_last_body() == [{"base_text": "Pouvez-vous", "base_tag": "BODY"}]
 
 
 def test_str():
     # Arrange
     message = Message(meta="Test\nmeta", text="Hello")
     message.tags = [
-        ("TAG", "ABC"),
-        ("TAAG", "ABCD"),
-        ("TAAAG", "ABCDE"),
+        {"base_text": "ABC", "base_tag": "TAG"},
+        {"base_text": "ABCD", "base_tag": "TAAG"},
+        {"base_text": "ABCDE", "base_tag": "TAAAG"},
     ]
 
     expected_list = [
@@ -126,9 +126,9 @@ def test_str_no_meta():
     # Arrange
     message = Message(text="Hello")
     message.tags = [
-        ("TAG", "ABC"),
-        ("TAAG", "ABCD"),
-        ("TAAAG", "ABCDE"),
+        {"base_text": "ABC", "base_tag": "TAG"},
+        {"base_text": "ABCD", "base_tag": "TAAG"},
+        {"base_text": "ABCDE", "base_tag": "TAAAG"},
     ]
 
     expected_list = [
@@ -175,6 +175,6 @@ def test_str_no_tags():
 
 def test_str_no_conf(reset_melusine_config):
     config.reset({"Test": "Test"})
-    message = Message(text="test", tags=[("TEST TAG", "TEST TEXT")])
+    message = Message(text="test", tags=[{"base_text": "TEST TEXT", "base_tag": "TEST TAG"}])
     print(message)
-    assert True
+    assert message.__str__()
