@@ -1,10 +1,9 @@
 import logging
 import os
+from unittest.mock import MagicMock, patch
 
 import pandas as pd
 import pytest
-
-from unittest.mock import MagicMock, patch
 
 google = pytest.importorskip("google")
 googleapiclient = pytest.importorskip("googleapiclient")
