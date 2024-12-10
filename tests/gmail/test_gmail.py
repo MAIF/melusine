@@ -4,9 +4,10 @@ import os
 import pandas as pd
 import pytest
 
-googleapiclient = pytest.importorskip("googleapiclient")
-from google.oauth2.credentials import Credentials
 from unittest.mock import MagicMock, patch
+
+google = pytest.importorskip("google")
+googleapiclient = pytest.importorskip("googleapiclient")
 
 from melusine.connectors.gmail import GmailConnector
 
@@ -43,7 +44,7 @@ def mocked_gc():
                     return_value,
                 )
                 mock_build.return_value = mock_service
-                mock_creds_from_file.return_value = Credentials("dummy")
+                mock_creds_from_file.return_value = google.oauth2.credentials.Credentials("dummy")
 
                 return GmailConnector(token_json_path="token.json", done_label="TRASH", target_column="target")
 
@@ -91,7 +92,7 @@ def test_init(mock_exists, mock_creds_from_file, mock_build, caplog):
         return_value,
     )
     mock_build.return_value = mock_service
-    mock_creds_from_file.return_value = Credentials("dummy")
+    mock_creds_from_file.return_value = google.oauth2.credentials.Credentials("dummy")
 
     # Creating an instance of GmailConnector
     with caplog.at_level(logging.DEBUG):
@@ -134,7 +135,7 @@ def test_init_without_creds(mock_flow, mock_build, caplog):
         return_value,
     )
     mock_build.return_value = mock_service
-    mock_flow.return_value.run_local_server.return_value = Credentials("dummy")
+    mock_flow.return_value.run_local_server.return_value = google.oauth2.credentials.Credentials("dummy")
 
     # Creating an instance of GmailConnector
     with caplog.at_level(logging.DEBUG):

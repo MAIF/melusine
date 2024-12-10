@@ -99,6 +99,23 @@ class MelusineTransformer(BaseEstimator, TransformerMixin, IoMixin):
             columns = [columns]
         return list(columns)
 
+    def fit(self, X: MelusineDataset, y: Any = None) -> MelusineTransformer:
+        """A reference implementation of a fitting function.
+
+        Parameters
+        ----------
+        X : The training input samples.
+
+        y : The target values (class labels in classification, real numbers in
+            regression).
+
+        Returns
+        -------
+        self : object
+            Returns self.
+        """
+        return self
+
     def transform(self, data: MelusineDataset) -> MelusineDataset:
         """
         Transform input data.
@@ -195,6 +212,23 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
         _: list[Callable]
             List of  methods to be called by the transform method.
         """
+
+    def fit(self, X: MelusineDataset, y: Any = None) -> MelusineTransformer:
+        """A reference implementation of a fitting function.
+
+        Parameters
+        ----------
+        X : The training input samples.
+
+        y : The target values (class labels in classification, real numbers in
+            regression).
+
+        Returns
+        -------
+        self : object
+            Returns self.
+        """
+        return self
 
     def transform(self, df: MelusineDataset) -> MelusineDataset:
         """
