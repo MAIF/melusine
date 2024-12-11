@@ -17,7 +17,7 @@ Renowned for its user-friendly interface and extensive collection of pre-trained
 
 Whether it's utilizing pre-trained models from Hugging Face, such as BERT or DistilBERT, for email classification, integrating Named Entity Recognition (NER) models to extract key information, leveraging topic modeling transformers to organize emails by themes, or using language translation models to convert emails into multiple languages, all of these capabilities are seamlessly achievable through the Melusine framework.
    
-By seamlessly integrating these models into the Melusine framework, businesses can unlock advanced email processing capabilities, streamline workflows, and enhance productivity across their operations. Transformers-based models from Hugging Face can significantly enhance detection capabilities and act as a complementary approach to strengthen prediction.
+By integrating these models into the Melusine framework, businesses can unlock advanced email processing capabilities, streamline workflows, and enhance productivity across their operations. Transformers-based models from Hugging Face can significantly enhance detection capabilities and act as a complementary approach to strengthen prediction.
 The integration of these advanced transformations is primarily facilitated through **Melusine detectors**.
 
 **model selection**
@@ -123,15 +123,12 @@ The model can be loaded directly from the Hugging Face platform, along with its 
 
     Fine-tuning approaches:
 
-    1- **Full Fine-tuning** : Updates all layers of the model in an autoregressive manner.
-    2- **LoRA's PEFT (Parameter-Efficient Fine-Tuning)** : A more efficient and optimized method that reduces computational cost while achieving excellent results.
-
-        
+    1- **Full Fine-Tuning**: Involves updating all layers of the model during training, typically used for adapting the model to a specific task.
+    2- **LoRA (Low-Rank Adaptation)** in Parameter-Efficient Fine-Tuning (PEFT): A method designed to reduce computational and memory costs by only   fine-tuning a small subset of parameters, while maintaining high performance.
+   
 Fine-tuning allows customization of the model for specific tasks, improving its performance on datasets relevant to dissatisfaction detection.
 A fine-tuned model could be then locally stored and loaded from path.
 
-        
-        
 
 ```python
 def load_hfmodel(self, model_name="distilcamembert-base") -> None:
@@ -256,5 +253,8 @@ def post_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineIt
     row[self.result_column] = deterministic_result or ml_result
     return row
 ```
+
+
+**Melusine already automates email workflows using deterministic regex-based methods. However, the rapid growth and evolution of artificial intelligence applications in the NLP landscape remain largely untapped. This tutorial offers a glimpse into integrating state-of-the-art models into your workflows. Feel free to experiment with different model types, preprocessing methods, and use cases while maintaining the general structure of the detector. The core purpose of Melusine lies in its modularity and versatility, enabling it to handle a wide range of applications and modeling tools effectively.**
 
 

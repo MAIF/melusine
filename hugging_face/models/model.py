@@ -5,7 +5,10 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
 
 class TextClassifier:
-    """ """
+    """
+    The modeling class
+
+    """
 
     def __init__(self, tokenizer_name_or_path: str, model_name_or_path: str, token: Optional[str]):
         """
@@ -54,14 +57,14 @@ class TextClassifier:
     def predict(self, text) -> Tuple[List, List]:
         """
         Apply model and get prediction
-                Parameters
-                ----------
-                text: str
-                    Email text
-                Returns
-                -------
-                predictions, scores: Tuple[List, List]
-                    Model output post softmax appliance
+        Parameters
+        ----------
+        text: str
+            Email text
+        Returns
+        -------
+        predictions, scores: Tuple[List, List]
+            Model output post softmax appliance
         """
 
         inputs = self.tokenizer(text, padding=True, truncation=True, return_tensors="pt")
