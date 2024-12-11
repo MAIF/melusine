@@ -38,7 +38,7 @@ classifiers = [
 dependencies = [
     "arrow",
     "pandas>2",
-    "scikit-learn>=1",
+    "scikit-learn<1.6",
     "tqdm>=4.34",
     "omegaconf>=2.0",
 ]
