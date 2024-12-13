@@ -1790,14 +1790,9 @@ class TransferredEmailProcessor(MelusineTransformer):
         top_message = message_list[0]
 
         parts = top_message.extract_parts()
-        try:
-            contains_only_tags_to_ignore = all(
-                [tag_data[Message.MAIN_TAG_TYPE].startswith(self.tags_to_ignore) for tag_data in parts]
-            )
-        except KeyError:
-            contains_only_tags_to_ignore = all(
-                [tag_data[Message.FALLBACK_TAG_TYPE].startswith(self.tags_to_ignore) for tag_data in parts]
-            )
+        contains_only_tags_to_ignore = all(
+            [tag_data[top_message.effective_tag_key].startswith(self.tags_to_ignore) for tag_data in parts]
+        )
 
         if contains_only_tags_to_ignore and (len(message_list) > 1):
             message_list = message_list[1:]

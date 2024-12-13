@@ -20,9 +20,6 @@ class Message:
 
     DEFAULT_STR_LINE_LENGTH = 120
     DEFAULT_STR_TAG_NAME_LENGTH = 22
-    MAIN_TAG_TYPE = "refined_tag"
-    FALLBACK_TAG_TYPE = "base_tag"
-    MAIN_TEXT_TYPE = "base_text"
 
     def __init__(
         self,
@@ -142,7 +139,7 @@ class Message:
         target_tags: Optional[Iterable[str]] = None,
         stop_at: Optional[Iterable[str]] = None,
         tag_type: Optional[str] = None,
-        text_type: str = MAIN_TEXT_TYPE,
+        text_type: Optional[str] = None,
         separator: str = "\n",
     ) -> str:
         """
@@ -165,6 +162,8 @@ class Message:
         -------
         _: List of extracted tags.
         """
+        if text_type is None:
+            text_type = self.effective_text_key
         parts = self.extract_parts(target_tags=target_tags, stop_at=stop_at, tag_type=tag_type)
         return separator.join([x[text_type] for x in parts])
 
@@ -223,10 +222,7 @@ class Message:
 
         found: bool = False
         for tag_data in self.tags:
-            try:
-                tag = tag_data[tag_type]
-            except KeyError:
-                tag = tag_data[self.FALLBACK_TAG_TYPE]
+            tag = tag_data[tag_type]
 
             # Check if tag in tags of interest
             if tag in target_tags:
@@ -239,24 +235,27 @@ class Message:
 
         return found
 
-    def format_tags(self, tag_type: str = MAIN_TAG_TYPE) -> str:
+    def format_tags(self, tag_type: Optional[str] = None, text_type: Optional[str] = None) -> str:
         """
         Create a pretty formatted representation of text and their associated tags.
 
         Returns:
             _: Pretty formatted representation of the tags and texts.
         """
+        if tag_type is None:
+            tag_type = self.effective_tag_key
+
+        if text_type is None:
+            text_type = self.effective_text_key
+
         if self.tags is None:
             return self.text
         else:
             tag_text_length = self.str_line_length - self.str_tag_name_length
             text = ""
             for tag_data in self.tags:
-                try:
-                    tag_name = tag_data[tag_type]
-                except KeyError:
-                    tag_name = tag_data[self.FALLBACK_TAG_TYPE]
-                tag_text = tag_data["base_text"]
+                tag_name = tag_data[tag_type]
+                tag_text = tag_data[text_type]
                 text += tag_text.ljust(tag_text_length, ".") + tag_name.rjust(self.str_tag_name_length, ".") + "\n"
 
         return text.strip()
