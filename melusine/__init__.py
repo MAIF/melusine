@@ -8,7 +8,7 @@ from melusine._config import config
 
 __all__ = ["config"]
 
-VERSION = (3, 1, 0)
+VERSION = (3, 1, 1)
 __version__ = ".".join(map(str, VERSION))
 
 # ------------------------------- #
