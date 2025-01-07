@@ -134,9 +134,7 @@ Your branch is now available on your remote forked repository, with your changes
 
 A pull request allows you to ask the Melusine team to review your changes, and merge your changes into the master branch of the official repository.
 
-To create one, on the top of your forked repository, you will find a button "Compare & pull request"
-
-<img src="https://raw.githubusercontent.com/MAIF/melusine/master/docs/assets/images/contributing/melusine-compare-pr.png" alt="pull request" />
+To create one, on the top of your forked repository, you will find a button "Compare & pull request".
 
 As you can see, you can select on the right side which branch of your forked repository you want to associate to the pull request.
 
@@ -147,12 +145,7 @@ On the left side, you will find the official Melusine repository. Due to increas
 - Head repository: your-github-username/melusine
 - Head branch: your-contribution-branch
 
-<img src="https://raw.githubusercontent.com/MAIF/melusine/master/docs/assets/images/contributing/melusine-pr-branch.png" alt="clone your forked repository" />
-
 Once you have selected the right branch, let's create the pull request with the green button "Create pull request".
-
-<img src="https://raw.githubusercontent.com/MAIF/melusine/master/docs/assets/images/contributing/melusine-pr-description.png" alt="clone your forked repository" />
-
 In the description, a template is initialized with all information you have to give about what you are doing on what your PR is doing.
 
 Please follow this to write your PR content.
