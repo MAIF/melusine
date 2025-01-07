@@ -28,18 +28,15 @@ Next, the Melusine team, or the community, will give you a feedback on whether y
 
 ## Fork to code in your personal Melusine repo
 
-The first step is to get our MAIF repository on your personal GitHub repositories. To do so, use the "Fork" button.
+The first step is to get our MAIF repository on your personal GitHub repositories. To do so, use the "Fork" button on Github landing page of melusine project.
 
-<img src="https://raw.githubusercontent.com/MAIF/melusine/master/docs/assets/images/contributing/fork_melusine.PNG" alt="fork this repository" />
 
 ## Clone your forked repository
-
-<img align="right" width="300" src="https://raw.githubusercontent.com/MAIF/melusine/master/docs/assets/images/contributing/clone_melusine.PNG" alt="clone your forked repository" />
 
 Click on the "Code" button to copy the url of your repository, and next, you can paste this url to clone your forked repository.
 
 ```
-git clone https://github.com/YOUR_GITHUB_PROFILE/melusine.git
+git clone https://github.com/<YOUR_GITHUB_PROFILE>/melusine.git
 ```
 
 ## Make sure that your repository is up-to-date
