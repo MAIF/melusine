@@ -355,12 +355,9 @@ def test_pipeline_from_config_with_error():
         # Create pipeline from a json config file
         _ = MelusinePipeline.from_config(config_key=pipeline_key, verbose=True)
 
-    with (
-        mock.patch("melusine.pipeline.MelusinePipeline.import_class") as mock_import_class,
-        pytest.raises(
-            AttributeError,
-        ) as e,
-    ):
+    with mock.patch("melusine.pipeline.MelusinePipeline.import_class") as mock_import_class, pytest.raises(
+        AttributeError
+    ) as e:
 
         class WrongNormalizerWithMethodFromConfig:
             def __init__(self) -> None:
