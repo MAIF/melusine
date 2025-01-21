@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import copy
 import importlib
+import warnings
 from typing import Iterable, TypeVar
 
 from sklearn.pipeline import Pipeline
@@ -35,7 +36,7 @@ class MelusinePipeline(Pipeline):
     """
 
     OBJ_NAME: str = "name"
-    OBJ_KEY: str = "config_key"
+    OBJ_CONFIG_KEY: str = "config_key"
     OBJ_PARAMS: str = "parameters"
     STEPS_KEY: str = "steps"
     OBJ_CLASS: str = "class_name"
@@ -194,10 +195,10 @@ class MelusinePipeline(Pipeline):
         # Get config dict
         if config_key and not config_dict:
             raw_config_dict = config[config_key]
-            config_dict = cls.parse_pipeline_config(raw_config_dict)
+            config_dict = cls.parse_pipeline_config(config_dict=raw_config_dict)
 
         elif config_dict and not config_key:
-            config_dict = cls.parse_pipeline_config(config_dict)
+            config_dict = cls.parse_pipeline_config(config_dict=config_dict)
         else:
             raise ValueError("You should specify one and only one of 'config_key' and 'config_dict'")
 
@@ -218,10 +219,33 @@ class MelusinePipeline(Pipeline):
             # Step arguments
             obj_params = obj_meta[cls.OBJ_PARAMS]
 
-            if issubclass(obj_class, IoMixin):
+            # Verbose option
+            suppress_warnings: Any = kwargs.pop("suppress_warnings", False)
+
+            try:
                 obj = obj_class.from_config(config_dict=obj_params)
-            else:
-                raise TypeError(f"Object {obj_class} does not inherit from the SaverMixin class")  # pragma: no cover
+                if not issubclass(obj_class, IoMixin) and not suppress_warnings:
+                    type_warn_msg: str = f"""
+                        It seems you are not using a melusine object in your melusine pipeline, but object '{obj_class}' (class {type(obj_class)}) for step '{step_name}'.
+                        The expected behavior is not guaranteed and can break in future version of melusine.
+
+                        Recommended usage:
+                            - Exclusive usage of melusine class Pipeline with melusine objects (MelusineTransformer, MelusineDetector...)
+
+                        To suppress this warning, instanciate melusine Pipeline with suppress_warnings argument at True (MelusinePipeline.from_config(..., suppress_warnings=True)).
+
+                        Visit Melusine Open-Source project: https://github.com/MAIF/melusine and the documentation for more information.
+                    """
+                    warnings.warn(message=type_warn_msg, category=DeprecationWarning, stacklevel=2)
+            except AttributeError as err:
+                if not hasattr(obj_class, "from_config"):
+                    raise AttributeError(
+                        f"Object '{obj_class}' does not implement 'from_config' method, maybe consider to inherit it from the Melusine IoMixin class or use a MelusineTransformer class."
+                    ) from None
+                else:
+                    raise AttributeError(f"Error in loading class: '{obj_class}'\\n{str(err)}").with_traceback(
+                        err.__traceback__
+                    ) from err
 
             # Add step to pipeline
             steps.append((step_name, obj))
@@ -251,17 +275,17 @@ class MelusinePipeline(Pipeline):
                 f"Pipeline step conf should have a {cls.OBJ_MODULE} key and a {cls.OBJ_CLASS} key."
             )
 
-        if step.get(cls.OBJ_KEY):
+        if step.get(cls.OBJ_CONFIG_KEY):
             return {
                 cls.OBJ_CLASS: step[cls.OBJ_CLASS],
                 cls.OBJ_MODULE: step[cls.OBJ_MODULE],
-                cls.OBJ_KEY: step[cls.OBJ_KEY],
+                cls.OBJ_CONFIG_KEY: step[cls.OBJ_CONFIG_KEY],
             }
 
         if not step.get(cls.OBJ_NAME) or not step.get(cls.OBJ_PARAMS):
             raise PipelineConfigurationError(
-                f"Pipeline step conf should have a {cls.OBJ_NAME} key and a {cls.OBJ_KEY} key "
-                f"(unless a {cls.OBJ_KEY} is specified)."
+                f"Pipeline step conf should have a {cls.OBJ_NAME} key and a {cls.OBJ_CONFIG_KEY} key "
+                f"(unless a {cls.OBJ_CONFIG_KEY} is specified)."
             )
 
         if not isinstance(step[cls.OBJ_PARAMS], dict):
@@ -325,11 +349,12 @@ class MelusinePipeline(Pipeline):
         steps = []
         for step in config_dict[cls.STEPS_KEY]:
             # Step defined from the config
-            config_key = step.get(cls.OBJ_KEY)
+            config_key = step.get(cls.OBJ_CONFIG_KEY)
+            config_name = step.get(cls.OBJ_NAME)
             if config_key:
-                # Use config key as step name
-                step[cls.OBJ_NAME] = config_key
-                _ = step.pop(cls.OBJ_KEY)
+                # Use config key as step name if no name is provided in config
+                step[cls.OBJ_NAME] = config_name or config_key
+                _ = step.pop(cls.OBJ_CONFIG_KEY)
                 # Update step parameters
                 step[cls.OBJ_PARAMS] = config[config_key]
 
