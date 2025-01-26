@@ -8,7 +8,8 @@ Implemented classes: [
     BaseLabelProcessor,
     MissingModelInputFieldError,
     MissingFieldError,
-    MelusineFeatureEncoder
+    MelusineFeatureEncoder,
+    MelusineTransformerDetector
 ]
 """
 
@@ -329,6 +330,45 @@ class MelusineDetector(BaseMelusineDetector, ABC):
 
     @abstractmethod
     def detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
+        """Run detection."""
+
+    @abstractmethod
+    def post_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
+        """What needs to be done after detection (e.g., mapping columns)."""
+
+
+class MelusineTransformerDetector(BaseMelusineDetector, ABC):
+    """
+    Defines an interface for detectors.
+    All detectors used in a MelusinePipeline should inherit from the MelusineDetector class and
+    implement the abstract methods.
+    This ensures homogeneous coding style throughout the application.
+    Alternatively, melusine user's can define their own Interface (inheriting from the BaseMelusineDetector)
+    to suit their needs.
+    """
+
+    @property
+    def transform_methods(self) -> list[Callable]:
+        """
+        Specify the sequence of methods to be called by the transform method.
+
+        Returns
+        -------
+        _: list[Callable]
+            List of  methods to be called by the transform method.
+        """
+        return [self.pre_detect, self.by_regex_detect, self.by_ml_detect, self.post_detect]
+
+    @abstractmethod
+    def pre_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
+        """What needs to be done before detection."""
+
+    @abstractmethod
+    def by_regex_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
+        """Run detection."""
+
+    @abstractmethod
+    def by_ml_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
         """Run detection."""
 
     @abstractmethod

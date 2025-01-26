@@ -38,17 +38,19 @@ classifiers = [
 dependencies = [
     "arrow",
     "pandas>2",
-    "scikit-learn>=1",
+    "scikit-learn<1.6",
     "tqdm>=4.34",
     "omegaconf>=2.0",
 ]
+
 dynamic = ["version"]
 
 [project.optional-dependencies] # Optional
-dev = ["tox", "pre-commit", "black", "flake8", "isort", "mypy", "pytest", "coverage", "build", "ruff"]
+dev = ["tox", "pre-commit", "black", "flake8", "isort", "mypy", "pytest", "coverage", "build", "ruff" ]
 test = ["pytest", "coverage", "pytest-cov", "google-auth-oauthlib", "google-api-python-client"]
-transformers = ["transformers>4"]
-connectors = ["exchangelib"]
+transformers = ["transformers>4" ]
+torch-cpu = ["torch>=2.0.0"]
+connectors = ["exchangelib", "google-auth-oauthlib", "google-api-python-client"]
 gmail = ["google-auth-oauthlib", "google-api-python-client"]
 docs = ["mkdocs", "markdown", "mkdocs-material", "mdx-include"]
 
