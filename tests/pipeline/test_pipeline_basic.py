@@ -1,6 +1,8 @@
 """
 Example script to fit a minimal preprocessing pipeline
 """
+from contextlib import nullcontext as does_not_raise
+from unittest import mock
 
 import pandas as pd
 import pytest
@@ -34,7 +36,7 @@ def test_pipeline_basic(dataframe_basic):
 @pytest.mark.usefixtures("use_test_config")
 def test_pipeline_from_config(dataframe_basic):
     """
-    Train a pipeline using transformers defined in a pipeline config file.
+    Train a pipeline using scikit-learn transformers defined in a pipeline config file.
     """
     # Input data
     df = dataframe_basic.copy()
@@ -79,7 +81,7 @@ def test_pipeline_from_config(dataframe_basic):
 @pytest.mark.usefixtures("use_test_config")
 def test_pipeline_from_dict(dataframe_basic):
     """
-    Train a pipeline using transformers defined in a pipeline config file.
+    Train a pipeline using scikit-learn transformers defined in a pipeline config file.
     """
     # Input data
     df = dataframe_basic.copy()
@@ -125,7 +127,7 @@ def test_pipeline_from_dict(dataframe_basic):
 @pytest.mark.usefixtures("use_test_config")
 def test_missing_config_key():
     """
-    Train a pipeline using transformers defined in a pipeline config file.
+    Train a pipeline using scikit-learn transformers defined in a pipeline config file.
     """
     # Set config keys
     normalizer_name = "normalizer"
@@ -159,7 +161,7 @@ def test_missing_config_key():
 @pytest.mark.usefixtures("use_test_config")
 def test_invalid_config_key():
     """
-    Train a pipeline using transformers defined in a pipeline config file.
+    Train a pipeline using scikit-learn transformers defined in a pipeline config file.
     """
     incorrect_config_key = "INCORRECT_CONFIG_KEY"
 
@@ -263,7 +265,7 @@ def test_invalid_config_key():
 )
 def test_pipeline_config_error(pipeline_conf):
     """
-    Train a pipeline using transformers defined in a pipeline config file.
+    Train a pipeline using scikit-learn transformers defined in a pipeline config file.
     """
     # Create pipeline from a json config file (using config key "my_pipeline")
     with pytest.raises(PipelineConfigurationError):
@@ -313,3 +315,117 @@ def test_missing_input_field(dataframe_basic):
     # Fit the pipeline and transform the data
     with pytest.raises(ValueError, match=rf"(?s){tokenizer_name}.*{missing_field_name}"):
         pipe.transform(df)
+
+
+@pytest.mark.usefixtures("use_test_config")
+def test_pipeline_from_config_with_error():
+    """
+    Instanciate a Melusine Pipeline not using scikit-learn transformers defined in a pipeline config file (raising errors).
+    """
+    # Set config keys
+    normalizer_key = "test_normalizer"
+    pipeline_key = "test_pipeline"
+
+    # Pipeline configuration
+    conf_pipeline_basic = {
+        "steps": [
+            {
+                "class_name": "Normalizer",
+                "module": "melusine.processors",
+                "config_key": normalizer_key,
+            },
+        ]
+    }
+
+    test_conf_dict = config.dict()
+    test_conf_dict[pipeline_key] = conf_pipeline_basic
+    config.reset(config_dict=test_conf_dict)
+
+    with mock.patch("melusine.pipeline.MelusinePipeline.import_class") as mock_import_class, pytest.raises(
+        AttributeError, match=r"Object '.+' does not implement 'from_config'.+to inherit it from the Melusine IoMixin.+"
+    ):
+
+        class WrongNormalizerWithoutMethodFromConfig:
+            def __init__(self, form, input_columns, lowercase, output_columns) -> None:
+                """Mock class without from_config method so we raise error."""
+                return None
+
+        mock_import_class.return_value = WrongNormalizerWithoutMethodFromConfig
+
+        # Create pipeline from a json config file
+        _ = MelusinePipeline.from_config(config_key=pipeline_key, verbose=True)
+
+    with mock.patch("melusine.pipeline.MelusinePipeline.import_class") as mock_import_class, pytest.raises(
+        AttributeError
+    ) as e:
+
+        class WrongNormalizerWithMethodFromConfig:
+            def __init__(self) -> None:
+                return None
+
+            @classmethod
+            def from_config(cls, config_dict: dict):
+                """Mock method from_config so we have a valid 'duck typed' class but with attribute error."""
+
+                return cls.class_constant_not_defined_raising_attribute_error
+
+        mock_import_class.return_value = WrongNormalizerWithMethodFromConfig
+
+        # Create pipeline from a json config file
+        _ = MelusinePipeline.from_config(config_key=pipeline_key, verbose=True)
+
+    assert "does not implement 'from_config'" not in str(e)
+
+
+@pytest.mark.usefixtures("use_test_config")
+def test_pipeline_from_config_with_warning(recwarn):
+    """
+    Instanciate a Melusine Pipeline not using scikit-learn transformers defined in a pipeline config file (raising warnings).
+    """
+    # Set config keys
+    normalizer_key = "test_normalizer"
+    pipeline_key = "test_pipeline"
+
+    # Pipeline configuration
+    conf_pipeline_basic = {
+        "steps": [
+            {
+                "class_name": "Normalizer",
+                "module": "melusine.processors",
+                "config_key": normalizer_key,
+            },
+        ]
+    }
+
+    test_conf_dict = config.dict()
+    test_conf_dict[pipeline_key] = conf_pipeline_basic
+    config.reset(config_dict=test_conf_dict)
+
+    with mock.patch("melusine.pipeline.MelusinePipeline.import_class") as mock_import_class:
+
+        class WrongNormalizerWithMethodFromConfig:
+            def __init__(self) -> None:
+                return None
+
+            @classmethod
+            def from_config(cls, config_dict: dict):
+                """Mock method from_config so we have a valid 'duck typed' class but with invalid functional behavior."""
+                return cls
+
+        mock_import_class.return_value = WrongNormalizerWithMethodFromConfig
+
+        with does_not_raise():
+            # Create pipeline from a json config file and suppress warning
+            _ = MelusinePipeline.from_config(config_key=pipeline_key, verbose=True, suppress_warnings=True)
+
+        assert len(recwarn) == 0
+
+        _ = MelusinePipeline.from_config(config_key=pipeline_key, verbose=True, suppress_warnings=False)
+
+        assert len(recwarn) == 1
+
+        with pytest.warns(
+            DeprecationWarning, match=r".+It seems you are not using a melusine object in your melusine pipeline.+"
+        ):
+            # Create pipeline from a json config file
+            _ = MelusinePipeline.from_config(config_key=pipeline_key, verbose=True, suppress_warnings=False)

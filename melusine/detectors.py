@@ -6,7 +6,7 @@ ReplyDetector, TransferDetector, RecipientsDetector]
 
 """
 
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 from melusine.base import MelusineDetector, MelusineItem, MelusineRegex
 from melusine.message import Message
@@ -95,19 +95,12 @@ class ThanksDetector(MelusineDetector):
             target_tags={self.BODY_PART}, stop_at={self.GREETINGS_PART}
         )
 
-        # Extract the THANKS part in the last message
-        thanks_parts: List[Tuple[str, str]] = row[self.messages_column][0].extract_parts(target_tags={self.THANKS_PART})
-
-        # Compute THANKS text
-        if not thanks_parts:
-            thanks_text: str = ""
-        else:
-            thanks_text = "\n".join(x[1] for x in thanks_parts)
+        # Extract the THANKS text in the last message
+        thanks_text = row[self.messages_column][0].extract_text(target_tags={self.THANKS_PART})
 
         # Save debug data
         if debug_mode:
             debug_dict = {
-                self.THANKS_PARTS_COL: thanks_parts,
                 self.THANKS_TEXT_COL: thanks_text,
                 self.HAS_BODY: has_body,
             }
@@ -236,20 +229,13 @@ class VacationReplyDetector(MelusineDetector):
         """
         # Last message body
         last_message: Message = row[self.messages_column][0]
-        body_parts = last_message.extract_last_body()
-
-        if body_parts:
-            row[self.CONST_TEXT_COL_NAME] = "\n".join(text for tag, text in body_parts)
-        else:
-            row[self.CONST_TEXT_COL_NAME] = ""
+        row[self.CONST_TEXT_COL_NAME] = last_message.extract_text(target_tags=("BODY",), stop_at=("GREETINGS",))
 
         # Prepare and save debug data
         if debug_mode:
             debug_dict: Dict[str, Any] = {
                 self.CONST_DEBUG_TEXT_KEY: row[self.CONST_TEXT_COL_NAME],
             }
-            if self.messages_column:
-                debug_dict[self.CONST_DEBUG_PARTS_KEY] = body_parts
             row[self.debug_dict_col].update(debug_dict)
 
         return row

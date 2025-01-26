@@ -51,6 +51,7 @@ test = ["pytest", "coverage", "pytest-cov", "google-auth-oauthlib", "google-api-
 transformers = ["transformers>4" ]
 torch-cpu = ["torch>=2.0.0"]
 connectors = ["exchangelib", "google-auth-oauthlib", "google-api-python-client"]
+gmail = ["google-auth-oauthlib", "google-api-python-client"]
 docs = ["mkdocs", "markdown", "mkdocs-material", "mdx-include"]
 
 [tool.setuptools.packages.find]
