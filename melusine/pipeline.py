@@ -426,3 +426,7 @@ class MelusinePipeline(Pipeline):
         """
         self.validate_input_fields(X)
         return super().transform(X)
+
+    def __sklearn_is_fitted__(self) -> bool:
+        """MelusinePipeline is considered always fitted since it is designed to be stateless."""
+        return True

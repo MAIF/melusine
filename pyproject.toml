@@ -12,7 +12,7 @@ authors = [
 ]
 description = "Melusine is a high-level library for emails processing"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 keywords = ["nlp", "email", "courriel", "text", "data-science", "machine-learning", "natural-language-processing"]
 license = {text = "Apache Software License 2.0"}
 classifiers = [
@@ -28,8 +28,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
