@@ -312,7 +312,7 @@ class MelusinePipeline(Pipeline):
         -------
         _: Validated pipeline configuration.
         """
-        validated_pipeline_conf = {cls.STEPS_KEY: []}
+        validated_pipeline_conf: dict[str, Any] = {cls.STEPS_KEY: []}
         steps = pipeline_conf.get(cls.STEPS_KEY)
 
         if not steps or not isinstance(steps, list):
