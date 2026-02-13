@@ -102,14 +102,14 @@ def test_tokenizer(input_text, output_tokens, lowercase, normalization_form):
             ],
         ),
         (
-                "Merci\nSujet: \nFwd:\nDe : jean@gmail.com\nSujet : ABCD\nVoici l'attestation",
-                [
-                    Message(meta="", text="Merci"),
-                    Message(
-                        meta="Sujet: Fwd\nDe : jean@gmail.com\nSujet : ABCD",
-                        text="Voici l'attestation",
-                    ),
-                ],
+            "Merci\nSujet: \nFwd:\nDe : jean@gmail.com\nSujet : ABCD\nVoici l'attestation",
+            [
+                Message(meta="", text="Merci"),
+                Message(
+                    meta="Sujet: Fwd\nDe : jean@gmail.com\nSujet : ABCD",
+                    text="Voici l'attestation",
+                ),
+            ],
         ),
         (
             "Je vous ai Envoyé :\n- le devis\nla facture\nSalutations",
