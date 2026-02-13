@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import copy
 import importlib
-from typing import Iterable, TypeVar
+from typing import Iterable, TypeVar, Any
 
 from sklearn.pipeline import Pipeline
 
@@ -44,7 +44,7 @@ class MelusinePipeline(Pipeline):
     def __init__(
         self,
         steps: list[tuple[str, MelusineTransformer]],
-        memory: bool | None = None,
+        memory: bool = None,
         verbose: bool = False,
     ) -> None:
         """
@@ -74,7 +74,7 @@ class MelusinePipeline(Pipeline):
         _: List[str]
             List of input fields.
         """
-        column_set: set[str] = set()
+        column_set = set()
         for _, step in self.steps:
             # UNION between sets
             column_set |= set(step.input_columns)
@@ -91,7 +91,7 @@ class MelusinePipeline(Pipeline):
         _: List[str]
             List of output fields.
         """
-        column_set: set[str] = set()
+        column_set = set()
         for _, step in self.steps:
             column_set |= set(step.output_columns)
 
@@ -159,7 +159,7 @@ class MelusinePipeline(Pipeline):
         _: Dict[str, Any]
             Flattened conf.
         """
-        new_conf: list[Any] = list()
+        new_conf = list()
         for step in conf[cls.STEPS_KEY]:
             if step.get(cls.OBJ_CLASS, "") == cls.__name__:
                 subpipeline_conf = cls.flatten_pipeline_config(step["parameters"])
@@ -172,8 +172,8 @@ class MelusinePipeline(Pipeline):
 
     @classmethod
     def from_config(
-        cls, config_key: str | None = None, config_dict: dict[str, Any] | None = None, **kwargs: Any
-    ) -> MelusinePipeline:
+        cls, config_key: str = None, config_dict: dict[str, Any] = None, **kwargs: Any
+    ) -> 'MelusinePipeline':
         """
         Instantiate a MelusinePipeline from a config key.
 
@@ -289,7 +289,7 @@ class MelusinePipeline(Pipeline):
         -------
         _: Validated pipeline configuration.
         """
-        validated_pipeline_conf: dict[str, Any] = {cls.STEPS_KEY: []}
+        validated_pipeline_conf = {cls.STEPS_KEY: []}
         steps = pipeline_conf.get(cls.STEPS_KEY)
 
         if not steps or not isinstance(steps, list):
@@ -371,7 +371,7 @@ class MelusinePipeline(Pipeline):
         data: Any
             Input data.
         """
-        active_fields: set[str] = set(backend.get_fields(data))
+        active_fields = set(backend.get_fields(data))
 
         for step_name, step in self.steps:
             difference = set(step.input_columns).difference(active_fields)
@@ -401,6 +401,14 @@ class MelusinePipeline(Pipeline):
         """
         self.validate_input_fields(X)
         return super().transform(X)
+
+    def fit(self, X=None, y=None, **fit_params):
+        """
+        No-op fit method to ensure compatibility with scikit-learn >=1.2,
+        which requires pipelines to be fitted before calling transform.
+        Returns self without modifying anything.
+        """
+        return self
 
     def __sklearn_is_fitted__(self) -> bool:
         """MelusinePipeline is considered always fitted since it is designed to be stateless."""

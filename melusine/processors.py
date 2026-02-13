@@ -464,7 +464,9 @@ class Segmenter(BaseSegmenter):
             r"Cc",
         ]
         piped_keywords_with_semicolon = "(?:" + "|".join(meta_keywords_list_with_semicolon) + ")"
+        # Ajout d'un pattern pour gérer les cas sans ':' mais avec retour à la ligne
         starter_pattern_with_semicolon = rf"^.{{,5}}(?:{piped_keywords_with_semicolon} ?\n? ?: *\n?)"
+        starter_pattern_with_newline = rf"^.{{,5}}(?:{piped_keywords_with_semicolon})\n"
 
         # Meta patterns of the form "META_KEYWORD"
         # Ex: "Transféré par jean@gmail.com"
@@ -504,8 +506,8 @@ class Segmenter(BaseSegmenter):
         piped_keywords_without_semicolon = "(?:" + "|".join(meta_keywords_list_without_semicolon) + ")"  # noqa
         starter_pattern_without_semicolon = f"{piped_keywords_without_semicolon}(?:[\n ]*--+)?"
 
-        # Combine pattern with and without semicolon
-        starter_pattern = rf"(?:{starter_pattern_with_semicolon}|{starter_pattern_without_semicolon})"  # noqa
+        # Combine pattern with and without semicolon, et avec retour à la ligne
+        starter_pattern = rf"(?:{starter_pattern_with_semicolon}|{starter_pattern_with_newline}|{starter_pattern_without_semicolon})"  # noqa
 
         # Match everything until the end of the line.
         # Match End of line "\n" and "space" characters
@@ -513,14 +515,8 @@ class Segmenter(BaseSegmenter):
 
         # Object / Subject pattern (These patterns are not sufficient to trigger segmentation)
         object_line_pattern = "(?:^.{,5}(?:Objet|Subject|Sujet) ?\n? ?: *\n?)" + end_pattern
-
-        # Starters are separated from the meta-values by
-        # a semicolon and optional spaces/line breaks
         full_generic_meta_pattern = rf"(?:{starter_pattern}{end_pattern}(?:{object_line_pattern})*)+"
-
-        # Make a tuple of patterns
         pattern_list = (full_generic_meta_pattern,)
-
         return pattern_list
 
 
@@ -1531,7 +1527,7 @@ class ContentTagger(BaseContentTagger):
             r"^.{,3}Appel non surtax[ée].{,3}$",
             # Street / Address / Post code
             street_address_regex,
-            r"^.{,3}Adresse.{,3}$",
+            r"^.{,3}Adresse.{0,3}$",
             r"(?: *(?:BP|Boite Postale) *\d{,6} .{,30}(?: *(?:\n|$)))",
             r"(?: *\b\d{5}\b(?: *(?:\n|$))?(?: *(?:\S+(?: +\S+){,5})? *)(?: *(?:\n|$)))",
             # postal address with only street name and number :  EX : 9/11 rue Jeanne d'Arc
