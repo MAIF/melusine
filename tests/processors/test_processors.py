@@ -106,7 +106,7 @@ def test_tokenizer(input_text, output_tokens, lowercase, normalization_form):
             [
                 Message(meta="", text="Merci"),
                 Message(
-                    meta="Sujet: Fwd\nDe : jean@gmail.com\nSujet : ABCD",
+                    meta="Sujet: \nFwd:\nDe : jean@gmail.com\nSujet : ABCD",
                     text="Voici l'attestation",
                 ),
             ],
