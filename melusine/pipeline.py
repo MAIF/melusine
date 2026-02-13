@@ -9,7 +9,7 @@ from __future__ import annotations
 import copy
 import importlib
 import warnings
-from typing import Iterable, TypeVar, Any
+from typing import Any, Iterable, TypeVar
 
 from sklearn.pipeline import Pipeline
 
