@@ -15,7 +15,6 @@ from sklearn.pipeline import Pipeline
 
 from melusine import config
 from melusine.backend import backend
-from melusine.backend.base_backend import Any
 from melusine.base import MelusineTransformer
 from melusine.io_mixin import IoMixin
 
@@ -45,7 +44,7 @@ class MelusinePipeline(Pipeline):
     def __init__(
         self,
         steps: list[tuple[str, MelusineTransformer]],
-        memory: bool = None,
+        memory: bool | None = None,
         verbose: bool = False,
     ) -> None:
         """
@@ -173,8 +172,8 @@ class MelusinePipeline(Pipeline):
 
     @classmethod
     def from_config(
-        cls, config_key: str = None, config_dict: dict[str, Any] = None, **kwargs: Any
-    ) -> 'MelusinePipeline':
+        cls, config_key: str | None = None, config_dict: dict[str, Any] | None = None, **kwargs: Any
+    ) -> MelusinePipeline:
         """
         Instantiate a MelusinePipeline from a config key.
 
