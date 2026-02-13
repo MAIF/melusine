@@ -516,8 +516,7 @@ class Segmenter(BaseSegmenter):
         # Object / Subject pattern (These patterns are not sufficient to trigger segmentation)
         object_line_pattern = "(?:^.{,5}(?:Objet|Subject|Sujet) ?\n? ?: *\n?)" + end_pattern
         full_generic_meta_pattern = (
-            rf"(?:(?:{object_line_pattern})?"
-            rf"{starter_pattern}{end_pattern}(?:{object_line_pattern})*)+"
+            rf"(?:(?:{object_line_pattern})?" rf"{starter_pattern}{end_pattern}(?:{object_line_pattern})*)+"
         )
         pattern_list = (full_generic_meta_pattern,)
         return pattern_list
