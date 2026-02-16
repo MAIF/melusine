@@ -177,8 +177,7 @@ class ExchangeConnector:
 
     @routing_folder_path.setter
     def routing_folder_path(self, routing_folder_path: str) -> None:
-        """Setter for the routing folder.
-        """
+        """Setter for the routing folder."""
         self.routing_folder = self._get_mailbox_path(routing_folder_path)
         folder_path = self._get_folder_path(self.routing_folder)
         logger.info(f"Routing folder path set to '{folder_path}'")
@@ -198,8 +197,7 @@ class ExchangeConnector:
 
     @done_folder_path.setter
     def done_folder_path(self, done_folder_path: str) -> None:
-        """Setter for the done folder.
-        """
+        """Setter for the done folder."""
         if not done_folder_path:
             self.done_folder = None
             logger.info("Done folder path not set")
@@ -223,8 +221,7 @@ class ExchangeConnector:
 
     @correction_folder_path.setter
     def correction_folder_path(self, correction_folder_path: str) -> None:
-        """Setter for the correction folder.
-        """
+        """Setter for the correction folder."""
         if not correction_folder_path:
             self.correction_folder = None
             logger.info("Correction folder path not set")

@@ -63,7 +63,7 @@ def use_test_config(conf_normalizer, conf_tokenizer, conf_phraser):
     Add test configurations.
     """
     # Code executed before the test starts
-    test_conf_dict = config.dict()
+    test_conf_dict = config.to_dict()
 
     test_conf_dict["test_tokenizer"] = conf_tokenizer
     test_conf_dict["test_normalizer"] = conf_normalizer

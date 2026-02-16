@@ -27,30 +27,25 @@ class MelusineConfig(UserDict):
 
     @no_type_check
     def pop(self, s: Any = None) -> None:
-        """Prevent MelusineConfig modification.
-        """
+        """Prevent MelusineConfig modification."""
         raise MelusineConfigError()
 
     @no_type_check
     def popitem(self, s: Any = None) -> None:
-        """Prevent MelusineConfig modification.
-        """
+        """Prevent MelusineConfig modification."""
         raise MelusineConfigError()
 
     def __setitem__(self, key: str, value: Any) -> None:
-        """Prevent MelusineConfig modification.
-        """
+        """Prevent MelusineConfig modification."""
         raise MelusineConfigError()
 
-    def dict(self) -> dict[str, Any]:
-        """Return a copy of the config dict.
-        """
+    def to_dict(self) -> dict[str, Any]:
+        """Return a copy of the config dict."""
         return copy.deepcopy(self.data)
 
     @staticmethod
     def _load_from_path(config_path: str) -> dict[str, Any]:
-        """Load yaml config files, merge them and return a config dict.
-        """
+        """Load yaml config files, merge them and return a config dict."""
         yaml_conf_file_list = list(Path(config_path).rglob("*.yaml")) + list(Path(config_path).rglob("*.yml"))
         omega_conf = OmegaConf.unsafe_merge(*[OmegaConf.load(conf_file) for conf_file in yaml_conf_file_list])
         return cast(dict[str, Any], OmegaConf.to_object(omega_conf))
@@ -110,8 +105,7 @@ config.reset()
 
 
 class MelusineConfigError(Exception):
-    """Exception raised when encountering config related errors.
-    """
+    """Exception raised when encountering config related errors."""
 
     CONST_CONFIG_ERROR_MESSAGE = f"""To modify the config use the `reset` method:
     - Using a dict:
@@ -131,6 +125,5 @@ class MelusineConfigError(Exception):
     """
 
     def __init__(self, msg: str = CONST_CONFIG_ERROR_MESSAGE, *args: Any) -> None:
-        """Initialize with a default error message.
-        """
+        """Initialize with a default error message."""
         super().__init__(msg, *args)

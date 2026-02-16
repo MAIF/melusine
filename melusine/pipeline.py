@@ -22,8 +22,7 @@ T = TypeVar("T")
 
 
 class PipelineConfigurationError(Exception):
-    """Error raised when an error is found in the pipeline configuration.
-    """
+    """Error raised when an error is found in the pipeline configuration."""
 
 
 class MelusinePipeline:
@@ -219,18 +218,18 @@ class MelusinePipeline:
                 obj = obj_class.from_config(config_dict=obj_params)
                 if not issubclass(obj_class, IoMixin) and not suppress_warnings:
                     type_warn_msg: str = f"""
-                        It seems you are not using a melusine object in your melusine pipeline, 
+                        It seems you are not using a melusine object in your melusine pipeline,
                         but object '{obj_class}' (class {type(obj_class)}) for step '{step_name}'.
                         The expected behavior is not guaranteed and can break in future version of melusine.
 
                         Recommended usage:
-                            - Exclusive usage of melusine class Pipeline with melusine objects 
+                            - Exclusive usage of melusine class Pipeline with melusine objects
                             (MelusineTransformer, MelusineDetector...)
 
-                        To suppress this warning, instanciate melusine Pipeline with suppress_warnings argument at True 
+                        To suppress this warning, instanciate melusine Pipeline with suppress_warnings argument at True
                         (MelusinePipeline.from_config(..., suppress_warnings=True)).
 
-                        Visit Melusine Open-Source project: https://github.com/MAIF/melusine and the documentation for 
+                        Visit Melusine Open-Source project: https://github.com/MAIF/melusine and the documentation for
                         more information.
                     """
                     warnings.warn(message=type_warn_msg, category=DeprecationWarning, stacklevel=2)

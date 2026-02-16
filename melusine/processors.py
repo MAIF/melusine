@@ -23,7 +23,8 @@ from __future__ import annotations
 import logging
 import re
 import unicodedata
-from abc import Iterable, Sequence, abstractmethod
+from abc import abstractmethod
+from collections.abc import Iterable, Sequence
 from re import Pattern
 from typing import Any, Literal
 
@@ -152,8 +153,7 @@ class Normalizer(MelusineTransformer):
 
 
 class RegexTokenizer(MelusineTransformer):
-    """Class to split a text into tokens using a regular expression.
-    """
+    """Class to split a text into tokens using a regular expression."""
 
     def __init__(
         self,
@@ -484,7 +484,7 @@ class Segmenter(BaseSegmenter):
                 rf"\bLe (?:"
                 rf"\d{{2}}/\d{{2}}/\d{{4}}|\d{{4}}-\d{{2}}-\d{{2}}|{regex_weekdays}|"  # noqa
                 rf"\d{{1,2}} {regex_months})(?:.|\n)"
-                r"{{,30}}\d{{2}}:\d{{2}}(?:.|\n){{,50}}(?:\<.{{,30}}\>.{{,5}})?\ba [éecrit]"  # noqa
+                rf"{{,30}}\d{{2}}:\d{{2}}(?:.|\n){{,50}}(?:\<.{{,30}}\>.{{,5}})?\ba [éecrit]"  # noqa
             ),
             r"Transf[ée]r[ée] par",
             r"D[ée]but du message transf[ée]r[ée] :",
@@ -512,7 +512,7 @@ class Segmenter(BaseSegmenter):
         # Object / Subject pattern (These patterns are not sufficient to trigger segmentation)
         object_line_pattern = "(?:^.{,5}(?:Objet|Subject|Sujet) ?\n? ?: *\n?)" + end_pattern
         full_generic_meta_pattern = (
-            rf"(?:(?:{object_line_pattern})?" rf"{starter_pattern}{end_pattern}(?:{object_line_pattern})*)+"
+            rf"(?:(?:{object_line_pattern})?{starter_pattern}{end_pattern}(?:{object_line_pattern})*)+"
         )
         pattern_list = (full_generic_meta_pattern,)
         return pattern_list
@@ -561,8 +561,7 @@ class BaseExtractor(MelusineTransformer):
 
 
 class TextExtractor(BaseExtractor):
-    """Class to extract text data from a list of messages.
-    """
+    """Class to extract text data from a list of messages."""
 
     def __init__(
         self,
@@ -1541,8 +1540,7 @@ class ContentTagger(BaseContentTagger):
 
 
 class RefinedTagger(MelusineTransformer):
-    """Post-processing class to refine initial tags.
-    """
+    """Post-processing class to refine initial tags."""
 
     def __init__(
         self,
@@ -1687,8 +1685,7 @@ class TransferredEmailProcessor(MelusineTransformer):
 
     @property
     def email_pattern(self) -> str:
-        """Regex pattern to detect an email address.
-        """
+        """Regex pattern to detect an email address."""
         return r"\w+(?:[-+.']\w+)*@\w+(?:[-.]\w+)*\.\w+(?:[-.]\w+)*"
 
     @property
@@ -1940,8 +1937,7 @@ class Cleaner(MelusineTransformer):
 
 
 class DateProcessor(MelusineTransformer):
-    """Parse string date to iso format string date
-    """
+    """Parse string date to iso format string date"""
 
     ISO_FORMAT = "%Y-%m-%d"
     LANGUAGE = ["en_US", "fr_FR", "es_ES", "it_IT", "nl_NL", "de_DE", "tr_TR"]

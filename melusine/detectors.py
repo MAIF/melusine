@@ -159,8 +159,7 @@ class ThanksDetector(MelusineDetector):
 
 
 class VacationReplyDetector(MelusineDetector):
-    """Implement a detector which detects automatic response message like vacation or out of office replies.
-    """
+    """Implement a detector which detects automatic response message like vacation or out of office replies."""
 
     # Class constants
     CONST_TEXT_COL_NAME: str = "vacation_reply_text"
@@ -538,8 +537,7 @@ class TransferDetector(MelusineDetector):
 
 
 class EmergencyDetector(MelusineDetector):
-    """Implement a detector which detects automatic response message like vacation or out of office replies.
-    """
+    """Implement a detector which detects automatic response message like vacation or out of office replies."""
 
     # Class constants
     CONST_TEXT_COL_NAME: str = "effective_text"

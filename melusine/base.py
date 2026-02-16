@@ -18,7 +18,8 @@ import inspect
 import logging
 import re
 import warnings
-from abc import ABC, Callable, Iterable, abstractmethod
+from abc import ABC, abstractmethod
+from collections.abc import Callable, Iterable
 from typing import Any, TypeAlias, TypeVar
 
 import pandas as pd
@@ -35,8 +36,7 @@ Transformer = TypeVar("Transformer", bound="MelusineTransformer")
 
 
 class TransformError(Exception):
-    """Exception raised when an error occurs during the transform operation.
-    """
+    """Exception raised when an error occurs during the transform operation."""
 
 
 class MelusineTransformer(IoMixin):
@@ -225,9 +225,7 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
         return self
 
     def transform(self, df: MelusineDataset, debug_mode: bool = False) -> MelusineDataset:
-        """Re-definition of super().transform() => specific detector's implementation
-
-        Transform input data.
+        """Transform input data with a specific implementation of the Template Method design pattern.
 
         Parameters
         ----------
@@ -349,16 +347,14 @@ class MelusineDetector(BaseMelusineDetector, ABC):
 
 
 class MissingFieldError(Exception):
-    """Exception raised when a missing field is encountered by a MelusineTransformer
-    """
+    """Exception raised when a missing field is encountered by a MelusineTransformer"""
 
 
 MatchData = dict[str, list[dict[str, Any]]]
 
 
 class MelusineRegex(ABC):
-    """Class to standardise text pattern detection using regex.
-    """
+    """Class to standardise text pattern detection using regex."""
 
     REGEX_FLAGS: re.RegexFlag = re.IGNORECASE | re.MULTILINE
     PAIRED_MATCHING_PREFIX: str = "_"
@@ -675,8 +671,7 @@ class MelusineRegex(ABC):
         return match_dict
 
     def test(self) -> None:
-        """Test the MelusineRegex on the match_list and no_match_list.
-        """
+        """Test the MelusineRegex on the match_list and no_match_list."""
         for text in self.match_list:
             match = self(text)
             assert match[self.MATCH_RESULT] is True, f"Expected match for text\n{text}\nObtained: {match}"

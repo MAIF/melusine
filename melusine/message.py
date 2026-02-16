@@ -14,8 +14,7 @@ from melusine import config
 
 
 class Message:
-    """Class acting as a data container for email data (text, meta and features)
-    """
+    """Class acting as a data container for email data (text, meta and features)"""
 
     DEFAULT_STR_LINE_LENGTH = 120
     DEFAULT_STR_TAG_NAME_LENGTH = 22
@@ -67,8 +66,7 @@ class Message:
 
     @property
     def str_tag_name_length(self) -> int:
-        """When printing a message, number of characters for the TAG field.
-        """
+        """When printing a message, number of characters for the TAG field."""
         if "message" not in config:
             return self.DEFAULT_STR_TAG_NAME_LENGTH
         else:
@@ -76,8 +74,7 @@ class Message:
 
     @property
     def str_line_length(self) -> int:
-        """When printing a message, total number of characters in each line (text + separation + tag).
-        """
+        """When printing a message, total number of characters in each line (text + separation + tag)."""
         if "message" not in config:
             return self.DEFAULT_STR_LINE_LENGTH
         else:
@@ -232,7 +229,7 @@ class Message:
 
         return found
 
-    def format_tags(self, tag_type: str | None = None, text_type: str = None) -> str:
+    def format_tags(self, tag_type: str | None = None, text_type: str | None = None) -> str:
         """Create a pretty formatted representation of text and their associated tags.
 
         Returns:

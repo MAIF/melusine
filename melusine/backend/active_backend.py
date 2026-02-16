@@ -18,8 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class ActiveBackend(BaseTransformerBackend):
-    """Class storing the active backend used by Melusine.
-    """
+    """Class storing the active backend used by Melusine."""
 
     PANDAS_BACKEND: str = "pandas"
     DICT_BACKEND: str = "dict"

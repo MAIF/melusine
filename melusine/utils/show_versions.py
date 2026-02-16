@@ -1,4 +1,5 @@
 """Show version information for melusine and optional dependencies."""
+
 import sys
 
 from melusine import __version__ as melusine_version

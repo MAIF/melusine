@@ -16,13 +16,11 @@ T = TypeVar("T", bound="IoMixin")
 
 
 class InitError(Exception):
-    """Error raised when object instantiation fails.
-    """
+    """Error raised when object instantiation fails."""
 
 
 class IoMixin:
-    """Defines generic load methods.
-    """
+    """Defines generic load methods."""
 
     @classmethod
     def from_config(

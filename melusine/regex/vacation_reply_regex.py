@@ -2,8 +2,7 @@ from melusine.base import MelusineRegex
 
 
 class VacationReplyRegex(MelusineRegex):
-    """Detect vacation reply patterns such as "Je suis absent du bureau".
-    """
+    """Detect vacation reply patterns such as "Je suis absent du bureau"."""
 
     @property
     def positive(self) -> str | dict[str, str]:

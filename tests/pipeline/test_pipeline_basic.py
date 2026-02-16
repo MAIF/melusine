@@ -63,7 +63,7 @@ def test_pipeline_from_config(dataframe_basic):
         ]
     }
 
-    test_conf_dict = config.dict()
+    test_conf_dict = config.to_dict()
     test_conf_dict[pipeline_key] = conf_pipeline_basic
     config.reset(config_dict=test_conf_dict)
 
@@ -338,7 +338,7 @@ def test_pipeline_from_config_with_error():
         ]
     }
 
-    test_conf_dict = config.dict()
+    test_conf_dict = config.to_dict()
     test_conf_dict[pipeline_key] = conf_pipeline_basic
     config.reset(config_dict=test_conf_dict)
 
@@ -403,7 +403,7 @@ def test_pipeline_from_config_with_warning(recwarn):
         ]
     }
 
-    test_conf_dict = config.dict()
+    test_conf_dict = config.to_dict()
     test_conf_dict[pipeline_key] = conf_pipeline_basic
     config.reset(config_dict=test_conf_dict)
 
