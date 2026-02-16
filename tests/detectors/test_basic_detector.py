@@ -1,9 +1,10 @@
-import pytest
 import pandas as pd
+import pytest
 
 from melusine.base import MelusineDetector
 
 TEST_RESULT = "test_result"
+
 
 class DummyDetector(MelusineDetector):
     def __init__(self):
@@ -27,6 +28,7 @@ class DummyDetector(MelusineDetector):
         """Dummy"""
         return row
 
+
 @pytest.mark.usefixtures("use_dict_backend")
 def test_transform_with_dict_and_debug_mode():
     detector = DummyDetector()
@@ -35,6 +37,7 @@ def test_transform_with_dict_and_debug_mode():
     assert isinstance(result, dict)
     assert result[detector.debug_dict_col]["test_debug"] == True
     assert result["result"] == TEST_RESULT
+
 
 @pytest.mark.usefixtures("use_dict_backend")
 def test_transform_with_dict_and_legacy_debug_mode():
@@ -45,6 +48,7 @@ def test_transform_with_dict_and_legacy_debug_mode():
     assert result[detector.debug_dict_col]["test_debug"] == True
     assert result["result"] == TEST_RESULT
 
+
 def test_transform_with_dataframe_and_debug_mode():
     detector = DummyDetector()
     data_df = pd.DataFrame([{"text": "exemple"}])
@@ -52,6 +56,7 @@ def test_transform_with_dataframe_and_debug_mode():
     assert isinstance(result, pd.DataFrame)
     assert result[detector.debug_dict_col].iloc[0]["test_debug"] == True
     assert result["result"].iloc[0] == TEST_RESULT
+
 
 def test_transform_with_dataframe_and_legacy_debug_mode():
     detector = DummyDetector()

@@ -410,11 +410,13 @@ class MelusinePipeline:
         Fit the pipeline.
         Not recommended for Melusine but present for sklearn compatibility.
         """
-        for name, transformer in self.steps:
-            if hasattr(transformer, "fit"):
-                transformer.fit(x, y)
-            if hasattr(transformer, "transform"):
-                x = transformer.transform(x)
+        for name, step in self.steps:
+            if self.verbose:
+                print(f"Running fit step '{name}' with transformer {step}...")
+            if hasattr(step, "fit"):
+                step.fit(x, y)
+            if hasattr(step, "transform"):
+                x = step.transform(x)
         return self
 
     def transform(self, x: Iterable[Any], debug_mode: bool = False) -> Iterable[Any]:
@@ -457,9 +459,9 @@ class MelusinePipeline:
 
         self.validate_input_fields(x)
 
-        for name, steps in self.steps:
+        for name, step in self.steps:
             if self.verbose:
-                print(f"Running step '{name}' with transformer {steps}...")
-            x = steps.transform(x, debug_mode=debug_mode)
+                print(f"Running step '{name}' with transformer {step}...")
+            x = step.transform(x, debug_mode=debug_mode)
 
         return x

@@ -8,7 +8,6 @@ Implemented classes: [
 
 from typing import Any, Callable, List, Optional, Tuple, Union
 
-import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
 from tqdm import tqdm

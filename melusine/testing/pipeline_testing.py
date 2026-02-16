@@ -40,20 +40,16 @@ def assert_pipeline_results(email: Dict[str, Any], pipeline_name: str) -> None:
 
 
 def assert_transformation(
-    email: Dict[str, Any], transformer: MelusineTransformer, transformer_name: str, test_name: str
+    email: Dict[str, Any], transformer: MelusineTransformer | MelusinePipeline, transformer_name: str, test_name: str
 ) -> Dict[str, Any]:
     """
 
     Parameters
     ----------
-    email: Dict[str, Any]
-        Email data dict
-    test_name: str
-        Name of the current test
-    transformer: MelusineTransformer
-        Data transformer instance
-    transformer_name: str
-        Name of the current transformer
+    email: Email data dict
+    test_name: Name of the current test
+    transformer: Data transformer instance
+    transformer_name: Name of the current transformer
 
     Returns
     -------

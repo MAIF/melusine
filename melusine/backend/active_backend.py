@@ -156,22 +156,6 @@ class ActiveBackend(BaseTransformerBackend):
         """
         return self.backend.add_fields(left=left, right=right, fields=fields)
 
-    def check_debug_flag(self, data: Any) -> bool:
-        """
-        Method to check if debug_mode is activated.
-
-        Parameters
-        ----------
-        data: Dataset
-            MelusineDataset object
-
-        Returns
-        -------
-        _: bool
-            True if debug mode is activated
-        """
-        return self.backend.check_debug_flag(data=data)
-
     def setup_debug_dict(self, data: Any, dict_name: str) -> Any:
         """
         Method to check if debug_mode is activated
