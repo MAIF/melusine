@@ -1,5 +1,4 @@
-"""
-Module which handles the package configuration.
+"""Module which handles the package configuration.
 """
 
 import copy
@@ -7,7 +6,7 @@ import logging
 import os
 from collections import UserDict
 from pathlib import Path
-from typing import Any, Dict, List, Optional, cast, no_type_check
+from typing import Any, cast, no_type_check
 
 from omegaconf import OmegaConf
 
@@ -16,8 +15,7 @@ CONST_ENV_MELUSINE_CONFIG_DIR = "MELUSINE_CONFIG_DIR"
 
 
 class MelusineConfig(UserDict):
-    """
-    The MelusineConfig class acts as a dict containing configurations.
+    """The MelusineConfig class acts as a dict containing configurations.
     The configurations can be changed dynamically using the switch_config function.
     """
 
@@ -29,47 +27,42 @@ class MelusineConfig(UserDict):
 
     @no_type_check
     def pop(self, s: Any = None) -> None:
-        """
-        Prevent MelusineConfig modification.
+        """Prevent MelusineConfig modification.
         """
         raise MelusineConfigError()
 
     @no_type_check
     def popitem(self, s: Any = None) -> None:
-        """
-        Prevent MelusineConfig modification.
+        """Prevent MelusineConfig modification.
         """
         raise MelusineConfigError()
 
     def __setitem__(self, key: str, value: Any) -> None:
-        """
-        Prevent MelusineConfig modification.
+        """Prevent MelusineConfig modification.
         """
         raise MelusineConfigError()
 
-    def dict(self) -> Dict[str, Any]:
-        """
-        Return a copy of the config dict.
+    def dict(self) -> dict[str, Any]:
+        """Return a copy of the config dict.
         """
         return copy.deepcopy(self.data)
 
     @staticmethod
-    def _load_from_path(config_path: str) -> Dict[str, Any]:
-        """
-        Load yaml config files, merge them and return a config dict.
+    def _load_from_path(config_path: str) -> dict[str, Any]:
+        """Load yaml config files, merge them and return a config dict.
         """
         yaml_conf_file_list = list(Path(config_path).rglob("*.yaml")) + list(Path(config_path).rglob("*.yml"))
         omega_conf = OmegaConf.unsafe_merge(*[OmegaConf.load(conf_file) for conf_file in yaml_conf_file_list])
-        return cast(Dict[str, Any], OmegaConf.to_object(omega_conf))
+        return cast(dict[str, Any], OmegaConf.to_object(omega_conf))
 
-    def reset(self, config_dict: Optional[Dict[str, Any]] = None, config_path: Optional[str] = None) -> None:
-        """
-        Function to reset the Melusine configuration using a dict or a path.
+    def reset(self, config_dict: dict[str, Any] | None = None, config_path: str | None = None) -> None:
+        """Function to reset the Melusine configuration using a dict or a path.
 
         Parameters
         ----------
             config_dict: Dict containing the new config.
             config_path: path to directory containing YAML config files.
+
         """
         config_path_from_env = os.getenv(self.ENV_MELUSINE_CONFIG_DIR)
 
@@ -90,9 +83,8 @@ class MelusineConfig(UserDict):
 
         self.data = config_dict
 
-    def export_default_config(self, path: str) -> List[str]:
-        """
-        Export the default Melusine configurations to a directory.
+    def export_default_config(self, path: str) -> list[str]:
+        """Export the default Melusine configurations to a directory.
 
         Parameters
         ----------
@@ -101,6 +93,7 @@ class MelusineConfig(UserDict):
         Returns
         -------
         _: the list of all copied files.
+
         """
         from shutil import copytree
 
@@ -117,8 +110,7 @@ config.reset()
 
 
 class MelusineConfigError(Exception):
-    """
-    Exception raised when encountering config related errors.
+    """Exception raised when encountering config related errors.
     """
 
     CONST_CONFIG_ERROR_MESSAGE = f"""To modify the config use the `reset` method:
@@ -139,7 +131,6 @@ class MelusineConfigError(Exception):
     """
 
     def __init__(self, msg: str = CONST_CONFIG_ERROR_MESSAGE, *args: Any) -> None:
-        """
-        Initialize with a default error message.
+        """Initialize with a default error message.
         """
         super().__init__(msg, *args)

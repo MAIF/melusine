@@ -1,13 +1,11 @@
-from __future__ import annotations
-
+"""Show version information for melusine and optional dependencies."""
 import sys
 
 from melusine import __version__ as melusine_version
 
 
 def show_versions() -> None:
-    """
-    Print out version of melusine and dependencies to stdout.
+    """Print out version of melusine and dependencies to stdout.
 
     Examples
     --------
@@ -16,11 +14,12 @@ def show_versions() -> None:
     melusine:      3.0.0
     Platform:    Linux-5.15.90.1-microsoft-standard-WSL2-x86_64-with-glibc2.35
     Python:      3.11.3 (main, Apr 15 2023, 14:44:51) [GCC 11.3.0]
-    \b
+
     ----Optional dependencies----
     numpy:       1.24.2
     pandas:      2.0.0
     pytorch:  <not installed>
+
     """
     # note: we import 'platform' here as a micro-optimisation for initial import
     import platform
@@ -42,11 +41,11 @@ def show_versions() -> None:
 
 
 def _get_dependency_info() -> dict[str, str]:
-    """
-    Collect information about optional dependencies.
+    """Collect information about optional dependencies.
 
     Returns:
         _: Dict of optional dependencies and associated versions.
+
     """
     # See the list of dependencies in pyproject.toml/setup.cfg
     opt_deps = [
@@ -60,14 +59,14 @@ def _get_dependency_info() -> dict[str, str]:
 
 
 def _get_dependency_version(dep_name: str) -> str:
-    """
-    Get the version of a dependency.
+    """Get the version of a dependency.
 
     Args:
         dep_name: Name of the dependency.
 
     Returns:
         _: Dependency version or "<not_installed>"
+
     """
     # import here to optimize the root melusine import
     import importlib

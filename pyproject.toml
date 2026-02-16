@@ -100,8 +100,8 @@ exclude = [
 target-version = "py310"
 
 [tool.ruff.lint]
-select = ["E", "F", "B", "I", "UP", "C90"]
-ignore = ["D"]
+select = ["E", "F", "B", "I", "UP", "C90", "D"]
+ignore = ["D100", "D107", "D200", "D205", "D400", "D401", "D404", "D415", "D417"]
 
 [tool.coverage.run]
 omit = [

@@ -1,6 +1,4 @@
-"""
-Module that contains utility functions for tests (in /tests).
-"""
+"""Module that contains utility functions for tests (in /tests)."""
 
 from typing import Any
 
@@ -11,8 +9,7 @@ expected_suffix: str = "_expected"
 
 
 def assert_pipeline_results(email: dict[str, Any], pipeline_name: str) -> None:
-    """
-    Assert that the pipeline execution result correspond to the testcase expectation.
+    """Assert that the pipeline execution result correspond to the testcase expectation.
 
     Parameters
     ----------
@@ -20,6 +17,7 @@ def assert_pipeline_results(email: dict[str, Any], pipeline_name: str) -> None:
         Email content.
     pipeline_name: str
         Name of a Melusine pipeline.
+
     """
     # Instantiate Pipeline
     pipeline: MelusinePipeline = MelusinePipeline.from_config(pipeline_name)
@@ -42,7 +40,7 @@ def assert_pipeline_results(email: dict[str, Any], pipeline_name: str) -> None:
 def assert_transformation(
     email: dict[str, Any], transformer: MelusineTransformer | MelusinePipeline, transformer_name: str, test_name: str
 ) -> dict[str, Any]:
-    """
+    """Assert that the transformation result correspond to the testcase expectation.
 
     Parameters
     ----------
@@ -55,6 +53,7 @@ def assert_transformation(
     -------
     email: Dict[str, Any]
         Transformed email data dict
+
     """
     # Apply transformer on email
     email = transformer.transform(email)  # type: ignore
@@ -83,7 +82,7 @@ def assert_transformation(
 def assert_message_attribute(
     col: str, email: dict[str, Any], expected_value: Any, test_name: str, transformer_name: str
 ) -> None:
-    """
+    """Assert that the message attribute value correspond to the testcase expectation.
 
     Parameters
     ----------
@@ -97,9 +96,6 @@ def assert_message_attribute(
         Name of the current test
     transformer_name: str
         Name of the current transformer
-
-    Returns
-    -------
 
     """
     # Check the number of messages in the conversation

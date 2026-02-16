@@ -2,17 +2,16 @@ from melusine.base import MelusineRegex
 
 
 class VacationReplyRegex(MelusineRegex):
-    """
-    Detect vacation reply patterns such as "Je suis absent du bureau".
+    """Detect vacation reply patterns such as "Je suis absent du bureau".
     """
 
     @property
     def positive(self) -> str | dict[str, str]:
-        """
-        Define regex patterns required to activate the MelusineRegex.
+        """Define regex patterns required to activate the MelusineRegex.
 
         Returns:
             _: Regex pattern or dict of regex patterns.
+
         """
         return dict(
             VAC_REP_URGENCY=r"en\s+?cas\s+?d'?\s?urgenc.{1,100}(?:contact|app?eler?)|pour toute urgence.{1,100}contact",
@@ -33,21 +32,21 @@ class VacationReplyRegex(MelusineRegex):
 
     @property
     def neutral(self) -> str | dict[str, str] | None:
-        """
-        Define regex patterns to be ignored when running detection.
+        """Define regex patterns to be ignored when running detection.
 
         Returns:
             _: Regex pattern or dict of regex patterns.
+
         """
         return None
 
     @property
     def negative(self) -> str | dict[str, str] | None:
-        """
-        Define regex patterns prohibited to activate the MelusineRegex.
+        """Define regex patterns prohibited to activate the MelusineRegex.
 
         Returns:
             _: Regex pattern or dict of regex patterns.
+
         """
         return dict(
             VAC_REP_FORBIDDEN_PROC=r"pas.{,10}traite|pas.{,10}identifie|pas.{,10}aboutir?",
@@ -88,11 +87,11 @@ class VacationReplyRegex(MelusineRegex):
 
     @property
     def match_list(self) -> list[str]:
-        """
-        List of texts that should activate the MelusineRegex.
+        """List of texts that should activate the MelusineRegex.
 
         Returns:
             _: List of texts.
+
         """
         return [
             "en cas d'urgence, vous pouvez m'appeler sur mon mobile au 01 02 03 04 05",
@@ -107,11 +106,11 @@ class VacationReplyRegex(MelusineRegex):
 
     @property
     def no_match_list(self) -> list[str]:
-        """
-        List of texts that should NOT activate the MelusineRegex.
+        """List of texts that should NOT activate the MelusineRegex.
 
         Returns:
             _: List of texts.
+
         """
         return [
             "Je souhaite une réponse même si je suis actuellement en congé",

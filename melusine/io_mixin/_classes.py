@@ -1,5 +1,4 @@
-"""
-Contain IO classes implementation.
+"""Contain IO classes implementation.
 
 Contained classes: [IoMixin]
 """
@@ -17,14 +16,12 @@ T = TypeVar("T", bound="IoMixin")
 
 
 class InitError(Exception):
-    """
-    Error raised when object instantiation fails.
+    """Error raised when object instantiation fails.
     """
 
 
 class IoMixin:
-    """
-    Defines generic load methods.
+    """Defines generic load methods.
     """
 
     @classmethod
@@ -34,8 +31,7 @@ class IoMixin:
         config_dict: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> T:
-        """
-        Instantiate a class from a config key or a config dict.
+        """Instantiate a class from a config key or a config dict.
 
         Parameters
         ----------
@@ -49,6 +45,7 @@ class IoMixin:
         -------
         _: T
             Instantiated objet.
+
         """
         # Load from Melusine config
         if config_dict is None:
@@ -67,8 +64,7 @@ class IoMixin:
 
     @classmethod
     def from_dict(cls: type[T], **params_dict: dict[str, Any]) -> T:
-        """
-        Method to instantiate a class based a dict object.
+        """Method to instantiate a class based a dict object.
 
         Parameters
         ----------
@@ -79,6 +75,7 @@ class IoMixin:
         -------
         _: T
             Instantiated objet.
+
         """
         # Exclude parameters starting with an underscore
         init_params = {key: value for key, value in params_dict.items() if not key.startswith("_")}

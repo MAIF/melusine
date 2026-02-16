@@ -1,5 +1,4 @@
-"""
-Data container class for email.
+"""Data container class for email.
 
 An email body can contain many "messages".
 
@@ -7,15 +6,15 @@ Implemented classes: [Message]
 """
 
 import re
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Any, Iterable
+from typing import Any
 
 from melusine import config
 
 
 class Message:
-    """
-    Class acting as a data container for email data (text, meta and features)
+    """Class acting as a data container for email data (text, meta and features)
     """
 
     DEFAULT_STR_LINE_LENGTH = 120
@@ -31,8 +30,7 @@ class Message:
         text_to: str | None = None,
         tags: list[dict[str, Any]] | None = None,
     ):
-        """
-        Attributes initialization.
+        """Attributes initialization.
 
         Parameters
         ----------
@@ -51,6 +49,7 @@ class Message:
         tags: List[Tuple[str, str]]
             Tagged test parts.
             (should be passed as init argument for debug purposes only)
+
         """
         self.text = text
         self.header = header
@@ -68,8 +67,7 @@ class Message:
 
     @property
     def str_tag_name_length(self) -> int:
-        """
-        When printing a message, number of characters for the TAG field.
+        """When printing a message, number of characters for the TAG field.
         """
         if "message" not in config:
             return self.DEFAULT_STR_TAG_NAME_LENGTH
@@ -78,8 +76,7 @@ class Message:
 
     @property
     def str_line_length(self) -> int:
-        """
-        When printing a message, total number of characters in each line (text + separation + tag).
+        """When printing a message, total number of characters in each line (text + separation + tag).
         """
         if "message" not in config:
             return self.DEFAULT_STR_LINE_LENGTH
@@ -92,8 +89,7 @@ class Message:
         stop_at: Iterable[str] | None = None,
         tag_type: str | None = None,
     ) -> list[dict[str, Any]]:
-        """
-        Function to extract target tags from the message.
+        """Function to extract target tags from the message.
 
         Parameters
         ----------
@@ -107,6 +103,7 @@ class Message:
         Returns
         -------
         _: List of extracted tags.
+
         """
         if not self.tags:
             return []
@@ -142,8 +139,7 @@ class Message:
         text_type: str | None = None,
         separator: str = "\n",
     ) -> str:
-        """
-        Function to extract target tags from the message.
+        """Function to extract target tags from the message.
 
         Parameters
         ----------
@@ -161,6 +157,7 @@ class Message:
         Returns
         -------
         _: List of extracted tags.
+
         """
         if text_type is None:
             text_type = self.effective_text_key
@@ -173,8 +170,7 @@ class Message:
         stop_at: Iterable[str] = ("GREETINGS",),
         tag_type: str | None = None,
     ) -> list[dict[str, Any]]:
-        """
-        Extract the BODY parts of the last message in the email.
+        """Extract the BODY parts of the last message in the email.
 
         Parameters
         ----------
@@ -185,6 +181,7 @@ class Message:
         Returns
         -------
         _: List[Tuple[str, str]]
+
         """
         return self.extract_parts(target_tags=target_tags, stop_at=stop_at, tag_type=tag_type)
 
@@ -194,8 +191,7 @@ class Message:
         stop_at: Iterable[str] | None = None,
         tag_type: str | None = None,
     ) -> bool:
-        """
-        Function to check if input tags are present in the message.
+        """Function to check if input tags are present in the message.
 
         Parameters
         ----------
@@ -210,6 +206,7 @@ class Message:
         -------
         _: bool
             True if target tags are present in the message.
+
         """
         if self.tags is None:
             return False
@@ -236,11 +233,11 @@ class Message:
         return found
 
     def format_tags(self, tag_type: str | None = None, text_type: str = None) -> str:
-        """
-        Create a pretty formatted representation of text and their associated tags.
+        """Create a pretty formatted representation of text and their associated tags.
 
         Returns:
             _: Pretty formatted representation of the tags and texts.
+
         """
         if tag_type is None:
             tag_type = self.effective_tag_key
@@ -261,13 +258,13 @@ class Message:
         return text.strip()
 
     def __repr__(self) -> str:
-        """
-        String representation.
+        """String representation.
 
         Returns
         -------
         _: str
             Readable representation of the Message.
+
         """
         if self.meta:
             meta = re.sub(r"\n+", r"\n", self.meta).strip("\n ")
@@ -277,13 +274,13 @@ class Message:
         return f"Message(meta={repr(meta)}, text={repr(text)})"
 
     def __str__(self) -> str:
-        """
-        Repr representation.
+        """Repr representation.
 
         Returns
         -------
         _: str
             Readable representation of the Message.
+
         """
         title_len = 22
         fill_len = (self.str_line_length - title_len) // 2

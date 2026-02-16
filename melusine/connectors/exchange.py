@@ -19,8 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class ExchangeConnector:
-    """
-    Connector to Outlook Exchange Mailboxs.
+    """Connector to Outlook Exchange Mailboxs.
     This class contains methods suited for automated emails routing.
     """
 
@@ -36,8 +35,7 @@ class ExchangeConnector:
         account_args: dict[str, Any] | None = None,
         sender_address: str | None = None,
     ):
-        """
-        Parameters
+        """Parameters
         ----------
         mailbox_address: str
             Email address of the mailbox. By default, the login address is used
@@ -57,8 +55,8 @@ class ExchangeConnector:
             Dict containing arguments to instantiate an exchangelib "Account" object.
         sender_address: str
             Email address used to send emails.
-        """
 
+        """
         self.sender_address = sender_address
         self.mailbox_address = mailbox_address
         self.folder_list = None
@@ -98,8 +96,7 @@ class ExchangeConnector:
         logger.info(f"Connected to mailbox {self.mailbox_address}.")
 
     def _get_mailbox_path(self, path: str | None) -> Folder:
-        """
-        Utils function to get a mailbox Folder from a path string.
+        """Utils function to get a mailbox Folder from a path string.
         Ex:
         - input string : ROUTING
         - output Folder : Folder at root/Haut de la banque d'informations/Boîte de réception/ROUTING
@@ -113,6 +110,7 @@ class ExchangeConnector:
         -------
         mailbox_path: Folder
             Mailbox Folder corresponding to the input path
+
         """
         # Default to inbox
         if not path:
@@ -139,8 +137,7 @@ class ExchangeConnector:
 
     @staticmethod
     def _get_folder_path(folder: Folder) -> str | None:
-        """
-        Utils function to get the full mailbox path of a folder.
+        """Utils function to get the full mailbox path of a folder.
         - input Folder : Folder("Routing")
         - output string : root/Haut de la banque d'informations/Boîte de réception/ROUTING
 
@@ -153,6 +150,7 @@ class ExchangeConnector:
         -------
         path: str
             Full mailbox path of the input Folder
+
         """
         if not isinstance(folder, Folder):
             return None
@@ -166,21 +164,20 @@ class ExchangeConnector:
 
     @property
     def routing_folder_path(self) -> str | None:
-        """
-        Get the path to the Routing folder.
+        """Get the path to the Routing folder.
 
         Returns
         -------
         path: str
             Path to the Routing folder
+
         """
         path = self._get_folder_path(self.routing_folder)
         return path
 
     @routing_folder_path.setter
     def routing_folder_path(self, routing_folder_path: str) -> None:
-        """
-        Setter for the routing folder.
+        """Setter for the routing folder.
         """
         self.routing_folder = self._get_mailbox_path(routing_folder_path)
         folder_path = self._get_folder_path(self.routing_folder)
@@ -188,21 +185,20 @@ class ExchangeConnector:
 
     @property
     def done_folder_path(self) -> str | None:
-        """
-        Get the path to the Done folder.
+        """Get the path to the Done folder.
 
         Returns
         -------
         path: str
             Path to the Done folder
+
         """
         path = self._get_folder_path(self.done_folder)
         return path
 
     @done_folder_path.setter
     def done_folder_path(self, done_folder_path: str) -> None:
-        """
-        Setter for the done folder.
+        """Setter for the done folder.
         """
         if not done_folder_path:
             self.done_folder = None
@@ -214,21 +210,20 @@ class ExchangeConnector:
 
     @property
     def correction_folder_path(self) -> str | None:
-        """
-        Get the path to the Correction folder.
+        """Get the path to the Correction folder.
 
         Returns
         -------
         path: str
             Path to the Correction folder
+
         """
         path = self._get_folder_path(self.correction_folder)
         return path
 
     @correction_folder_path.setter
     def correction_folder_path(self, correction_folder_path: str) -> None:
-        """
-        Setter for the correction folder.
+        """Setter for the correction folder.
         """
         if not correction_folder_path:
             self.correction_folder = None
@@ -247,6 +242,7 @@ class ExchangeConnector:
             Create folders in the mailbox
         base_folder_path : str
             New folders will be created inside at path base_folder_path (Defaults to inbox)
+
         """
         self.folder_list = folder_list
 
@@ -270,8 +266,7 @@ class ExchangeConnector:
         base_folder_path: str | None = None,
         ascending: bool = True,
     ) -> pd.DataFrame:
-        """
-        Load emails in the inbox.
+        """Load emails in the inbox.
 
         Parameters
         ----------
@@ -286,6 +281,7 @@ class ExchangeConnector:
         -------
         df_new_emails: pandas.DataFrame
             DataFrame containing nex emails
+
         """
         logger.info(f"Reading new emails for mailbox '{self.mailbox_address}'")
         base_folder = self._get_mailbox_path(base_folder_path)
@@ -316,8 +312,7 @@ class ExchangeConnector:
 
     @staticmethod
     def _extract_email_attributes(email_item: Message) -> dict:
-        """
-        Load email attributes of interest such as:
+        """Load email attributes of interest such as:
         - `message_id` field
         - `body` field
         - `header` field
@@ -334,6 +329,7 @@ class ExchangeConnector:
         Returns
         -------
         email_dict: Dict with email attributes of interest
+
         """
         if not email_item.to_recipients:
             to_list = list()
@@ -375,8 +371,7 @@ class ExchangeConnector:
         raise_missing_folder_error: bool = False,
         id_column: str = "message_id",
     ) -> None:
-        """
-        Function to route emails to mailbox folders.
+        """Function to route emails to mailbox folders.
 
         Parameters
         ----------
@@ -386,6 +381,7 @@ class ExchangeConnector:
             Whether an error should be raised when a target folder is missing
         id_column: str
             Name of the DataFrame column containing message ids
+
         """
         target_column = self.target_column
         target_folders = classified_emails[target_column].unique().tolist()
@@ -414,8 +410,7 @@ class ExchangeConnector:
         ignore_list: list[str] | None = None,
         correction_column_name: str = "correction",
     ) -> pd.DataFrame:
-        """
-        When mailbox users find misclassified emails, they should move them to correction folders.
+        """When mailbox users find misclassified emails, they should move them to correction folders.
         This method collects the emails placed in the correction folders.
 
         Parameters
@@ -428,6 +423,7 @@ class ExchangeConnector:
         -------
         df_corrected_emails: pandas.DataFrame
             DataFrame containing the misclassified emails ids and associated correction folder
+
         """
         if ignore_list is None:
             ignore_list = []
@@ -474,13 +470,13 @@ class ExchangeConnector:
         return df_corrected_emails
 
     def move_to_done(self, emails_id: list[str]) -> None:
-        """
-        Once the corrected emails have been processed, they can be moved to a "Done" folder.
+        """Once the corrected emails have been processed, they can be moved to a "Done" folder.
 
         Parameters
         ----------
         emails_id: list
             List of emails IDs to be moved to the done folder.
+
         """
         if (self.correction_folder is None) or (self.done_folder is None):
             raise AttributeError(
@@ -496,20 +492,19 @@ class ExchangeConnector:
         logger.info(f"Moved {n_items} corrected emails to the folder {self.done_folder_path}")
 
     def list_subfolders(self, base_folder_path: str | None = None) -> list[str]:
-        """
-        List the sub-folders of the specified folder.
+        """List the sub-folders of the specified folder.
 
         Parameters
         ----------
         base_folder_path: str
             Path to folder to be inspected
+
         """
         base_folder = self._get_mailbox_path(base_folder_path)
         return [f.name for f in base_folder.children]
 
     def send_email(self, to: str | list[str], header: str, body: str, attachments: dict) -> None:
-        """
-        This method sends an email from the login address (attribute login_address).
+        """This method sends an email from the login address (attribute login_address).
 
         Parameters
         ----------
@@ -522,6 +517,7 @@ class ExchangeConnector:
         attachments: dict
             Dict containing attachment names as key and attachment file contents as values.
             Currently, the code is tested for DataFrame attachments only.
+
         """
         if self.sender_account is None:
             raise AttributeError(

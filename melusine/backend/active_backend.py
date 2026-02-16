@@ -1,5 +1,4 @@
-"""
-Melusine transformation can operate on different data structures such as dict or pandas.DataFrame.
+"""Melusine transformation can operate on different data structures such as dict or pandas.DataFrame.
 Different transformation backends are used to process different data structures.
 The ActiveBackend class stores an instance of the activated backend.
 
@@ -9,7 +8,8 @@ Implemented classes: [
 """
 
 import logging
-from typing import Callable, Any
+from collections.abc import Callable
+from typing import Any
 
 from melusine.backend.base_backend import BaseTransformerBackend
 from melusine.backend.dict_backend import DictBackend
@@ -18,8 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class ActiveBackend(BaseTransformerBackend):
-    """
-    Class storing the active backend used by Melusine.
+    """Class storing the active backend used by Melusine.
     """
 
     PANDAS_BACKEND: str = "pandas"
@@ -39,15 +38,14 @@ class ActiveBackend(BaseTransformerBackend):
             return self._backend
 
     def reset(self, new_backend: BaseTransformerBackend | str = PANDAS_BACKEND) -> None:
-        """
-        Method to switch from current backend to specified backend.
+        """Method to switch from current backend to specified backend.
 
         Parameters
         ----------
         new_backend: BaseTransformerBackend | str
             New backend to be used
-        """
 
+        """
         if isinstance(new_backend, BaseTransformerBackend):
             self._backend = new_backend
 
@@ -73,8 +71,7 @@ class ActiveBackend(BaseTransformerBackend):
         input_columns: list[str] | None = None,
         **kwargs: Any,
     ) -> Any:
-        """
-        Method to apply a transform on a Dataset using current backend.
+        """Method to apply a transform on a Dataset using current backend.
 
         Parameters
         ----------
@@ -92,6 +89,7 @@ class ActiveBackend(BaseTransformerBackend):
         -------
         _: Dataset
             Transformed data
+
         """
         return self.backend.apply_transform(
             data=data,
@@ -102,8 +100,7 @@ class ActiveBackend(BaseTransformerBackend):
         )
 
     def copy(self, data: Any, fields: list[str] | None = None) -> Any:
-        """
-        Method to make a copy of the input dataset.
+        """Method to make a copy of the input dataset.
 
         Parameters
         ----------
@@ -116,12 +113,12 @@ class ActiveBackend(BaseTransformerBackend):
         -------
         _: Dataset
             Copy of original object
+
         """
         return self.backend.copy(data, fields=fields)
 
     def get_fields(self, data: Any) -> list[str]:
-        """
-        Method to get the list of fields available in the input dataset.
+        """Method to get the list of fields available in the input dataset.
 
         Parameters
         ----------
@@ -132,12 +129,12 @@ class ActiveBackend(BaseTransformerBackend):
         -------
         _: List[str]
             List of dataset fields
+
         """
         return self.backend.get_fields(data=data)
 
     def add_fields(self, left: Any, right: Any, fields: list[str] | None = None) -> Any:
-        """
-        Method to add fields from the right object to the left object
+        """Method to add fields from the right object to the left object
 
         Parameters
         ----------
@@ -152,12 +149,12 @@ class ActiveBackend(BaseTransformerBackend):
         -------
         _: Dataset
             Left object with added fields
+
         """
         return self.backend.add_fields(left=left, right=right, fields=fields)
 
     def setup_debug_dict(self, data: Any, dict_name: str) -> Any:
-        """
-        Method to check if debug_mode is activated
+        """Method to check if debug_mode is activated
 
         Parameters
         ----------
@@ -170,6 +167,7 @@ class ActiveBackend(BaseTransformerBackend):
         -------
         _: Dataset
             MelusineDataset object
+
         """
         return self.backend.setup_debug_dict(data=data, dict_name=dict_name)
 

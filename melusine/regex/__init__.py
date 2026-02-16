@@ -1,5 +1,4 @@
-"""
-The melusine.regex module includes tools for handling regexes.
+"""The melusine.regex module includes tools for handling regexes.
 """
 
 from melusine.regex.emergency_regex import EmergencyRegex

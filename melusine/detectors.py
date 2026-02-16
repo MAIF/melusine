@@ -1,5 +1,4 @@
-"""
-Classes of detectors.
+"""Classes of detectors.
 
 Implemented classes: [ThanksDetector, VacationReplyDetector, ExpeditorDetector,
 ReplyDetector, TransferDetector, RecipientsDetector]
@@ -14,8 +13,7 @@ from melusine.regex import EmergencyRegex, ReplyRegex, ThanksRegex, TransferRege
 
 
 class ThanksDetector(MelusineDetector):
-    """
-    Class to detect emails containing only thanks text.
+    """Class to detect emails containing only thanks text.
 
     Ex:
     Merci à vous,
@@ -38,8 +36,7 @@ class ThanksDetector(MelusineDetector):
         messages_column: str = "messages",
         name: str = "thanks",
     ) -> None:
-        """
-        Attributes initialization.
+        """Attributes initialization.
 
         Parameters
         ----------
@@ -48,8 +45,8 @@ class ThanksDetector(MelusineDetector):
 
         name: str
             Name of the detector.
-        """
 
+        """
         # Input columns
         self.messages_column = messages_column
         input_columns: list[str] = [self.messages_column]
@@ -69,8 +66,7 @@ class ThanksDetector(MelusineDetector):
         self.complex_regex_key: str
 
     def pre_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-        """
-        Extract text to analyse.
+        """Extract text to analyse.
 
         Parameters
         ----------
@@ -83,6 +79,7 @@ class ThanksDetector(MelusineDetector):
         -------
         row: MelusineItem
             Updated row.
+
         """
         # Check if a BODY part is present in the last message
         has_body: bool = row[self.messages_column][0].has_tags(
@@ -107,8 +104,7 @@ class ThanksDetector(MelusineDetector):
         return row
 
     def detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-        """
-        Use regex to detect thanks.
+        """Use regex to detect thanks.
 
         Parameters
         ----------
@@ -121,6 +117,7 @@ class ThanksDetector(MelusineDetector):
         -------
         row: MelusineItem
             Updated row.
+
         """
         debug_info: dict[str, Any] = {}
 
@@ -140,8 +137,7 @@ class ThanksDetector(MelusineDetector):
         return row
 
     def post_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-        """
-        Apply final eligibility rules.
+        """Apply final eligibility rules.
 
         Parameters
         ----------
@@ -154,8 +150,8 @@ class ThanksDetector(MelusineDetector):
         -------
         row: MelusineItem
             Updated row.
-        """
 
+        """
         # Match on thanks regex & Does not contain a body
         row[self.result_column] = row[self.THANKS_MATCH_COL] and not row[self.HAS_BODY]
 
@@ -163,8 +159,7 @@ class ThanksDetector(MelusineDetector):
 
 
 class VacationReplyDetector(MelusineDetector):
-    """
-    Implement a detector which detects automatic response message like vacation or out of office replies.
+    """Implement a detector which detects automatic response message like vacation or out of office replies.
     """
 
     # Class constants
@@ -177,8 +172,7 @@ class VacationReplyDetector(MelusineDetector):
         name: str,
         messages_column: str = "messages",
     ) -> None:
-        """
-        Attributes initialization.
+        """Attributes initialization.
 
         Parameters
         ----------
@@ -186,6 +180,7 @@ class VacationReplyDetector(MelusineDetector):
             Detector's name.
         messages_column: str
             Name of the column containing the messages.
+
         """
         self.messages_column = messages_column
 
@@ -206,8 +201,7 @@ class VacationReplyDetector(MelusineDetector):
         )
 
     def pre_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-        """
-        Extract/prepare the text to analyse.
+        """Extract/prepare the text to analyse.
 
         Parameters
         ----------
@@ -220,6 +214,7 @@ class VacationReplyDetector(MelusineDetector):
         -------
         row: MelusineItem
             Updated row.
+
         """
         # Last message body
         last_message: Message = row[self.messages_column][0]
@@ -235,8 +230,7 @@ class VacationReplyDetector(MelusineDetector):
         return row
 
     def detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-        """
-        Use regex to detect if an email is an automatic response like an Out of office or Vacation reply.
+        """Use regex to detect if an email is an automatic response like an Out of office or Vacation reply.
 
         Parameters
         ----------
@@ -249,6 +243,7 @@ class VacationReplyDetector(MelusineDetector):
         -------
         row: MelusineItem
             Updated row.
+
         """
         debug_info: dict[str, Any] = {}
 
@@ -267,8 +262,7 @@ class VacationReplyDetector(MelusineDetector):
         return row
 
     def post_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-        """
-        Apply final eligibility rule.
+        """Apply final eligibility rule.
 
         Parameters
         ----------
@@ -281,13 +275,13 @@ class VacationReplyDetector(MelusineDetector):
         -------
         row: MelusineItem
             Updated row.
+
         """
         return row
 
 
 class ReplyDetector(MelusineDetector):
-    """
-    The ReplyDetector detects if an email is a reply.
+    """The ReplyDetector detects if an email is a reply.
 
     If the header of the email starts with "re", it returns True.
     If not, it returns False.
@@ -301,8 +295,7 @@ class ReplyDetector(MelusineDetector):
         name: str,
         header_column: str = "clean_header",
     ) -> None:
-        """
-        Attributes initialization.
+        """Attributes initialization.
 
         Parameters
         ----------
@@ -310,6 +303,7 @@ class ReplyDetector(MelusineDetector):
             Name given to the detector.
         header_column: [str]
             Name of the column used for the email header.
+
         """
         # Set instance attributes
         self.header_column = header_column
@@ -331,8 +325,7 @@ class ReplyDetector(MelusineDetector):
         )
 
     def pre_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-        """
-        Retrieve text to analyze.
+        """Retrieve text to analyze.
 
         Log debug information if debug_mode is True.
 
@@ -347,6 +340,7 @@ class ReplyDetector(MelusineDetector):
         -------
         row: MelusineItem
             Updated row.
+
         """
         # Retrieve text to be analysed
         row[self.CONST_ANALYSED_TEXT_COL] = row[self.header_column].lower()
@@ -361,8 +355,7 @@ class ReplyDetector(MelusineDetector):
         return row
 
     def detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-        """
-        Check if a header starts with "RE:".
+        """Check if a header starts with "RE:".
 
         Parameters
         ----------
@@ -375,6 +368,7 @@ class ReplyDetector(MelusineDetector):
         -------
         row: MelusineItem
             Updated row.
+
         """
         debug_info: dict[str, Any] = {}
 
@@ -393,8 +387,7 @@ class ReplyDetector(MelusineDetector):
         return row
 
     def post_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-        """
-        Apply final eligibility rules.
+        """Apply final eligibility rules.
 
         Parameters
         ----------
@@ -407,14 +400,14 @@ class ReplyDetector(MelusineDetector):
         -------
         row: MelusineItem
             Updated row.
+
         """
         # No implementation needed
         return row
 
 
 class TransferDetector(MelusineDetector):
-    """
-    The TransferDetector detects if an email is a transfer.
+    """The TransferDetector detects if an email is a transfer.
     It returns True if the header starts with "tr:", "fwd:" of if the meta is not empty.
     """
 
@@ -430,8 +423,7 @@ class TransferDetector(MelusineDetector):
         header_column: str = "clean_header",
         messages_column: str = "messages",
     ) -> None:
-        """
-        Attributes initialization.
+        """Attributes initialization.
 
         Parameters
         ----------
@@ -441,6 +433,7 @@ class TransferDetector(MelusineDetector):
             Name of the column used for the email header.
         messages_column: [str]
             Name of the column used for the message.
+
         """
         # Set instance attributes
         self.header_column = header_column
@@ -461,8 +454,7 @@ class TransferDetector(MelusineDetector):
         )
 
     def pre_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-        """
-        Retrieve text to analyze.
+        """Retrieve text to analyze.
 
         Log debug information if debug_mode is True.
 
@@ -477,6 +469,7 @@ class TransferDetector(MelusineDetector):
         -------
         row: MelusineItem
             Updated row.
+
         """
         row[self.CONST_ANALYSED_TEXT_COL] = row[self.header_column].lower()
 
@@ -490,8 +483,7 @@ class TransferDetector(MelusineDetector):
         return row
 
     def detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-        """
-        Check if a header starts with "tr: , fwd:".
+        """Check if a header starts with "tr: , fwd:".
         or if the body begins with metadata (e.g, From: , To:, Subject:, etc.)
 
         Parameters
@@ -505,6 +497,7 @@ class TransferDetector(MelusineDetector):
         -------
         row: MelusineItem
             Updated row.
+
         """
         debug_info: dict[str, Any] = {}
 
@@ -525,8 +518,7 @@ class TransferDetector(MelusineDetector):
         return row
 
     def post_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-        """
-        Apply final eligibility rules.
+        """Apply final eligibility rules.
 
         Parameters
         ----------
@@ -539,14 +531,14 @@ class TransferDetector(MelusineDetector):
         -------
         row: MelusineItem
             Updated row.
+
         """
         # No implementation needed
         return row
 
 
 class EmergencyDetector(MelusineDetector):
-    """
-    Implement a detector which detects automatic response message like vacation or out of office replies.
+    """Implement a detector which detects automatic response message like vacation or out of office replies.
     """
 
     # Class constants
@@ -559,8 +551,7 @@ class EmergencyDetector(MelusineDetector):
         header_column: str = "header",
         text_column: str = "det_normalized_last_body",
     ) -> None:
-        """
-        Attributes initialization.
+        """Attributes initialization.
 
         Parameters
         ----------
@@ -568,6 +559,7 @@ class EmergencyDetector(MelusineDetector):
             Detector's name.
         header_column: str
             Name of the column containing the text of the email.
+
         """
         self.header_column = header_column
         self.text_column = text_column
@@ -589,8 +581,7 @@ class EmergencyDetector(MelusineDetector):
         )
 
     def pre_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-        """
-        Extract/prepare the text to analyse.
+        """Extract/prepare the text to analyse.
 
         Parameters
         ----------
@@ -603,6 +594,7 @@ class EmergencyDetector(MelusineDetector):
         -------
         row: MelusineItem
             Updated row.
+
         """
         # Last message body
         message_text: str = row[self.text_column]
@@ -620,8 +612,7 @@ class EmergencyDetector(MelusineDetector):
         return row
 
     def detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-        """
-        Apply regex on the effective text.
+        """Apply regex on the effective text.
 
         Parameters
         ----------
@@ -634,6 +625,7 @@ class EmergencyDetector(MelusineDetector):
         -------
         row: MelusineItem
             Updated row.
+
         """
         debug_info: dict[str, Any] = {}
 
@@ -652,8 +644,7 @@ class EmergencyDetector(MelusineDetector):
         return row
 
     def post_detect(self, row: MelusineItem, debug_mode: bool = False) -> MelusineItem:
-        """
-        Apply final eligibility rule.
+        """Apply final eligibility rule.
 
         Parameters
         ----------
@@ -666,5 +657,6 @@ class EmergencyDetector(MelusineDetector):
         -------
         row: MelusineItem
             Updated row.
+
         """
         return row

@@ -1,5 +1,4 @@
-"""
-Melusine transformation can operate on different data structures such as dict or pandas.DataFrame.
+"""Melusine transformation can operate on different data structures such as dict or pandas.DataFrame.
 Different transformation backends are used to process different data structures.
 The BaseTransformerBackend class defines the interface for transformation backend classes.
 
@@ -9,12 +8,12 @@ Implemented classes: [
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 
 class BaseTransformerBackend(ABC):
-    """
-    Abstract base class defining how to implement a Melusine Backend.
+    """Abstract base class defining how to implement a Melusine Backend.
     Each backend applies transform operations on a specific type of data.
     Ex: Pandas DataFrames, Dict, Spark objects, etc
     """
@@ -28,8 +27,7 @@ class BaseTransformerBackend(ABC):
         input_columns: list[str] | None = None,
         **kwargs: Any,
     ) -> Any:
-        """
-        Method to apply a transform on a Dataset using the current backend.
+        """Method to apply a transform on a Dataset using the current backend.
 
         Parameters
         ----------
@@ -47,12 +45,12 @@ class BaseTransformerBackend(ABC):
         -------
         _: Any
             Transformed data
+
         """
 
     @abstractmethod
     def add_fields(self, left: Any, right: Any, fields: list[str] | None = None) -> Any:
-        """
-        Method to add fields form the right object to the left object.
+        """Method to add fields form the right object to the left object.
 
         Parameters
         ----------
@@ -67,12 +65,12 @@ class BaseTransformerBackend(ABC):
         -------
         _: Dataset
             Left object with added fields
+
         """
 
     @abstractmethod
     def copy(self, data: Any, fields: list[str] | None = None) -> Any:
-        """
-        Method to make a copy of the dataset.
+        """Method to make a copy of the dataset.
 
         Parameters
         ----------
@@ -85,12 +83,12 @@ class BaseTransformerBackend(ABC):
         -------
         _: Dataset
             Copy of original object
+
         """
 
     @abstractmethod
     def get_fields(self, data: Any) -> list[str]:
-        """
-        Method to get the list of fields available in the input dataset.
+        """Method to get the list of fields available in the input dataset.
 
         Parameters
         ----------
@@ -101,12 +99,12 @@ class BaseTransformerBackend(ABC):
         -------
         _: List[str]
             List of dataset fields
+
         """
 
     @abstractmethod
     def setup_debug_dict(self, data: Any, dict_name: str) -> Any:
-        """
-        Method to check if debug_mode is activated.
+        """Method to check if debug_mode is activated.
 
         Parameters
         ----------
@@ -119,4 +117,5 @@ class BaseTransformerBackend(ABC):
         -------
         _: Dataset
             MelusineDataset object
+
         """

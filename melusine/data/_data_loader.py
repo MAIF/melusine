@@ -4,15 +4,14 @@ import pandas as pd
 
 
 def load_email_data() -> pd.DataFrame:
-    """
-    Function to load a file containing toy email data.
+    """Function to load a file containing toy email data.
 
-    Return
+    Return:
     ------
     pandas.DataFrame
         DataFrame with toy email data
-    """
 
+    """
     # Path to data directory
     data_directory = Path(__file__).parent.resolve()
 

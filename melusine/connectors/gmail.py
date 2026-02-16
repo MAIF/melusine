@@ -18,8 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class GmailConnector:
-    """
-    Connector to Gmail Mailboxs.
+    """Connector to Gmail Mailboxs.
     This class contains methods suited for automated emails routing.
     A credentials.json file is needed to sign in to google. To do so, follow these steps :
     https://medium.com/@preetipriyanka24/how-to-read-emails-from-gmail-using-gmail-api-in-python-20f7d9d09ae9
@@ -46,14 +45,14 @@ class GmailConnector:
         done_label: str | None = None,
         target_column: str = "target",
     ):
-        """
-        Args:
-            token_json_path (Optional[str], optional): `token.json` file path created after the first connection using
-            `credentials.json`. If None, looking for credentials_json_path and sign in. Defaults to None.
-            credentials_json_path (str, optional): file path for credentials.json delivered by google.
-            Defaults to credentials.json at root.
-            done_label (Optional[str], optional): Label name for the done situation. Defaults to None.
-            target_column (str, optional): Name of the DataFrame column containing target label. Defaults to "target".
+        """Args:
+        token_json_path (Optional[str], optional): `token.json` file path created after the first connection using
+        `credentials.json`. If None, looking for credentials_json_path and sign in. Defaults to None.
+        credentials_json_path (str, optional): file path for credentials.json delivered by google.
+        Defaults to credentials.json at root.
+        done_label (Optional[str], optional): Label name for the done situation. Defaults to None.
+        target_column (str, optional): Name of the DataFrame column containing target label. Defaults to "target".
+
         """
         self.target_column: str = target_column
 
@@ -71,9 +70,9 @@ class GmailConnector:
         logger.info(f"Connected to mailbox: {self.mailbox_address}.")
 
     def __repr__(self) -> str:
-        """
-        Returns:
-            str: Reprensentation of the object
+        """Returns:
+        str: Reprensentation of the object
+
         """
         return (
             f"GmailConnector(done_label={self.done_label}, target_column={self.target_column}), "
@@ -92,6 +91,7 @@ class GmailConnector:
 
         Returns:
             Credentials: Credentials to connect to Gmail
+
         """
         # Get the token from the path
         if token_json_path is not None and os.path.exists(token_json_path):
@@ -119,6 +119,7 @@ class GmailConnector:
 
         Returns:
             List[Dict]: List of labels dict
+
         """
         labels = self.service.users().labels().list(userId="me").execute()["labels"]
         return labels
@@ -131,6 +132,7 @@ class GmailConnector:
 
         Returns:
             Optional[str]: The label name
+
         """
         if label_name is None:
             return None
@@ -158,6 +160,7 @@ class GmailConnector:
 
         Returns:
             Dict[str, str]: return from the api with label and its informations
+
         """
         try:
             label = self.service.users().labels().create(userId="me", body=dict(name=label_name)).execute()
@@ -179,6 +182,7 @@ class GmailConnector:
 
         Returns:
             Dict[str, Any]: `body` key and `attachments_list` key with value inside the parsed email
+
         """
         body: str = ""
         if parsed_email.is_multipart():
@@ -219,8 +223,8 @@ class GmailConnector:
 
         Returns:
             Dict: formatted output of the email
-        """
 
+        """
         # Get the raw message and create a Message object
         msg_raw: dict[str, Any] = (
             self.service.users().messages().get(id=message_id, userId="me", format="raw").execute()
@@ -267,6 +271,7 @@ class GmailConnector:
 
         Returns:
             pd.DataFrame: DataFrame containing emails
+
         """
         logger.info("Reading new emails for mailbox")
         if target_labels is None:
@@ -306,9 +311,7 @@ class GmailConnector:
             label_to_move_on (str): Label name to set
 
         """
-        label_id: str | None = next(
-            (label["id"] for label in self.labels if label["name"] == label_to_move_on), None
-        )
+        label_id: str | None = next((label["id"] for label in self.labels if label["name"] == label_to_move_on), None)
         if label_id is None:
             raise ValueError(
                 f"Label '{label_to_move_on}' does not exist in self.labels. Make sure to specified a right label name."
@@ -323,6 +326,7 @@ class GmailConnector:
 
         Args:
             emails_id (List[str]): List of emails id to move to done label
+
         """
         if self.done_label is None:
             raise AttributeError("You need to set the class attribute `done_label` to use `move_to_done`.")
@@ -334,6 +338,7 @@ class GmailConnector:
         Args:
             classified_emails (pd.DataFrame): DataFrame containing emails message_id and target folder
             id_column (str, optional): Name of the DataFrame column containing message ids. Defaults to "message_id".
+
         """
         target_column = self.target_column
         target_labels = classified_emails[target_column].unique().tolist()
@@ -352,8 +357,8 @@ class GmailConnector:
             body (str): Email body
             attachments (Optional[Dict], optional): Dict containing attachment names as key and attachment
             file contents as values. Defaults to None.
-        """
 
+        """
         if isinstance(to, str):
             to = [to]
 
