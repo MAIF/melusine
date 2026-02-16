@@ -31,7 +31,7 @@ class MelusinePipeline:
     """
     This class defines and executes data transformation.
 
-    The MelusinePipeline is built on top of sklearn Pipelines.
+    The MelusinePipeline is similar but does not inherit from the sklearn Pipeline.
     """
 
     OBJ_NAME: str = "name"
@@ -446,7 +446,7 @@ class MelusinePipeline:
             )
             debug_mode = True
 
-        if isinstance(x, pd.DataFrame) and hasattr(x, "debug"):
+        if isinstance(x, pd.DataFrame) and getattr(x, "debug", False):
             warnings.warn(
                 (
                     "Debug mode activation via the debug attribute is deprecated and will be removed in a future release.\n"

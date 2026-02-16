@@ -8,6 +8,7 @@ Implemented classes: [
 
 from typing import Any, Callable, List, Optional, Tuple, Union
 
+import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed
 from tqdm import tqdm
@@ -203,7 +204,10 @@ class PandasBackend(BaseTransformerBackend):
         # Use Series.apply
         if input_columns and len(input_columns) == 1:
             input_column = input_columns[0]
-            splits = [data.iloc[i::workers] for i in range(workers)]
+            splits = [
+                data.iloc[idx]
+                for idx in np.array_split(np.arange(len(data)), workers)
+            ]
             chunks = Parallel(n_jobs=workers)(
                 delayed(self.apply_joblib_series)(
                     s=d[input_column],
@@ -217,7 +221,10 @@ class PandasBackend(BaseTransformerBackend):
 
         # Use DataFrame.apply
         else:
-            splits = [data.iloc[i::workers] for i in range(workers)]
+            splits = [
+                data.iloc[idx]
+                for idx in np.array_split(np.arange(len(data)), workers)
+            ]
             chunks = Parallel(n_jobs=workers)(
                 delayed(self.apply_joblib_dataframe)(
                     df=d,
@@ -230,9 +237,9 @@ class PandasBackend(BaseTransformerBackend):
             )
 
         if not new_cols:
-            data = pd.concat(chunks).sort_index(kind="mergesort")
+            data = pd.concat(chunks)
         else:
-            data[new_cols] = pd.concat(chunks).sort_index(kind="mergesort")
+            data[new_cols] = pd.concat(chunks)
 
         return data
 

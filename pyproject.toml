@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=61", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -35,18 +35,37 @@ classifiers = [
     "Natural Language :: English",
 ]
 dependencies = [
-    "arrow",
-    "pandas>2",
-    "scikit-learn>=1",
+    "arrow>=1.2.3",
+    "pandas>=2.0.0",
+    "scikit-learn>=1.0.0",
     "tqdm>=4.34",
     "omegaconf>=2.0",
 ]
 dynamic = ["version"]
 
-[project.optional-dependencies] # Optional
-dev = ["tox", "pre-commit", "black", "flake8", "isort", "mypy", "pytest", "coverage", "build", "ruff"]
-test = ["pytest", "coverage", "pytest-cov", "google-auth-oauthlib", "google-api-python-client"]
-transformers = ["transformers>4"]
+urls = { Homepage = "https://github.com/MAIF/melusine", Documentation = "https://maif.github.io/melusine/", Source = "https://github.com/MAIF/melusine" }
+
+[project.optional-dependencies]
+dev = [
+    "tox",
+    "pre-commit",
+    "black>=24.4.2",
+    "flake8>=7.0.0",
+    "isort>=5.13.2",
+    "mypy>=1.10.0",
+    "pytest>=7.0.0",
+    "coverage>=7.0.0",
+    "build",
+    "ruff>=0.4.4"
+]
+test = [
+    "pytest>=7.0.0",
+    "coverage>=7.0.0",
+    "pytest-cov",
+    "google-auth-oauthlib",
+    "google-api-python-client"
+]
+transformers = ["transformers>=4.0.0"]
 connectors = ["exchangelib"]
 gmail = ["google-auth-oauthlib", "google-api-python-client"]
 docs = ["mkdocs", "markdown", "mkdocs-material", "mdx-include"]
@@ -59,15 +78,18 @@ version = {attr = "melusine.VERSION"}
 
 [tool.black]
 line-length = 120
+target-version = ['py310']
 
 [tool.isort]
 profile = "black"
+line_length = 120
 
 [tool.mypy]
 ignore_missing_imports = true
 disallow_untyped_defs = false
 hide_error_codes = false
 no_site_packages = true
+python_version = "3.10"
 
 [tool.ruff]
 line-length = 120
@@ -75,17 +97,31 @@ exclude = [
     "tests",
     "docs"
 ]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "I", "UP", "C90", "D"]
+ignore = []
 
 [tool.coverage.run]
 omit = [
-    # omit init files in docs_src
     "docs/__init__.py",
     "docs/docs_src/*/__init__.py",
-    # omit test files
     "tests/*",
-    # omit anything in a .local directory anywhere
     "*/.local/*",
-    # omit single files
     "melusine/connectors/__init__.py",
     "melusine/connectors/exchange.py",
 ]
+
+[tool.coverage.report]
+exclude_lines = [
+    "if __name__ == .__main__.:",
+    "pragma: no cover",
+    "def __repr__",
+    "def __str__",
+    "if self.debug",
+]
+
+[tool.pytest.ini_options]
+addopts = "-ra --cov=melusine --cov-report=term-missing"
+testpaths = ["tests"]

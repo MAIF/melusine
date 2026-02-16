@@ -26,7 +26,7 @@ import re
 import unicodedata
 from abc import abstractmethod
 from re import Pattern
-from typing import Any, Iterable, Literal, Sequence, Union
+from typing import Any, Iterable, Literal, Sequence
 
 import arrow
 
@@ -729,7 +729,7 @@ class Tag(property):
     """
 
 
-TagPattern = Union[str, Iterable[str], re.Pattern]
+TagPattern = str | Iterable[str] | re.Pattern
 
 
 class BaseContentTagger(MelusineTransformer):
@@ -2125,3 +2125,4 @@ class DateProcessor(MelusineTransformer):
 
         # We were not working with abbrevations so we use arrow package
         return arrow.get(matched_group, format_).datetime.strftime(cls.ISO_FORMAT)
+

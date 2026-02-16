@@ -20,7 +20,7 @@ import logging
 import re
 import warnings
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, Iterable, List, TypeVar, Union
+from typing import Any, Callable, Iterable, TypeVar
 
 import pandas as pd
 
@@ -30,12 +30,12 @@ from melusine.io_mixin import IoMixin
 logger = logging.getLogger(__name__)
 
 # Dataset types supported by Melusine : pandas DataFrame and dicts
-MelusineDataset = Union[Dict[str, Any], pd.DataFrame]
+MelusineDataset = dict[str, Any] | pd.DataFrame
 
 # Corresponding items are:
 # - Dataset : Pandas DataFrame => Item : Pandas Series
 # - Dataset Dict => Item Dict
-MelusineItem = Union[Dict[str, Any], pd.Series]
+MelusineItem = dict[str, Any] | pd.Series
 Transformer = TypeVar("Transformer", bound="MelusineTransformer")
 
 
@@ -65,11 +65,11 @@ class MelusineTransformer(IoMixin):
 
         Parameters
         ----------
-        input_columns: Union[str, Iterable[str]]
+        input_columns: str | Iterable[str]
             List of input columns
-        output_columns: Union[str, Iterable[str]]
+        output_columns: str | Iterable[str]
             List of output columns
-        func: Callable
+        func: Callable | None
             Transform function to be applied
         """
         IoMixin.__init__(self)
@@ -85,7 +85,7 @@ class MelusineTransformer(IoMixin):
 
         Parameters
         ----------
-        columns: Union[str, Iterable[str]]
+        columns: str | Iterable[str]
             String or list of strings with column name(s).
 
         Returns
@@ -197,7 +197,7 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
           > Ex: thanks_output: "Remerciement plat"
         - output_score_col: float
           > Ex: thanks_score: 0.95
-        - (debug) debug_dict_col: Dict[str, Any]
+        - (debug) debug_dict_col: dict[str, Any]
           > Ex: debug_thanks: {"thanks_text": "Merci"}
         """
         return f"debug_{self.name}"
@@ -361,7 +361,7 @@ class MissingFieldError(Exception):
     """
 
 
-MatchData = Dict[str, List[Dict[str, Any]]]
+MatchData = dict[str, list[dict[str, Any]]]
 
 
 class MelusineRegex(ABC):
