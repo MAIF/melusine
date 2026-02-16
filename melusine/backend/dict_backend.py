@@ -6,7 +6,7 @@ Implemented classes: [
 ]
 """
 
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable
 
 from melusine.backend.base_backend import BaseTransformerBackend
 
@@ -19,12 +19,12 @@ class DictBackend(BaseTransformerBackend):
 
     def apply_transform(
         self,
-        data: Dict[str, Any],
+        data: dict[str, Any],
         func: Callable,
-        output_columns: Optional[List[str]] = None,
-        input_columns: Optional[List[str]] = None,
+        output_columns: list[str] | None = None,
+        input_columns: list[str] | None = None,
         **kwargs: Any,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Method to apply a transform on a Dataset using the Dict backend.
 
@@ -81,8 +81,8 @@ class DictBackend(BaseTransformerBackend):
         return data
 
     def add_fields(
-        self, left: Dict[str, Any], right: Dict[str, Any], fields: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
+        self, left: dict[str, Any], right: dict[str, Any], fields: list[str] | None = None
+    ) -> dict[str, Any]:
         """
         Method to add fields form the right object to the left object.
 
@@ -108,7 +108,7 @@ class DictBackend(BaseTransformerBackend):
 
         return left
 
-    def copy(self, data: Dict[str, Any], fields: Optional[List[str]] = None) -> Dict[str, Any]:
+    def copy(self, data: dict[str, Any], fields: list[str] | None = None) -> dict[str, Any]:
         """
         Method to make a copy of the dataset.
 
@@ -134,7 +134,7 @@ class DictBackend(BaseTransformerBackend):
 
         return new_dict
 
-    def get_fields(self, data: Dict[str, Any]) -> List[str]:
+    def get_fields(self, data: dict[str, Any]) -> list[str]:
         """
         Method to get the list of fields available in the input dataset.
 
@@ -150,7 +150,7 @@ class DictBackend(BaseTransformerBackend):
         """
         return list(data.keys())
 
-    def setup_debug_dict(self, data: Dict[str, Any], dict_name: str) -> Dict[str, Any]:
+    def setup_debug_dict(self, data: dict[str, Any], dict_name: str) -> dict[str, Any]:
         """
         Method to check if debug_mode is activated.
 

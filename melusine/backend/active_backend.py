@@ -9,9 +9,9 @@ Implemented classes: [
 """
 
 import logging
-from typing import Callable, List, Optional, Union
+from typing import Callable, Any
 
-from melusine.backend.base_backend import Any, BaseTransformerBackend
+from melusine.backend.base_backend import BaseTransformerBackend
 from melusine.backend.dict_backend import DictBackend
 
 logger = logging.getLogger(__name__)
@@ -28,24 +28,23 @@ class ActiveBackend(BaseTransformerBackend):
     def __init__(self) -> None:
         """Init"""
         super().__init__()
-        self._backend: Optional[BaseTransformerBackend] = None
+        self._backend: BaseTransformerBackend | None = None
 
     @property
     def backend(self) -> BaseTransformerBackend:
         """Backend attribute getter"""
         if self._backend is None:
             raise AttributeError("'_backend' attribute is None")
-
         else:
             return self._backend
 
-    def reset(self, new_backend: Union[BaseTransformerBackend, str] = PANDAS_BACKEND) -> None:
+    def reset(self, new_backend: BaseTransformerBackend | str = PANDAS_BACKEND) -> None:
         """
         Method to switch from current backend to specified backend.
 
         Parameters
         ----------
-        new_backend: Union[BaseTransformerBackend, str]
+        new_backend: BaseTransformerBackend | str
             New backend to be used
         """
 
@@ -70,8 +69,8 @@ class ActiveBackend(BaseTransformerBackend):
         self,
         data: Any,
         func: Callable,
-        output_columns: Optional[List[str]] = None,
-        input_columns: Optional[List[str]] = None,
+        output_columns: list[str] | None = None,
+        input_columns: list[str] | None = None,
         **kwargs: Any,
     ) -> Any:
         """
@@ -102,7 +101,7 @@ class ActiveBackend(BaseTransformerBackend):
             **kwargs,
         )
 
-    def copy(self, data: Any, fields: Optional[List[str]] = None) -> Any:
+    def copy(self, data: Any, fields: list[str] | None = None) -> Any:
         """
         Method to make a copy of the input dataset.
 
@@ -120,7 +119,7 @@ class ActiveBackend(BaseTransformerBackend):
         """
         return self.backend.copy(data, fields=fields)
 
-    def get_fields(self, data: Any) -> List[str]:
+    def get_fields(self, data: Any) -> list[str]:
         """
         Method to get the list of fields available in the input dataset.
 
@@ -136,7 +135,7 @@ class ActiveBackend(BaseTransformerBackend):
         """
         return self.backend.get_fields(data=data)
 
-    def add_fields(self, left: Any, right: Any, fields: Optional[List[str]] = None) -> Any:
+    def add_fields(self, left: Any, right: Any, fields: list[str] | None = None) -> Any:
         """
         Method to add fields from the right object to the left object
 

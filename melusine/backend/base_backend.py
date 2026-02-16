@@ -9,7 +9,7 @@ Implemented classes: [
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable
 
 
 class BaseTransformerBackend(ABC):
@@ -24,8 +24,8 @@ class BaseTransformerBackend(ABC):
         self,
         data: Any,
         func: Callable,
-        output_columns: Optional[List[str]] = None,
-        input_columns: Optional[List[str]] = None,
+        output_columns: list[str] | None = None,
+        input_columns: list[str] | None = None,
         **kwargs: Any,
     ) -> Any:
         """
@@ -50,7 +50,7 @@ class BaseTransformerBackend(ABC):
         """
 
     @abstractmethod
-    def add_fields(self, left: Any, right: Any, fields: Optional[List[str]] = None) -> Any:
+    def add_fields(self, left: Any, right: Any, fields: list[str] | None = None) -> Any:
         """
         Method to add fields form the right object to the left object.
 
@@ -70,7 +70,7 @@ class BaseTransformerBackend(ABC):
         """
 
     @abstractmethod
-    def copy(self, data: Any, fields: Optional[List[str]] = None) -> Any:
+    def copy(self, data: Any, fields: list[str] | None = None) -> Any:
         """
         Method to make a copy of the dataset.
 
@@ -88,7 +88,7 @@ class BaseTransformerBackend(ABC):
         """
 
     @abstractmethod
-    def get_fields(self, data: Any) -> List[str]:
+    def get_fields(self, data: Any) -> list[str]:
         """
         Method to get the list of fields available in the input dataset.
 
