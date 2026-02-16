@@ -57,12 +57,12 @@ def assert_transformation(
         Transformed email data dict
     """
     # Apply transformer on email
-    email = transformer.transform(email)
+    email = transformer.transform(email)  # type: ignore
 
     # Do we have an expected value for this transformer?
     expected_key = f"{transformer_name}{expected_suffix}"
     if expected_key in email:
-        expectation_dict: Dict[str, Any] = email.pop(expected_key)
+        expectation_dict = email.pop(expected_key)
 
         # Loop on columns with an expected value
         for col, expected_value in expectation_dict.items():
