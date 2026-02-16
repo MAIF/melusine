@@ -1,5 +1,4 @@
-"""Module which handles the package configuration.
-"""
+"""Module which handles the package configuration."""
 
 import copy
 import logging

@@ -1,5 +1,4 @@
-"""Top-level package.
-"""
+"""Top-level package."""
 
 import logging
 
