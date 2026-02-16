@@ -19,8 +19,8 @@ import inspect
 import logging
 import re
 import warnings
-from abc import ABC, abstractmethod
-from typing import Any, Callable, Iterable, TypeAlias, TypeVar
+from abc import ABC, Callable, Iterable, abstractmethod
+from typing import Any, TypeAlias, TypeVar
 
 import pandas as pd
 
@@ -261,7 +261,8 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
         if isinstance(df, pd.DataFrame) and hasattr(df, "debug"):
             warnings.warn(
                 (
-                    "Debug mode activation via the debug attribute is deprecated and will be removed in a future release.\n"
+                    "Debug mode activation via the debug attribute is deprecated "
+                    "and will be removed in a future release.\n"
                     "Please use the 'debug_mode' of the transform method.\n"
                 ),
                 DeprecationWarning,

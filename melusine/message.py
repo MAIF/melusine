@@ -8,7 +8,7 @@ Implemented classes: [Message]
 
 import re
 from datetime import datetime
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Iterable
 
 from melusine import config
 
@@ -26,10 +26,10 @@ class Message:
         text: str,
         header: str = "",
         meta: str = "",
-        date: Optional[datetime] = None,
+        date: datetime | None = None,
         text_from: str = "",
-        text_to: Optional[str] = None,
-        tags: Optional[List[Dict[str, Any]]] = None,
+        text_to: str | None = None,
+        tags: list[dict[str, Any]] | None = None,
     ):
         """
         Attributes initialization.
@@ -88,10 +88,10 @@ class Message:
 
     def extract_parts(
         self,
-        target_tags: Optional[Iterable[str]] = None,
-        stop_at: Optional[Iterable[str]] = None,
-        tag_type: Optional[str] = None,
-    ) -> List[Dict[str, Any]]:
+        target_tags: Iterable[str] | None = None,
+        stop_at: Iterable[str] | None = None,
+        tag_type: str | None = None,
+    ) -> list[dict[str, Any]]:
         """
         Function to extract target tags from the message.
 
@@ -115,7 +115,7 @@ class Message:
             tag_type = self.effective_tag_key
 
         # List of tags in the message
-        tag_name_list: List[str] = [x[tag_type] for x in self.tags]
+        tag_name_list: list[str] = [x[tag_type] for x in self.tags]
 
         if target_tags is None:
             target_tags = tag_name_list
@@ -136,10 +136,10 @@ class Message:
 
     def extract_text(
         self,
-        target_tags: Optional[Iterable[str]] = None,
-        stop_at: Optional[Iterable[str]] = None,
-        tag_type: Optional[str] = None,
-        text_type: Optional[str] = None,
+        target_tags: Iterable[str] | None = None,
+        stop_at: Iterable[str] | None = None,
+        tag_type: str | None = None,
+        text_type: str | None = None,
         separator: str = "\n",
     ) -> str:
         """
@@ -171,8 +171,8 @@ class Message:
         self,
         target_tags: Iterable[str] = ("BODY",),
         stop_at: Iterable[str] = ("GREETINGS",),
-        tag_type: Optional[str] = None,
-    ) -> List[Dict[str, Any]]:
+        tag_type: str | None = None,
+    ) -> list[dict[str, Any]]:
         """
         Extract the BODY parts of the last message in the email.
 
@@ -191,8 +191,8 @@ class Message:
     def has_tags(
         self,
         target_tags: Iterable[str] = ("BODY",),
-        stop_at: Optional[Iterable[str]] = None,
-        tag_type: Optional[str] = None,
+        stop_at: Iterable[str] | None = None,
+        tag_type: str | None = None,
     ) -> bool:
         """
         Function to check if input tags are present in the message.
@@ -235,7 +235,7 @@ class Message:
 
         return found
 
-    def format_tags(self, tag_type: Optional[str] = None, text_type: Optional[str] = None) -> str:
+    def format_tags(self, tag_type: str | None = None, text_type: str = None) -> str:
         """
         Create a pretty formatted representation of text and their associated tags.
 

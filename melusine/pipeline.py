@@ -9,7 +9,8 @@ from __future__ import annotations
 import copy
 import importlib
 import warnings
-from typing import Any, Iterable, TypeVar
+from collections.abc import Iterable
+from typing import Any, TypeVar
 
 import pandas as pd
 
@@ -221,21 +222,26 @@ class MelusinePipeline:
                 obj = obj_class.from_config(config_dict=obj_params)
                 if not issubclass(obj_class, IoMixin) and not suppress_warnings:
                     type_warn_msg: str = f"""
-                        It seems you are not using a melusine object in your melusine pipeline, but object '{obj_class}' (class {type(obj_class)}) for step '{step_name}'.
+                        It seems you are not using a melusine object in your melusine pipeline, 
+                        but object '{obj_class}' (class {type(obj_class)}) for step '{step_name}'.
                         The expected behavior is not guaranteed and can break in future version of melusine.
 
                         Recommended usage:
-                            - Exclusive usage of melusine class Pipeline with melusine objects (MelusineTransformer, MelusineDetector...)
+                            - Exclusive usage of melusine class Pipeline with melusine objects 
+                            (MelusineTransformer, MelusineDetector...)
 
-                        To suppress this warning, instanciate melusine Pipeline with suppress_warnings argument at True (MelusinePipeline.from_config(..., suppress_warnings=True)).
+                        To suppress this warning, instanciate melusine Pipeline with suppress_warnings argument at True 
+                        (MelusinePipeline.from_config(..., suppress_warnings=True)).
 
-                        Visit Melusine Open-Source project: https://github.com/MAIF/melusine and the documentation for more information.
+                        Visit Melusine Open-Source project: https://github.com/MAIF/melusine and the documentation for 
+                        more information.
                     """
                     warnings.warn(message=type_warn_msg, category=DeprecationWarning, stacklevel=2)
             except AttributeError as err:
                 if not hasattr(obj_class, "from_config"):
                     raise AttributeError(
-                        f"Object '{obj_class}' does not implement 'from_config' method, maybe consider to inherit it from the Melusine IoMixin class or use a MelusineTransformer class."
+                        f"Object '{obj_class}' does not implement 'from_config' method, maybe consider to "
+                        "inherit it from the Melusine IoMixin class or use a MelusineTransformer class."
                     ) from None
                 else:
                     raise AttributeError(f"Error in loading class: '{obj_class}'\\n{str(err)}").with_traceback(
@@ -449,7 +455,8 @@ class MelusinePipeline:
         if isinstance(x, pd.DataFrame) and getattr(x, "debug", False):
             warnings.warn(
                 (
-                    "Debug mode activation via the debug attribute is deprecated and will be removed in a future release.\n"
+                    "Debug mode activation via the debug attribute is deprecated "
+                    "and will be removed in a future release.\n"
                     "Please use the 'debug_mode' of the transform method.\n"
                 ),
                 DeprecationWarning,

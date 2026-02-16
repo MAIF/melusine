@@ -6,7 +6,7 @@ Implemented classes: [
 ]
 """
 
-from typing import Any, Callable, List, Optional, Tuple, Union
+from typing import Any, Callable
 
 import numpy as np
 import pandas as pd
@@ -40,8 +40,8 @@ class PandasBackend(BaseTransformerBackend):
         self,
         data: pd.DataFrame,
         func: Callable,
-        output_columns: Optional[List[str]] = None,
-        input_columns: Optional[List[str]] = None,
+        output_columns: list[str] | None = None,
+        input_columns: list[str] | None = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
         """
@@ -78,8 +78,8 @@ class PandasBackend(BaseTransformerBackend):
         self,
         data: pd.DataFrame,
         func: Callable,
-        output_columns: Optional[List[str]] = None,
-        input_columns: Optional[List[str]] = None,
+        output_columns: list[str] | None = None,
+        input_columns: list[str] | None = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
         """
@@ -138,8 +138,8 @@ class PandasBackend(BaseTransformerBackend):
 
     @staticmethod
     def setup_apply_parameters(
-        output_columns: Optional[List[str]] = None,
-    ) -> Tuple[Union[None, str], Union[None, str, List[str]]]:
+        output_columns: list[str] | None = None,
+    ) -> tuple[str | None, str | None | list[str]]:
         """
         Parameters
         ----------
@@ -168,8 +168,8 @@ class PandasBackend(BaseTransformerBackend):
         self,
         data: pd.DataFrame,
         func: Callable,
-        output_columns: Optional[List[str]] = None,
-        input_columns: Optional[List[str]] = None,
+        output_columns: list[str] | None = None,
+        input_columns: list[str] | None = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
         """
@@ -241,7 +241,7 @@ class PandasBackend(BaseTransformerBackend):
     def apply_joblib_dataframe(
         df: pd.DataFrame,
         func: Callable,
-        expand: Optional[str] = None,
+        expand: str | None = None,
         progress_bar: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame:
@@ -263,7 +263,7 @@ class PandasBackend(BaseTransformerBackend):
     def apply_joblib_series(
         s: pd.Series,
         func: Callable,
-        expand: Optional[str] = None,
+        expand: str | None = None,
         progress_bar: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame:
@@ -283,7 +283,7 @@ class PandasBackend(BaseTransformerBackend):
 
         return result
 
-    def add_fields(self, left: pd.DataFrame, right: pd.DataFrame, fields: Optional[List[str]] = None) -> pd.DataFrame:
+    def add_fields(self, left: pd.DataFrame, right: pd.DataFrame, fields: list[str] | None = None) -> pd.DataFrame:
         """
         Method to add fields form the right object to the left object.
 
@@ -305,7 +305,7 @@ class PandasBackend(BaseTransformerBackend):
 
         return left
 
-    def copy(self, data: pd.DataFrame, fields: Optional[List[str]] = None) -> pd.DataFrame:
+    def copy(self, data: pd.DataFrame, fields: list[str] | None = None) -> pd.DataFrame:
         """
         Method to make a copy of the dataset.
 
@@ -326,7 +326,7 @@ class PandasBackend(BaseTransformerBackend):
 
         return data[fields].copy()
 
-    def get_fields(self, data: pd.DataFrame) -> List[str]:
+    def get_fields(self, data: pd.DataFrame) -> list[str]:
         """
         Method to get the list of fields available in the input dataset.
 

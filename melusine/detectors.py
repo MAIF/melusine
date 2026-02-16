@@ -6,7 +6,7 @@ ReplyDetector, TransferDetector, RecipientsDetector]
 
 """
 
-from typing import Any, Dict, List
+from typing import Any
 
 from melusine.base import MelusineDetector, MelusineItem, MelusineRegex
 from melusine.message import Message
@@ -52,11 +52,11 @@ class ThanksDetector(MelusineDetector):
 
         # Input columns
         self.messages_column = messages_column
-        input_columns: List[str] = [self.messages_column]
+        input_columns: list[str] = [self.messages_column]
 
         # Output columns
         self.result_column = f"{name}_result"
-        output_columns: List[str] = [self.result_column]
+        output_columns: list[str] = [self.result_column]
 
         # Detection regex
         self.thanks_regex: MelusineRegex = ThanksRegex()
@@ -122,7 +122,7 @@ class ThanksDetector(MelusineDetector):
         row: MelusineItem
             Updated row.
         """
-        debug_info: Dict[str, Any] = {}
+        debug_info: dict[str, Any] = {}
 
         text: str = row[self.THANKS_TEXT_COL]
 
@@ -193,11 +193,11 @@ class VacationReplyDetector(MelusineDetector):
         self.vacation_reply_regex: MelusineRegex = VacationReplyRegex()
 
         # Input columns
-        input_columns: List[str] = [messages_column]
+        input_columns: list[str] = [messages_column]
 
         # Output columns
         self.result_column = f"{name}_result"
-        output_columns: List[str] = [self.result_column]
+        output_columns: list[str] = [self.result_column]
 
         super().__init__(
             name=name,
@@ -227,7 +227,7 @@ class VacationReplyDetector(MelusineDetector):
 
         # Prepare and save debug data
         if debug_mode:
-            debug_dict: Dict[str, Any] = {
+            debug_dict: dict[str, Any] = {
                 self.CONST_DEBUG_TEXT_KEY: row[self.CONST_TEXT_COL_NAME],
             }
             row[self.debug_dict_col].update(debug_dict)
@@ -250,7 +250,7 @@ class VacationReplyDetector(MelusineDetector):
         row: MelusineItem
             Updated row.
         """
-        debug_info: Dict[str, Any] = {}
+        debug_info: dict[str, Any] = {}
 
         text: str = row[self.CONST_TEXT_COL_NAME]
 
@@ -318,11 +318,11 @@ class ReplyDetector(MelusineDetector):
         self.reply_regex: MelusineRegex = ReplyRegex()
 
         # Input columns
-        input_columns: List[str] = [self.header_column]
+        input_columns: list[str] = [self.header_column]
 
         # Output columns
         self.result_column = f"{name}_result"
-        output_columns: List[str] = [self.result_column]
+        output_columns: list[str] = [self.result_column]
 
         super().__init__(
             name=name,
@@ -376,7 +376,7 @@ class ReplyDetector(MelusineDetector):
         row: MelusineItem
             Updated row.
         """
-        debug_info: Dict[str, Any] = {}
+        debug_info: dict[str, Any] = {}
 
         text: str = row[self.CONST_ANALYSED_TEXT_COL]
 
@@ -448,11 +448,11 @@ class TransferDetector(MelusineDetector):
         self.transfer_regex: MelusineRegex = TransferRegex()
 
         # Input columns
-        input_columns: List[str] = [self.header_column, self.messages_column]
+        input_columns: list[str] = [self.header_column, self.messages_column]
 
         # Output columns
         self.result_column = f"{name}_result"
-        output_columns: List[str] = [self.result_column]
+        output_columns: list[str] = [self.result_column]
 
         super().__init__(
             name=name,
@@ -506,7 +506,7 @@ class TransferDetector(MelusineDetector):
         row: MelusineItem
             Updated row.
         """
-        debug_info: Dict[str, Any] = {}
+        debug_info: dict[str, Any] = {}
 
         text: str = row[self.CONST_ANALYSED_TEXT_COL]
         meta: str = row[self.messages_column][0].meta
@@ -576,11 +576,11 @@ class EmergencyDetector(MelusineDetector):
         self.regex: MelusineRegex = EmergencyRegex()
 
         # Input columns
-        input_columns: List[str] = [header_column, text_column]
+        input_columns: list[str] = [header_column, text_column]
 
         # Output columns
         self.result_column = f"{name}_result"
-        output_columns: List[str] = [self.result_column]
+        output_columns: list[str] = [self.result_column]
 
         super().__init__(
             name=name,
@@ -612,7 +612,7 @@ class EmergencyDetector(MelusineDetector):
 
         # Prepare and save debug data
         if debug_mode:
-            debug_dict: Dict[str, Any] = {
+            debug_dict: dict[str, Any] = {
                 self.CONST_DEBUG_TEXT_KEY: row[self.CONST_TEXT_COL_NAME],
             }
             row[self.debug_dict_col].update(debug_dict)
@@ -635,7 +635,7 @@ class EmergencyDetector(MelusineDetector):
         row: MelusineItem
             Updated row.
         """
-        debug_info: Dict[str, Any] = {}
+        debug_info: dict[str, Any] = {}
 
         text: str = row[self.CONST_TEXT_COL_NAME]
 

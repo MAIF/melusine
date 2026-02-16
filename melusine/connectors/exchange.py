@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import pandas as pd
 from exchangelib import (  # noqa
@@ -29,12 +29,12 @@ class ExchangeConnector:
         mailbox_address: str,
         credentials: Credentials,
         config: Configuration,
-        routing_folder_path: Optional[str] = None,
-        correction_folder_path: Optional[str] = None,
-        done_folder_path: Optional[str] = None,
+        routing_folder_path: str | None = None,
+        correction_folder_path: str | None = None,
+        done_folder_path: str | None = None,
         target_column: str = "target",
-        account_args: Optional[Dict[str, Any]] = None,
-        sender_address: Optional[str] = None,
+        account_args: dict[str, Any] | None = None,
+        sender_address: str | None = None,
     ):
         """
         Parameters
@@ -97,7 +97,7 @@ class ExchangeConnector:
 
         logger.info(f"Connected to mailbox {self.mailbox_address}.")
 
-    def _get_mailbox_path(self, path: Optional[str]) -> Folder:
+    def _get_mailbox_path(self, path: str | None) -> Folder:
         """
         Utils function to get a mailbox Folder from a path string.
         Ex:
@@ -138,7 +138,7 @@ class ExchangeConnector:
         return mailbox_path
 
     @staticmethod
-    def _get_folder_path(folder: Folder) -> Union[str, None]:
+    def _get_folder_path(folder: Folder) -> str | None:
         """
         Utils function to get the full mailbox path of a folder.
         - input Folder : Folder("Routing")
@@ -165,7 +165,7 @@ class ExchangeConnector:
         return path
 
     @property
-    def routing_folder_path(self) -> Union[str, None]:
+    def routing_folder_path(self) -> str | None:
         """
         Get the path to the Routing folder.
 
@@ -187,7 +187,7 @@ class ExchangeConnector:
         logger.info(f"Routing folder path set to '{folder_path}'")
 
     @property
-    def done_folder_path(self) -> Union[str, None]:
+    def done_folder_path(self) -> str | None:
         """
         Get the path to the Done folder.
 
@@ -213,7 +213,7 @@ class ExchangeConnector:
             logger.info(f"Done folder path set to '{folder_path}'")
 
     @property
-    def correction_folder_path(self) -> Union[str, None]:
+    def correction_folder_path(self) -> str | None:
         """
         Get the path to the Correction folder.
 
@@ -238,7 +238,7 @@ class ExchangeConnector:
             folder_path = self._get_folder_path(self.correction_folder)
             logger.info(f"Correction folder path set to '{folder_path}'")
 
-    def create_folders(self, folder_list: List[str], base_folder_path: Optional[str] = None) -> None:
+    def create_folders(self, folder_list: list[str], base_folder_path: str | None = None) -> None:
         """Create folders in the mailbox.
 
         Parameters
@@ -267,7 +267,7 @@ class ExchangeConnector:
     def get_emails(
         self,
         max_emails: int = 100,
-        base_folder_path: Optional[str] = None,
+        base_folder_path: str | None = None,
         ascending: bool = True,
     ) -> pd.DataFrame:
         """
@@ -411,7 +411,7 @@ class ExchangeConnector:
     def get_corrections(
         self,
         max_emails: int = 100,
-        ignore_list: Optional[List[str]] = None,
+        ignore_list: list[str] | None = None,
         correction_column_name: str = "correction",
     ) -> pd.DataFrame:
         """
@@ -473,7 +473,7 @@ class ExchangeConnector:
 
         return df_corrected_emails
 
-    def move_to_done(self, emails_id: List[str]) -> None:
+    def move_to_done(self, emails_id: list[str]) -> None:
         """
         Once the corrected emails have been processed, they can be moved to a "Done" folder.
 
@@ -495,7 +495,7 @@ class ExchangeConnector:
         self.mailbox_account.bulk_move(ids=items, to_folder=self.done_folder, chunk_size=5)
         logger.info(f"Moved {n_items} corrected emails to the folder {self.done_folder_path}")
 
-    def list_subfolders(self, base_folder_path: Optional[str] = None) -> List[str]:
+    def list_subfolders(self, base_folder_path: str | None = None) -> list[str]:
         """
         List the sub-folders of the specified folder.
 
@@ -507,7 +507,7 @@ class ExchangeConnector:
         base_folder = self._get_mailbox_path(base_folder_path)
         return [f.name for f in base_folder.children]
 
-    def send_email(self, to: Union[str, List[str]], header: str, body: str, attachments: dict) -> None:
+    def send_email(self, to: str | list[str], header: str, body: str, attachments: dict) -> None:
         """
         This method sends an email from the login address (attribute login_address).
 

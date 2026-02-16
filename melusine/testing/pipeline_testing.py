@@ -106,7 +106,7 @@ def assert_message_attribute(
     assert len(email["messages"]) == len(expected_value)
 
     # Loop on messages
-    for message, expected_attr in zip(email["messages"], expected_value):
+    for message, expected_attr in zip(email["messages"], expected_value, strict=False):
         _, attribute_name = col.rsplit(".")
         attribute_value = getattr(message, attribute_name)
 

@@ -89,4 +89,4 @@ class IoMixin:
         except Exception as error:
             raise InitError(f"Failed to instantiate {cls.__name__} with attributes {init_params}.").with_traceback(
                 error.__traceback__
-            )
+            ) from error

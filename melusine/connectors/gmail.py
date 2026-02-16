@@ -4,7 +4,7 @@ import mimetypes
 import os
 from email import message, policy
 from email.parser import BytesParser
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 import pandas as pd
 from google.auth.transport.requests import Request
@@ -34,16 +34,16 @@ class GmailConnector:
     ```
     """
 
-    SCOPES: List[str] = [
+    SCOPES: list[str] = [
         "https://www.googleapis.com/auth/gmail.readonly",
         "https://www.googleapis.com/auth/gmail.modify",
     ]
 
     def __init__(
         self,
-        token_json_path: Optional[str] = None,
+        token_json_path: str | None = None,
         credentials_json_path: str = "credentials.json",
-        done_label: Optional[str] = None,
+        done_label: str | None = None,
         target_column: str = "target",
     ):
         """
@@ -64,8 +64,8 @@ class GmailConnector:
         self.service: Any = build("gmail", "v1", credentials=self.credentials)
 
         # Get and setup labels
-        self.labels: List[Dict[str, str]] = self._get_labels()
-        self.done_label: Optional[str] = self._check_or_create_label(done_label)
+        self.labels: list[dict[str, str]] = self._get_labels()
+        self.done_label: str | None = self._check_or_create_label(done_label)
 
         self.mailbox_address: str = self.service.users().getProfile(userId="me").execute()["emailAddress"]
         logger.info(f"Connected to mailbox: {self.mailbox_address}.")
@@ -80,7 +80,7 @@ class GmailConnector:
             + f"connected to {self.mailbox_address}"
         )
 
-    def get_credentials(self, credentials_json_path: str, token_json_path: Optional[str] = None) -> Credentials:
+    def get_credentials(self, credentials_json_path: str, token_json_path: str | None = None) -> Credentials:
         """Retrieve credentials object to connect to Gmail using the `credentials.json` and generating the `token.json`
         if needed at root path.
         Please create json file as here https://cloud.google.com/docs/authentication/getting-started
@@ -114,7 +114,7 @@ class GmailConnector:
         logger.info(f"gmail token.json saved at: {os.getcwd()}")
         return creds
 
-    def _get_labels(self) -> List[Dict]:
+    def _get_labels(self) -> list[dict]:
         """Retrieve all current labels in mailbox
 
         Returns:
@@ -123,7 +123,7 @@ class GmailConnector:
         labels = self.service.users().labels().list(userId="me").execute()["labels"]
         return labels
 
-    def _check_or_create_label(self, label_name: Optional[str] = None) -> Optional[str]:
+    def _check_or_create_label(self, label_name: str | None = None) -> str | None:
         """Check label existance, if not, ask to create it.
 
         Args:
@@ -135,7 +135,7 @@ class GmailConnector:
         if label_name is None:
             return None
 
-        all_labels_upper: List[str] = [label["name"].upper() for label in self.labels]
+        all_labels_upper: list[str] = [label["name"].upper() for label in self.labels]
         if label_name.upper() in all_labels_upper:
             return label_name
 
@@ -145,12 +145,12 @@ class GmailConnector:
         )
         choice: str = input()
         if "Y" in choice.upper():
-            result: Dict[str, str] = self.create_label(label_name)
+            result: dict[str, str] = self.create_label(label_name)
             self.labels.append(result)
             return label_name
         raise ValueError(f"Label {label_name} does not exist.")
 
-    def create_label(self, label_name: str) -> Dict[str, str]:
+    def create_label(self, label_name: str) -> dict[str, str]:
         """Create a label into connected mailbox
 
         Args:
@@ -171,7 +171,7 @@ class GmailConnector:
         return label
 
     @staticmethod
-    def extract_from_parsed_mail(parsed_email: message.Message) -> Dict[str, Any]:
+    def extract_from_parsed_mail(parsed_email: message.Message) -> dict[str, Any]:
         """Extract body and attachments from the parsed email
 
         Args:
@@ -193,7 +193,7 @@ class GmailConnector:
             charset = parsed_email.get_content_charset("iso-8859-1")
             body += bytes_string.decode(charset, "replace")  # type: ignore
 
-        attachments_list: List[Dict] = []
+        attachments_list: list[dict] = []
         for part in parsed_email.iter_attachments():  # type: ignore
             attachments_list.append(
                 {
@@ -204,7 +204,7 @@ class GmailConnector:
             )
         return {"body": body, "attachments_list": attachments_list}
 
-    def _extract_email_attributes(self, message_id: str) -> Dict:
+    def _extract_email_attributes(self, message_id: str) -> dict:
         """Return formatted attributes for the considered email such as:
         - `message_id` field
         - `body` field
@@ -222,14 +222,14 @@ class GmailConnector:
         """
 
         # Get the raw message and create a Message object
-        msg_raw: Dict[str, Any] = (
+        msg_raw: dict[str, Any] = (
             self.service.users().messages().get(id=message_id, userId="me", format="raw").execute()
         )
         parsed_email: message.Message = BytesParser(policy=policy.default).parsebytes(
             base64.urlsafe_b64decode(msg_raw["raw"])
         )
 
-        infos: Dict[str, Any] = self.extract_from_parsed_mail(parsed_email)
+        infos: dict[str, Any] = self.extract_from_parsed_mail(parsed_email)
         email_dict = {
             "message_id": message_id,
             "body": infos["body"],
@@ -244,9 +244,9 @@ class GmailConnector:
     def get_emails(
         self,
         max_emails: int = 100,
-        target_labels: Optional[List[str]] = None,
-        start_date: Optional[str] = None,
-        end_date: Optional[str] = None,
+        target_labels: list[str] | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
     ) -> pd.DataFrame:
         """Loads emails in descending date order based on target_labels. To see all available labels, use `self.labels`.
         If two label names are defined, retrieve all emails with both labels, e.g. ["TRASH", "INBOX"] will retrieve none
@@ -271,7 +271,7 @@ class GmailConnector:
         logger.info("Reading new emails for mailbox")
         if target_labels is None:
             target_labels = ["INBOX"]
-        target_label_id: List[str] = [item["id"] for item in self.labels if item["name"] in target_labels]
+        target_label_id: list[str] = [item["id"] for item in self.labels if item["name"] in target_labels]
         q = ""
         if start_date is not None:
             q += f"after:{start_date} "
@@ -279,7 +279,7 @@ class GmailConnector:
         if end_date is not None:
             q += f"before:{end_date}"
 
-        all_new_data: Dict[str, Any] = (
+        all_new_data: dict[str, Any] = (
             self.service.users()
             .messages()
             .list(userId="me", maxResults=max_emails, labelIds=target_label_id, q=q)
@@ -292,13 +292,13 @@ class GmailConnector:
             )
             return pd.DataFrame(columns=["message_id", "body", "header", "date", "from", "to", "attachment"])
         logger.info("Please wait while loading messages")
-        new_emails: List[Dict] = [self._extract_email_attributes(x["id"]) for x in tqdm(all_new_data["messages"])]
+        new_emails: list[dict] = [self._extract_email_attributes(x["id"]) for x in tqdm(all_new_data["messages"])]
         df_new_emails = pd.DataFrame(new_emails)
 
         logger.info(f"Read '{len(new_emails)}' new emails")
         return df_new_emails
 
-    def move_to(self, emails_id: List[str], label_to_move_on: str) -> None:
+    def move_to(self, emails_id: list[str], label_to_move_on: str) -> None:
         """Generic method to move emails to a specified label
 
         Args:
@@ -306,7 +306,7 @@ class GmailConnector:
             label_to_move_on (str): Label name to set
 
         """
-        label_id: Optional[str] = next(
+        label_id: str | None = next(
             (label["id"] for label in self.labels if label["name"] == label_to_move_on), None
         )
         if label_id is None:
@@ -318,7 +318,7 @@ class GmailConnector:
 
         logger.info(f"Moved {len(emails_id)} emails to '{label_to_move_on}' label.")
 
-    def move_to_done(self, emails_id: List[str]) -> None:
+    def move_to_done(self, emails_id: list[str]) -> None:
         """Move emails to done label
 
         Args:
@@ -343,7 +343,7 @@ class GmailConnector:
             mids_to_move = classified_emails[mask][id_column]
             self.move_to(mids_to_move, label)
 
-    def send_email(self, to: Union[str, List[str]], header: str, body: str, attachments: Optional[Dict] = None) -> None:
+    def send_email(self, to: str | list[str], header: str, body: str, attachments: dict | None = None) -> None:
         """This method sends an email from the login address (attribute login_address).
 
         Args:

@@ -378,7 +378,7 @@ class BaseSegmenter(MelusineTransformer):
         # Replace first message meta
         meta_list[0] = first_message_meta
 
-        return [Message(text=text, meta=meta) for text, meta in zip(text_list, meta_list)]
+        return [Message(text=text, meta=meta) for text, meta in zip(text_list, meta_list, strict=True)]
 
     def segment_text(self, text: str) -> list[Message]:
         """
