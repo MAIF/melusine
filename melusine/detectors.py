@@ -10,13 +10,7 @@ from typing import Any, Dict, List
 
 from melusine.base import MelusineDetector, MelusineItem, MelusineRegex
 from melusine.message import Message
-from melusine.regex import (
-    EmergencyRegex,
-    ReplyRegex,
-    ThanksRegex,
-    TransferRegex,
-    VacationReplyRegex,
-)
+from melusine.regex import EmergencyRegex, ReplyRegex, ThanksRegex, TransferRegex, VacationReplyRegex
 
 
 class ThanksDetector(MelusineDetector):

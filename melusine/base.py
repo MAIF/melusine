@@ -20,7 +20,7 @@ import logging
 import re
 import warnings
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Iterable, TypeVar
+from typing import Any, Callable, Iterable, TypeVar, TypeAlias
 
 import pandas as pd
 
@@ -30,12 +30,8 @@ from melusine.io_mixin import IoMixin
 logger = logging.getLogger(__name__)
 
 # Dataset types supported by Melusine : pandas DataFrame and dicts
-MelusineDataset = dict[str, Any] | pd.DataFrame
-
-# Corresponding items are:
-# - Dataset : Pandas DataFrame => Item : Pandas Series
-# - Dataset Dict => Item Dict
-MelusineItem = dict[str, Any] | pd.Series
+MelusineDataset: TypeAlias = dict[str, Any] | pd.DataFrame
+MelusineItem: TypeAlias = dict[str, Any] | pd.Series
 Transformer = TypeVar("Transformer", bound="MelusineTransformer")
 
 
