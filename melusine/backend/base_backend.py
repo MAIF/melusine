@@ -19,8 +19,6 @@ class BaseTransformerBackend(ABC):
     Ex: Pandas DataFrames, Dict, Spark objects, etc
     """
 
-    DEBUG_FLAG = "debug"
-
     @abstractmethod
     def apply_transform(
         self,
@@ -104,29 +102,6 @@ class BaseTransformerBackend(ABC):
         _: List[str]
             List of dataset fields
         """
-
-    def check_debug_flag(self, data: Any) -> bool:
-        """
-        Method to check if debug_mode is activated.
-
-        Parameters
-        ----------
-        data: Dataset
-            MelusineDataset object
-
-        Returns
-        -------
-        _: bool
-            True if debug mode is activated
-        """
-        if hasattr(data, self.DEBUG_FLAG):
-            debug_mode = getattr(data, self.DEBUG_FLAG)
-        elif isinstance(data, dict):
-            debug_mode = data.get(self.DEBUG_FLAG, False)
-        else:  # pragma: no cover
-            debug_mode = False
-
-        return debug_mode
 
     @abstractmethod
     def setup_debug_dict(self, data: Any, dict_name: str) -> Any:

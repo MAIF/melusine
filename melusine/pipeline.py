@@ -11,6 +11,8 @@ import importlib
 import warnings
 from typing import Any, Iterable, TypeVar
 
+import pandas as pd
+
 from melusine import config
 from melusine.backend import backend
 from melusine.base import MelusineTransformer
@@ -415,7 +417,7 @@ class MelusinePipeline:
                 x = transformer.transform(x)
         return self
 
-    def transform(self, x: Iterable[Any]) -> Iterable[Any]:
+    def transform(self, x: Iterable[Any], debug_mode: bool = False) -> Iterable[Any]:
         """
         Transform input dataset.
 
@@ -423,17 +425,41 @@ class MelusinePipeline:
         ----------
         x: Dataset
             Input Dataset.
+        debug_mode: Debug mode.
 
         Returns
         -------
         _: Dataset
             Output Dataset.
         """
+        # Legacy debug mode
+        if isinstance(x, dict) and x.get("debug"):
+            warnings.warn(
+                (
+                    "Debug mode activation via the debug field is deprecated and will be removed in a future release.\n"
+                    "Please use the 'debug_mode' of the transform method.\n"
+                ),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            debug_mode = True
+
+        if isinstance(x, pd.DataFrame) and hasattr(x, "debug"):
+            warnings.warn(
+                (
+                    "Debug mode activation via the debug attribute is deprecated and will be removed in a future release.\n"
+                    "Please use the 'debug_mode' of the transform method.\n"
+                ),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            debug_mode = True
+
         self.validate_input_fields(x)
 
         for name, steps in self.steps:
             if self.verbose:
                 print(f"Running step '{name}' with transformer {steps}...")
-            x = steps.transform(x)
+            x = steps.transform(x, debug_mode=debug_mode)
 
         return x

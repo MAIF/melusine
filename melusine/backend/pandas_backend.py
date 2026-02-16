@@ -204,6 +204,7 @@ class PandasBackend(BaseTransformerBackend):
         # Use Series.apply
         if input_columns and len(input_columns) == 1:
             input_column = input_columns[0]
+            df_chunks = [data.iloc[indices] for indices in np.array_split(np.arange(len(data)), workers)]
             chunks = Parallel(n_jobs=workers)(
                 delayed(self.apply_joblib_series)(
                     s=d[input_column],
@@ -212,11 +213,12 @@ class PandasBackend(BaseTransformerBackend):
                     progress_bar=self.progress_bar,
                     **kwargs,
                 )
-                for d in np.array_split(data, workers)
+                for d in df_chunks
             )
 
         # Use DataFrame.apply
         else:
+            df_chunks = [data.iloc[indices] for indices in np.array_split(np.arange(len(data)), workers)]
             chunks = Parallel(n_jobs=workers)(
                 delayed(self.apply_joblib_dataframe)(
                     df=d,
@@ -225,7 +227,7 @@ class PandasBackend(BaseTransformerBackend):
                     progress_bar=self.progress_bar,
                     **kwargs,
                 )
-                for d in np.array_split(data, workers)
+                for d in df_chunks
             )
 
         if not new_cols:

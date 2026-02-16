@@ -36,32 +36,6 @@ def test_backend_error():
     backend.reset()
 
 
-def test_check_debug_flag_dict():
-    dict_data = {"input_col": "àçöbïù"}
-    dict_backend = DictBackend()
-
-    assert dict_backend.check_debug_flag(dict_data) is False
-
-    dict_data = {"debug": False}
-    assert dict_backend.check_debug_flag(dict_data) is False
-
-    dict_data = {"debug": True}
-    assert dict_backend.check_debug_flag(dict_data) is True
-
-
-def test_check_debug_flag_pandas():
-    df = pd.DataFrame([{"input_col": "àçöbïù"}])
-    pandas_backend = PandasBackend()
-
-    assert pandas_backend.check_debug_flag(df) is False
-
-    df.debug = False
-    assert pandas_backend.check_debug_flag(df) is False
-
-    df.debug = True
-    assert pandas_backend.check_debug_flag(df) is True
-
-
 def test_add_fields_dict():
     dict_data1 = {"col1": 1, "col8": 8}
     dict_data2 = {"col1": 10, "col2": 2}

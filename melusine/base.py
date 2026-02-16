@@ -18,11 +18,11 @@ import copy
 import inspect
 import logging
 import re
+import warnings
 from abc import ABC, abstractmethod
 from typing import Any, Callable, Dict, Iterable, List, TypeVar, Union
 
 import pandas as pd
-from sklearn.base import BaseEstimator, TransformerMixin
 
 from melusine.backend import backend
 from melusine.io_mixin import IoMixin
@@ -45,7 +45,7 @@ class TransformError(Exception):
     """
 
 
-class MelusineTransformer(BaseEstimator, TransformerMixin, IoMixin):
+class MelusineTransformer(IoMixin):
     """
     Define a MelusineTransformer object.
 
@@ -116,7 +116,7 @@ class MelusineTransformer(BaseEstimator, TransformerMixin, IoMixin):
         """
         return self
 
-    def transform(self, data: MelusineDataset) -> MelusineDataset:
+    def transform(self, data: MelusineDataset, debug_mode: bool = False) -> MelusineDataset:
         """
         Transform input data.
 
@@ -124,6 +124,7 @@ class MelusineTransformer(BaseEstimator, TransformerMixin, IoMixin):
         ----------
         data: MelusineDataset
             Input data.
+        debug_mode: Debug mode.
 
         Returns
         -------
@@ -230,7 +231,7 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
         """
         return self
 
-    def transform(self, df: MelusineDataset) -> MelusineDataset:
+    def transform(self, df: MelusineDataset, debug_mode: bool = False) -> MelusineDataset:
         """
         Re-definition of super().transform() => specific detector's implementation
 
@@ -240,6 +241,7 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
         ----------
         df: MelusineDataset
             Input data.
+        debug_mode: Debug mode.
 
         Returns
         -------
@@ -248,14 +250,31 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
         """
         logger.debug(f"Running transform for {type(self).__name__}")
 
-        # Debug mode ON?
-        debug_mode: bool = backend.check_debug_flag(df)
+        # Legacy debug mode
+        if isinstance(df, dict) and df.get("debug"):
+            warnings.warn(
+                (
+                    "Debug mode activation via the debug field is deprecated and will be removed in a future release.\n"
+                    "Please use the 'debug_mode' of the transform method.\n"
+                ),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            debug_mode = True
+
+        if isinstance(df, pd.DataFrame) and hasattr(df, "debug"):
+            warnings.warn(
+                (
+                    "Debug mode activation via the debug attribute is deprecated and will be removed in a future release.\n"
+                    "Please use the 'debug_mode' of the transform method.\n"
+                ),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            debug_mode = True
 
         # Validate fields of the input data
         self.validate_input_fields(df)
-
-        # Work on a copy of the DataFrame and limit fields to effective input columns
-        # data_ = backend.copy(data, fields=self.input_columns)
 
         # Work on a copy of the DataFrame and keep all columns
         # (too complex to handle model input columns)

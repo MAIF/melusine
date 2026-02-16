@@ -140,8 +140,7 @@ def test_transform_debug_mode(df, good_detection_result, good_debug_info):
     debug_dict_col = detector.debug_dict_col
 
     # Transform data
-    df.debug = True
-    df = detector.transform(df)
+    df = detector.transform(df, debug_mode=True)
 
     # Collect results
     result = df[output_col].iloc[0]
