@@ -26,7 +26,7 @@ import re
 import unicodedata
 from abc import abstractmethod
 from re import Pattern
-from typing import Any, Iterable, Sequence, Union
+from typing import Any, Iterable, Literal, Sequence, Union
 
 import arrow
 
@@ -45,7 +45,7 @@ class Normalizer(MelusineTransformer):
 
     def __init__(
         self,
-        form: str = "NFKD",
+        form: Literal["NFC", "NFD", "NFKC", "NFKD"] = "NFKD",
         lowercase: bool = True,
         fix_newlines: bool = True,
         input_columns: str = "text",
@@ -165,7 +165,7 @@ class RegexTokenizer(MelusineTransformer):
         tokenizer_regex: str = r"\w+(?:[\?\-\"_]\w+)*",
         stopwords: list[str] | None = None,
         lowercase: bool = True,
-        normalization_form: str | None = None,
+        normalization_form: Literal["NFC", "NFD", "NFKC", "NFKD"] | None = None,
         input_columns: str = "text",
         output_columns: str = "tokens",
     ):

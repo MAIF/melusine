@@ -187,11 +187,11 @@ class GmailConnector:
                 if "text/plain" in content_type:
                     bytes_string = part.get_payload(decode=True)
                     charset = part.get_content_charset("iso-8859-1")
-                    body += bytes_string.decode(charset, "replace")
+                    body += bytes_string.decode(charset, "replace")  # type: ignore
         else:
             bytes_string = parsed_email.get_payload(decode=True)
             charset = parsed_email.get_content_charset("iso-8859-1")
-            body += bytes_string.decode(charset, "replace")
+            body += bytes_string.decode(charset, "replace")  # type: ignore
 
         attachments_list: List[Dict] = []
         for part in parsed_email.iter_attachments():  # type: ignore

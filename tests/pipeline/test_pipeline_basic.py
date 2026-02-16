@@ -1,6 +1,7 @@
 """
 Example script to fit a minimal preprocessing pipeline
 """
+
 from contextlib import nullcontext as does_not_raise
 from unittest import mock
 
@@ -341,8 +342,12 @@ def test_pipeline_from_config_with_error():
     test_conf_dict[pipeline_key] = conf_pipeline_basic
     config.reset(config_dict=test_conf_dict)
 
-    with mock.patch("melusine.pipeline.MelusinePipeline.import_class") as mock_import_class, pytest.raises(
-        AttributeError, match=r"Object '.+' does not implement 'from_config'.+to inherit it from the Melusine IoMixin.+"
+    with (
+        mock.patch("melusine.pipeline.MelusinePipeline.import_class") as mock_import_class,
+        pytest.raises(
+            AttributeError,
+            match=r"Object '.+' does not implement 'from_config'.+to inherit it from the Melusine IoMixin.+",
+        ),
     ):
 
         class WrongNormalizerWithoutMethodFromConfig:
@@ -355,9 +360,10 @@ def test_pipeline_from_config_with_error():
         # Create pipeline from a json config file
         _ = MelusinePipeline.from_config(config_key=pipeline_key, verbose=True)
 
-    with mock.patch("melusine.pipeline.MelusinePipeline.import_class") as mock_import_class, pytest.raises(
-        AttributeError
-    ) as e:
+    with (
+        mock.patch("melusine.pipeline.MelusinePipeline.import_class") as mock_import_class,
+        pytest.raises(AttributeError) as e,
+    ):
 
         class WrongNormalizerWithMethodFromConfig:
             def __init__(self) -> None:
