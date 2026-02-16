@@ -11,8 +11,6 @@ import importlib
 import warnings
 from typing import Any, Iterable, TypeVar
 
-from sklearn.pipeline import Pipeline
-
 from melusine import config
 from melusine.backend import backend
 from melusine.base import MelusineTransformer
@@ -27,7 +25,7 @@ class PipelineConfigurationError(Exception):
     """
 
 
-class MelusinePipeline(Pipeline):
+class MelusinePipeline:
     """
     This class defines and executes data transformation.
 
@@ -43,8 +41,7 @@ class MelusinePipeline(Pipeline):
 
     def __init__(
         self,
-        steps: list[tuple[str, MelusineTransformer]],
-        memory: bool | None = None,
+        steps: list[tuple[str, MelusineTransformer | MelusinePipeline]],
         verbose: bool = False,
     ) -> None:
         """
@@ -54,14 +51,11 @@ class MelusinePipeline(Pipeline):
         ----------
         steps: List[Tuple[str, MelusineTransformer]]
             List of the pipeline steps.
-        memory: bool
-            If True, cache invariant transformers when running grid searches.
         verbose: bool
             Verbose mode.
         """
-        Pipeline.__init__(self, steps=steps, memory=memory, verbose=verbose)
-
-        self.memory = memory
+        self.steps = steps
+        self.named_steps = dict(steps)
         self.verbose = verbose
 
     @property
@@ -409,13 +403,25 @@ class MelusinePipeline(Pipeline):
 
             active_fields |= set(step.output_columns)
 
-    def transform(self, X: Iterable[Any]) -> Iterable[Any]:  # NOSONAR
+    def fit(self, x, y=None):
+        """
+        Fit the pipeline.
+        Not recommended for Melusine but present for sklearn compatibility.
+        """
+        for name, transformer in self.steps:
+            if hasattr(transformer, "fit"):
+                transformer.fit(x, y)
+            if hasattr(transformer, "transform"):
+                x = transformer.transform(x)
+        return self
+
+    def transform(self, x: Iterable[Any]) -> Iterable[Any]:
         """
         Transform input dataset.
 
         Parameters
         ----------
-        X: Dataset
+        x: Dataset
             Input Dataset.
 
         Returns
@@ -423,17 +429,11 @@ class MelusinePipeline(Pipeline):
         _: Dataset
             Output Dataset.
         """
-        self.validate_input_fields(X)
-        return super().transform(X)
+        self.validate_input_fields(x)
 
-    def fit(self, X=None, y=None, **fit_params):
-        """
-        No-op fit method to ensure compatibility with scikit-learn >=1.2,
-        which requires pipelines to be fitted before calling transform.
-        Returns self without modifying anything.
-        """
-        return self
+        for name, steps in self.steps:
+            if self.verbose:
+                print(f"Running step '{name}' with transformer {steps}...")
+            x = steps.transform(x)
 
-    def __sklearn_is_fitted__(self) -> bool:
-        """MelusinePipeline is considered always fitted since it is designed to be stateless."""
-        return True
+        return x
