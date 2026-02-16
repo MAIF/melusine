@@ -204,6 +204,7 @@ class PandasBackend(BaseTransformerBackend):
         # Use Series.apply
         if input_columns and len(input_columns) == 1:
             input_column = input_columns[0]
+            splits = [data.iloc[i::workers] for i in range(workers)]
             chunks = Parallel(n_jobs=workers)(
                 delayed(self.apply_joblib_series)(
                     s=d[input_column],
@@ -212,26 +213,27 @@ class PandasBackend(BaseTransformerBackend):
                     progress_bar=self.progress_bar,
                     **kwargs,
                 )
-                for d in np.array_split(data, workers)
+                for d in splits
             )
 
         # Use DataFrame.apply
         else:
+            splits = [data.iloc[i::workers] for i in range(workers)]
             chunks = Parallel(n_jobs=workers)(
                 delayed(self.apply_joblib_dataframe)(
-                    df=pd.DataFrame(d) if not isinstance(d, pd.DataFrame) else d,
+                    df=d,
                     func=func,
                     expand=expand,
                     progress_bar=self.progress_bar,
                     **kwargs,
                 )
-                for d in np.array_split(data, workers)
+                for d in splits
             )
 
         if not new_cols:
-            data = pd.concat(chunks)
+            data = pd.concat(chunks).sort_index(kind="mergesort")
         else:
-            data[new_cols] = pd.concat(chunks)
+            data[new_cols] = pd.concat(chunks).sort_index(kind="mergesort")
 
         return data
 
