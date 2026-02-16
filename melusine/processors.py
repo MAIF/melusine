@@ -510,7 +510,7 @@ class Segmenter(BaseSegmenter):
         # Combine pattern with and without semicolon, et avec retour à la ligne
         starter_pattern = (
             rf"(?:{starter_pattern_with_semicolon}|{starter_pattern_with_newline}|{starter_pattern_without_semicolon})"
-        )# noqa
+        )
 
         # Match everything until the end of the line.
         # Match End of line "\n" and "space" characters
