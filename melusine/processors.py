@@ -2125,4 +2125,3 @@ class DateProcessor(MelusineTransformer):
 
         # We were not working with abbrevations so we use arrow package
         return arrow.get(matched_group, format_).datetime.strftime(cls.ISO_FORMAT)
-
