@@ -1,5 +1,3 @@
-from typing import Dict, List, Optional, Union
-
 from melusine.base import MelusineRegex
 
 
@@ -9,7 +7,7 @@ class VacationReplyRegex(MelusineRegex):
     """
 
     @property
-    def positive(self) -> Union[str, Dict[str, str]]:
+    def positive(self) -> str | dict[str, str]:
         """
         Define regex patterns required to activate the MelusineRegex.
 
@@ -34,7 +32,7 @@ class VacationReplyRegex(MelusineRegex):
         )
 
     @property
-    def neutral(self) -> Optional[Union[str, Dict[str, str]]]:
+    def neutral(self) -> str | dict[str, str] | None:
         """
         Define regex patterns to be ignored when running detection.
 
@@ -44,7 +42,7 @@ class VacationReplyRegex(MelusineRegex):
         return None
 
     @property
-    def negative(self) -> Optional[Union[str, Dict[str, str]]]:
+    def negative(self) -> str | dict[str, str] | None:
         """
         Define regex patterns prohibited to activate the MelusineRegex.
 
@@ -89,7 +87,7 @@ class VacationReplyRegex(MelusineRegex):
         )
 
     @property
-    def match_list(self) -> List[str]:
+    def match_list(self) -> list[str]:
         """
         List of texts that should activate the MelusineRegex.
 
@@ -108,7 +106,7 @@ class VacationReplyRegex(MelusineRegex):
         ]
 
     @property
-    def no_match_list(self) -> List[str]:
+    def no_match_list(self) -> list[str]:
         """
         List of texts that should NOT activate the MelusineRegex.
 

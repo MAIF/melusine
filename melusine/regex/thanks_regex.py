@@ -1,5 +1,3 @@
-from typing import Dict, List, Optional, Union
-
 from melusine.base import MelusineRegex
 
 
@@ -9,7 +7,7 @@ class ThanksRegex(MelusineRegex):
     """
 
     @property
-    def positive(self) -> Union[str, Dict[str, str]]:
+    def positive(self) -> str | dict[str, str]:
         """
         Define regex patterns required to activate the MelusineRegex.
 
@@ -19,7 +17,7 @@ class ThanksRegex(MelusineRegex):
         return r"\bmerci+s?\b|\bremercie?"
 
     @property
-    def neutral(self) -> Optional[Union[str, Dict[str, str]]]:
+    def neutral(self) -> str | dict[str, str] | None:
         """
         Define regex patterns to be ignored when running detection.
 
@@ -29,7 +27,7 @@ class ThanksRegex(MelusineRegex):
         return None
 
     @property
-    def negative(self) -> Optional[Union[str, Dict[str, str]]]:
+    def negative(self) -> str | dict[str, str] | None:
         """
         Define regex patterns prohibited to activate the MelusineRegex.
 
@@ -49,7 +47,7 @@ class ThanksRegex(MelusineRegex):
         return dict(QUESTION=r"\?", FORBIDDEN_WORDS=r"\b(" + "|".join(forbidden_thanks_words) + ")")
 
     @property
-    def match_list(self) -> List[str]:
+    def match_list(self) -> list[str]:
         """
         List of texts that should activate the MelusineRegex.
 
@@ -64,7 +62,7 @@ class ThanksRegex(MelusineRegex):
         ]
 
     @property
-    def no_match_list(self) -> List[str]:
+    def no_match_list(self) -> list[str]:
         """
         List of texts that should NOT activate the MelusineRegex.
 

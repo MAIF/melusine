@@ -490,7 +490,8 @@ class Segmenter(BaseSegmenter):
             (
                 rf"\bLe (?:"
                 rf"\d{{2}}/\d{{2}}/\d{{4}}|\d{{4}}-\d{{2}}-\d{{2}}|{regex_weekdays}|"  # noqa
-                rf"\d{{1,2}} {regex_months})(?:.|\n){{,30}}\d{{2}}:\d{{2}}(?:.|\n){{,50}}(?:\<.{{,30}}\>.{{,5}})?\ba [éecrit]"  # noqa
+                rf"\d{{1,2}} {regex_months})(?:.|\n)"
+                r"{{,30}}\d{{2}}:\d{{2}}(?:.|\n){{,50}}(?:\<.{{,30}}\>.{{,5}})?\ba [éecrit]"  # noqa
             ),
             r"Transf[ée]r[ée] par",
             r"D[ée]but du message transf[ée]r[ée] :",
@@ -507,7 +508,9 @@ class Segmenter(BaseSegmenter):
         starter_pattern_without_semicolon = f"{piped_keywords_without_semicolon}(?:[\n ]*--+)?"
 
         # Combine pattern with and without semicolon, et avec retour à la ligne
-        starter_pattern = rf"(?:{starter_pattern_with_semicolon}|{starter_pattern_with_newline}|{starter_pattern_without_semicolon})"  # noqa
+        starter_pattern = (
+            rf"(?:{starter_pattern_with_semicolon}|{starter_pattern_with_newline}|{starter_pattern_without_semicolon})"
+        )# noqa
 
         # Match everything until the end of the line.
         # Match End of line "\n" and "space" characters
@@ -928,8 +931,8 @@ class BaseContentTagger(MelusineTransformer):
         if isinstance(regex, str):
             try:
                 regex = re.compile(regex, flags=self.default_regex_flag)
-            except re.error:
-                raise ValueError(f"Invalid regex for tag {tag}:\n{regex}")
+            except re.error as err:
+                raise ValueError(f"Invalid regex for tag {tag}:\n{regex}") from err
         elif isinstance(regex, re.Pattern):
             pass
         else:
@@ -1232,7 +1235,10 @@ class ContentTagger(BaseContentTagger):
             r"^.{0,10}courtoisement.{0,16}$",
             r"^.{0,10}bien [àa] (?:toi|vous).{0,16}$",
             r"^.{0,10}sentiments? (?:d[ée]vou[ée]s?|mutualistes?).{0,16}$",
-            r"^.{0,10}(Veuillez.{,3})?(accepte[zr] .{,8}|receve[zr] .{,8})?(meilleure?s?|sinc[eè]res?|cordiale?s?)? ?(salutations?|sentiments?).{0,16}$",
+            (
+                r"^.{0,10}(Veuillez.{,3})?(accepte[zr] .{,8}|receve[zr] .{,8})?"
+                r"(meilleure?s?|sinc[eè]res?|cordiale?s?)? ?(salutations?|sentiments?).{0,16}$"
+            ),
             r"^.{0,45}(?:(?:l')?expression|assurance) de (?:nos|mes) sentiments.{0,16}$",
             r"^.{0,50}(?:salutations?|sentiments?) distingu.{0,30}$",
             r"^.{0,10}Respectueusement.{0,16}$",
@@ -1242,7 +1248,10 @@ class ContentTagger(BaseContentTagger):
             r"^.{0,3}Bonne r[ée]ception.{0,3}$",
             r"^.{0,3}votre bien d[ée]vou[ée]e?.{0,3}$",
             r"^.{0,3}amicalement votre.{0,3}$",
-            r"^.{,3}je vous prie de croire.{,50}(expression|assurance)?.{,50}(consideration|salutations|sentiments).{,30}$",
+            (
+                r"^.{,3}je vous prie de croire.{,50}"
+                r"(expression|assurance)?.{,50}(consideration|salutations|sentiments).{,30}$"
+            ),
             # English
             r"^.{0,3}regards.{0,3}$",
             r"^.{0,3}(best|warm|kind|my) *(regards|wishes)?.{0,3}$",
@@ -1523,7 +1532,10 @@ class ContentTagger(BaseContentTagger):
                 "( *(\n+|$))"
             ),
             # Make sure there are at least 6 digits
-            r"^.{,3}(T[ée]l[ée]?(phone|copie)?|Fax|mobile|phone|num[ée]ro|ligne).{,20}\d{2}[ .-]?\d{2}[ .-]?\d{2}.{,20} *(?:\n+|$)",
+            (
+                r"^.{,3}(T[ée]l[ée]?(phone|copie)?|Fax|mobile|phone|num[ée]ro|ligne).{,20}"
+                r"\d{2}[ .-]?\d{2}[ .-]?\d{2}.{,20} *(?:\n+|$)"
+            ),
             # Phone number on separate line
             r"^.{,3}(T[ée]l[ée]?(phone|copie)?|Fax|mobile|phone|num[ée]ro|ligne).{,3} *(?:\n+|$)",
             r"^.{,3}Appel non surtax[ée].{,3}$",

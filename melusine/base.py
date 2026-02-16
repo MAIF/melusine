@@ -20,7 +20,7 @@ import logging
 import re
 import warnings
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Iterable, TypeVar, TypeAlias
+from typing import Any, Callable, Iterable, TypeAlias, TypeVar
 
 import pandas as pd
 

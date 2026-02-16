@@ -2,7 +2,7 @@
 Module that contains utility functions for tests (in /tests).
 """
 
-from typing import Any, Dict
+from typing import Any
 
 from melusine.base import MelusineTransformer
 from melusine.pipeline import MelusinePipeline
@@ -10,7 +10,7 @@ from melusine.pipeline import MelusinePipeline
 expected_suffix: str = "_expected"
 
 
-def assert_pipeline_results(email: Dict[str, Any], pipeline_name: str) -> None:
+def assert_pipeline_results(email: dict[str, Any], pipeline_name: str) -> None:
     """
     Assert that the pipeline execution result correspond to the testcase expectation.
 
@@ -40,8 +40,8 @@ def assert_pipeline_results(email: Dict[str, Any], pipeline_name: str) -> None:
 
 
 def assert_transformation(
-    email: Dict[str, Any], transformer: MelusineTransformer | MelusinePipeline, transformer_name: str, test_name: str
-) -> Dict[str, Any]:
+    email: dict[str, Any], transformer: MelusineTransformer | MelusinePipeline, transformer_name: str, test_name: str
+) -> dict[str, Any]:
     """
 
     Parameters
@@ -81,7 +81,7 @@ def assert_transformation(
 
 
 def assert_message_attribute(
-    col: str, email: Dict[str, Any], expected_value: Any, test_name: str, transformer_name: str
+    col: str, email: dict[str, Any], expected_value: Any, test_name: str, transformer_name: str
 ) -> None:
     """
 
