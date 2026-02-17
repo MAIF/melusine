@@ -1,32 +1,30 @@
-"""
-Backend to run transforms on dict objects.
+"""Backend to run transforms on dict objects.
 
 Implemented classes: [
     DictBackend,
 ]
 """
 
-from typing import Any, Callable, Dict, List, Optional
+from collections.abc import Callable
+from typing import Any
 
 from melusine.backend.base_backend import BaseTransformerBackend
 
 
 class DictBackend(BaseTransformerBackend):
-    """
-    Backend class to operate on dict objects.
+    """Backend class to operate on dict objects.
     Inherits from the BaseTransformerBackend abstract class.
     """
 
     def apply_transform(
         self,
-        data: Dict[str, Any],
+        data: dict[str, Any],
         func: Callable,
-        output_columns: Optional[List[str]] = None,
-        input_columns: Optional[List[str]] = None,
+        output_columns: list[str] | None = None,
+        input_columns: list[str] | None = None,
         **kwargs: Any,
-    ) -> Dict[str, Any]:
-        """
-        Method to apply a transform on a Dataset using the Dict backend.
+    ) -> dict[str, Any]:
+        """Method to apply a transform on a Dataset using the Dict backend.
 
         Parameters
         ----------
@@ -44,6 +42,7 @@ class DictBackend(BaseTransformerBackend):
         -------
         _: Dict[str: Any]
             Transformed data
+
         """
         if input_columns and len(input_columns) == 1:
             input_column = input_columns[0]
@@ -60,7 +59,7 @@ class DictBackend(BaseTransformerBackend):
             # Create multiple new fields
             else:
                 result = func(data[input_column], **kwargs)
-                data.update(dict(zip(output_columns, result)))
+                data.update(dict(zip(output_columns, result, strict=True)))
 
         # Use DataFrame.apply
         else:
@@ -76,15 +75,14 @@ class DictBackend(BaseTransformerBackend):
             # Create multiple new fields
             else:
                 result = func(data, **kwargs)
-                data.update(dict(zip(output_columns, result)))
+                data.update(dict(zip(output_columns, result, strict=True)))
 
         return data
 
     def add_fields(
-        self, left: Dict[str, Any], right: Dict[str, Any], fields: Optional[List[str]] = None
-    ) -> Dict[str, Any]:
-        """
-        Method to add fields form the right object to the left object.
+        self, left: dict[str, Any], right: dict[str, Any], fields: list[str] | None = None
+    ) -> dict[str, Any]:
+        """Method to add fields form the right object to the left object.
 
         Parameters
         ----------
@@ -99,6 +97,7 @@ class DictBackend(BaseTransformerBackend):
         -------
         _: Dict[str, Any]
             Left object with added fields
+
         """
         if not fields:
             fields = list(right.keys())
@@ -108,9 +107,8 @@ class DictBackend(BaseTransformerBackend):
 
         return left
 
-    def copy(self, data: Dict[str, Any], fields: Optional[List[str]] = None) -> Dict[str, Any]:
-        """
-        Method to make a copy of the dataset.
+    def copy(self, data: dict[str, Any], fields: list[str] | None = None) -> dict[str, Any]:
+        """Method to make a copy of the dataset.
 
         Parameters
         ----------
@@ -123,6 +121,7 @@ class DictBackend(BaseTransformerBackend):
         -------
         _: Dict[str, Any]
             Copy of original object
+
         """
         new_dict = dict()
 
@@ -134,9 +133,8 @@ class DictBackend(BaseTransformerBackend):
 
         return new_dict
 
-    def get_fields(self, data: Dict[str, Any]) -> List[str]:
-        """
-        Method to get the list of fields available in the input dataset.
+    def get_fields(self, data: dict[str, Any]) -> list[str]:
+        """Method to get the list of fields available in the input dataset.
 
         Parameters
         ----------
@@ -147,12 +145,12 @@ class DictBackend(BaseTransformerBackend):
         -------
         _: List[str]
             List of dataset fields
+
         """
         return list(data.keys())
 
-    def setup_debug_dict(self, data: Dict[str, Any], dict_name: str) -> Dict[str, Any]:
-        """
-        Method to check if debug_mode is activated.
+    def setup_debug_dict(self, data: dict[str, Any], dict_name: str) -> dict[str, Any]:
+        """Method to check if debug_mode is activated.
 
         Parameters
         ----------
@@ -165,6 +163,7 @@ class DictBackend(BaseTransformerBackend):
         -------
         _: Dict[str, Any]
             MelusineDataset object
+
         """
         data[dict_name] = {}
 

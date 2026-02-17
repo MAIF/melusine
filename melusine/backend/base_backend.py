@@ -1,5 +1,4 @@
-"""
-Melusine transformation can operate on different data structures such as dict or pandas.DataFrame.
+"""Melusine transformation can operate on different data structures such as dict or pandas.DataFrame.
 Different transformation backends are used to process different data structures.
 The BaseTransformerBackend class defines the interface for transformation backend classes.
 
@@ -9,29 +8,26 @@ Implemented classes: [
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, List, Optional
+from collections.abc import Callable
+from typing import Any
 
 
 class BaseTransformerBackend(ABC):
-    """
-    Abstract base class defining how to implement a Melusine Backend.
+    """Abstract base class defining how to implement a Melusine Backend.
     Each backend applies transform operations on a specific type of data.
     Ex: Pandas DataFrames, Dict, Spark objects, etc
     """
-
-    DEBUG_FLAG = "debug"
 
     @abstractmethod
     def apply_transform(
         self,
         data: Any,
         func: Callable,
-        output_columns: Optional[List[str]] = None,
-        input_columns: Optional[List[str]] = None,
+        output_columns: list[str] | None = None,
+        input_columns: list[str] | None = None,
         **kwargs: Any,
     ) -> Any:
-        """
-        Method to apply a transform on a Dataset using the current backend.
+        """Method to apply a transform on a Dataset using the current backend.
 
         Parameters
         ----------
@@ -49,12 +45,12 @@ class BaseTransformerBackend(ABC):
         -------
         _: Any
             Transformed data
+
         """
 
     @abstractmethod
-    def add_fields(self, left: Any, right: Any, fields: Optional[List[str]] = None) -> Any:
-        """
-        Method to add fields form the right object to the left object.
+    def add_fields(self, left: Any, right: Any, fields: list[str] | None = None) -> Any:
+        """Method to add fields form the right object to the left object.
 
         Parameters
         ----------
@@ -69,12 +65,12 @@ class BaseTransformerBackend(ABC):
         -------
         _: Dataset
             Left object with added fields
+
         """
 
     @abstractmethod
-    def copy(self, data: Any, fields: Optional[List[str]] = None) -> Any:
-        """
-        Method to make a copy of the dataset.
+    def copy(self, data: Any, fields: list[str] | None = None) -> Any:
+        """Method to make a copy of the dataset.
 
         Parameters
         ----------
@@ -87,12 +83,12 @@ class BaseTransformerBackend(ABC):
         -------
         _: Dataset
             Copy of original object
+
         """
 
     @abstractmethod
-    def get_fields(self, data: Any) -> List[str]:
-        """
-        Method to get the list of fields available in the input dataset.
+    def get_fields(self, data: Any) -> list[str]:
+        """Method to get the list of fields available in the input dataset.
 
         Parameters
         ----------
@@ -103,35 +99,12 @@ class BaseTransformerBackend(ABC):
         -------
         _: List[str]
             List of dataset fields
+
         """
-
-    def check_debug_flag(self, data: Any) -> bool:
-        """
-        Method to check if debug_mode is activated.
-
-        Parameters
-        ----------
-        data: Dataset
-            MelusineDataset object
-
-        Returns
-        -------
-        _: bool
-            True if debug mode is activated
-        """
-        if hasattr(data, self.DEBUG_FLAG):
-            debug_mode = getattr(data, self.DEBUG_FLAG)
-        elif isinstance(data, dict):
-            debug_mode = data.get(self.DEBUG_FLAG, False)
-        else:  # pragma: no cover
-            debug_mode = False
-
-        return debug_mode
 
     @abstractmethod
     def setup_debug_dict(self, data: Any, dict_name: str) -> Any:
-        """
-        Method to check if debug_mode is activated.
+        """Method to check if debug_mode is activated.
 
         Parameters
         ----------
@@ -144,4 +117,5 @@ class BaseTransformerBackend(ABC):
         -------
         _: Dataset
             MelusineDataset object
+
         """

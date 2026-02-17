@@ -1,5 +1,4 @@
-"""
-This module contains classes for the MelusinePipeline object.
+"""Classes for the MelusinePipeline object.
 
 Implemented classes: [PipelineConfigurationError, MelusinePipeline]
 """
@@ -9,13 +8,13 @@ from __future__ import annotations
 import copy
 import importlib
 import warnings
-from typing import Iterable, TypeVar
+from collections.abc import Iterable
+from typing import Any, TypeVar
 
-from sklearn.pipeline import Pipeline
+import pandas as pd
 
 from melusine import config
 from melusine.backend import backend
-from melusine.backend.base_backend import Any
 from melusine.base import MelusineTransformer
 from melusine.io_mixin import IoMixin
 
@@ -23,16 +22,13 @@ T = TypeVar("T")
 
 
 class PipelineConfigurationError(Exception):
-    """
-    Error raised when an error is found in the pipeline configuration.
-    """
+    """Error raised when an error is found in the pipeline configuration."""
 
 
-class MelusinePipeline(Pipeline):
-    """
-    This class defines and executes data transformation.
+class MelusinePipeline:
+    """Define and executes data transformation.
 
-    The MelusinePipeline is built on top of sklearn Pipelines.
+    The MelusinePipeline is similar but does not inherit from the sklearn Pipeline.
     """
 
     OBJ_NAME: str = "name"
@@ -44,38 +40,34 @@ class MelusinePipeline(Pipeline):
 
     def __init__(
         self,
-        steps: list[tuple[str, MelusineTransformer]],
-        memory: bool | None = None,
+        steps: list[tuple[str, MelusineTransformer | MelusinePipeline]],
         verbose: bool = False,
     ) -> None:
-        """
-        Initialize attributes.
+        """Initialize attributes.
 
         Parameters
         ----------
         steps: List[Tuple[str, MelusineTransformer]]
             List of the pipeline steps.
-        memory: bool
-            If True, cache invariant transformers when running grid searches.
         verbose: bool
             Verbose mode.
-        """
-        Pipeline.__init__(self, steps=steps, memory=memory, verbose=verbose)
 
-        self.memory = memory
+        """
+        self.steps = steps
+        self.named_steps = dict(steps)
         self.verbose = verbose
 
     @property
     def input_columns(self) -> list[str]:
-        """
-        Input fields of the Pipeline.
+        """Input fields of the Pipeline.
 
         Returns
         -------
         _: List[str]
             List of input fields.
+
         """
-        column_set: set[str] = set()
+        column_set = set()
         for _, step in self.steps:
             # UNION between sets
             column_set |= set(step.input_columns)
@@ -84,15 +76,15 @@ class MelusinePipeline(Pipeline):
 
     @property
     def output_columns(self) -> list[str]:
-        """
-        Output fields of the Pipeline.
+        """Output fields of the Pipeline.
 
         Returns
         -------
         _: List[str]
             List of output fields.
+
         """
-        column_set: set[str] = set()
+        column_set = set()
         for _, step in self.steps:
             column_set |= set(step.output_columns)
 
@@ -100,8 +92,7 @@ class MelusinePipeline(Pipeline):
 
     @classmethod
     def get_obj_class(cls, obj_params: dict[str, Any]) -> Any:
-        """
-        Get the class object of an instance.
+        """Get the class object of an instance.
 
         Parameters
         ----------
@@ -111,6 +102,7 @@ class MelusinePipeline(Pipeline):
         -------
         _: Any
             Class object.
+
         """
         obj_class_name = obj_params.pop(cls.OBJ_CLASS)
         obj_module = obj_params.pop(cls.OBJ_MODULE)
@@ -121,8 +113,7 @@ class MelusinePipeline(Pipeline):
 
     @staticmethod
     def import_class(obj_class_name: str, obj_module: str) -> Any:
-        """
-        Method to import a class dynamically.
+        """Method to import a class dynamically.
 
         Parameters
         ----------
@@ -135,6 +126,7 @@ class MelusinePipeline(Pipeline):
         -------
         _: Any
             Class object.
+
         """
         # Import object class from name and module
         module = importlib.import_module(obj_module)
@@ -145,8 +137,7 @@ class MelusinePipeline(Pipeline):
 
     @classmethod
     def flatten_pipeline_config(cls, conf: dict[str, Any]) -> dict[str, Any]:
-        """
-        Flatten nested Melusine Pipelines.
+        """Flatten nested Melusine Pipelines.
 
         This makes it easier for the rest of the processing.
 
@@ -159,8 +150,9 @@ class MelusinePipeline(Pipeline):
         -------
         _: Dict[str, Any]
             Flattened conf.
+
         """
-        new_conf: list[Any] = list()
+        new_conf = list()
         for step in conf[cls.STEPS_KEY]:
             if step.get(cls.OBJ_CLASS, "") == cls.__name__:
                 subpipeline_conf = cls.flatten_pipeline_config(step["parameters"])
@@ -175,8 +167,7 @@ class MelusinePipeline(Pipeline):
     def from_config(
         cls, config_key: str | None = None, config_dict: dict[str, Any] | None = None, **kwargs: Any
     ) -> MelusinePipeline:
-        """
-        Instantiate a MelusinePipeline from a config key.
+        """Instantiate a MelusinePipeline from a config key.
 
         Parameters
         ----------
@@ -189,6 +180,7 @@ class MelusinePipeline(Pipeline):
         -------
         _: MelusinePipeline
             Pipeline instance.
+
         """
         init_params = dict()
 
@@ -226,21 +218,26 @@ class MelusinePipeline(Pipeline):
                 obj = obj_class.from_config(config_dict=obj_params)
                 if not issubclass(obj_class, IoMixin) and not suppress_warnings:
                     type_warn_msg: str = f"""
-                        It seems you are not using a melusine object in your melusine pipeline, but object '{obj_class}' (class {type(obj_class)}) for step '{step_name}'.
+                        It seems you are not using a melusine object in your melusine pipeline,
+                        but object '{obj_class}' (class {type(obj_class)}) for step '{step_name}'.
                         The expected behavior is not guaranteed and can break in future version of melusine.
 
                         Recommended usage:
-                            - Exclusive usage of melusine class Pipeline with melusine objects (MelusineTransformer, MelusineDetector...)
+                            - Exclusive usage of melusine class Pipeline with melusine objects
+                            (MelusineTransformer, MelusineDetector...)
 
-                        To suppress this warning, instanciate melusine Pipeline with suppress_warnings argument at True (MelusinePipeline.from_config(..., suppress_warnings=True)).
+                        To suppress this warning, instanciate melusine Pipeline with suppress_warnings argument at True
+                        (MelusinePipeline.from_config(..., suppress_warnings=True)).
 
-                        Visit Melusine Open-Source project: https://github.com/MAIF/melusine and the documentation for more information.
+                        Visit Melusine Open-Source project: https://github.com/MAIF/melusine and the documentation for
+                        more information.
                     """
                     warnings.warn(message=type_warn_msg, category=DeprecationWarning, stacklevel=2)
             except AttributeError as err:
                 if not hasattr(obj_class, "from_config"):
                     raise AttributeError(
-                        f"Object '{obj_class}' does not implement 'from_config' method, maybe consider to inherit it from the Melusine IoMixin class or use a MelusineTransformer class."
+                        f"Object '{obj_class}' does not implement 'from_config' method, maybe consider to "
+                        "inherit it from the Melusine IoMixin class or use a MelusineTransformer class."
                     ) from None
                 else:
                     raise AttributeError(f"Error in loading class: '{obj_class}'\\n{str(err)}").with_traceback(
@@ -259,8 +256,7 @@ class MelusinePipeline(Pipeline):
 
     @classmethod
     def validate_step_config(cls, step: dict[str, Any]) -> dict[str, Any]:
-        """
-        Validate a pipeline step configuration.
+        """Validate a pipeline step configuration.
 
         Parameters
         ----------
@@ -269,6 +265,7 @@ class MelusinePipeline(Pipeline):
         Returns
         -------
         _: Validated pipeline step configuration.
+
         """
         if not step.get(cls.OBJ_CLASS) or not step.get(cls.OBJ_MODULE):
             raise PipelineConfigurationError(
@@ -302,8 +299,7 @@ class MelusinePipeline(Pipeline):
 
     @classmethod
     def validate_pipeline_config(cls, pipeline_conf: dict[str, Any]) -> dict[str, Any]:
-        """
-        Validate a pipeline configuration.
+        """Validate a pipeline configuration.
 
         Parameters
         ----------
@@ -312,6 +308,7 @@ class MelusinePipeline(Pipeline):
         Returns
         -------
         _: Validated pipeline configuration.
+
         """
         validated_pipeline_conf: dict[str, Any] = {cls.STEPS_KEY: []}
         steps = pipeline_conf.get(cls.STEPS_KEY)
@@ -328,8 +325,7 @@ class MelusinePipeline(Pipeline):
 
     @classmethod
     def parse_pipeline_config(cls, config_dict: dict[str, Any]) -> dict[str, Any]:
-        """
-        Parse config dict to replace config key by the associated configurations.
+        """Parse config dict to replace config key by the associated configurations.
 
         Parameters
         ----------
@@ -340,6 +336,7 @@ class MelusinePipeline(Pipeline):
         -------
         _: Dict[str, Any]
             Parsed config.
+
         """
         config_dict = copy.deepcopy(config_dict)
 
@@ -372,8 +369,7 @@ class MelusinePipeline(Pipeline):
 
     @classmethod
     def get_config_from_key(cls, config_key: str) -> dict[str, Any]:
-        """
-        Parse config dict to replace config key by the associated configurations.
+        """Parse config dict to replace config key by the associated configurations.
 
         Parameters
         ----------
@@ -383,20 +379,21 @@ class MelusinePipeline(Pipeline):
         -------
         _: Dict[str, Any]
             Parsed config.
+
         """
         return cls.parse_pipeline_config(config_dict=config[config_key])
 
     def validate_input_fields(self, data: Any) -> None:
-        """
-        Validate input fields prior of executing the pipeline.
+        """Validate input fields prior of executing the pipeline.
         Use the input_columns and output_columns attributes of each step.
 
         Parameters
         ----------
         data: Any
             Input data.
+
         """
-        active_fields: set[str] = set(backend.get_fields(data))
+        active_fields = set(backend.get_fields(data))
 
         for step_name, step in self.steps:
             difference = set(step.input_columns).difference(active_fields)
@@ -410,19 +407,63 @@ class MelusinePipeline(Pipeline):
 
             active_fields |= set(step.output_columns)
 
-    def transform(self, X: Iterable[Any]) -> Iterable[Any]:  # NOSONAR
+    def fit(self, x, y=None):
+        """Fit the pipeline.
+        Not recommended for Melusine but present for sklearn compatibility.
         """
-        Transform input dataset.
+        for name, step in self.steps:
+            if self.verbose:
+                print(f"Running fit step '{name}' with transformer {step}...")
+            if hasattr(step, "fit"):
+                step.fit(x, y)
+            if hasattr(step, "transform"):
+                x = step.transform(x)
+        return self
+
+    def transform(self, x: Iterable[Any], debug_mode: bool = False) -> Iterable[Any]:
+        """Transform input dataset.
 
         Parameters
         ----------
-        X: Dataset
+        x: Dataset
             Input Dataset.
+        debug_mode: Debug mode.
 
         Returns
         -------
         _: Dataset
             Output Dataset.
+
         """
-        self.validate_input_fields(X)
-        return super().transform(X)
+        # Legacy debug mode
+        if isinstance(x, dict) and x.get("debug"):
+            warnings.warn(
+                (
+                    "Debug mode activation via the debug field is deprecated and will be removed in a future release.\n"
+                    "Please use the 'debug_mode' of the transform method.\n"
+                ),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            debug_mode = True
+
+        if isinstance(x, pd.DataFrame) and getattr(x, "debug", False):
+            warnings.warn(
+                (
+                    "Debug mode activation via the debug attribute is deprecated "
+                    "and will be removed in a future release.\n"
+                    "Please use the 'debug_mode' of the transform method.\n"
+                ),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            debug_mode = True
+
+        self.validate_input_fields(x)
+
+        for name, step in self.steps:
+            if self.verbose:
+                print(f"Running step '{name}' with transformer {step}...")
+            x = step.transform(x, debug_mode=debug_mode)
+
+        return x

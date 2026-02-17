@@ -1,40 +1,36 @@
-from typing import Dict, List, Optional, Union
-
 from melusine.base import MelusineRegex
 
 
 class ThanksRegex(MelusineRegex):
-    """
-    Detect thanks patterns such as "merci".
-    """
+    """Detect thanks patterns such as "merci"."""
 
     @property
-    def positive(self) -> Union[str, Dict[str, str]]:
-        """
-        Define regex patterns required to activate the MelusineRegex.
+    def positive(self) -> str | dict[str, str]:
+        """Define regex patterns required to activate the MelusineRegex.
 
         Returns:
             _: Regex pattern or dict of regex patterns.
+
         """
         return r"\bmerci+s?\b|\bremercie?"
 
     @property
-    def neutral(self) -> Optional[Union[str, Dict[str, str]]]:
-        """
-        Define regex patterns to be ignored when running detection.
+    def neutral(self) -> str | dict[str, str] | None:
+        """Define regex patterns to be ignored when running detection.
 
         Returns:
             _: Regex pattern or dict of regex patterns.
+
         """
         return None
 
     @property
-    def negative(self) -> Optional[Union[str, Dict[str, str]]]:
-        """
-        Define regex patterns prohibited to activate the MelusineRegex.
+    def negative(self) -> str | dict[str, str] | None:
+        """Define regex patterns prohibited to activate the MelusineRegex.
 
         Returns:
             _: Regex pattern or dict of regex patterns.
+
         """
         forbidden_thanks_words = [
             r"oui",
@@ -49,12 +45,12 @@ class ThanksRegex(MelusineRegex):
         return dict(QUESTION=r"\?", FORBIDDEN_WORDS=r"\b(" + "|".join(forbidden_thanks_words) + ")")
 
     @property
-    def match_list(self) -> List[str]:
-        """
-        List of texts that should activate the MelusineRegex.
+    def match_list(self) -> list[str]:
+        """List of texts that should activate the MelusineRegex.
 
         Returns:
             _: List of texts.
+
         """
         return [
             "merci",
@@ -64,12 +60,12 @@ class ThanksRegex(MelusineRegex):
         ]
 
     @property
-    def no_match_list(self) -> List[str]:
-        """
-        List of texts that should NOT activate the MelusineRegex.
+    def no_match_list(self) -> list[str]:
+        """List of texts that should NOT activate the MelusineRegex.
 
         Returns:
             _: List of texts.
+
         """
         return [
             # réponse à une question ouverte

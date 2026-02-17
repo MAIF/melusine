@@ -1,5 +1,4 @@
-"""
-Define Processors
+"""Define Processors
 Processors are objects that can be used as standalone or as steps of a MelusinePipeline.
 
 Implemented classes: [
@@ -25,8 +24,9 @@ import logging
 import re
 import unicodedata
 from abc import abstractmethod
+from collections.abc import Iterable, Sequence
 from re import Pattern
-from typing import Any, Iterable, Sequence, Union
+from typing import Any, Literal
 
 import arrow
 
@@ -37,22 +37,20 @@ logger = logging.getLogger(__name__)
 
 
 class Normalizer(MelusineTransformer):
-    """
-    Normalizer transforms raw text into standard text by:
+    """Normalizer transforms raw text into standard text by:
     - Lowercasing
     - Applying unicode normalization standards such as NFD or NFKD
     """
 
     def __init__(
         self,
-        form: str = "NFKD",
+        form: Literal["NFC", "NFD", "NFKC", "NFKD"] = "NFKD",
         lowercase: bool = True,
         fix_newlines: bool = True,
         input_columns: str = "text",
         output_columns: str = "text",
     ):
-        """
-        Parameters
+        """Parameters
         ----------
         form: str
             Unicode normalization form
@@ -62,8 +60,8 @@ class Normalizer(MelusineTransformer):
             Input columns for the transform operation
         output_columns: str
             Outputs columns for the transform operation
-        """
 
+        """
         super().__init__(
             input_columns=input_columns,
             output_columns=output_columns,
@@ -84,8 +82,7 @@ class Normalizer(MelusineTransformer):
         self.fix_newlines = fix_newlines
 
     def normalize_message(self, message_list: list[Message]) -> list[Message]:
-        """
-        Normalize the text of a message.
+        """Normalize the text of a message.
 
         Parameters
         ----------
@@ -96,8 +93,8 @@ class Normalizer(MelusineTransformer):
         -------
         _: list[Message]
             Normalized message list
-        """
 
+        """
         for message in message_list:
             message.clean_text = self.normalize_text(message.text)
             message.clean_header = self.normalize_text(message.header)
@@ -105,8 +102,7 @@ class Normalizer(MelusineTransformer):
         return message_list
 
     def normalize_text(self, text: str) -> str:
-        """
-        Apply the normalization transformations to the text.
+        """Apply the normalization transformations to the text.
 
         Parameters
         ----------
@@ -117,6 +113,7 @@ class Normalizer(MelusineTransformer):
         -------
         text: str
             Normalized text
+
         """
         if not isinstance(text, str):
             text = ""
@@ -156,24 +153,22 @@ class Normalizer(MelusineTransformer):
 
 
 class RegexTokenizer(MelusineTransformer):
-    """
-    Class to split a text into tokens using a regular expression.
-    """
+    """Class to split a text into tokens using a regular expression."""
 
     def __init__(
         self,
         tokenizer_regex: str = r"\w+(?:[\?\-\"_]\w+)*",
         stopwords: list[str] | None = None,
         lowercase: bool = True,
-        normalization_form: str | None = None,
+        normalization_form: Literal["NFC", "NFD", "NFKC", "NFKD"] | None = None,
         input_columns: str = "text",
         output_columns: str = "tokens",
     ):
-        """
-        Parameters
+        """Parameters
         ----------
         tokenizer_regex: str
             Regex used to split the text into tokens
+
         """
         super().__init__(
             input_columns=input_columns,
@@ -196,8 +191,7 @@ class RegexTokenizer(MelusineTransformer):
             self.stopwords = set(stopwords)
 
     def _text_to_tokens(self, text: str) -> Sequence[str]:
-        """
-        Method to split a text into a list of tokens.
+        """Method to split a text into a list of tokens.
 
         Parameters
         ----------
@@ -208,14 +202,14 @@ class RegexTokenizer(MelusineTransformer):
         -------
         tokens: Sequence[str]
             List of tokens
+
         """
         tokens = re.findall(self.tokenizer_regex, text, re.M + re.DOTALL)
 
         return tokens
 
     def _remove_stopwords(self, tokens: Sequence[str]) -> Sequence[str]:
-        """
-        Method to remove stopwords from tokens.
+        """Method to remove stopwords from tokens.
 
         Parameters
         ----------
@@ -226,12 +220,12 @@ class RegexTokenizer(MelusineTransformer):
         -------
         tokens: Sequence[str]
             List of tokens without stopwords
+
         """
         return [token for token in tokens if token not in self.stopwords]
 
     def tokenize(self, text: str) -> Sequence[str]:
-        """
-        Method to apply the full tokenization pipeline on a text.
+        """Method to apply the full tokenization pipeline on a text.
 
         Parameters
         ----------
@@ -242,6 +236,7 @@ class RegexTokenizer(MelusineTransformer):
         -------
         tokens: Sequence[str]
             List of tokens
+
         """
         # Lowercase
         if self.lowercase:
@@ -260,8 +255,7 @@ class RegexTokenizer(MelusineTransformer):
 
 
 class BaseSegmenter(MelusineTransformer):
-    """
-    Class to split a conversation into a list of Messages.
+    """Class to split a conversation into a list of Messages.
     This is an abstract class defining the Segmenter interface.
     Melusine users should implement a subclass or use an existing subclass to segment their emails.
     """
@@ -273,8 +267,7 @@ class BaseSegmenter(MelusineTransformer):
         output_columns: str = "messages",
         regex_flags: re.RegexFlag = re.MULTILINE | re.IGNORECASE,
     ):
-        """
-        Parameters
+        """Parameters
         ----------
         strip_characters: str
             Characters to be stripped of text segments
@@ -284,6 +277,7 @@ class BaseSegmenter(MelusineTransformer):
             Outputs columns for the transform operation
         regex_flags: re.RegexFlag
             Regex flags for segmentation
+
         """
         super().__init__(
             input_columns=input_columns,
@@ -300,19 +294,18 @@ class BaseSegmenter(MelusineTransformer):
     @staticmethod
     @abstractmethod
     def create_segmentation_regex_list() -> Iterable[str]:
-        """
-        Method to create a compiled regex that can be used to segment an email.
+        """Method to create a compiled regex that can be used to segment an email.
 
         Returns
         -------
         _: Iterable[str]
             List of segmentation regexs
+
         """
 
     @staticmethod
     def compile_regex_from_list(regex_list: Iterable[str], flags: int | re.RegexFlag = re.M) -> Pattern:
-        """
-        Method to create a meta-regex from a list of regexs.
+        """Method to create a meta-regex from a list of regexs.
 
         Parameters
         ----------
@@ -325,6 +318,7 @@ class BaseSegmenter(MelusineTransformer):
         -------
         _:  Pattern[AnyStr]
             Compiled meta-regex
+
         """
         regex_list = ["(?:" + r + ")" for r in regex_list]
         regex = "|".join(regex_list)
@@ -335,8 +329,7 @@ class BaseSegmenter(MelusineTransformer):
         return re.compile(regex, flags=flags)
 
     def create_messages(self, match_list: list[str]) -> list[Message]:
-        """
-        Method to create Message instances based on the segmented email data.
+        """Method to create Message instances based on the segmented email data.
 
         Parameters
         ----------
@@ -346,6 +339,7 @@ class BaseSegmenter(MelusineTransformer):
         Returns
         -------
         _: list[Message]
+
         """
         # Create first message meta based on email meta
         first_message_meta = ""
@@ -378,11 +372,10 @@ class BaseSegmenter(MelusineTransformer):
         # Replace first message meta
         meta_list[0] = first_message_meta
 
-        return [Message(text=text, meta=meta) for text, meta in zip(text_list, meta_list)]
+        return [Message(text=text, meta=meta) for text, meta in zip(text_list, meta_list, strict=True)]
 
     def segment_text(self, text: str) -> list[Message]:
-        """
-        Method to segment a conversation by splitting the text on  transition patterns.
+        r"""Method to segment a conversation by splitting the text on  transition patterns.
         Ex:
         > Input : "Thank you\nSent by Mr Smith\nHello\nSee attached the document.\nBest Regards"
         > Output :
@@ -398,6 +391,7 @@ class BaseSegmenter(MelusineTransformer):
         -------
         _: list[Message]
             List of messages
+
         """
         # Strip start / end characters
         text = text.strip(self.strip_characters)
@@ -409,8 +403,7 @@ class BaseSegmenter(MelusineTransformer):
 
 
 class Segmenter(BaseSegmenter):
-    """
-    Class to split a conversation into a list of Messages.
+    """Class to split a conversation into a list of Messages.
     Inherits from BaseSegmenter.
     Implement methods to segment french emails.
     """
@@ -421,8 +414,7 @@ class Segmenter(BaseSegmenter):
         input_columns: str = "body",
         output_columns: str = "messages",
     ):
-        """
-        Parameters
+        """Parameters
         ----------
         strip_characters: str
             Characters to be stripped of text segments
@@ -430,6 +422,7 @@ class Segmenter(BaseSegmenter):
             Input columns for the transform operation
         output_columns: str
             Outputs columns for the transform operation
+
         """
         super().__init__(
             input_columns=input_columns,
@@ -439,13 +432,13 @@ class Segmenter(BaseSegmenter):
 
     @staticmethod
     def create_segmentation_regex_list() -> Iterable[str]:
-        """
-        Method to create a compiled regex that can be used to segment an email.
+        """Method to create a compiled regex that can be used to segment an email.
 
         Returns
         -------
         _: Iterable[str]
             List of segmentation regexs
+
         """
         # Meta patterns of the form "META_KEYWORD : META_CONTENT"
         # Ex: "De : jean@gmail.com"
@@ -464,7 +457,9 @@ class Segmenter(BaseSegmenter):
             r"Cc",
         ]
         piped_keywords_with_semicolon = "(?:" + "|".join(meta_keywords_list_with_semicolon) + ")"
+        # Ajout d'un pattern pour gérer les cas sans ':' mais avec retour à la ligne
         starter_pattern_with_semicolon = rf"^.{{,5}}(?:{piped_keywords_with_semicolon} ?\n? ?: *\n?)"
+        starter_pattern_with_newline = rf"^.{{,5}}(?:{piped_keywords_with_semicolon})\n"
 
         # Meta patterns of the form "META_KEYWORD"
         # Ex: "Transféré par jean@gmail.com"
@@ -488,7 +483,8 @@ class Segmenter(BaseSegmenter):
             (
                 rf"\bLe (?:"
                 rf"\d{{2}}/\d{{2}}/\d{{4}}|\d{{4}}-\d{{2}}-\d{{2}}|{regex_weekdays}|"  # noqa
-                rf"\d{{1,2}} {regex_months})(?:.|\n){{,30}}\d{{2}}:\d{{2}}(?:.|\n){{,50}}(?:\<.{{,30}}\>.{{,5}})?\ba [éecrit]"  # noqa
+                rf"\d{{1,2}} {regex_months})(?:.|\n)"
+                rf"{{,30}}\d{{2}}:\d{{2}}(?:.|\n){{,50}}(?:\<.{{,30}}\>.{{,5}})?\ba [éecrit]"  # noqa
             ),
             r"Transf[ée]r[ée] par",
             r"D[ée]but du message transf[ée]r[ée] :",
@@ -504,8 +500,10 @@ class Segmenter(BaseSegmenter):
         piped_keywords_without_semicolon = "(?:" + "|".join(meta_keywords_list_without_semicolon) + ")"  # noqa
         starter_pattern_without_semicolon = f"{piped_keywords_without_semicolon}(?:[\n ]*--+)?"
 
-        # Combine pattern with and without semicolon
-        starter_pattern = rf"(?:{starter_pattern_with_semicolon}|{starter_pattern_without_semicolon})"  # noqa
+        # Combine pattern with and without semicolon, et avec retour à la ligne
+        starter_pattern = (
+            rf"(?:{starter_pattern_with_semicolon}|{starter_pattern_with_newline}|{starter_pattern_without_semicolon})"
+        )
 
         # Match everything until the end of the line.
         # Match End of line "\n" and "space" characters
@@ -513,20 +511,15 @@ class Segmenter(BaseSegmenter):
 
         # Object / Subject pattern (These patterns are not sufficient to trigger segmentation)
         object_line_pattern = "(?:^.{,5}(?:Objet|Subject|Sujet) ?\n? ?: *\n?)" + end_pattern
-
-        # Starters are separated from the meta-values by
-        # a semicolon and optional spaces/line breaks
-        full_generic_meta_pattern = rf"(?:{starter_pattern}{end_pattern}(?:{object_line_pattern})*)+"
-
-        # Make a tuple of patterns
+        full_generic_meta_pattern = (
+            rf"(?:(?:{object_line_pattern})?{starter_pattern}{end_pattern}(?:{object_line_pattern})*)+"
+        )
         pattern_list = (full_generic_meta_pattern,)
-
         return pattern_list
 
 
 class BaseExtractor(MelusineTransformer):
-    """
-    Class to extract data from a list of messages.
+    """Class to extract data from a list of messages.
     This is an abstract class defining the interface for extractor classes.
     Melusine users should implement a subclass (or use an existing subclass) to extract data from a list of messages.
     """
@@ -536,13 +529,13 @@ class BaseExtractor(MelusineTransformer):
         input_columns: str | Iterable[str],
         output_columns: str,
     ):
-        """
-        Parameters
+        """Parameters
         ----------
         input_columns: Union[str, Iterable[str]]
             Input columns for the transform operation
         output_columns: str
             Outputs columns for the transform operation
+
         """
         super().__init__(
             input_columns=input_columns,
@@ -552,8 +545,7 @@ class BaseExtractor(MelusineTransformer):
 
     @abstractmethod
     def extract(self, message_list: list[Message]) -> Any:
-        """
-        Method to extract data from a list of messages.
+        """Method to extract data from a list of messages.
 
         Parameters
         ----------
@@ -564,13 +556,12 @@ class BaseExtractor(MelusineTransformer):
         -------
         _: str
             Extracted text
+
         """
 
 
 class TextExtractor(BaseExtractor):
-    """
-    Class to extract text data from a list of messages.
-    """
+    """Class to extract text data from a list of messages."""
 
     def __init__(
         self,
@@ -582,8 +573,7 @@ class TextExtractor(BaseExtractor):
         n_messages: int | None = 1,
         stop_at: Iterable[str] = ("GREETINGS",),
     ):
-        """
-        Parameters
+        """Parameters
         ----------
         input_columns: str
             Input columns for the transform operation
@@ -599,6 +589,7 @@ class TextExtractor(BaseExtractor):
             Number of messages to take into account (starting with the latest)
         stop_at: list[str]
             When stop_at tags are encountered, stop extracting text of the message
+
         """
         super().__init__(
             input_columns=input_columns,
@@ -615,8 +606,7 @@ class TextExtractor(BaseExtractor):
         self.stop_at = stop_at
 
     def extract(self, message_list: list[Message]) -> str:
-        """
-        Method to extract text parts from a list of messages.
+        """Method to extract text parts from a list of messages.
 
         Parameters
         ----------
@@ -627,6 +617,7 @@ class TextExtractor(BaseExtractor):
         -------
         _: str
             Extracted text
+
         """
         if self.n_messages is None:
             n_messages = len(message_list)
@@ -663,8 +654,7 @@ class TextExtractor(BaseExtractor):
 
 
 class TokensExtractor(BaseExtractor):
-    """
-    Class to extract tokens from different DataFrame columns.
+    """Class to extract tokens from different DataFrame columns.
     Ex:
     > (input column 1) body_tokens: ["hello", "how", "are", "you"]
     > (input column 2) header_tokens: ["catch", "up"]
@@ -679,13 +669,13 @@ class TokensExtractor(BaseExtractor):
         sep_token: str = "[PAD]",
         pad_size: int = 5,
     ):
-        """
-        Parameters
+        """Parameters
         ----------
         input_columns: Union[str, Iterable[str]]
             Input columns for the transform operation
         output_columns: str
             Outputs columns for the transform operation
+
         """
         super().__init__(
             input_columns=input_columns,
@@ -696,8 +686,7 @@ class TokensExtractor(BaseExtractor):
         self.pad_size = pad_size
 
     def extract(self, row: MelusineDataset) -> list[str]:
-        """
-        Method to extract tokens from different columns of a DataFrame.
+        """Method to extract tokens from different columns of a DataFrame.
 
         Parameters
         ----------
@@ -708,8 +697,8 @@ class TokensExtractor(BaseExtractor):
         -------
         _: list[str]
             List of extracted tokens
-        """
 
+        """
         pad_pattern = [self.sep_token] * self.pad_size
         tokens = list()
         for col in self.input_columns:
@@ -723,20 +712,18 @@ class TokensExtractor(BaseExtractor):
 
 
 class Tag(property):
-    """
-    Class used by the ContentTagger to identify text tags such as:
+    """Class used by the ContentTagger to identify text tags such as:
     - BODY
     - HELLO
     - GREETINGS
     """
 
 
-TagPattern = Union[str, Iterable[str], re.Pattern]
+TagPattern = str | Iterable[str] | re.Pattern
 
 
 class BaseContentTagger(MelusineTransformer):
-    """
-    Class to add tags to a text
+    """Class to add tags to a text
     This is an abstract class defining the interface for all ContentTaggers.
     Melusine users should implement a subclass (or use an existing subclass) to add tags to texts.
     """
@@ -751,8 +738,7 @@ class BaseContentTagger(MelusineTransformer):
         default_regex_flag: int = re.IGNORECASE,
         text_attribute: str = "text",
     ):
-        """
-        Parameters
+        """Parameters
         ----------
         input_columns: str
         output_columns: str
@@ -764,6 +750,7 @@ class BaseContentTagger(MelusineTransformer):
             Default flag to compile regex
         text_attribute: str
             Message attribute containing the text data
+
         """
         super().__init__(
             input_columns=input_columns,
@@ -798,8 +785,7 @@ class BaseContentTagger(MelusineTransformer):
             self.regex_dict[tag] = self.compile_tag_regex(tag)
 
     def __getitem__(self, key: str) -> re.Pattern:
-        """
-        Method to access regex corresponding to individual tags easily.
+        """Method to access regex corresponding to individual tags easily.
         Ex:
         > t = ContentTagger()
         > t["HELLO"].match("bonjour")
@@ -813,13 +799,13 @@ class BaseContentTagger(MelusineTransformer):
         -------
         _: re.Pattern
             Compiled regex
+
         """
         return self.regex_dict[key]
 
     @staticmethod
     def compile_split_pattern() -> re.Pattern:
-        """
-        Method to compile the sentence split regex pattern.
+        """Method to compile the sentence split regex pattern.
 
         Ex:
         Bonjour Mr. Dupont. Salutations
@@ -830,6 +816,7 @@ class BaseContentTagger(MelusineTransformer):
         -------
         _: re.Pattern
             Compiled regex
+
         """
         # Dot exception patterns
         _madame_pattern = r"(?<!\bM[Mm]e)"
@@ -868,19 +855,18 @@ class BaseContentTagger(MelusineTransformer):
 
     @classmethod
     def get_tag_list(cls) -> list[str]:
-        """
-        Method to get the list of available tags.
+        """Method to get the list of available tags.
 
         Returns
         -------
         _: list[str]
             List of tags
+
         """
         return [p for p in dir(cls) if isinstance(getattr(cls, p), Tag)]
 
     def tag_email(self, messages: list[Message]) -> list[Message] | None:
-        """
-        Method to apply content tagging on an email (= List of Messages)
+        """Method to apply content tagging on an email (= List of Messages)
 
         Parameters
         ----------
@@ -891,6 +877,7 @@ class BaseContentTagger(MelusineTransformer):
         -------
         messages : list[Message]
             List of messages after content tagging
+
         """
         if not messages:
             return None
@@ -902,8 +889,7 @@ class BaseContentTagger(MelusineTransformer):
         return messages
 
     def compile_tag_regex(self, tag: str) -> re.Pattern:
-        """
-        Method to validate and compile the regex associated with the input tag.
+        """Method to validate and compile the regex associated with the input tag.
         Return an error if the regex pattern is malformed.
 
         Parameters
@@ -915,6 +901,7 @@ class BaseContentTagger(MelusineTransformer):
         -------
         _: re.Pattern
             compiled regex
+
         """
         # Collect data associated with the input tag
         if hasattr(self, tag):
@@ -930,8 +917,8 @@ class BaseContentTagger(MelusineTransformer):
         if isinstance(regex, str):
             try:
                 regex = re.compile(regex, flags=self.default_regex_flag)
-            except re.error:
-                raise ValueError(f"Invalid regex for tag {tag}:\n{regex}")
+            except re.error as err:
+                raise ValueError(f"Invalid regex for tag {tag}:\n{regex}") from err
         elif isinstance(regex, re.Pattern):
             pass
         else:
@@ -946,8 +933,7 @@ class BaseContentTagger(MelusineTransformer):
         return regex
 
     def tag_text(self, text: str) -> list[dict[str, Any]]:
-        """
-        Method to apply content tagging on a text.
+        """Method to apply content tagging on a text.
 
         Parameters
         ----------
@@ -957,6 +943,7 @@ class BaseContentTagger(MelusineTransformer):
         Returns
         -------
         _: List of tag/text couples
+
         """
         parts = self.split_text(text)
         tags = list()
@@ -966,8 +953,7 @@ class BaseContentTagger(MelusineTransformer):
         return tags
 
     def split_text(self, text: str) -> list[str]:
-        """
-        Method to split input text into sentences/parts using a regex.
+        """Method to split input text into sentences/parts using a regex.
 
         Parameters
         ----------
@@ -978,6 +964,7 @@ class BaseContentTagger(MelusineTransformer):
         -------
         _: list[str]
             List of parts/sentences
+
         """
         # Replace multiple spaces by single spaces
         text = re.sub(r" +", " ", text)
@@ -991,8 +978,7 @@ class BaseContentTagger(MelusineTransformer):
         return [p.strip() for p in clean_parts if self.validate_part(p)]
 
     def validate_part(self, text: str) -> bool:
-        """
-        Method to validate a text part.
+        """Method to validate a text part.
         By default, check that it contains at least one of:
         - a letter
         - a number
@@ -1006,13 +992,13 @@ class BaseContentTagger(MelusineTransformer):
         -------
         _: bool
             True if text part is valid
+
         """
         return bool(re.search(self.valid_part_regex, text, flags=re.I))
 
     @staticmethod
     def clean_up_after_split(parts: list[str | None]) -> list[str]:
-        """
-        Clean up sentences after splitting.
+        """Clean up sentences after splitting.
         Typically, put punctuation back at the end of sentences.
 
         Parameters
@@ -1022,6 +1008,7 @@ class BaseContentTagger(MelusineTransformer):
         Returns
         -------
         clean_parts: list[str]
+
         """
         clean_parts: list[str] = []
         for part in parts:
@@ -1040,8 +1027,7 @@ class BaseContentTagger(MelusineTransformer):
         return clean_parts
 
     def tag_part(self, part: str) -> dict[str, Any]:
-        """
-        Method to apply tagging on a text chunk (sentence/part).
+        """Method to apply tagging on a text chunk (sentence/part).
 
         Parameters
         ----------
@@ -1051,6 +1037,7 @@ class BaseContentTagger(MelusineTransformer):
         Returns
         -------
         _: tag data such as text, base_tag_list or base_tag
+
         """
         match_tag_list = []
         for tag, regex in self.regex_dict.items():
@@ -1068,8 +1055,7 @@ class BaseContentTagger(MelusineTransformer):
         }
 
     def get_base_tag(self, match_tag_list: list[str]) -> str:
-        """
-        Given a list of tags, return the base tag using the hierarchy from the tag_list attribute.
+        """Given a list of tags, return the base tag using the hierarchy from the tag_list attribute.
 
         Parameters
         ----------
@@ -1078,6 +1064,7 @@ class BaseContentTagger(MelusineTransformer):
         Returns
         -------
         _: Base tag
+
         """
         for tag in self.tag_list:
             if tag in match_tag_list:
@@ -1086,8 +1073,7 @@ class BaseContentTagger(MelusineTransformer):
 
     @staticmethod
     def word_block(n_words: int, word_character_only: bool = False) -> str:
-        """
-        Method to dynamically generate regex patterns to match block of words.
+        """Method to dynamically generate regex patterns to match block of words.
 
         Parameters
         ----------
@@ -1100,6 +1086,7 @@ class BaseContentTagger(MelusineTransformer):
         -------
         _: str
             Regex matching desired pattern
+
         """
         if word_character_only:
             positive = r"\w"
@@ -1110,8 +1097,7 @@ class BaseContentTagger(MelusineTransformer):
         return rf"(?:[ \-–]*(?:{positive}+(?:[ \-–]+{positive}+){{,{n_words - 1}}})? *)"
 
     def __call__(self, text: str) -> list[tuple[str, str, str]]:
-        """
-        Method to find all regex patterns matching the input text.
+        """Method to find all regex patterns matching the input text.
 
         Parameters
         ----------
@@ -1122,6 +1108,7 @@ class BaseContentTagger(MelusineTransformer):
         -------
         match_list: list[tuple[str, str]]
             List of matching regexes and associated tags
+
         """
         full_match_list = list()
 
@@ -1141,8 +1128,7 @@ class BaseContentTagger(MelusineTransformer):
         return full_match_list
 
     def find_matching_regex_patterns(self, part: str, regex: TagPattern) -> list[str]:
-        """
-        Given a regex string, a regex pattern or a list of regexes.
+        """Given a regex string, a regex pattern or a list of regexes.
         Find all matching patterns
         """
         matching_regex_list = []
@@ -1168,8 +1154,7 @@ class BaseContentTagger(MelusineTransformer):
 
 
 class ContentTagger(BaseContentTagger):
-    """
-    Class to add tags to a text.
+    """Class to add tags to a text.
     This class inherits from the base class BaseContentTagger.
     This class implements Content Tagging for French emails.
 
@@ -1194,8 +1179,7 @@ class ContentTagger(BaseContentTagger):
         default_regex_flag: int = re.IGNORECASE | re.MULTILINE,
         text_attribute: str = "text",
     ):
-        """
-        Parameters
+        """Parameters
         ----------
         input_columns: str
         output_columns: str
@@ -1207,6 +1191,7 @@ class ContentTagger(BaseContentTagger):
             Default flag to compile regex
         text_attribute: str
             Message attribute containing the text data
+
         """
         super().__init__(
             input_columns=input_columns,
@@ -1220,8 +1205,7 @@ class ContentTagger(BaseContentTagger):
 
     @Tag
     def GREETINGS(self) -> str | list[str] | re.Pattern:
-        """
-        Tag associated with email closure sentences.
+        """Tag associated with email closure sentences.
         Watchout, this tag typically marks the end of a message.
         Ex: "Cordialement"
         """
@@ -1234,7 +1218,10 @@ class ContentTagger(BaseContentTagger):
             r"^.{0,10}courtoisement.{0,16}$",
             r"^.{0,10}bien [àa] (?:toi|vous).{0,16}$",
             r"^.{0,10}sentiments? (?:d[ée]vou[ée]s?|mutualistes?).{0,16}$",
-            r"^.{0,10}(Veuillez.{,3})?(accepte[zr] .{,8}|receve[zr] .{,8})?(meilleure?s?|sinc[eè]res?|cordiale?s?)? ?(salutations?|sentiments?).{0,16}$",
+            (
+                r"^.{0,10}(Veuillez.{,3})?(accepte[zr] .{,8}|receve[zr] .{,8})?"
+                r"(meilleure?s?|sinc[eè]res?|cordiale?s?)? ?(salutations?|sentiments?).{0,16}$"
+            ),
             r"^.{0,45}(?:(?:l')?expression|assurance) de (?:nos|mes) sentiments.{0,16}$",
             r"^.{0,50}(?:salutations?|sentiments?) distingu.{0,30}$",
             r"^.{0,10}Respectueusement.{0,16}$",
@@ -1244,7 +1231,10 @@ class ContentTagger(BaseContentTagger):
             r"^.{0,3}Bonne r[ée]ception.{0,3}$",
             r"^.{0,3}votre bien d[ée]vou[ée]e?.{0,3}$",
             r"^.{0,3}amicalement votre.{0,3}$",
-            r"^.{,3}je vous prie de croire.{,50}(expression|assurance)?.{,50}(consideration|salutations|sentiments).{,30}$",
+            (
+                r"^.{,3}je vous prie de croire.{,50}"
+                r"(expression|assurance)?.{,50}(consideration|salutations|sentiments).{,30}$"
+            ),
             # English
             r"^.{0,3}regards.{0,3}$",
             r"^.{0,3}(best|warm|kind|my) *(regards|wishes)?.{0,3}$",
@@ -1262,8 +1252,7 @@ class ContentTagger(BaseContentTagger):
 
     @Tag
     def HELLO(self) -> str | list[str] | re.Pattern:
-        """
-        Tag associated with email opening sentences.
+        """Tag associated with email opening sentences.
         Sentences that can be either opening or closing should be placed here.
         Ex1: "Bonjour"
         Ex2: "Bonne année"
@@ -1325,8 +1314,7 @@ class ContentTagger(BaseContentTagger):
 
     @Tag
     def PJ(self) -> str | list[str] | re.Pattern:
-        """
-        Tag associated with email attachment mentions.
+        """Tag associated with email attachment mentions.
         Ex: "See attached files"
         """
         return [
@@ -1337,8 +1325,7 @@ class ContentTagger(BaseContentTagger):
 
     @Tag
     def FOOTER(self) -> str | list[str] | re.Pattern:
-        """
-        Tag associated with email footer sentences.
+        """Tag associated with email footer sentences.
         Ex: "Envoyé de mon iPhone"
         """
         prefix = r"^.{0,40}"
@@ -1414,8 +1401,7 @@ class ContentTagger(BaseContentTagger):
 
     @Tag
     def THANKS(self) -> str | list[str] | re.Pattern:
-        """
-        Tag associated with email thanks sentences.
+        """Tag associated with email thanks sentences.
         Ex: "Merci beaucoup"
         """
         thanks_expressions = [
@@ -1444,11 +1430,9 @@ class ContentTagger(BaseContentTagger):
 
     @Tag
     def SIGNATURE(self) -> str | list[str] | re.Pattern:
-        """
-        Tag associated with email signature sentences.
+        """Tag associated with email signature sentences.
         Ex: "Tel : 0600000000"
         """
-
         # Jobs lines
         jobs = [
             r"associations?",
@@ -1525,13 +1509,16 @@ class ContentTagger(BaseContentTagger):
                 "( *(\n+|$))"
             ),
             # Make sure there are at least 6 digits
-            r"^.{,3}(T[ée]l[ée]?(phone|copie)?|Fax|mobile|phone|num[ée]ro|ligne).{,20}\d{2}[ .-]?\d{2}[ .-]?\d{2}.{,20} *(?:\n+|$)",
+            (
+                r"^.{,3}(T[ée]l[ée]?(phone|copie)?|Fax|mobile|phone|num[ée]ro|ligne).{,20}"
+                r"\d{2}[ .-]?\d{2}[ .-]?\d{2}.{,20} *(?:\n+|$)"
+            ),
             # Phone number on separate line
             r"^.{,3}(T[ée]l[ée]?(phone|copie)?|Fax|mobile|phone|num[ée]ro|ligne).{,3} *(?:\n+|$)",
             r"^.{,3}Appel non surtax[ée].{,3}$",
             # Street / Address / Post code
             street_address_regex,
-            r"^.{,3}Adresse.{,3}$",
+            r"^.{,3}Adresse.{0,3}$",
             r"(?: *(?:BP|Boite Postale) *\d{,6} .{,30}(?: *(?:\n|$)))",
             r"(?: *\b\d{5}\b(?: *(?:\n|$))?(?: *(?:\S+(?: +\S+){,5})? *)(?: *(?:\n|$)))",
             # postal address with only street name and number :  EX : 9/11 rue Jeanne d'Arc
@@ -1553,9 +1540,7 @@ class ContentTagger(BaseContentTagger):
 
 
 class RefinedTagger(MelusineTransformer):
-    """
-    Post-processing class to refine initial tags.
-    """
+    """Post-processing class to refine initial tags."""
 
     def __init__(
         self,
@@ -1566,8 +1551,7 @@ class RefinedTagger(MelusineTransformer):
         text_key: str = "base_text",
         refined_tag_key: str = "refined_tag",
     ):
-        """
-        Parameters
+        """Parameters
         ----------
         input_columns: str
             Input columns for the transform operation
@@ -1578,6 +1562,7 @@ class RefinedTagger(MelusineTransformer):
         tag_key: input tag jey
         text_key: input text key
         refined_tag_key: output tag key
+
         """
         self.default_tag = default_tag
         self.base_tag_key = tag_key
@@ -1591,8 +1576,7 @@ class RefinedTagger(MelusineTransformer):
         )
 
     def post_process_messages(self, messages: list[Message]) -> list[Message]:
-        """
-        Method to apply tagging rules posterior to the standard regex tagging.
+        """Method to apply tagging rules posterior to the standard regex tagging.
 
         Parameters
         ----------
@@ -1601,6 +1585,7 @@ class RefinedTagger(MelusineTransformer):
         Returns
         -------
         messages: list of messages post-processed
+
         """
         for message in messages:
             message.tags = self.post_process_tags(message.tags)
@@ -1609,8 +1594,7 @@ class RefinedTagger(MelusineTransformer):
         return messages
 
     def post_process_tags(self, tags: list[dict[str, Any]] | None) -> list[dict[str, Any]] | None:
-        """
-        Method to post-process tags.
+        """Method to post-process tags.
 
         Parameters
         ----------
@@ -1619,6 +1603,7 @@ class RefinedTagger(MelusineTransformer):
         Returns
         -------
         _: Refined tags
+
         """
         if tags is None:
             return None
@@ -1629,8 +1614,7 @@ class RefinedTagger(MelusineTransformer):
         return tags
 
     def detect_name_signature(self, tags: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        """
-        Method to detect lines containing First name / Surname
+        """Method to detect lines containing First name / Surname
         Ex: Mr Joe Dupond
 
         Parameters
@@ -1640,6 +1624,7 @@ class RefinedTagger(MelusineTransformer):
         Returns
         -------
         _: Post processed tags
+
         """
         # First name / Last name Signatures
         capitalized_words: str = r"[A-Z][-'A-za-zÀ-ÿ]{,10}"
@@ -1668,8 +1653,7 @@ class RefinedTagger(MelusineTransformer):
 
 
 class TransferredEmailProcessor(MelusineTransformer):
-    """
-    Processing specific to transferred emails such as:
+    """Processing specific to transferred emails such as:
     - Extracting the email address of the original sender (before transfer)
     - Removing empty messages related to the transfer action
     """
@@ -1680,13 +1664,13 @@ class TransferredEmailProcessor(MelusineTransformer):
         tags_to_ignore: Iterable[str] = ("FOOTER", "SIGNATURE"),
         messages_column: str = "messages",
     ):
-        """
-        Parameters
+        """Parameters
         ----------
         output_columns: str
         tags_to_ignore: Iterable[str]
             If a message contains only tags in this list, it will be ignored
         messages_column: DataFrame column containing a list of Message instances
+
         """
         self.messages_column = messages_column
         input_columns = [self.messages_column]
@@ -1701,15 +1685,12 @@ class TransferredEmailProcessor(MelusineTransformer):
 
     @property
     def email_pattern(self) -> str:
-        """
-        Regex pattern to detect an email address.
-        """
+        """Regex pattern to detect an email address."""
         return r"\w+(?:[-+.']\w+)*@\w+(?:[-.]\w+)*\.\w+(?:[-.]\w+)*"
 
     @property
     def meta_email_address_regex(self) -> str:
-        """
-        Regex to extract an email address from an email transition pattern.
+        """Regex to extract an email address from an email transition pattern.
         Ex:
             De: jane@gmail.fr A: joe@gmail.fr Envoyé à: 11h22
             => jane@gmail.fr
@@ -1735,8 +1716,7 @@ class TransferredEmailProcessor(MelusineTransformer):
         return meta_pattern
 
     def process_transfered_mail(self, message_list: list[Message]) -> tuple[list[Message], str | None]:
-        """
-        Run all transformations related to transfer emails.
+        """Run all transformations related to transfer emails.
 
         Args:
             message_list: Emails input data
@@ -1744,6 +1724,7 @@ class TransferredEmailProcessor(MelusineTransformer):
         Returns:
             message_list: List of messages in the conversation
             clean_address_from: Processed sender email address
+
         """
         clean_address_from: str | None = None
 
@@ -1761,14 +1742,14 @@ class TransferredEmailProcessor(MelusineTransformer):
         return message_list, clean_address_from
 
     def extract_email_address(self, message: Message) -> str | None:
-        """
-        Extract sender email address from message meta (transition pattern).
+        """Extract sender email address from message meta (transition pattern).
 
         Args:
             message: Message with text and metadata
 
         Returns:
             extracted_address_from: Extracted sender address if available
+
         """
         extracted_address_from = None
 
@@ -1786,7 +1767,7 @@ class TransferredEmailProcessor(MelusineTransformer):
         return extracted_address_from
 
     def filter_message_list(self, message_list: list[Message]) -> list[Message]:
-        """ """
+        """Filter a list of messages."""
         top_message = message_list[0]
 
         parts = top_message.extract_parts()
@@ -1801,8 +1782,7 @@ class TransferredEmailProcessor(MelusineTransformer):
 
 
 class DeterministicTextFlagger(MelusineTransformer):
-    """
-    Class to flag text patterns such as :
+    """Class to flag text patterns such as :
     "new york" => "new_york"
     """
 
@@ -1814,8 +1794,7 @@ class DeterministicTextFlagger(MelusineTransformer):
         remove_multiple_spaces: bool = True,
         add_spaces: bool = True,
     ):
-        """
-        Parameters
+        """Parameters
         ----------
         text_flags: dict[str, Any]
             Dict containing flag name as key and regex pattern as value
@@ -1823,6 +1802,7 @@ class DeterministicTextFlagger(MelusineTransformer):
             If true, add spaces around flags
         remove_multiple_spaces: bool
             If True, remove multiple spaces after flagging
+
         """
         super().__init__(
             input_columns=input_columns,
@@ -1840,8 +1820,7 @@ class DeterministicTextFlagger(MelusineTransformer):
         add_spaces: bool = True,
         remove_multiple_spaces: bool = True,
     ) -> str:
-        """
-        Method to apply flagging on a text.
+        """Method to apply flagging on a text.
         General flagging: replace remarkable expressions by a flag
         Ex: 0123456789 => flag_phone_
 
@@ -1860,6 +1839,7 @@ class DeterministicTextFlagger(MelusineTransformer):
         -------
         text: str
             Flagged text
+
         """
         # Support for nested flag dicts
         for key, value in flag_dict.items():
@@ -1883,18 +1863,18 @@ class DeterministicTextFlagger(MelusineTransformer):
         return text.strip()
 
     def flag_text(self, text: str) -> str:
-        """
-         Method to flag text.
+        """Method to flag text.
 
-         Parameters
-         ----------
+        Parameters
+        ----------
          text: str
              Text to be flagged
 
-         Returns
-         -------
+        Returns
+        -------
         _: str
              Flagged text
+
         """
         # Join collocations
         text = self.default_flag_text(
@@ -1908,9 +1888,7 @@ class DeterministicTextFlagger(MelusineTransformer):
 
 
 class Cleaner(MelusineTransformer):
-    """
-    Class to clean text columns
-    """
+    """Class to clean text columns"""
 
     def __init__(
         self,
@@ -1918,11 +1896,13 @@ class Cleaner(MelusineTransformer):
         input_columns: str = "text",
         output_columns: str = "text",
     ):
-        """
+        """Init
+
         Parameters
         ----------
         substitutions: dict[str, Any]
             Dict containing replace pattern and replacement value
+
         """
         super().__init__(
             input_columns=input_columns,
@@ -1932,18 +1912,18 @@ class Cleaner(MelusineTransformer):
         self.substitutions = substitutions
 
     def clean(self, text: str) -> str:
-        """
-         Method to clean text.
+        """Method to clean text.
 
-         Parameters
-         ----------
+        Parameters
+        ----------
          text: str
              Text to be flagged
 
-         Returns
-         -------
+        Returns
+        -------
         _: str
              Flagged text
+
         """
         # Join collocations
         text = DeterministicTextFlagger.default_flag_text(
@@ -1957,9 +1937,7 @@ class Cleaner(MelusineTransformer):
 
 
 class DateProcessor(MelusineTransformer):
-    """
-    Parse string date to iso format string date
-    """
+    """Parse string date to iso format string date"""
 
     ISO_FORMAT = "%Y-%m-%d"
     LANGUAGE = ["en_US", "fr_FR", "es_ES", "it_IT", "nl_NL", "de_DE", "tr_TR"]
@@ -2020,13 +1998,15 @@ class DateProcessor(MelusineTransformer):
         input_columns: str = "date",
         output_columns: str = "date",
     ) -> None:
-        """
+        """Init
+
         Parameters
         ----------
         input_columns: str
             Input columns for the transform operation
         output_columns: str
             Outputs columns for the transform operation
+
         """
         super().__init__(
             input_columns=input_columns,
@@ -2036,8 +2016,7 @@ class DateProcessor(MelusineTransformer):
 
     @classmethod
     def parse_date_to_iso(cls, date_: str) -> str | None:
-        """
-        This function use the package arrow to convert a date from string format with any
+        """Use the package arrow to convert a date from string format with any
         type of format (i.e. vendredi 8 juillet 2020 -> 2020-07-08)
         This package is prefered to datetime because datetime use locale settings and
         arrow do not use locale setting
@@ -2052,6 +2031,7 @@ class DateProcessor(MelusineTransformer):
         -------
         date_: str
                 date_ as string with iso format (YYYY-MM-DD)
+
         """
         # Initialization
         matched_group: str | None = None
@@ -2080,10 +2060,7 @@ class DateProcessor(MelusineTransformer):
 
     @staticmethod
     def process_single_digit(matched_group: str, pattern: str) -> str:
-        """
-        Replace single digit by 0+digit
-        i.e.: 9 -> 09
-        """
+        """Replace single digit by 0+digit (i.e.: 9 -> 09)"""
         if r"\d{1,2}" in pattern:
             # Case when digit is in the middle of the string
             number_searched = re.search(r"\s\d\s", matched_group)
@@ -2099,9 +2076,7 @@ class DateProcessor(MelusineTransformer):
 
     @classmethod
     def convert_to_iso_format(cls, matched_group: str, format_: str) -> str | None:
-        """
-        Try to convert the date found as any string form to ISO format
-        """
+        """Try to convert the date found as any string form to ISO format."""
         # In case we are working with abbreviations
         if "ddd" in format_ or "MMM" in format_:
             for lang in cls.LANGUAGE:

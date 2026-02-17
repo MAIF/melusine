@@ -218,9 +218,6 @@ def test_transform(df_emails, expected_result):
 def test_transform_debug_mode(df_emails, expected_result, expected_debug_info):
     """Unit test of the debug mode."""
 
-    # Copy for later load/save test
-    df_copy = df_emails.copy()
-
     # Instanciate manually a detector
     detector = TransferDetector(
         name="transfer",
@@ -233,8 +230,7 @@ def test_transform_debug_mode(df_emails, expected_result, expected_debug_info):
     debug_dict_col = detector.debug_dict_col
 
     # Transform data
-    df_emails.debug = True
-    df_emails = detector.transform(df_emails)
+    df_emails = detector.transform(df_emails, debug_mode=True)
 
     # Collect results
     result = df_emails[res_col].iloc[0]

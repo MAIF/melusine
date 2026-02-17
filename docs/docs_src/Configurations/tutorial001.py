@@ -48,7 +48,7 @@ def modify_conf_with_dict():
     from melusine import config
 
     # Get a dict of the existing conf
-    new_conf = config.dict()
+    new_conf = config.to_dict()
 
     # Add/Modify a config key
     new_conf["my_conf_key"] = "my_conf_value"

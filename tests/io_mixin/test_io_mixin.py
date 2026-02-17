@@ -21,7 +21,7 @@ def test_from_config_dict():
 @pytest.mark.usefixtures("use_dict_backend", "reset_melusine_config")
 def test_from_config_key():
     my_dict = {"test_arg": "hey"}
-    test_conf_dict = config.dict()
+    test_conf_dict = config.to_dict()
     test_conf_dict["testclass_conf"] = my_dict
     config.reset(config_dict=test_conf_dict)
 

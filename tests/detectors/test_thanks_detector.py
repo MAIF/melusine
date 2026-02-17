@@ -64,8 +64,7 @@ def test_thanks_detector(thanks_detector_df):
     debug_dict_col = detector.debug_dict_col
 
     # Transform data
-    df.debug = True
-    df = detector.transform(df)
+    df = detector.transform(df, debug_mode=True)
 
     # Test result
     assert result_col in df.columns
@@ -121,15 +120,12 @@ def test_thanks_detector_debug(tags, has_body, thanks_text, thanks_parts):
 
     data = {
         "messages": [Message(text="", tags=tags)],
-        "debug": True,
     }
 
-    detector = ThanksDetector(
-        name="thanks",
-    )
+    detector = ThanksDetector(name="thanks")
 
     # Transform data
-    data = detector.transform(data)
+    data = detector.transform(data, debug_mode=True)
 
     # Test result
     assert "debug_thanks" in data

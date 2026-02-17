@@ -1,6 +1,4 @@
-"""
-Top-level package.
-"""
+"""Top-level package."""
 
 import logging
 
@@ -8,7 +6,7 @@ from melusine._config import config
 
 __all__ = ["config"]
 
-VERSION = (3, 2, 0)
+VERSION = (3, 3, 0)
 __version__ = ".".join(map(str, VERSION))
 
 # ------------------------------- #

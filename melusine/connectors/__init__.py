@@ -1,0 +1,1 @@
+"""Init file for connectors module. This module contains connectors to various data sources and formats."""

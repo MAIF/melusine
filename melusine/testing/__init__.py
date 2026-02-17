@@ -1,3 +1,5 @@
+"""Testing utilities for Melusine."""
+
 from .pipeline_testing import assert_pipeline_results
 
 __all__ = [

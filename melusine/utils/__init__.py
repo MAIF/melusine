@@ -1,6 +1,4 @@
-"""
-The melusine.utils module includes utils functionalitites.
-"""
+"""The melusine.utils module includes utils functionalitites."""
 
 from melusine.utils.show_versions import show_versions
 

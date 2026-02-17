@@ -1,5 +1,4 @@
-"""
-Base classes of the Melusine framework.
+"""Base classes of the Melusine framework.
 
 Implemented classes: [
     MelusineTransformer,
@@ -18,11 +17,12 @@ import copy
 import inspect
 import logging
 import re
+import warnings
 from abc import ABC, abstractmethod
-from typing import Any, Callable, Dict, Iterable, List, TypeVar, Union
+from collections.abc import Callable, Iterable
+from typing import Any, TypeAlias, TypeVar
 
 import pandas as pd
-from sklearn.base import BaseEstimator, TransformerMixin
 
 from melusine.backend import backend
 from melusine.io_mixin import IoMixin
@@ -30,24 +30,17 @@ from melusine.io_mixin import IoMixin
 logger = logging.getLogger(__name__)
 
 # Dataset types supported by Melusine : pandas DataFrame and dicts
-MelusineDataset = Union[Dict[str, Any], pd.DataFrame]
-
-# Corresponding items are:
-# - Dataset : Pandas DataFrame => Item : Pandas Series
-# - Dataset Dict => Item Dict
-MelusineItem = Union[Dict[str, Any], pd.Series]
+MelusineDataset: TypeAlias = dict[str, Any] | pd.DataFrame
+MelusineItem: TypeAlias = dict[str, Any] | pd.Series
 Transformer = TypeVar("Transformer", bound="MelusineTransformer")
 
 
 class TransformError(Exception):
-    """
-    Exception raised when an error occurs during the transform operation.
-    """
+    """Exception raised when an error occurs during the transform operation."""
 
 
-class MelusineTransformer(BaseEstimator, TransformerMixin, IoMixin):
-    """
-    Define a MelusineTransformer object.
+class MelusineTransformer(IoMixin):
+    """Define a MelusineTransformer object.
 
     Is an abstract class.
 
@@ -60,17 +53,17 @@ class MelusineTransformer(BaseEstimator, TransformerMixin, IoMixin):
         output_columns: str | Iterable[str],
         func: Callable | None = None,
     ) -> None:
-        """
-        Attribute initialization.
+        """Attribute initialization.
 
         Parameters
         ----------
-        input_columns: Union[str, Iterable[str]]
+        input_columns: str | Iterable[str]
             List of input columns
-        output_columns: Union[str, Iterable[str]]
+        output_columns: str | Iterable[str]
             List of output columns
-        func: Callable
+        func: Callable | None
             Transform function to be applied
+
         """
         IoMixin.__init__(self)
 
@@ -80,18 +73,18 @@ class MelusineTransformer(BaseEstimator, TransformerMixin, IoMixin):
 
     @staticmethod
     def parse_column_list(columns: str | Iterable[str]) -> list[str]:
-        """
-        Transform a string into a list with a single element.
+        """Transform a string into a list with a single element.
 
         Parameters
         ----------
-        columns: Union[str, Iterable[str]]
+        columns: str | Iterable[str]
             String or list of strings with column name(s).
 
         Returns
         -------
         _: list[str]
             A list of column names.
+
         """
         # Change string into list of strings if necessary
         # "body" => ["body]
@@ -113,22 +106,24 @@ class MelusineTransformer(BaseEstimator, TransformerMixin, IoMixin):
         -------
         self : object
             Returns self.
+
         """
         return self
 
-    def transform(self, data: MelusineDataset) -> MelusineDataset:
-        """
-        Transform input data.
+    def transform(self, data: MelusineDataset, debug_mode: bool = False) -> MelusineDataset:
+        """Transform input data.
 
         Parameters
         ----------
         data: MelusineDataset
             Input data.
+        debug_mode: Debug mode.
 
         Returns
         -------
         _: MelusineDataset
             Transformed data (output).
+
         """
         logger.debug(f"Running transform for {type(self).__name__}")
         if self.func is None:
@@ -151,8 +146,7 @@ class MelusineTransformer(BaseEstimator, TransformerMixin, IoMixin):
 
 
 class BaseMelusineDetector(MelusineTransformer, ABC):
-    """
-    Used to define detectors.
+    """Used to define detectors.
 
     Template Method str based on the MelusineTransformer class.
     """
@@ -163,8 +157,7 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
         input_columns: list[str],
         output_columns: list[str],
     ):
-        """
-        Attributes initialization.
+        """Attributes initialization.
 
         Parameters
         ----------
@@ -174,6 +167,7 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
             Detector input columns.
         output_columns:
             Detector output columns.
+
         """
         #  self.name needs to be set before the super class init
         #  Name is used to build the output_columns
@@ -186,8 +180,7 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
 
     @property
     def debug_dict_col(self) -> str:
-        """
-        Standard name for the column containing the debug info.
+        """Standard name for the column containing the debug info.
 
         Typically, a detector may return the following outputs:
         - output_result_col: bool
@@ -196,7 +189,7 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
           > Ex: thanks_output: "Remerciement plat"
         - output_score_col: float
           > Ex: thanks_score: 0.95
-        - (debug) debug_dict_col: Dict[str, Any]
+        - (debug) debug_dict_col: dict[str, Any]
           > Ex: debug_thanks: {"thanks_text": "Merci"}
         """
         return f"debug_{self.name}"
@@ -204,13 +197,13 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
     @property
     @abstractmethod
     def transform_methods(self) -> list[Callable]:
-        """
-        Specify the sequence of methods to be called by the transform method.
+        """Specify the sequence of methods to be called by the transform method.
 
         Returns
         -------
         _: list[Callable]
             List of  methods to be called by the transform method.
+
         """
 
     def fit(self, X: MelusineDataset, y: Any = None) -> MelusineTransformer:
@@ -227,35 +220,53 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
         -------
         self : object
             Returns self.
+
         """
         return self
 
-    def transform(self, df: MelusineDataset) -> MelusineDataset:
-        """
-        Re-definition of super().transform() => specific detector's implementation
-
-        Transform input data.
+    def transform(self, df: MelusineDataset, debug_mode: bool = False) -> MelusineDataset:
+        """Transform input data with a specific implementation of the Template Method design pattern.
 
         Parameters
         ----------
         df: MelusineDataset
             Input data.
+        debug_mode: Debug mode.
 
         Returns
         -------
         _: MelusineDataset
             Transformed data (output).
+
         """
         logger.debug(f"Running transform for {type(self).__name__}")
 
-        # Debug mode ON?
-        debug_mode: bool = backend.check_debug_flag(df)
+        # Legacy debug mode
+        if isinstance(df, dict) and df.get("debug"):
+            warnings.warn(
+                (
+                    "Debug mode activation via the debug field is deprecated and will be removed in a future release.\n"
+                    "Please use the 'debug_mode' of the transform method.\n"
+                ),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            debug_mode = True
+
+        if isinstance(df, pd.DataFrame) and hasattr(df, "debug"):
+            warnings.warn(
+                (
+                    "Debug mode activation via the debug attribute is deprecated "
+                    "and will be removed in a future release.\n"
+                    "Please use the 'debug_mode' of the transform method.\n"
+                ),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            debug_mode = True
 
         # Validate fields of the input data
         self.validate_input_fields(df)
-
-        # Work on a copy of the DataFrame and limit fields to effective input columns
-        # data_ = backend.copy(data, fields=self.input_columns)
 
         # Work on a copy of the DataFrame and keep all columns
         # (too complex to handle model input columns)
@@ -287,13 +298,13 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
         return data
 
     def validate_input_fields(self, data: MelusineDataset) -> None:
-        """
-        Make sure that all the required input fields are present.
+        """Make sure that all the required input fields are present.
 
         Parameters
         ----------
         data: MelusineDataset
             Input data.
+
         """
         input_fields: list[str] = backend.get_fields(data)
         missing_fields: list[str] = [x for x in self.input_columns if x not in input_fields]
@@ -302,8 +313,7 @@ class BaseMelusineDetector(MelusineTransformer, ABC):
 
 
 class MelusineDetector(BaseMelusineDetector, ABC):
-    """
-    Defines an interface for detectors.
+    """Defines an interface for detectors.
     All detectors used in a MelusinePipeline should inherit from the MelusineDetector class and
     implement the abstract methods.
     This ensures homogeneous coding style throughout the application.
@@ -313,13 +323,13 @@ class MelusineDetector(BaseMelusineDetector, ABC):
 
     @property
     def transform_methods(self) -> list[Callable]:
-        """
-        Specify the sequence of methods to be called by the transform method.
+        """Specify the sequence of methods to be called by the transform method.
 
         Returns
         -------
         _: list[Callable]
             List of  methods to be called by the transform method.
+
         """
         return [self.pre_detect, self.detect, self.post_detect]
 
@@ -337,18 +347,14 @@ class MelusineDetector(BaseMelusineDetector, ABC):
 
 
 class MissingFieldError(Exception):
-    """
-    Exception raised when a missing field is encountered by a MelusineTransformer
-    """
+    """Exception raised when a missing field is encountered by a MelusineTransformer"""
 
 
-MatchData = Dict[str, List[Dict[str, Any]]]
+MatchData = dict[str, list[dict[str, Any]]]
 
 
 class MelusineRegex(ABC):
-    """
-    Class to standardise text pattern detection using regex.
-    """
+    """Class to standardise text pattern detection using regex."""
 
     REGEX_FLAGS: re.RegexFlag = re.IGNORECASE | re.MULTILINE
     PAIRED_MATCHING_PREFIX: str = "_"
@@ -376,8 +382,7 @@ class MelusineRegex(ABC):
 
     @property
     def regex_name(self) -> str:
-        """
-        Name of the Melusine regex object.
+        """Name of the Melusine regex object.
         Defaults to the class name.
         """
         return getattr(self, "_regex_name", type(self).__name__)
@@ -385,58 +390,57 @@ class MelusineRegex(ABC):
     @property
     @abstractmethod
     def positive(self) -> dict[str, str] | str:
-        """
-        Define regex patterns required to activate the MelusineRegex.
+        """Define regex patterns required to activate the MelusineRegex.
 
         Returns:
             _: Regex pattern or dict of regex patterns.
+
         """
 
     @property
     def neutral(self) -> dict[str, str] | str | None:
-        """
-        Define regex patterns to be ignored when running detection.
+        """Define regex patterns to be ignored when running detection.
 
         Returns:
             _: Regex pattern or dict of regex patterns.
+
         """
         return None
 
     @property
     def negative(self) -> dict[str, str] | str | None:
-        """
-        Define regex patterns prohibited to activate the MelusineRegex.
+        """Define regex patterns prohibited to activate the MelusineRegex.
 
         Returns:
             _: Regex pattern or dict of regex patterns.
+
         """
         return None
 
     @property
     @abstractmethod
     def match_list(self) -> list[str]:
-        """
-        List of texts that should activate the MelusineRegex.
+        """List of texts that should activate the MelusineRegex.
 
         Returns:
             _: List of texts.
+
         """
 
     @property
     @abstractmethod
     def no_match_list(self) -> list[str]:
-        """
-        List of texts that should NOT activate the MelusineRegex.
+        """List of texts that should NOT activate the MelusineRegex.
 
         Returns:
             _: List of texts.
+
         """
 
     def _get_match(
         self, text: str, base_regex: str | dict[str, str], regex_group: str | None = None
     ) -> dict[str, list[dict[str, Any]]]:
-        """
-        Run specified regex on the input text and return a dict with matching group as key.
+        """Run specified regex on the input text and return a dict with matching group as key.
 
         Args:
             text: Text to apply regex on.
@@ -445,6 +449,7 @@ class MelusineRegex(ABC):
 
         Returns:
             Dict of regex matches for each regex group.
+
         """
         match_data_dict = {}
 
@@ -478,8 +483,7 @@ class MelusineRegex(ABC):
         text: str,
         match_data_dict: dict[str, list[dict[str, Any]]],
     ) -> str:
-        """
-        Replace neutral regex match text with substitution text to ignore it.
+        """Replace neutral regex match text with substitution text to ignore it.
 
         Args:
             text: Input text.
@@ -487,6 +491,7 @@ class MelusineRegex(ABC):
 
         Returns:
             _: Text with substituions.
+
         """
         for _, match_list in match_data_dict.items():
             for match_data in match_list:
@@ -499,8 +504,7 @@ class MelusineRegex(ABC):
         return text
 
     def get_match_result(self, text: str) -> bool:
-        """
-        Apply MelusineRegex patterns (neutral, negative and positive) on the input text.
+        """Apply MelusineRegex patterns (neutral, negative and positive) on the input text.
         Return a boolean output of the match result.
 
         Args:
@@ -508,13 +512,13 @@ class MelusineRegex(ABC):
 
         Returns:
             _: True if the MelusineRegex matches the input text.
+
         """
         result = self(text)
         return result[self.MATCH_RESULT]
 
     def __call__(self, text: str) -> dict[str, Any]:
-        """
-        Apply MelusineRegex patterns (neutral, negative and positive) on the input text.
+        """Apply MelusineRegex patterns (neutral, negative and positive) on the input text.
         Return a detailed output of the match results as a dict.
 
         Args:
@@ -522,6 +526,7 @@ class MelusineRegex(ABC):
 
         Returns:
             _: Regex match results.
+
         """
         # Apply pre match hook
         text = self.pre_match_hook(text)
@@ -558,20 +563,20 @@ class MelusineRegex(ABC):
         return match_dict
 
     def describe(self, text: str, position: bool = False) -> None:
-        """
-        User-friendly description of the regex match results.
+        """User-friendly description of the regex match results.
 
         Args:
             text: Input text.
             position: If True, print regex match start and stop positions.
+
         """
 
         def _describe_match_field(match_field_data: dict[str, list[dict[str, Any]]]) -> None:
-            """
-            Format and print result description text.
+            """Format and print result description text.
 
             Args:
                 match_field_data: Regex match result for a given field.
+
             """
             for group, match_list in match_field_data.items():
                 for match_dict in match_list:
@@ -610,8 +615,7 @@ class MelusineRegex(ABC):
             _describe_match_field(match_data[self.POSITIVE_MATCH_FIELD])
 
     def apply_paired_matching(self, negative_match_data: MatchData, positive_match_data: MatchData) -> bool:
-        """
-        Check if negative match is effective in the case of paired matching.
+        """Check if negative match is effective in the case of paired matching.
 
         Args:
             negative_match_data: negative_match_data
@@ -619,6 +623,7 @@ class MelusineRegex(ABC):
 
         Returns:
             effective_negative_match: negative_match adapted for paired matching
+
         """
         effective_negative_match = False
         if positive_match_data and negative_match_data:
@@ -634,28 +639,27 @@ class MelusineRegex(ABC):
         return effective_negative_match
 
     def pre_match_hook(self, text: str) -> str:
-        """
-        Hook to run before the Melusine regex match.
+        """Hook to run before the Melusine regex match.
 
         Args:
             text: input text.
 
         Returns:
             _: Modified text.
+
         """
         return text
 
     def post_match_hook(self, match_dict: dict[str, Any]) -> dict[str, Any]:
-        """
-        Hook to run after the Melusine regex match.
+        """Hook to run after the Melusine regex match.
 
         Args:
             match_dict: Match results.
 
         Returns:
             _: Modified match results.
-        """
 
+        """
         # Paired matching
         negative_match = self.apply_paired_matching(
             match_dict[self.NEGATIVE_MATCH_FIELD], match_dict[self.POSITIVE_MATCH_FIELD]
@@ -667,9 +671,7 @@ class MelusineRegex(ABC):
         return match_dict
 
     def test(self) -> None:
-        """
-        Test the MelusineRegex on the match_list and no_match_list.
-        """
+        """Test the MelusineRegex on the match_list and no_match_list."""
         for text in self.match_list:
             match = self(text)
             assert match[self.MATCH_RESULT] is True, f"Expected match for text\n{text}\nObtained: {match}"
@@ -679,4 +681,5 @@ class MelusineRegex(ABC):
             assert match[self.MATCH_RESULT] is False, f"Expected no match for text:\n{text}\nObtained: {match}"
 
     def __repr__(self) -> str:
+        """Repr for the class MelusineRegex."""
         return f"{type(self).__name__}(positive:{self.positive},neutral:{self.neutral},negative:{self.negative})"

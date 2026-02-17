@@ -1,12 +1,12 @@
-"""
-Backend to run transforms on pandas.DataFrame objects.
+"""Backend to run transforms on pandas.DataFrame objects.
 
 Implemented classes: [
     PandasBackend,
 ]
 """
 
-from typing import Any, Callable, List, Optional, Tuple, Union
+from collections.abc import Callable
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -17,20 +17,19 @@ from melusine.backend.base_backend import BaseTransformerBackend
 
 
 class PandasBackend(BaseTransformerBackend):
-    """
-    Backend class to operate on Pandas DataFrames.
+    """Backend class to operate on Pandas DataFrames.
     Inherits from the BaseTransformerBackend abstract class.
     Includes multiprocessing functionalities
     """
 
     def __init__(self, progress_bar: bool = False, workers: int = 1):
-        """
-        Parameters
+        """Parameters
         ----------
         progress_bar: bool
             If True, display progress bar
         workers: int
             Number of workers for multiprocessing
+
         """
         super().__init__()
         self.progress_bar = progress_bar
@@ -40,12 +39,11 @@ class PandasBackend(BaseTransformerBackend):
         self,
         data: pd.DataFrame,
         func: Callable,
-        output_columns: Optional[List[str]] = None,
-        input_columns: Optional[List[str]] = None,
+        output_columns: list[str] | None = None,
+        input_columns: list[str] | None = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
-        """
-        Method to apply a transform on a Dataset using the Dict backend.
+        """Method to apply a transform on a Dataset using the Dict backend.
 
         Parameters
         ----------
@@ -63,6 +61,7 @@ class PandasBackend(BaseTransformerBackend):
         -------
         _: pd.DataFrame
             Transformed data
+
         """
         # Multiprocessing
         if self.workers > 1:
@@ -78,12 +77,11 @@ class PandasBackend(BaseTransformerBackend):
         self,
         data: pd.DataFrame,
         func: Callable,
-        output_columns: Optional[List[str]] = None,
-        input_columns: Optional[List[str]] = None,
+        output_columns: list[str] | None = None,
+        input_columns: list[str] | None = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
-        """
-        Regular transform (no multiprocessing)
+        """Regular transform (no multiprocessing)
 
         Parameters
         ----------
@@ -101,8 +99,8 @@ class PandasBackend(BaseTransformerBackend):
         -------
         _: pd.DataFrame
             Transformed data
-        """
 
+        """
         # Setup apply parameters
         expand, new_cols = self.setup_apply_parameters(output_columns)
 
@@ -138,10 +136,9 @@ class PandasBackend(BaseTransformerBackend):
 
     @staticmethod
     def setup_apply_parameters(
-        output_columns: Optional[List[str]] = None,
-    ) -> Tuple[Union[None, str], Union[None, str, List[str]]]:
-        """
-        Parameters
+        output_columns: list[str] | None = None,
+    ) -> tuple[str | None, str | None | list[str]]:
+        """Parameters
         ----------
         output_columns: List[str]
             List of output columns
@@ -150,10 +147,11 @@ class PandasBackend(BaseTransformerBackend):
         -------
         expand: str
         new_cols: Union[None, str, List[str]]
+
         """
         if not output_columns:
             expand = None
-            new_cols: Union[None, str, List[str]] = None
+            new_cols: None | str | list[str] = None
         elif len(output_columns) == 1:
             expand = None
             new_cols = output_columns[0]
@@ -168,12 +166,11 @@ class PandasBackend(BaseTransformerBackend):
         self,
         data: pd.DataFrame,
         func: Callable,
-        output_columns: Optional[List[str]] = None,
-        input_columns: Optional[List[str]] = None,
+        output_columns: list[str] | None = None,
+        input_columns: list[str] | None = None,
         **kwargs: Any,
     ) -> pd.DataFrame:
-        """
-        Transform with multiprocessing
+        """Transform with multiprocessing
 
         Parameters
         ----------
@@ -191,6 +188,7 @@ class PandasBackend(BaseTransformerBackend):
         -------
         _: pd.DataFrame
             Transformed data
+
         """
         workers = min(self.workers, int(data.shape[0] // 2))
         workers = max(workers, 1)
@@ -204,6 +202,7 @@ class PandasBackend(BaseTransformerBackend):
         # Use Series.apply
         if input_columns and len(input_columns) == 1:
             input_column = input_columns[0]
+            splits = [data.iloc[idx] for idx in np.array_split(np.arange(len(data)), workers)]
             chunks = Parallel(n_jobs=workers)(
                 delayed(self.apply_joblib_series)(
                     s=d[input_column],
@@ -212,11 +211,12 @@ class PandasBackend(BaseTransformerBackend):
                     progress_bar=self.progress_bar,
                     **kwargs,
                 )
-                for d in np.array_split(data, workers)
+                for d in splits
             )
 
         # Use DataFrame.apply
         else:
+            splits = [data.iloc[idx] for idx in np.array_split(np.arange(len(data)), workers)]
             chunks = Parallel(n_jobs=workers)(
                 delayed(self.apply_joblib_dataframe)(
                     df=d,
@@ -225,7 +225,7 @@ class PandasBackend(BaseTransformerBackend):
                     progress_bar=self.progress_bar,
                     **kwargs,
                 )
-                for d in np.array_split(data, workers)
+                for d in splits
             )
 
         if not new_cols:
@@ -239,12 +239,11 @@ class PandasBackend(BaseTransformerBackend):
     def apply_joblib_dataframe(
         df: pd.DataFrame,
         func: Callable,
-        expand: Optional[str] = None,
+        expand: str | None = None,
         progress_bar: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame:
-        """
-        Need to create a function to pass to Joblib Parallel.
+        """Need to create a function to pass to Joblib Parallel.
         This function can't be a lambda so we need to create a separate function.
         """
         if progress_bar:
@@ -261,12 +260,11 @@ class PandasBackend(BaseTransformerBackend):
     def apply_joblib_series(
         s: pd.Series,
         func: Callable,
-        expand: Optional[str] = None,
+        expand: str | None = None,
         progress_bar: bool = False,
         **kwargs: Any,
     ) -> pd.DataFrame:
-        """
-        Need to create a function to pass to Joblib Parallel.
+        """Need to create a function to pass to Joblib Parallel.
         This function can't be a lambda so we need to create a separate function.
         """
         if progress_bar:
@@ -281,9 +279,8 @@ class PandasBackend(BaseTransformerBackend):
 
         return result
 
-    def add_fields(self, left: pd.DataFrame, right: pd.DataFrame, fields: Optional[List[str]] = None) -> pd.DataFrame:
-        """
-        Method to add fields form the right object to the left object.
+    def add_fields(self, left: pd.DataFrame, right: pd.DataFrame, fields: list[str] | None = None) -> pd.DataFrame:
+        """Method to add fields form the right object to the left object.
 
         Parameters
         ----------
@@ -298,14 +295,14 @@ class PandasBackend(BaseTransformerBackend):
         -------
         _: pd.DataFrame
             Left object with added fields
+
         """
         left[fields] = right[fields]
 
         return left
 
-    def copy(self, data: pd.DataFrame, fields: Optional[List[str]] = None) -> pd.DataFrame:
-        """
-        Method to make a copy of the dataset.
+    def copy(self, data: pd.DataFrame, fields: list[str] | None = None) -> pd.DataFrame:
+        """Method to make a copy of the dataset.
 
         Parameters
         ----------
@@ -318,15 +315,15 @@ class PandasBackend(BaseTransformerBackend):
         -------
         _: pd.DataFrame
             Copy of original object
+
         """
         if not fields:
             fields = data.columns
 
         return data[fields].copy()
 
-    def get_fields(self, data: pd.DataFrame) -> List[str]:
-        """
-        Method to get the list of fields available in the input dataset.
+    def get_fields(self, data: pd.DataFrame) -> list[str]:
+        """Method to get the list of fields available in the input dataset.
 
         Parameters
         ----------
@@ -337,12 +334,12 @@ class PandasBackend(BaseTransformerBackend):
         -------
         _: List[str]
             List of dataset fields
+
         """
         return data.columns.to_list()
 
     def setup_debug_dict(self, data: pd.DataFrame, dict_name: str) -> pd.DataFrame:
-        """
-        Method to check if debug_mode is activated.
+        """Method to check if debug_mode is activated.
 
         Parameters
         ----------
@@ -355,6 +352,7 @@ class PandasBackend(BaseTransformerBackend):
         -------
         _: pd.DataFrame
             MelusineDataset object
+
         """
         data[dict_name] = [{} for _ in range(len(data))]
 

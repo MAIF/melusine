@@ -6,9 +6,7 @@ import pytest
 transformers = pytest.importorskip("transformers")
 from typing import List
 
-from transformers.pipelines.zero_shot_classification import (
-    ZeroShotClassificationPipeline,
-)
+from transformers.pipelines.zero_shot_classification import ZeroShotClassificationPipeline
 
 
 class MockZeroShotClassificationPipeline(ZeroShotClassificationPipeline):
