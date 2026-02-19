@@ -3,7 +3,6 @@ import pytest
 from melusine.testing.pipeline_testing import assert_pipeline_results
 
 
-@pytest.mark.usefixtures("use_dict_backend")
 def test_pipeline_testing():
     testcase = {
         "test_name": "Simple test",
@@ -16,7 +15,6 @@ def test_pipeline_testing():
     assert_pipeline_results(testcase, "my_pipeline")
 
 
-@pytest.mark.usefixtures("use_dict_backend")
 def test_pipeline_testing_error():
     test_name = "Expected result error"
     pipeline_step_name = "body_cleaner"
@@ -35,7 +33,6 @@ def test_pipeline_testing_error():
         assert_pipeline_results(testcase, "my_pipeline")
 
 
-@pytest.mark.usefixtures("use_dict_backend")
 def test_pipeline_testing_untested_field():
     test_name = "Untested field test"
     pipeline_step_name = "non_existent_step"

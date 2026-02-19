@@ -114,7 +114,6 @@ def test_thanks_detector_missing_field(thanks_detector_df):
         ),
     ],
 )
-@pytest.mark.usefixtures("use_dict_backend")
 def test_thanks_detector_debug(tags, has_body, thanks_text, thanks_parts):
     """Unit test of the debug mode."""
 

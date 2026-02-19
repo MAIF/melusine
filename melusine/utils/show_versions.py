@@ -77,7 +77,7 @@ def _get_dependency_version(dep_name: str) -> str:
     except ImportError:
         return "<not installed>"
 
-    if hasattr(module, "__version__"):
+    if hasattr(module, "__version__"):  # pragma: no cover
         module_version = module.__version__
     else:
         module_version = "<__version__ unavailable>"  # pragma: no cover

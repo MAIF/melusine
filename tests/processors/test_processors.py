@@ -29,6 +29,7 @@ def test_normalizer(input_text, lowercase, output_text):
     """Unit test"""
 
     normalizer = Normalizer(lowercase=lowercase)
+    normalizer = normalizer.fit({"dummy": "hey"})
     text = normalizer.normalize_text(input_text)
     assert text == output_text
 
@@ -108,6 +109,22 @@ def test_tokenizer(input_text, output_tokens, lowercase, normalization_form):
                 Message(
                     meta="Sujet: \nFwd:\nDe : jean@gmail.com\nSujet : ABCD",
                     text="Voici l'attestation",
+                ),
+            ],
+        ),
+        (
+            (
+                "\nSujet: \nFwd:\n\n\nDe: \ntest@gmail.com,"
+                "\n\n\nCopie: \ntest@maif.fr,\n\n\nAttachments: \nIMG_00000.jpg,\n"
+                "Bonjour"
+            ),
+            [
+                Message(
+                    meta=(
+                        "Sujet: \nFwd:\n\n\nDe: \ntest@gmail.com,"
+                        "\n\n\nCopie: \ntest@maif.fr,\n\n\nAttachments: \nIMG_00000.jpg,"
+                    ),
+                    text="Bonjour",
                 ),
             ],
         ),

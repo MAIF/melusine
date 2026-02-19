@@ -18,6 +18,11 @@ class BaseTransformerBackend(ABC):
     Ex: Pandas DataFrames, Dict, Spark objects, etc
     """
 
+    @property
+    @abstractmethod
+    def supported_types(self) -> tuple:
+        """Return a tuple of supported data types."""
+
     @abstractmethod
     def apply_transform(
         self,

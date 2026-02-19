@@ -8,6 +8,7 @@ from melusine.backend.pandas_backend import PandasBackend
 from melusine.processors import Normalizer
 
 
+@pytest.mark.usefixtures("reset_melusine_backend")
 def test_reset_backend():
     """Test"""
     dict_data = {"input_col": "àçöbïù"}
@@ -23,17 +24,58 @@ def test_reset_backend():
     df_out = processor.transform(df_data)
     assert isinstance(df_out, pd.DataFrame)
 
+@pytest.mark.parametrize("keep_defaults, len_backend_list", [(True, 3), (False, 1)])
+@pytest.mark.usefixtures("reset_melusine_backend")
+def test_select_backend(keep_defaults, len_backend_list):
+    """Test"""
+    df = pd.DataFrame([{"col": "hey"}])
+
+    backend.reset()
+
+    pandas_backend = PandasBackend(progress_bar=True)
+    backend.reset(new_backend=pandas_backend, keep_default_backends=keep_defaults)
+    _backend = backend.select_backend(df)
+
+    assert isinstance(_backend, PandasBackend)
+    assert _backend.progress_bar is True
+    assert len(backend.backend_list) == len_backend_list
+
+
+@pytest.mark.usefixtures("reset_melusine_backend")
+def test_add_backend():
+    """Test"""
+    class FloatBackend(DictBackend):
+        """Dummy backend"""
+
+        @property
+        def supported_types(self):
+            """Test"""
+            return (float,)
+
+    backend.add(FloatBackend())
+    _backend = backend.select_backend(3.5)
+
+    assert isinstance(_backend, FloatBackend)
+    expected_types = [dict, pd.DataFrame, float]
+    assert not set(backend.supported_types).difference(set(expected_types))
+
+@pytest.mark.usefixtures("reset_melusine_backend")
+def test_add_named_backend():
+    """Test"""
+    backend.add("pandas")
+    assert isinstance(backend.backend_list[-1], PandasBackend)
+
+    backend.add("dict")
+    assert isinstance(backend.backend_list[-1], DictBackend)
 
 def test_unknown_backend():
     with pytest.raises(ValueError):
         backend.reset("unknown")
 
 
-def test_backend_error():
-    backend._backend = None
-    with pytest.raises(AttributeError):
-        _ = backend.backend
-    backend.reset()
+def test_select_backend_error():
+    with pytest.raises(ValueError, match="<class 'float'>"):
+        _ = backend.select_backend(3.5)
 
 
 def test_add_fields_dict():

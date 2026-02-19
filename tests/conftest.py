@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from melusine import config
+from melusine.backend import backend
 
 # Declare fixtures
 pytest_plugins = [
@@ -43,6 +44,20 @@ def df_emails():
 
 # =============== Fixtures with "function" scope ===============
 @pytest.fixture(scope="function")
+def reset_melusine_backend():
+    """
+    When a test modifies the melusine backend, this fixture can be used to reset the backend.
+    """
+    # Code executed before the test starts
+    pass
+
+    # Run the test
+    yield
+
+    # Code executed after the test ends
+    backend.reset()
+
+@pytest.fixture(scope="function")
 def reset_melusine_config():
     """
     When a test modifies the melusine configuration, this fixture can be used to reset the config.
@@ -76,21 +91,3 @@ def use_test_config(conf_normalizer, conf_tokenizer, conf_phraser):
 
     # Code executed after the test ends
     config.reset()
-
-
-@pytest.fixture(scope="function")
-def use_dict_backend():
-    """
-    When a test modifies the melusine backend, this fixture can be used to reset the backend.
-    """
-    from melusine.backend.active_backend import backend
-
-    # =========== Code executed before the test starts ===========
-    # Use a dict backend to test a pipeline message by message
-    backend.reset("dict")
-
-    # =========== Run the test ===========
-    yield
-
-    # =========== Code executed after the test ends ===========
-    backend.reset()

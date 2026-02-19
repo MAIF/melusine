@@ -16,6 +16,11 @@ class DictBackend(BaseTransformerBackend):
     Inherits from the BaseTransformerBackend abstract class.
     """
 
+    @property
+    def supported_types(self) -> tuple:
+        """Return a tupple of supported data types."""
+        return (dict,)
+
     def apply_transform(
         self,
         data: dict[str, Any],

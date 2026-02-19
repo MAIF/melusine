@@ -9,10 +9,12 @@ Implemented classes: [
 
 import logging
 from collections.abc import Callable
+from itertools import chain
 from typing import Any
 
 from melusine.backend.base_backend import BaseTransformerBackend
 from melusine.backend.dict_backend import DictBackend
+from melusine.backend.pandas_backend import PandasBackend
 
 logger = logging.getLogger(__name__)
 
@@ -26,41 +28,65 @@ class ActiveBackend(BaseTransformerBackend):
     def __init__(self) -> None:
         """Init"""
         super().__init__()
-        self._backend: BaseTransformerBackend | None = None
+        self.backend_list : list[BaseTransformerBackend] = None
 
     @property
-    def backend(self) -> BaseTransformerBackend:
-        """Backend attribute getter"""
-        if self._backend is None:
-            raise AttributeError("'_backend' attribute is None")
-        else:
-            return self._backend
+    def supported_types(self) -> tuple:
+        """Supported types for the active backend."""
+        supported_types_tuples = [
+            _backend.supported_types
+            for _backend in self.backend_list
+        ]
 
-    def reset(self, new_backend: BaseTransformerBackend | str = PANDAS_BACKEND) -> None:
-        """Method to switch from current backend to specified backend.
+        return tuple(set(chain(*supported_types_tuples)))
+
+    def add(
+            self,
+            new_backend: BaseTransformerBackend | str,
+    ) -> None:
+        """Method to add a backend to the active backend list.
 
         Parameters
         ----------
         new_backend: BaseTransformerBackend | str
             New backend to be used
-
         """
+
         if isinstance(new_backend, BaseTransformerBackend):
-            self._backend = new_backend
+            self.backend_list.append(new_backend)
 
         elif new_backend == self.PANDAS_BACKEND:
-            # Importing in local scope to prevent hard dependencies
-            from melusine.backend.pandas_backend import PandasBackend
-
-            self._backend = PandasBackend()
+            self.backend_list.append(PandasBackend())
 
         elif new_backend == self.DICT_BACKEND:
-            self._backend = DictBackend()
+            self.backend_list.append(DictBackend())
 
         else:
             raise ValueError(f"Backend {new_backend} is not supported")
 
-        logger.info(f"Using backend '{new_backend}' for Data transformations")
+        logger.info(f"Using backends '{self.backend_list}' for Data transformations")
+
+    def reset(
+            self,
+            new_backend: BaseTransformerBackend | str | None = None,
+            keep_default_backends: bool = True
+    ) -> None:
+        """Method to reset active backend list.
+
+        Parameters
+        ----------
+        new_backend: BaseTransformerBackend | str
+            New backend to be used
+        keep_default_backends: If True, keep the default backends on top of the new one.
+
+        """
+        if keep_default_backends:
+            self.backend_list = [DictBackend(), PandasBackend()]
+        else:
+            self.backend_list = []
+
+        if new_backend:
+            self.add(new_backend)
 
     def apply_transform(
         self,
@@ -90,13 +116,28 @@ class ActiveBackend(BaseTransformerBackend):
             Transformed data
 
         """
-        return self.backend.apply_transform(
+        _backend = self.select_backend(data=data)
+        return _backend.apply_transform(
             data=data,
             func=func,
             output_columns=output_columns,
             input_columns=input_columns,
             **kwargs,
         )
+
+    def select_backend(self, data: Any):
+        """Automatically select appropriate backend based on data type."""
+        for _backend in self.backend_list[::-1]:
+            if isinstance(data, _backend.supported_types):
+                return _backend
+
+        raise ValueError(
+            f"Could not find an appropriate backend fo data of type {type(data)}\n"
+            f"Backends available are: {self.backend_list}\n"
+            "To add an extra backend, use backend.add_backend(my_backend)"
+        )
+
+
 
     def copy(self, data: Any, fields: list[str] | None = None) -> Any:
         """Method to make a copy of the input dataset.
@@ -114,7 +155,8 @@ class ActiveBackend(BaseTransformerBackend):
             Copy of original object
 
         """
-        return self.backend.copy(data, fields=fields)
+        _backend = self.select_backend(data=data)
+        return _backend.copy(data, fields=fields)
 
     def get_fields(self, data: Any) -> list[str]:
         """Method to get the list of fields available in the input dataset.
@@ -130,7 +172,8 @@ class ActiveBackend(BaseTransformerBackend):
             List of dataset fields
 
         """
-        return self.backend.get_fields(data=data)
+        _backend = self.select_backend(data=data)
+        return _backend.get_fields(data=data)
 
     def add_fields(self, left: Any, right: Any, fields: list[str] | None = None) -> Any:
         """Method to add fields from the right object to the left object
@@ -150,7 +193,8 @@ class ActiveBackend(BaseTransformerBackend):
             Left object with added fields
 
         """
-        return self.backend.add_fields(left=left, right=right, fields=fields)
+        _backend = self.select_backend(data=left)
+        return _backend.add_fields(left=left, right=right, fields=fields)
 
     def setup_debug_dict(self, data: Any, dict_name: str) -> Any:
         """Method to check if debug_mode is activated
@@ -168,7 +212,8 @@ class ActiveBackend(BaseTransformerBackend):
             MelusineDataset object
 
         """
-        return self.backend.setup_debug_dict(data=data, dict_name=dict_name)
+        _backend = self.select_backend(data=data)
+        return _backend.setup_debug_dict(data=data, dict_name=dict_name)
 
 
 # Instantiate the default backend

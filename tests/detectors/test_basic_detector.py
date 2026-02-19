@@ -1,5 +1,4 @@
 import pandas as pd
-import pytest
 
 from melusine.base import MelusineDetector
 
@@ -29,17 +28,17 @@ class DummyDetector(MelusineDetector):
         return row
 
 
-@pytest.mark.usefixtures("use_dict_backend")
 def test_transform_with_dict_and_debug_mode():
     detector = DummyDetector()
     data_dict = {"text": "exemple"}
+
+    detector = detector.fit(data_dict)
     result = detector.transform(data_dict, debug_mode=True)
     assert isinstance(result, dict)
     assert result[detector.debug_dict_col]["test_debug"] == True
     assert result["result"] == TEST_RESULT
 
 
-@pytest.mark.usefixtures("use_dict_backend")
 def test_transform_with_dict_and_legacy_debug_mode():
     detector = DummyDetector()
     data_dict = {"text": "exemple", "debug": True}

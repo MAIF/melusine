@@ -35,6 +35,11 @@ class PandasBackend(BaseTransformerBackend):
         self.progress_bar = progress_bar
         self.workers = workers
 
+    @property
+    def supported_types(self) -> tuple:
+        """Return a tupple of supported data types."""
+        return (pd.DataFrame,)
+
     def apply_transform(
         self,
         data: pd.DataFrame,
