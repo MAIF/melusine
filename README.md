@@ -9,11 +9,11 @@
 <img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="Test">
 </a>
 <a href="https://shields.io/" target="_blank">
-<img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="pypi">
+<img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="pypi">
 </a>
 </p>
 
-<p align="center">🎉 **BREAKING** : New major version <b>Melusine 3.0</b> is available 🎉</p>
+<p align="center"> Release 3.3 : Drop sklearn inheritance, update debug mode activation and automate backend selection </p>
 
 <p align="center">
 <a href="https://maif.github.io/melusine" target="_blank">
@@ -42,7 +42,7 @@ deterministic rules (regex, keywords, heuristics) into a full email qualificatio
 
 ## Why Choose Melusine ?
 
-Melusine stands out with its combination of features and advantages:
+Features that make Melusine stand out:
 
 - **Pre-packaged Tools** : Melusine comes with out-of-the-box features such as
     - Segmenting an email conversation into individual messages
@@ -50,7 +50,7 @@ Melusine stands out with its combination of features and advantages:
     - Transferred email handling
 - **Streamlined Execution** : Focus on the core email qualification logic
 while Melusine handles the boilerplate code, providing debug mode, pipeline execution, code parallelization, and more.
-- **Flexible Integrations** : Melusine's modular architecture enables seamless integration with various AI frameworks,
+- **Flexible Integrations** : Melusine's modular architecture enables integration with various AI frameworks,
 ensuring compatibility with your preferred tools.
 - **Production ready** : Proven in the MAIF production environment,
 Melusine provides the robustness and stability you need.
