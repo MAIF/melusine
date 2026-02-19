@@ -50,8 +50,8 @@ class ActiveBackend(BaseTransformerBackend):
         ----------
         new_backend: BaseTransformerBackend | str
             New backend to be used
-        """
 
+        """
         if isinstance(new_backend, BaseTransformerBackend):
             self.backend_list.append(new_backend)
 
