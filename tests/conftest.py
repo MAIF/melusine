@@ -57,6 +57,7 @@ def reset_melusine_backend():
     # Code executed after the test ends
     backend.reset()
 
+
 @pytest.fixture(scope="function")
 def reset_melusine_config():
     """
