@@ -46,5 +46,4 @@ def test_emergency_detector(emergency_detector_df):
     assert debug_dict_col in df.columns
 
     for i, row in df.iterrows():
-        # assert row[result_col] == row["detection_expectation"]
         assert row[debug_dict_col][detector.regex.regex_name] == row["debug_expectation"]

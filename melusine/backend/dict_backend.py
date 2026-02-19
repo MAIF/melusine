@@ -18,7 +18,7 @@ class DictBackend(BaseTransformerBackend):
 
     @property
     def supported_types(self) -> tuple:
-        """Return a tupple of supported data types."""
+        """Return a tuple of supported data types."""
         return (dict,)
 
     def apply_transform(

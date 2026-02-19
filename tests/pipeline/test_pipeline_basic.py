@@ -18,7 +18,7 @@ TEST_RESULT = "test_result"
 
 def test_pipeline_basic(dataframe_basic):
     """
-    Train a pipeline by explicitly instatiating all the transformers.
+    Train a pipeline by explicitly instantiating all the transformers.
     """
     # Input data
     df = dataframe_basic.copy()

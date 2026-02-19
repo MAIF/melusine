@@ -8,7 +8,6 @@ from melusine.backend.pandas_backend import PandasBackend
 from melusine.processors import Normalizer
 
 
-@pytest.mark.usefixtures("reset_melusine_backend")
 def test_reset_backend():
     """Test"""
     dict_data = {"input_col": "àçöbïù"}
@@ -26,12 +25,9 @@ def test_reset_backend():
 
 
 @pytest.mark.parametrize("keep_defaults, len_backend_list", [(True, 3), (False, 1)])
-@pytest.mark.usefixtures("reset_melusine_backend")
 def test_select_backend(keep_defaults, len_backend_list):
     """Test"""
     df = pd.DataFrame([{"col": "hey"}])
-
-    backend.reset()
 
     pandas_backend = PandasBackend(progress_bar=True)
     backend.reset(new_backend=pandas_backend, keep_default_backends=keep_defaults)
@@ -42,7 +38,6 @@ def test_select_backend(keep_defaults, len_backend_list):
     assert len(backend.backend_list) == len_backend_list
 
 
-@pytest.mark.usefixtures("reset_melusine_backend")
 def test_add_backend():
     """Test"""
 
@@ -62,7 +57,6 @@ def test_add_backend():
     assert not set(backend.supported_types).difference(set(expected_types))
 
 
-@pytest.mark.usefixtures("reset_melusine_backend")
 def test_add_named_backend():
     """Test"""
     backend.add("pandas")

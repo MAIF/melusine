@@ -64,24 +64,24 @@ class ActiveBackend(BaseTransformerBackend):
         logger.info(f"Using backends '{self.backend_list}' for Data transformations")
 
     def reset(
-        self, new_backend: BaseTransformerBackend | str | None = None, keep_default_backends: bool = True
+        self, new_backend: BaseTransformerBackend | str | None = None, keep_default_backends: bool = False
     ) -> None:
         """Method to reset active backend list.
 
         Parameters
         ----------
-        new_backend: BaseTransformerBackend | str
-            New backend to be used
+        new_backend: New backend to be used
         keep_default_backends: If True, keep the default backends on top of the new one.
 
         """
-        if keep_default_backends:
-            self.backend_list = [DictBackend(), PandasBackend()]
-        else:
-            self.backend_list = []
-
         if new_backend:
+            if keep_default_backends:
+                self.backend_list = [DictBackend(), PandasBackend()]
+            else:
+                self.backend_list = []
             self.add(new_backend)
+        else:
+            self.backend_list = [DictBackend(), PandasBackend()]
 
     def apply_transform(
         self,
@@ -127,9 +127,9 @@ class ActiveBackend(BaseTransformerBackend):
                 return _backend
 
         raise ValueError(
-            f"Could not find an appropriate backend fo data of type {type(data)}\n"
+            f"Could not find an appropriate backend of data of type {type(data)}\n"
             f"Backends available are: {self.backend_list}\n"
-            "To add an extra backend, use backend.add_backend(my_backend)"
+            "To add an extra backend, use backend.add(my_backend)"
         )
 
     def copy(self, data: Any, fields: list[str] | None = None) -> Any:

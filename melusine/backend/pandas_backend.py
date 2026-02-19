@@ -37,7 +37,7 @@ class PandasBackend(BaseTransformerBackend):
 
     @property
     def supported_types(self) -> tuple:
-        """Return a tupple of supported data types."""
+        """Return a tuple of supported data types."""
         return (pd.DataFrame,)
 
     def apply_transform(

@@ -43,13 +43,13 @@ def df_emails():
 
 
 # =============== Fixtures with "function" scope ===============
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="function", autouse=True)
 def reset_melusine_backend():
     """
     When a test modifies the melusine backend, this fixture can be used to reset the backend.
     """
     # Code executed before the test starts
-    pass
+    backend.reset()
 
     # Run the test
     yield
@@ -64,7 +64,7 @@ def reset_melusine_config():
     When a test modifies the melusine configuration, this fixture can be used to reset the config.
     """
     # Code executed before the test starts
-    pass
+    config.reset()
 
     # Run the test
     yield
@@ -79,6 +79,7 @@ def use_test_config(conf_normalizer, conf_tokenizer, conf_phraser):
     Add test configurations.
     """
     # Code executed before the test starts
+    config.reset()
     test_conf_dict = config.to_dict()
 
     test_conf_dict["test_tokenizer"] = conf_tokenizer
