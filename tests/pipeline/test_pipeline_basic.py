@@ -9,8 +9,12 @@ import pandas as pd
 import pytest
 
 from melusine import config
+from melusine.base import MelusineDetector
 from melusine.pipeline import MelusinePipeline, PipelineConfigurationError
 from melusine.processors import Normalizer, RegexTokenizer
+
+
+TEST_RESULT = "test_result"
 
 
 def test_pipeline_basic(dataframe_basic):
@@ -28,11 +32,86 @@ def test_pipeline_basic(dataframe_basic):
     pipe = MelusinePipeline(steps=[("normalizer", normalizer), ("tokenizer", tokenizer)], verbose=True)
 
     # Fit the pipeline and transform the data
+    pipe = pipe.fit(df)
     df_transformed = pipe.transform(df)
 
     # Most basic test, check that the pipeline returns a pandas DataFrame
     assert isinstance(df_transformed, pd.DataFrame)
 
+def test_pipeline_debug(dataframe_basic):
+    """
+    Train a pipeline by explicitly instatiating all the transformers.
+    """
+
+    class DummyDetector(MelusineDetector):
+
+        def __init__(self):
+            """Dummy"""
+            super().__init__(name="dummy", input_columns=["text"], output_columns=["result"])
+
+        def pre_detect(self, row, debug_mode=False):
+            """Dummy"""
+            # Simule un comportement simple pour le test
+            if debug_mode:
+                row[self.debug_dict_col]["test_debug"] = True
+
+            row["result"] = TEST_RESULT
+            return row
+
+        def detect(self, row, debug_mode=False):
+            """Dummy"""
+            return row
+
+        def post_detect(self, row, debug_mode=False):
+            """Dummy"""
+            return row
+
+    # Input data
+    df = dataframe_basic.copy()
+
+    # Instantiate processors
+    normalizer = Normalizer(lowercase=True, form="NFKD")
+    tokenizer = RegexTokenizer()
+    detector = DummyDetector()
+
+    # Create pipeline
+    pipe = MelusinePipeline(
+        steps=[("normalizer", normalizer), ("tokenizer", tokenizer), ("dummy", detector)], verbose=True
+    )
+
+    # No debug
+    dfz = df.copy()
+    df_transformed = pipe.transform(dfz, debug_mode=False)
+
+    # Assert
+    assert isinstance(df_transformed, pd.DataFrame)
+    assert df_transformed.iloc[0].get("debug_dummy") is None
+
+    # Regular debug
+    dfa = df.copy()
+    df_transformed = pipe.transform(dfa, debug_mode=True)
+
+    # Assert
+    assert isinstance(df_transformed, pd.DataFrame)
+    assert df_transformed["debug_dummy"].iloc[0] == {"test_debug": True}
+
+    # Legacy DataFrame debug
+    dfb = df.copy()
+    dfb.debug = True
+    df_transformed = pipe.transform(dfb)
+
+    # Assert
+    assert isinstance(df_transformed, pd.DataFrame)
+    assert df_transformed["debug_dummy"].iloc[0] == {"test_debug": True}
+
+    # Legacy dict debug
+    my_dict = df.iloc[0].to_dict()
+    my_dict["debug"] = True
+    dict_transformed = pipe.transform(my_dict)
+
+    # Assert
+    assert isinstance(dict_transformed, dict)
+    assert dict_transformed["debug_dummy"] == {"test_debug": True}
 
 @pytest.mark.usefixtures("use_test_config")
 def test_pipeline_from_config(dataframe_basic):
