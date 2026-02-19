@@ -38,13 +38,13 @@ def test_pipeline_basic(dataframe_basic):
     # Most basic test, check that the pipeline returns a pandas DataFrame
     assert isinstance(df_transformed, pd.DataFrame)
 
+
 def test_pipeline_debug(dataframe_basic):
     """
     Train a pipeline by explicitly instatiating all the transformers.
     """
 
     class DummyDetector(MelusineDetector):
-
         def __init__(self):
             """Dummy"""
             super().__init__(name="dummy", input_columns=["text"], output_columns=["result"])
@@ -112,6 +112,7 @@ def test_pipeline_debug(dataframe_basic):
     # Assert
     assert isinstance(dict_transformed, dict)
     assert dict_transformed["debug_dummy"] == {"test_debug": True}
+
 
 @pytest.mark.usefixtures("use_test_config")
 def test_pipeline_from_config(dataframe_basic):

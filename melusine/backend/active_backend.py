@@ -28,21 +28,18 @@ class ActiveBackend(BaseTransformerBackend):
     def __init__(self) -> None:
         """Init"""
         super().__init__()
-        self.backend_list : list[BaseTransformerBackend] = None
+        self.backend_list: list[BaseTransformerBackend] = None
 
     @property
     def supported_types(self) -> tuple:
         """Supported types for the active backend."""
-        supported_types_tuples = [
-            _backend.supported_types
-            for _backend in self.backend_list
-        ]
+        supported_types_tuples = [_backend.supported_types for _backend in self.backend_list]
 
         return tuple(set(chain(*supported_types_tuples)))
 
     def add(
-            self,
-            new_backend: BaseTransformerBackend | str,
+        self,
+        new_backend: BaseTransformerBackend | str,
     ) -> None:
         """Method to add a backend to the active backend list.
 
@@ -67,9 +64,7 @@ class ActiveBackend(BaseTransformerBackend):
         logger.info(f"Using backends '{self.backend_list}' for Data transformations")
 
     def reset(
-            self,
-            new_backend: BaseTransformerBackend | str | None = None,
-            keep_default_backends: bool = True
+        self, new_backend: BaseTransformerBackend | str | None = None, keep_default_backends: bool = True
     ) -> None:
         """Method to reset active backend list.
 
@@ -136,8 +131,6 @@ class ActiveBackend(BaseTransformerBackend):
             f"Backends available are: {self.backend_list}\n"
             "To add an extra backend, use backend.add_backend(my_backend)"
         )
-
-
 
     def copy(self, data: Any, fields: list[str] | None = None) -> Any:
         """Method to make a copy of the input dataset.

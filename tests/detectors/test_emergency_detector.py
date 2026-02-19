@@ -2,6 +2,7 @@
 Unit test of the EmergencyDetector.
 
 """
+
 import pandas as pd
 import pytest
 
