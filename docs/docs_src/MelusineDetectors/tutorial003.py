@@ -91,9 +91,8 @@ def run():
             {"body": "corona virus is annoying", "header": "test"},
         ]
     )
-    df.debug = True
 
-    df = detector.transform(df)
+    df = detector.transform(df, debug_mode=True)
     # --8<-- [end:run]
 
     return df

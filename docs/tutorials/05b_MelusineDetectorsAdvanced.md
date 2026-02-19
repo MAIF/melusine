@@ -8,16 +8,7 @@ This tutorial presents the advanced features of the `MelusineDetector` class:
 
 ## Debug mode
 
-`MelusineDetector` are designed to be easily debugged. For that purpose, the `pre-detect`/`detect`/`post-detect` methods all have a `debug_mode` argument. The debug mode is activated by setting the `debug` attribute of a dataframe to `True`.
-
-```Python hl_lines="3"
-import pandas as pd
-df = pd.DataFrame({"bla": [1, 2, 3]})
-df.debug = True
-```
-
-!!! warning
-    Debug mode activation is backend dependent. With a DictBackend, tou should use `my_dict["debug"] = True`
+`MelusineDetector` is designed to be easily debugged. For that purpose, the `pre-detect`/`detect`/`post-detect` methods all have a `debug_mode` argument.
 
 When debug mode is activated, a column named `DETECTOR_NAME_debug` containing an empty dictionary is automatically created.
 Populating this debug dict with debug info is then left to the user's responsibility. 

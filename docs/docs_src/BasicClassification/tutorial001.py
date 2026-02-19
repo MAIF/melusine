@@ -135,8 +135,7 @@ def run():
 
     # Debug mode
     df = create_dataset()
-    df.debug = True
-    _ = detector.transform(df)
+    _ = detector.transform(df, debug_mode=True)
 
     return df
 

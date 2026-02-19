@@ -455,6 +455,8 @@ class Segmenter(BaseSegmenter):
             r"To",
             r"Sent",
             r"Cc",
+            r"Copie",
+            r"Attachments",
         ]
         piped_keywords_with_semicolon = "(?:" + "|".join(meta_keywords_list_with_semicolon) + ")"
         # Ajout d'un pattern pour gérer les cas sans ':' mais avec retour à la ligne

@@ -3,10 +3,11 @@
 import logging
 
 from melusine._config import config
+from melusine.pipeline import MelusinePipeline
 
-__all__ = ["config"]
+__all__ = ["config", "MelusinePipeline"]
 
-VERSION = (3, 3, 0)
+VERSION = (3, 3, 1)
 __version__ = ".".join(map(str, VERSION))
 
 # ------------------------------- #
