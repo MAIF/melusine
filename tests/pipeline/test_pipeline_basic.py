@@ -13,8 +13,8 @@ from melusine.base import MelusineDetector
 from melusine.pipeline import MelusinePipeline, PipelineConfigurationError
 from melusine.processors import Normalizer, RegexTokenizer
 
-
 TEST_RESULT = "test_result"
+
 
 def test_pipeline_basic(dataframe_basic):
     """

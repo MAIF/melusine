@@ -28,7 +28,7 @@ class ActiveBackend(BaseTransformerBackend):
     def __init__(self) -> None:
         """Init"""
         super().__init__()
-        self.backend_list: list[BaseTransformerBackend] = None
+        self.backend_list: list[BaseTransformerBackend] = []
 
     @property
     def supported_types(self) -> tuple:
