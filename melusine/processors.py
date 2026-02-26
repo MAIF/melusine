@@ -449,7 +449,7 @@ class Segmenter(BaseSegmenter):
 
         # Meta patterns of the form "META_KEYWORD : META_CONTENT"
         # Ex: "De : jean@gmail.com"
-        mandayory_meta_keywords_list_with_semicolon = [
+        mandatory_meta_keywords_list_with_semicolon = [
             r"De",
             r"Exp[ée]diteur",
             r"[ÀA]",
@@ -464,7 +464,6 @@ class Segmenter(BaseSegmenter):
         ]
         optional_meta_keywords_list_with_semicolon = [
             r"Date",
-            r"Pour",
             r"Copie",
             r"Attachments",
             r"Objet",
@@ -476,7 +475,7 @@ class Segmenter(BaseSegmenter):
             "(?:"
             + tolerant_line_start
             + "(?:"
-            + "|".join(mandayory_meta_keywords_list_with_semicolon)
+            + "|".join(mandatory_meta_keywords_list_with_semicolon)
             + ")"
             + semicolon_pattern
             + ")"

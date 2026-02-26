@@ -182,7 +182,7 @@ def test_segmenter(input_text, expected_messages):
                     text="some text",
                 ),
             ],
-            id="Afin de",
+            id="Copie keyword",
         ),
     ],
 )
