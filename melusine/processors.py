@@ -440,10 +440,16 @@ class Segmenter(BaseSegmenter):
             List of segmentation regexs
 
         """
+        # Match everything until the end of the line.
+        tolerant_line_start = r"^.{,5}"
+        semicolon_pattern = r" ?\n? ?: *\n?"
+        dash_pattern = r"(?:[\n ]*--+)"
+        # Match anything until first line break and following line breaks
+        end_pattern = r"[^\n]*\n[\n ]*"
+
         # Meta patterns of the form "META_KEYWORD : META_CONTENT"
         # Ex: "De : jean@gmail.com"
-        meta_keywords_list_with_semicolon = [
-            r"Date",
+        mandayory_meta_keywords_list_with_semicolon = [
             r"De",
             r"Exp[ée]diteur",
             r"[ÀA]",
@@ -455,13 +461,35 @@ class Segmenter(BaseSegmenter):
             r"To",
             r"Sent",
             r"Cc",
+        ]
+        optional_meta_keywords_list_with_semicolon = [
+            r"Date",
+            r"Pour",
             r"Copie",
             r"Attachments",
+            r"Objet",
+            r"Object",
+            r"Subject",
+            r"Sujet",
         ]
-        piped_keywords_with_semicolon = "(?:" + "|".join(meta_keywords_list_with_semicolon) + ")"
-        # Ajout d'un pattern pour gérer les cas sans ':' mais avec retour à la ligne
-        starter_pattern_with_semicolon = rf"^.{{,5}}(?:{piped_keywords_with_semicolon} ?\n? ?: *\n?)"
-        starter_pattern_with_newline = rf"^.{{,5}}(?:{piped_keywords_with_semicolon})\n"
+        mandatory_pattern = (
+            "(?:"
+            + tolerant_line_start
+            + "(?:"
+            + "|".join(mandayory_meta_keywords_list_with_semicolon)
+            + ")"
+            + semicolon_pattern
+            + ")"
+        )
+        optional_pattern = (
+            "(?:"
+            + tolerant_line_start
+            + "(?:"
+            + "|".join(optional_meta_keywords_list_with_semicolon)
+            + ")"
+            + semicolon_pattern
+            + ")"
+        )
 
         # Meta patterns of the form "META_KEYWORD"
         # Ex: "Transféré par jean@gmail.com"
@@ -469,12 +497,12 @@ class Segmenter(BaseSegmenter):
         # Ex: "------ Message transmis ------"
 
         regex_weekdays = (
-            r"(?:[Ll]undi|[Ll]un\.|[Mm]ardi|[Mm]ar\.|[Mm]ercredi|[Mm]er\.|[Jj]eudi|[Jj]eu\.|"  # noqa
-            r"[Vv]endredi|[Vv]en\.|[Ss]amedi|[Ss]am\.|[Dd]imanche|[Dd]im\.)"  # noqa
+            r"(?:[Ll]undi|[Ll]un\.|[Mm]ardi|[Mm]ar\.|[Mm]ercredi|[Mm]er\.|[Jj]eudi|[Jj]eu\.|"
+            r"[Vv]endredi|[Vv]en\.|[Ss]amedi|[Ss]am\.|[Dd]imanche|[Dd]im\.)"
         )
         regex_months = (
-            r"(?:[Jj]anvier|[Ff][ée]vrier|[Mm]ars|[Aa]vril|[Mm]ai|[Jj]uin|[Jj]uillet|"  # noqa
-            r"[Aa]o[ûu]t|[Ss]eptembre|[Oo]ctobre|[Nn]ovembre|[Dd][eé]cembre|"  # noqa
+            r"(?:[Jj]anvier|[Ff][ée]vrier|[Mm]ars|[Aa]vril|[Mm]ai|[Jj]uin|[Jj]uillet|"
+            r"[Aa]o[ûu]t|[Ss]eptembre|[Oo]ctobre|[Nn]ovembre|[Dd][eé]cembre|"
             r"(?:janv?|f[ée]vr?|mar|avr|juil?|sept?|oct|nov|d[ée]c)\.)"
         )
 
@@ -483,10 +511,10 @@ class Segmenter(BaseSegmenter):
             # Le 02 juillet 1991 à 11:20 jane@gmail.fr a écrit :
             # Le mardi 31 août 2021 à 11:09, <ville@maif.fr> a écrit :
             (
-                rf"\bLe (?:"
-                rf"\d{{2}}/\d{{2}}/\d{{4}}|\d{{4}}-\d{{2}}-\d{{2}}|{regex_weekdays}|"  # noqa
+                r"\bLe (?:"
+                rf"\d{{2}}/\d{{2}}/\d{{4}}|\d{{4}}-\d{{2}}-\d{{2}}|{regex_weekdays}|"
                 rf"\d{{1,2}} {regex_months})(?:.|\n)"
-                rf"{{,30}}\d{{2}}:\d{{2}}(?:.|\n){{,50}}(?:\<.{{,30}}\>.{{,5}})?\ba [éecrit]"  # noqa
+                r"{,30}\d{2}:\d{2}(?:.|\n){,50}(?:\<.{,30}\>.{,5})?\ba [ée]crit"
             ),
             r"Transf[ée]r[ée] par",
             r"D[ée]but du message transf[ée]r[ée] :",
@@ -500,21 +528,29 @@ class Segmenter(BaseSegmenter):
             r"Forwarded by",
         ]
         piped_keywords_without_semicolon = "(?:" + "|".join(meta_keywords_list_without_semicolon) + ")"  # noqa
-        starter_pattern_without_semicolon = f"{piped_keywords_without_semicolon}(?:[\n ]*--+)?"
 
-        # Combine pattern with and without semicolon, et avec retour à la ligne
-        starter_pattern = (
-            rf"(?:{starter_pattern_with_semicolon}|{starter_pattern_with_newline}|{starter_pattern_without_semicolon})"
+        mandatory_pattern_without_semicolon = (
+            "(?:"
+            + "(?:"
+            + "|".join(meta_keywords_list_without_semicolon)
+            + ")"
+            + rf"{dash_pattern}?"
+            + ")"
         )
 
-        # Match everything until the end of the line.
-        # Match End of line "\n" and "space" characters
-        end_pattern = r".*[\n ]*"
+        # Must match at least one mandatory pattern (ex: "De :) and any optional patterns. Exemple :
+        # Copy : blabla (optional)
+        # De : test_from@maif.fr (mandatory)
+        # A : test_to@maif.fr (mandatory)
+        # Attachments : test.pdf, blop.png (optional)
+        # Cc : test_cc@gmail.co (mandatory)
+        any_line = rf"(?:(?:{optional_pattern}|{mandatory_pattern}|{mandatory_pattern_without_semicolon}){end_pattern})"
+        mandatory_line = rf"(?:(?:{mandatory_pattern_without_semicolon}|{mandatory_pattern}){end_pattern})"
 
-        # Object / Subject pattern (These patterns are not sufficient to trigger segmentation)
-        object_line_pattern = "(?:^.{,5}(?:Objet|Subject|Sujet) ?\n? ?: *\n?)" + end_pattern
         full_generic_meta_pattern = (
-            rf"(?:(?:{object_line_pattern})?{starter_pattern}{end_pattern}(?:{object_line_pattern})*)+"
+            rf"{any_line}*"
+            + rf"{mandatory_line}"
+            rf"{any_line}*"
         )
         pattern_list = (full_generic_meta_pattern,)
         return pattern_list
@@ -1234,9 +1270,14 @@ class ContentTagger(BaseContentTagger):
             r"^.{0,3}votre bien d[ée]vou[ée]e?.{0,3}$",
             r"^.{0,3}amicalement votre.{0,3}$",
             (
+                r"^.{0,3}(?:Je|Nous) vous pri(?:e|ons) d'(?:agr[ée]er|accepter)(.{0,4}madame)?(.{0,4}monsieur)?"
+                r"(?:.{0,50}(consideration|salutations|sentiments).{0,20})?.{0,10}$"
+            ),
+            (
                 r"^.{,3}je vous prie de croire.{,50}"
                 r"(expression|assurance)?.{,50}(consideration|salutations|sentiments).{,30}$"
             ),
+            r"^.{0,3}(expression|assurance)?.{,50}(consideration|salutations|sentiments).{,30}$",
             # English
             r"^.{0,3}regards.{0,3}$",
             r"^.{0,3}(best|warm|kind|my) *(regards|wishes)?.{0,3}$",

@@ -264,12 +264,17 @@ def test_content_tagger_split_text(text, expected_parts):
                 {"base_text": "John Smith", "base_tag": "BODY", "refined_tag": "SIGNATURE_NAME"},
             ],
         ),
-        (
+        pytest.param(
             (
                 "chère madame,\n"
                 "URGENT URGENT\n"
                 "Merci de me faire suivre les docs à ma nouvelle adresse qui est 0 rue du parc, 75000 Paris. "
-                "Merci d'avance. \nRecevez nos salutations,\nVous en souhaitant bonne réception"
+                "Merci d'avance. \nRecevez nos salutations,\nVous en souhaitant bonne réception\n"
+                "Nous vous prions d'agréer.\n"
+                "Nous vous prions d'agréer do not match\n"
+                "Nous vous prions d'agréer, Madame, Monsieur, l'expression de nos salutations distinguées.\n"
+                "Nous vous prions d'accepter, Madame, Monsieur, l'assurance de nos sentiments sincères.\n"
+                "L'expression de mes salutations distinguées.\n"
             ),
             [
                 {"base_text": "chère madame,", "base_tag": "HELLO", "refined_tag": "HELLO"},
@@ -286,7 +291,37 @@ def test_content_tagger_split_text(text, expected_parts):
                     "base_tag": "GREETINGS",
                     "refined_tag": "GREETINGS",
                 },
+                {
+                    "base_text": ("Nous vous prions d'agréer."),
+                    "base_tag": "GREETINGS",
+                    "refined_tag": "GREETINGS",
+                },
+                {
+                    "base_text": ("Nous vous prions d'agréer do not match"),
+                    "base_tag": "BODY",
+                    "refined_tag": "BODY",
+                },
+                {
+                    "base_text": (
+                        "Nous vous prions d'agréer, Madame, Monsieur, l'expression de nos salutations distinguées."
+                    ),
+                    "base_tag": "GREETINGS",
+                    "refined_tag": "GREETINGS",
+                },
+                {
+                    "base_text": (
+                        "Nous vous prions d'accepter, Madame, Monsieur, l'assurance de nos sentiments sincères."
+                    ),
+                    "base_tag": "GREETINGS",
+                    "refined_tag": "GREETINGS",
+                },
+                {
+                    "base_text": ("L'expression de mes salutations distinguées."),
+                    "base_tag": "GREETINGS",
+                    "refined_tag": "GREETINGS",
+                },
             ],
+            id="Test_different_greetings",
         ),
         pytest.param(
             "Un témoignage sous X\nEnvoyé depuis mon téléphone Orange",

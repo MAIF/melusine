@@ -164,6 +164,49 @@ def test_segmenter(input_text, expected_messages):
 
 
 @pytest.mark.parametrize(
+    "input_text, expected_messages",
+    [
+        pytest.param(
+            (
+                "I want to break free.\n"
+                "Afin de\ntest test test test\n:"
+                "\n● I want to break free"
+            ),
+            [
+                Message(
+                    meta="",
+                    text="I want to break free.\nAfin de\ntest test test test\n:\n● I want to break free"
+                ),
+            ],
+            id="Afin de",
+        ),
+        pytest.param(
+            (
+                    "Hello.\nCopie: test test\nCopie\n: test test\n  Copie :\ntest test\nDe: test@gmail.com\nsome text"
+            ),
+            [
+                Message(
+                    meta="",
+                    text="Hello."
+                ),
+                Message(
+                    meta="Copie: test test\nCopie\n: test test\n  Copie :\ntest test\nDe: test@gmail.com",
+                    text="some text"
+                ),
+            ],
+            id="Afin de",
+        ),
+    ]
+)
+def test_segmenter_2(input_text, expected_messages):
+    """Test"""
+    segmenter = Segmenter()
+    result = segmenter.segment_text(input_text)
+    for i, message in enumerate(result):
+        assert message.meta == expected_messages[i].meta
+        assert message.text == expected_messages[i].text
+
+@pytest.mark.parametrize(
     "input_message_list, expected_text",
     [
         (
