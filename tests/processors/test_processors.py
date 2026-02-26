@@ -184,7 +184,7 @@ def test_segmenter(input_text, expected_messages):
             ],
             id="Afin de",
         ),
-    ]
+    ],
 )
 def test_segmenter_2(input_text, expected_messages):
     """Test"""
