@@ -194,6 +194,7 @@ def test_segmenter_2(input_text, expected_messages):
         assert message.meta == expected_messages[i].meta
         assert message.text == expected_messages[i].text
 
+
 @pytest.mark.parametrize(
     "input_message_list, expected_text",
     [
