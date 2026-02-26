@@ -530,12 +530,7 @@ class Segmenter(BaseSegmenter):
         piped_keywords_without_semicolon = "(?:" + "|".join(meta_keywords_list_without_semicolon) + ")"  # noqa
 
         mandatory_pattern_without_semicolon = (
-            "(?:"
-            + "(?:"
-            + "|".join(meta_keywords_list_without_semicolon)
-            + ")"
-            + rf"{dash_pattern}?"
-            + ")"
+            "(?:" + "(?:" + "|".join(meta_keywords_list_without_semicolon) + ")" + rf"{dash_pattern}?" + ")"
         )
 
         # Must match at least one mandatory pattern (ex: "De :) and any optional patterns. Exemple :
@@ -547,11 +542,8 @@ class Segmenter(BaseSegmenter):
         any_line = rf"(?:(?:{optional_pattern}|{mandatory_pattern}|{mandatory_pattern_without_semicolon}){end_pattern})"
         mandatory_line = rf"(?:(?:{mandatory_pattern_without_semicolon}|{mandatory_pattern}){end_pattern})"
 
-        full_generic_meta_pattern = (
-            rf"{any_line}*"
-            + rf"{mandatory_line}"
-            rf"{any_line}*"
-        )
+        full_generic_meta_pattern = rf"{any_line}*{mandatory_line}{any_line}*"
+
         pattern_list = (full_generic_meta_pattern,)
         return pattern_list
 

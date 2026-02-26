@@ -167,11 +167,7 @@ def test_segmenter(input_text, expected_messages):
     "input_text, expected_messages",
     [
         pytest.param(
-            (
-                "I want to break free.\n"
-                "Afin de\ntest test test test\n:"
-                "\n● I want to break free"
-            ),
+            "I want to break free.\nAfin de\ntest test test test\n:\n● I want to break free",
             [
                 Message(
                     meta="",
@@ -181,14 +177,9 @@ def test_segmenter(input_text, expected_messages):
             id="Afin de",
         ),
         pytest.param(
-            (
-                    "Hello.\nCopie: test test\nCopie\n: test test\n  Copie :\ntest test\nDe: test@gmail.com\nsome text"
-            ),
+            "Hello.\nCopie: test test\nCopie\n: test test\n  Copie :\ntest test\nDe: test@gmail.com\nsome text",
             [
-                Message(
-                    meta="",
-                    text="Hello."
-                ),
+                Message(meta="", text="Hello."),
                 Message(
                     meta="Copie: test test\nCopie\n: test test\n  Copie :\ntest test\nDe: test@gmail.com",
                     text="some text"
