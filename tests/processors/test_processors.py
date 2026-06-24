@@ -185,14 +185,14 @@ def test_segmenter(input_text, expected_messages):
             id="Copie keyword",
         ),
         pytest.param(
-            (
-                    "Message 1\n"
-                    "On Mon, Aug 18, 2025, 18:17 <abc@maif.fr> wrote:\n\n\n"
-                    "Message 2\n\n"
-                    "On friday july 6 Bob TEST <bob@test.fr> wrote:\n"
-                    "Message 3\n"
-                    "On Tue jan 30 Bob TEST wrote:\n\n"
-                    "Message 4\n"
+    (
+                "Message 1\n"
+                "On Mon, Aug 18, 2025, 18:17 <abc@maif.fr> wrote:\n\n\n"
+                "Message 2\n\n"
+                "On friday july 6 Bob TEST <bob@test.fr> wrote:\n"
+                "Message 3\n"
+                "On Tue jan 30 Bob TEST wrote:\n\n"
+                "Message 4\n"
             ),
             [
                 Message(meta="", text="Message 1"),
