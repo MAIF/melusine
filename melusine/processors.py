@@ -526,7 +526,7 @@ class Segmenter(BaseSegmenter):
                 r"{,30}\d{2}:\d{2}(?:.|\n){,50}(?:\<.{,30}\>.{,5})?\ba [ée]crit"
             ),
             (
-                fr"On {regex_weekdays_en},? {regex_months_en} \d{{1,2}},? \d{{4}},? \d{{1,2}}:\d{{2}}"
+                rf"On {regex_weekdays_en},? {regex_months_en} \d{{1,2}},? \d{{4}},? \d{{1,2}}:\d{{2}}"
                 r"(?:.|\n){,50}(?:\<.{,30}\>.{,5})?\bwrote:"
             ),
             r"Transf[ée]r[ée] par",
