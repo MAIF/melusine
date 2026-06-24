@@ -176,7 +176,7 @@ def test_tokenizer(input_text, output_tokens, lowercase, normalization_form):
                     text="Message 4",
                 ),
             ],
-            id="On Mon, Aug 18, 2025, 18:17 <abc@maif.fr> wrote:"
+            id="On Mon, Aug 18, 2025, 18:17 <abc@maif.fr> wrote:",
         ),
     ],
 )
