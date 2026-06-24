@@ -185,7 +185,7 @@ def test_segmenter(input_text, expected_messages):
             id="Copie keyword",
         ),
         pytest.param(
-    (
+            (
                 "Message 1\n"
                 "On Mon, Aug 18, 2025, 18:17 <abc@maif.fr> wrote:\n\n\n"
                 "Message 2\n\n"
