@@ -499,21 +499,35 @@ class Segmenter(BaseSegmenter):
             r"(?:[Ll]undi|[Ll]un\.|[Mm]ardi|[Mm]ar\.|[Mm]ercredi|[Mm]er\.|[Jj]eudi|[Jj]eu\.|"
             r"[Vv]endredi|[Vv]en\.|[Ss]amedi|[Ss]am\.|[Dd]imanche|[Dd]im\.)"
         )
+        regex_weekdays_en = (
+            r"([Mn]on(day)?|[Tt]ue(sday)?|[Ww]ed(nesday)?|[Tt]hu(rsday)?|[Ff]ri(day)?|[Ss]at(urday)?|[Ss]un(day)?)"
+        )
+
         regex_months = (
             r"(?:[Jj]anvier|[Ff][ée]vrier|[Mm]ars|[Aa]vril|[Mm]ai|[Jj]uin|[Jj]uillet|"
             r"[Aa]o[ûu]t|[Ss]eptembre|[Oo]ctobre|[Nn]ovembre|[Dd][eé]cembre|"
             r"(?:janv?|f[ée]vr?|mar|avr|juil?|sept?|oct|nov|d[ée]c)\.)"
+        )
+        regex_months_en = (
+            r"(?:[Jj]anuary|[Ff]ebruary|[Mm]arch|[Aa]pril|[Mm]ay|[Jj]une|[Jj]uly|"
+            r"[Aa]ugust|[Ss]eptember|[Oo]ctober|[Nn]ovember|[Dd]ecember|"
+            r"(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\.?)"
         )
 
         meta_keywords_list_without_semicolon = [
             # Le 2021-01-02 11:20 jane@gmail.fr a écrit :
             # Le 02 juillet 1991 à 11:20 jane@gmail.fr a écrit :
             # Le mardi 31 août 2021 à 11:09, <ville@maif.fr> a écrit :
+            # On Mon, Aug 18, 2025, 18:17 < abc @ maif.fr > wrote:
             (
                 r"\bLe (?:"
                 rf"\d{{2}}/\d{{2}}/\d{{4}}|\d{{4}}-\d{{2}}-\d{{2}}|{regex_weekdays}|"
                 rf"\d{{1,2}} {regex_months})(?:.|\n)"
                 r"{,30}\d{2}:\d{2}(?:.|\n){,50}(?:\<.{,30}\>.{,5})?\ba [ée]crit"
+            ),
+            (
+                fr"On {regex_weekdays_en},? {regex_months_en} \d{{1,2}},? \d{{4}},? \d{{1,2}}:\d{{2}}"
+                r"(?:.|\n){,50}(?:\<.{,30}\>.{,5})?\bwrote:"
             ),
             r"Transf[ée]r[ée] par",
             r"D[ée]but du message transf[ée]r[ée] :",
