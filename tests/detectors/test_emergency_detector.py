@@ -6,17 +6,20 @@ Unit test of the EmergencyDetector.
 import pandas as pd
 import pytest
 
+from melusine.base import MelusineRegexFullMatch, MelusineRegexUnitMatch
 from melusine.detectors import EmergencyDetector
 
 
 @pytest.fixture
 def emergency_detector_df():
-    m0_debug_expected = {
+    m0_debug_expected = MelusineRegexFullMatch(**{
         "match_result": True,
-        "negative_match_data": {},
-        "neutral_match_data": {},
-        "positive_match_data": {"DEFAULT": [{"match_text": "urgent", "start": 10, "stop": 16}]},
-    }
+        "negative": {},
+        "neutral": {},
+        "positive": {"DEFAULT": [
+            MelusineRegexUnitMatch(**{"match_text": "urgent", "start": 10, "stop": 16})
+        ]},
+    })
 
     df = pd.DataFrame(
         {

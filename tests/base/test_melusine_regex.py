@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional, Union
 
 import pytest
 
-from melusine.base import MelusineRegex
+from melusine.base import MelusineRegex, MelusineRegexFullMatch, MelusineRegexUnitMatch
 
 
 class VirusRegex(MelusineRegex):
@@ -58,29 +58,29 @@ def test_match_method():
     regex = VirusRegex()
     match_data = regex("The computer virus in the ladybug software caused a bug in the corona virus dashboard")
 
-    assert match_data[MelusineRegex.MATCH_RESULT] is False
-    assert match_data[MelusineRegex.POSITIVE_MATCH_FIELD] == {
-        "DEFAULT": [{"match_text": "virus", "start": 13, "stop": 18}]
+    assert match_data.match_result is False
+    assert match_data.positive == {
+        "DEFAULT": [MelusineRegexUnitMatch(**{"match_text": "virus", "start": 13, "stop": 18})]
     }
-    assert match_data[MelusineRegex.NEUTRAL_MATCH_FIELD] == {
-        "NEUTRAL_INSECT": [{"match_text": "ladybug", "start": 26, "stop": 33}],
-        "NEUTRAL_MEDICAL_VIRUS": [{"match_text": "corona virus", "start": 63, "stop": 75}],
+    assert match_data.neutral == {
+        "NEUTRAL_INSECT": [MelusineRegexUnitMatch(**{"match_text": "ladybug", "start": 26, "stop": 33})],
+        "NEUTRAL_MEDICAL_VIRUS": [MelusineRegexUnitMatch(**{"match_text": "corona virus", "start": 63, "stop": 75})],
     }
-    assert match_data[MelusineRegex.NEGATIVE_MATCH_FIELD] == {
-        "NEGATIVE_BUG": [{"match_text": "bug", "start": 52, "stop": 55}]
+    assert match_data.negative == {
+        "NEGATIVE_BUG": [MelusineRegexUnitMatch(**{"match_text": "bug", "start": 52, "stop": 55})]
     }
 
 
 def test_direct_match_method():
     regex = VirusRegex()
 
-    bool_match_result = regex.get_match_result("The computer virus")
+    bool_match_result = regex("The computer virus").match_result
 
     assert bool_match_result is True
 
-    bool_match_result = regex.get_match_result(
+    bool_match_result = regex(
         "The computer virus in the ladybug software caused a bug in the corona virus dashboard"
-    )
+    ).match_result
 
     assert bool_match_result is False
 
@@ -161,20 +161,20 @@ class PreMatchHookVirusRegex(VirusRegex):
 def test_pre_match_hook():
     reg = PreMatchHookVirusRegex()
 
-    bool_match_result = reg.get_match_result("I see a virrrrus !")
+    bool_match_result = reg("I see a virrrrus !").match_result
 
     assert bool_match_result is True
 
 
 class PostMatchHookVirusRegex(VirusRegex):
-    def post_match_hook(self, match_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def post_match_hook(self, match_dict: MelusineRegexFullMatch) -> MelusineRegexFullMatch:
         """Test custom post processing of match data"""
         if (
-            match_dict[self.MATCH_RESULT] is True
-            and "NEUTRAL_MEDICAL_VIRUS" in match_dict[self.NEUTRAL_MATCH_FIELD]
-            and "NEUTRAL_INSECT" in match_dict[self.NEUTRAL_MATCH_FIELD]
+            match_dict.match_result is True
+            and "NEUTRAL_MEDICAL_VIRUS" in match_dict.neutral
+            and "NEUTRAL_INSECT" in match_dict.neutral
         ):
-            match_dict[self.MATCH_RESULT] = False
+            match_dict.match_result = False
 
         return match_dict
 
@@ -182,10 +182,10 @@ class PostMatchHookVirusRegex(VirusRegex):
 def test_post_match_hook():
     reg = PostMatchHookVirusRegex()
 
-    bool_match_result = reg.get_match_result("I see a virus, a corona virus and a ladybug")
+    bool_match_result = reg("I see a virus, a corona virus and a ladybug").match_result
     assert bool_match_result is False
 
-    bool_match_result = reg.get_match_result("I see a virus and a ladybug")
+    bool_match_result = reg("I see a virus and a ladybug").match_result
     assert bool_match_result is True
 
 
@@ -229,3 +229,39 @@ class PairedMatchRegex(MelusineRegex):
 def test_paired_matching_test():
     regex = PairedMatchRegex()
     regex.test()
+
+
+@pytest.mark.parametrize(
+    "attr_name,expected",
+    [
+        ("MATCH_RESULT", "match_result"),
+        ("NEUTRAL_MATCH_FIELD", "neutral_match_data"),
+        ("POSITIVE_MATCH_FIELD", "positive_match_data"),
+        ("NEGATIVE_MATCH_FIELD", "negative_match_data"),
+        ("MATCH_START", "start"),
+        ("MATCH_STOP", "stop"),
+        ("MATCH_TEXT", "match_text"),
+    ],
+)
+def test_legacy_regex_attributes_warn_on_class_access(attr_name, expected):
+    with pytest.deprecated_call(match=attr_name):
+        assert getattr(MelusineRegex, attr_name) == expected
+
+
+@pytest.mark.parametrize(
+    "attr_name,expected",
+    [
+        ("MATCH_RESULT", "match_result"),
+        ("NEUTRAL_MATCH_FIELD", "neutral_match_data"),
+        ("POSITIVE_MATCH_FIELD", "positive_match_data"),
+        ("NEGATIVE_MATCH_FIELD", "negative_match_data"),
+        ("MATCH_START", "start"),
+        ("MATCH_STOP", "stop"),
+        ("MATCH_TEXT", "match_text"),
+    ],
+)
+def test_legacy_regex_attributes_warn_on_instance_access(attr_name, expected):
+    regex = VirusRegex()
+    with pytest.deprecated_call(match=attr_name):
+        assert getattr(regex, attr_name) == expected
+

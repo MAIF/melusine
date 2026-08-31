@@ -7,7 +7,7 @@ from melusine.pipeline import MelusinePipeline
 
 __all__ = ["config", "MelusinePipeline"]
 
-VERSION = (3, 3, 4)
+VERSION = (3, 4, 0)
 __version__ = ".".join(map(str, VERSION))
 
 # ------------------------------- #

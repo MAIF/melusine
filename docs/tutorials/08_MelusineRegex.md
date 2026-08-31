@@ -48,8 +48,8 @@ to_delete_detection = to_delete_regex(
     "You shall not pass through the magical portal of the lake from Monday to Thursday as it is currently under repair."
 )
 
-print(to_delete_detection[MelusineRegex.MATCH_RESULT])  # (1)!
-print(to_delete_detection[MelusineRegex.POSITIVE_MATCH_FIELD])  # (2)!
+print(to_delete_detection.match_result)  # (1)!
+print(to_delete_detection.positive)  # (2)!
 ```
 
 1. Prints `True`
@@ -96,7 +96,7 @@ to_delete_regex = AnnoyingEmailsRegex()
 email = "You shall not pass through the magical portal of the lake from Monday to Thursday as it is currently under repair."
 to_delete_detection = to_delete_regex(email)
 
-print(to_delete_detection[MelusineRegex.MATCH_RESULT])  # (1)!
+print(to_delete_detection.match_result)  # (1)!
 ```
 
 1. Prints `False`
@@ -116,9 +116,9 @@ class PreMatchHookAnnoyingEmailsRegex(AnnoyingEmailsRegex):
         return text
 
     preprocessed_to_delete_regex = PreMatchHookAnnoyingEmailsRegex()
-    spell_result = preprocessed_to_delete_regex.get_match_result(
+    spell_result = preprocessed_to_delete_regex(
         "Andthen,, I told Morgana 'You sholl not pass!' as she wanted topass... Im stil wonddering why she did not find it fundny..."
-    )
+    ).match_result
 ```
 
 ## Using the regex result
@@ -129,9 +129,9 @@ The complete `to_delete_detection` object looks like this:
 ``` json
 {
    "match_result":False,
-   "neutral_match_data":{
+   "neutral":{
    },
-   "negative_match_data":{
+   "negative":{
       "PORTAL_MENTIONNED":[
          {
             "start":31,
@@ -140,7 +140,7 @@ The complete `to_delete_detection` object looks like this:
          }
       ]
    },
-   "positive_match_data":{
+   "positive":{
       "GANDALF_BEING_GANDALF":[
          {
             "start":0,
@@ -155,7 +155,7 @@ The complete `to_delete_detection` object looks like this:
 For a more straightforward approach, if you only need the regex result, you can use the following syntax:
 
 ``` python
-spell_analysis_result: bool = to_delete_regex.get_match_result(email)  # (1)!
+spell_analysis_result: bool = to_delete_regex(email).match_result  # (1)!
 ```
 1. Returns `True`
 Some of the older fairies might need a more detailed explanation on what triggered the deletion of an email.
