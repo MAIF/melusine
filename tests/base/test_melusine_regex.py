@@ -250,6 +250,7 @@ def test_legacy_regex_attributes_warn_on_class_access(attr_name, expected):
 @pytest.mark.parametrize(
     "attribute",
     [
+        "match_result",
         "positive_match_data",
         "neutral_match_data",
         "negative_match_data",
@@ -260,5 +261,5 @@ def test_legacy_dict_access(attribute):
 
     match_data = regex("The computer virus in the ladybug software caused a bug in the corona virus dashboard")
 
-    with pytest.deprecated_call(match=attribute):
+    with pytest.deprecated_call(match="Dict like access is deprecated, please use direct attribute access instead"):
         assert match_data[attribute] == getattr(match_data, attribute)

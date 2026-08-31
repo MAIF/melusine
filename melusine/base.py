@@ -48,6 +48,7 @@ class DeprecatedClassAttribute:
         self._message = message
 
     def __get__(self, instance, owner) -> str:
+        """Get"""
         warnings.warn(self._message, DeprecationWarning, stacklevel=2)
         return self._value
 
@@ -365,11 +366,13 @@ class MissingFieldError(Exception):
 
 @dataclass(frozen=True)
 class MelusineRegexUnitMatch:
+    """Dataclass to structure a Unitary MelusineRegex match"""
     start: int
     stop: int
     match_text: str
 
     def __getitem__(self, index):
+        """GetItem"""
         return getattr(self, index)
 
 
@@ -378,6 +381,7 @@ MatchData: TypeAlias = dict[str, list[MelusineRegexUnitMatch]]
 
 @dataclass
 class MelusineRegexFullMatch:
+    """Dataclass to structure a Full MelusineRegex match"""
     match_result: bool = False
     positive: MatchData = field(default_factory=dict)
     neutral: MatchData = field(default_factory=dict)
@@ -414,30 +418,43 @@ class MelusineRegexFullMatch:
         return self.negative
 
     def reset_match(self, value: bool = False):
+        """Reset the match value"""
         self.match_result = value
 
     def reset_positive(self, values: MatchData | None = None) -> None:
+        """Reset the positive value"""
         self.positive = values or {}
 
     def reset_neutral(self, values: MatchData | None = None) -> None:
+        """Reset the neutral value"""
         self.neutral = values or {}
 
     def reset_negative(self, values: MatchData | None = None) -> None:
+        """Reset the negative value"""
         self.negative = values or {}
 
     @property
     def positive_keys(self):
+        """Return the keys of positive match data."""
         return self.positive.keys()
 
     @property
     def neutral_keys(self):
+        """Return the keys of neutral match data."""
         return self.neutral.keys()
 
     @property
     def negative_keys(self):
+        """Return the keys of negative match data."""
         return self.negative.keys()
 
     def __getitem__(self, index):
+        """Legacy dict like access"""
+        warnings.warn(
+            "Dict like access is deprecated, please use direct attribute access instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return getattr(self, index)
 
 

@@ -2,13 +2,10 @@
 Unit test of the ThanksDetector.
 
 """
-
-from tempfile import TemporaryDirectory
-
 import pandas as pd
 import pytest
 
-from melusine.base import MissingFieldError, MelusineRegexFullMatch, MelusineRegexUnitMatch
+from melusine.base import MelusineRegexFullMatch, MelusineRegexUnitMatch, MissingFieldError
 from melusine.detectors import ThanksDetector
 from melusine.message import Message
 
