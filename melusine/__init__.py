@@ -12,7 +12,7 @@ __all__ = [
     "MelusineRegex",
     "MelusineRegexFullMatch",
     "MelusineTransformer",
-    "MelusinePipeline"
+    "MelusinePipeline",
 ]
 
 VERSION = (3, 4, 0)

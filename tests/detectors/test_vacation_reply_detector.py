@@ -121,14 +121,18 @@ def test_transform(df, good_result):
                         "neutral": {},
                         "positive": {
                             "VAC_REP_HOLIDAYS": [
-                                MelusineRegexUnitMatch(**{
-                                    "match_text": "Actuellement en conge", "start": 0, "stop": 21
-                                })
+                                MelusineRegexUnitMatch(
+                                    **{
+                                        "match_text": "Actuellement en conge", "start": 0, "stop": 21
+                                    }
+                                )
                             ],
                             "VAC_REP_OUT_OF_OFFICE": [
-                                MelusineRegexUnitMatch(**{
-                                    "match_text": "je prendrai connaissance", "start": 22, "stop": 46
-                                })
+                                MelusineRegexUnitMatch(
+                                    **{
+                                        "match_text": "je prendrai connaissance", "start": 22, "stop": 46
+                                    }
+                                )
                             ],
                         },
                     }

@@ -211,11 +211,11 @@ def test_transform(df_emails, expected_result):
                         "match_result": True,
                         "negative": {},
                         "neutral": {},
-                        "positive": {"DEFAULT": [
-                            MelusineRegexUnitMatch(**{"match_text": "tr:", "start": 0, "stop": 3})
-                        ]
-                    },
-                }),
+                        "positive": {
+                            "DEFAULT": [MelusineRegexUnitMatch(**{"match_text": "tr:", "start": 0, "stop": 3})]
+                        },
+                    }
+                ),
             },
         ),
     ],
