@@ -44,7 +44,8 @@ def thanks_detector_df():
             },
             "neutral": {},
             "positive": {"DEFAULT": [MelusineRegexUnitMatch(**{"match_text": "Merci", "start": 0, "stop": 5})]},
-    })
+        }
+    )
 
     df = pd.DataFrame(
         {
