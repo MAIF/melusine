@@ -545,9 +545,7 @@ class MelusineRegex(ABC):
 
         """
 
-    def _get_match(
-        self, text: str, base_regex: str | dict[str, str], regex_group: str | None = None
-    ) -> MatchData:
+    def _get_match(self, text: str, base_regex: str | dict[str, str], regex_group: str | None = None) -> MatchData:
         """Run specified regex on the input text and return a dict with matching group as key.
 
         Args:
@@ -618,7 +616,7 @@ class MelusineRegex(ABC):
             DeprecationWarning,
             stacklevel=2,
         )
-        result : MelusineRegexFullMatch = self(text)
+        result: MelusineRegexFullMatch = self(text)
         return result.match_result
 
     def __call__(self, text: str) -> MelusineRegexFullMatch:
@@ -765,9 +763,7 @@ class MelusineRegex(ABC):
 
         """
         # Paired matching
-        negative_match = self.apply_paired_matching(
-            match_dict.negative, match_dict.positive
-        )
+        negative_match = self.apply_paired_matching(match_dict.negative, match_dict.positive)
         positive_match = bool(match_dict.positive)
 
         match_dict.match_result = positive_match and not negative_match
