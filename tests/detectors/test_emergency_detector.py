@@ -17,7 +17,7 @@ def emergency_detector_df():
             "match_result": True,
             "negative": {},
             "neutral": {},
-            "positive": {"DEFAULT": [MelusineRegexUnitMatch(**{"match_text": "urgent", "start": 10, "stop": 16})]
+            "positive": {"DEFAULT": [MelusineRegexUnitMatch(**{"match_text": "urgent", "start": 10, "stop": 16})],
         },
     })
 
