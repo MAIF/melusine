@@ -12,13 +12,15 @@ from melusine.detectors import EmergencyDetector
 
 @pytest.fixture
 def emergency_detector_df():
-    m0_debug_expected = MelusineRegexFullMatch(**{
-        "match_result": True,
-        "negative": {},
-        "neutral": {},
-        "positive": {"DEFAULT": [
-            MelusineRegexUnitMatch(**{"match_text": "urgent", "start": 10, "stop": 16})
-        ]},
+    m0_debug_expected = MelusineRegexFullMatch(
+        **{
+            "match_result": True,
+            "negative": {},
+            "neutral": {},
+            "positive": {"DEFAULT": [
+                MelusineRegexUnitMatch(**{"match_text": "urgent", "start": 10, "stop": 16})
+            ]
+        },
     })
 
     df = pd.DataFrame(

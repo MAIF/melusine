@@ -367,6 +367,7 @@ class MissingFieldError(Exception):
 @dataclass(frozen=True)
 class MelusineRegexUnitMatch:
     """Dataclass to structure a Unitary MelusineRegex match"""
+
     start: int
     stop: int
     match_text: str
@@ -382,6 +383,7 @@ MatchData: TypeAlias = dict[str, list[MelusineRegexUnitMatch]]
 @dataclass
 class MelusineRegexFullMatch:
     """Dataclass to structure a Full MelusineRegex match"""
+
     match_result: bool = False
     positive: MatchData = field(default_factory=dict)
     neutral: MatchData = field(default_factory=dict)

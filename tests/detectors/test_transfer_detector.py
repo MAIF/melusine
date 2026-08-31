@@ -206,13 +206,15 @@ def test_transform(df_emails, expected_result):
             {
                 "reply_text": "tr: suivi de dossier",
                 "messages[0].meta": "",
-                "TransferRegex": MelusineRegexFullMatch(**{
-                    "match_result": True,
-                    "negative": {},
-                    "neutral": {},
-                    "positive": {"DEFAULT": [
-                        MelusineRegexUnitMatch(**{"match_text": "tr:", "start": 0, "stop": 3})
-                    ]},
+                "TransferRegex": MelusineRegexFullMatch(
+                    **{
+                        "match_result": True,
+                        "negative": {},
+                        "neutral": {},
+                        "positive": {"DEFAULT": [
+                            MelusineRegexUnitMatch(**{"match_text": "tr:", "start": 0, "stop": 3})
+                        ]
+                    },
                 }),
             },
         ),

@@ -34,14 +34,16 @@ def thanks_detector_df():
     ]
     m1_messages = [m1]
     m1_expected = False
-    m1_debug_expected = MelusineRegexFullMatch(**{
-        "match_result": False,
-        "negative": {"FORBIDDEN_WORDS": [
-            MelusineRegexUnitMatch(**{"match_text": "attend", "start": 9, "stop": 15})]},
-        "neutral": {},
-        "positive": {"DEFAULT": [
-            MelusineRegexUnitMatch(**{"match_text": "Merci", "start": 0, "stop": 5})
-        ]},
+    m1_debug_expected = MelusineRegexFullMatch(
+        **{
+            "match_result": False,
+            "negative": {"FORBIDDEN_WORDS": [
+                MelusineRegexUnitMatch(**{"match_text": "attend", "start": 9, "stop": 15})]},
+            "neutral": {},
+            "positive": {"DEFAULT": [
+                MelusineRegexUnitMatch(**{"match_text": "Merci", "start": 0, "stop": 5})
+            ]
+        },
     })
 
     df = pd.DataFrame(

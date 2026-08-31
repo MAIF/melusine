@@ -132,14 +132,16 @@ def test_transform(df_emails, expected_result):
             ),
             True,
             {
-                "ReplyRegex": MelusineRegexFullMatch(**{
-                    "match_result": True,
-                    "negative": {},
-                    "neutral": {},
-                    "positive": {"DEFAULT": [
-                        MelusineRegexUnitMatch(**{"match_text": "re:", "start": 0, "stop": 3})
-                    ]},
-                }),
+                "ReplyRegex": MelusineRegexFullMatch(
+                    **{
+                        "match_result": True,
+                        "negative": {},
+                        "neutral": {},
+                        "positive": {"DEFAULT": [
+                            MelusineRegexUnitMatch(**{"match_text": "re:", "start": 0, "stop": 3})
+                        ]},
+                    }
+                ),
                 "reply_text": "re: suivi de dossier",
             },
         ),

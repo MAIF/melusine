@@ -247,6 +247,7 @@ def test_legacy_regex_attributes_warn_on_class_access(attr_name, expected):
     with pytest.deprecated_call(match=attr_name):
         assert getattr(MelusineRegex, attr_name) == expected
 
+
 @pytest.mark.parametrize(
     "attribute",
     [
@@ -254,7 +255,7 @@ def test_legacy_regex_attributes_warn_on_class_access(attr_name, expected):
         "positive_match_data",
         "neutral_match_data",
         "negative_match_data",
-    ]
+    ],
 )
 def test_legacy_dict_access(attribute):
     regex = VirusRegex()
