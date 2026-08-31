@@ -19,8 +19,9 @@ def emergency_detector_df():
             "neutral": {},
             "positive": {
                 "DEFAULT": [MelusineRegexUnitMatch(**{"match_text": "urgent", "start": 10, "stop": 16})],
-        },
-    })
+            },
+        }
+    )
 
     df = pd.DataFrame(
         {
