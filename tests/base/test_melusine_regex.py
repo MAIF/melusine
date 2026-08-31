@@ -247,21 +247,18 @@ def test_legacy_regex_attributes_warn_on_class_access(attr_name, expected):
     with pytest.deprecated_call(match=attr_name):
         assert getattr(MelusineRegex, attr_name) == expected
 
-
 @pytest.mark.parametrize(
-    "attr_name,expected",
+    "attribute",
     [
-        ("MATCH_RESULT", "match_result"),
-        ("NEUTRAL_MATCH_FIELD", "neutral_match_data"),
-        ("POSITIVE_MATCH_FIELD", "positive_match_data"),
-        ("NEGATIVE_MATCH_FIELD", "negative_match_data"),
-        ("MATCH_START", "start"),
-        ("MATCH_STOP", "stop"),
-        ("MATCH_TEXT", "match_text"),
-    ],
+        "positive_match_data",
+        "neutral_match_data",
+        "negative_match_data",
+    ]
 )
-def test_legacy_regex_attributes_warn_on_instance_access(attr_name, expected):
+def test_legacy_dict_access(attribute):
     regex = VirusRegex()
-    with pytest.deprecated_call(match=attr_name):
-        assert getattr(regex, attr_name) == expected
 
+    match_data = regex("The computer virus in the ladybug software caused a bug in the corona virus dashboard")
+
+    with pytest.deprecated_call(match=attribute):
+        assert match_data[attribute] == getattr(match_data, attribute)
