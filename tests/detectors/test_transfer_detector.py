@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 from pandas import DataFrame
 
+from melusine.base import MelusineRegexFullMatch, MelusineRegexUnitMatch
 from melusine.detectors import TransferDetector
 from melusine.message import Message
 from melusine.pipeline import MelusinePipeline
@@ -205,12 +206,16 @@ def test_transform(df_emails, expected_result):
             {
                 "reply_text": "tr: suivi de dossier",
                 "messages[0].meta": "",
-                "TransferRegex": {
-                    "match_result": True,
-                    "negative_match_data": {},
-                    "neutral_match_data": {},
-                    "positive_match_data": {"DEFAULT": [{"match_text": "tr:", "start": 0, "stop": 3}]},
-                },
+                "TransferRegex": MelusineRegexFullMatch(
+                    **{
+                        "match_result": True,
+                        "negative": {},
+                        "neutral": {},
+                        "positive": {
+                            "DEFAULT": [MelusineRegexUnitMatch(**{"match_text": "tr:", "start": 0, "stop": 3})]
+                        },
+                    }
+                ),
             },
         ),
     ],

@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 from pandas import DataFrame
 
+from melusine.base import MelusineRegexFullMatch, MelusineRegexUnitMatch
 from melusine.detectors import VacationReplyDetector
 from melusine.message import Message
 from melusine.pipeline import MelusinePipeline
@@ -113,17 +114,25 @@ def test_transform(df, good_result):
             True,
             {
                 "text": "Actuellement en conge je prendrai connaissance de votre message ulterieurement.",
-                "VacationReplyRegex": {
-                    "match_result": True,
-                    "negative_match_data": {},
-                    "neutral_match_data": {},
-                    "positive_match_data": {
-                        "VAC_REP_HOLIDAYS": [{"match_text": "Actuellement " "en " "conge", "start": 0, "stop": 21}],
-                        "VAC_REP_OUT_OF_OFFICE": [
-                            {"match_text": "je " "prendrai " "connaissance", "start": 22, "stop": 46}
-                        ],
-                    },
-                },
+                "VacationReplyRegex": MelusineRegexFullMatch(
+                    **{
+                        "match_result": True,
+                        "negative": {},
+                        "neutral": {},
+                        "positive": {
+                            "VAC_REP_HOLIDAYS": [
+                                MelusineRegexUnitMatch(
+                                    **{"match_text": "Actuellement en conge", "start": 0, "stop": 21}
+                                )
+                            ],
+                            "VAC_REP_OUT_OF_OFFICE": [
+                                MelusineRegexUnitMatch(
+                                    **{"match_text": "je prendrai connaissance", "start": 22, "stop": 46}
+                                )
+                            ],
+                        },
+                    }
+                ),
             },
         ),
     ],

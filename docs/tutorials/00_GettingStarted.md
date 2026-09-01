@@ -108,8 +108,8 @@ Inspecting the debug data gives a lot of info:
 - `text`: Effective text considered for detection.
 - `EmergencyRegex`: melusine used an `EmergencyRegex` object to run detection.
 - `match_result`: The `EmergencyRegex` did not match the text.
-- `positive_match_data`: The `EmergencyRegex` matched **positively** the text pattern "Urgent" (Required condition).
-- `negative_match_data`: The `EmergencyRegex` matched **negatively** the text pattern "Mr. Annoying" (Forbidden condition).
+- `positive`: The `EmergencyRegex` matched **positively** the text pattern "Urgent" (Required condition).
+- `negative`: The `EmergencyRegex` matched **negatively** the text pattern "Mr. Annoying" (Forbidden condition).
 - `BLACKLIST`: Detection groups can be defined to easily link a matching pattern to the corresponding regex. DEFAULT is used if no detection group is specified.
 
 ```Python
@@ -118,12 +118,12 @@ Inspecting the debug data gives a lot of info:
   'text': 'Latest news\nUrgent update about Mr. Annoying'},
   'EmergencyRegex': {
     'match_result': False,
-    'negative_match_data': {
+    'negative': {
       'BLACKLIST': [
         {'match_text': 'Mr. Annoying', 'start': 32, 'stop': 44}
       ]},
-    'neutral_match_data': {},
-    'positive_match_data': {
+    'neutral': {},
+    'positive': {
       'DEFAULT': [
         {'match_text': 'Urgent', 'start': 12, 'stop': 18}
       ]

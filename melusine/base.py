@@ -20,6 +20,7 @@ import re
 import warnings
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterable
+from dataclasses import dataclass, field
 from typing import Any, TypeAlias, TypeVar
 
 import pandas as pd
@@ -37,6 +38,19 @@ Transformer = TypeVar("Transformer", bound="MelusineTransformer")
 
 class TransformError(Exception):
     """Exception raised when an error occurs during the transform operation."""
+
+
+class DeprecatedClassAttribute:
+    """Descriptor exposing a deprecated class/instance attribute with warning."""
+
+    def __init__(self, value: str, message: str):
+        self._value = value
+        self._message = message
+
+    def __get__(self, instance, owner) -> str:
+        """Get"""
+        warnings.warn(self._message, DeprecationWarning, stacklevel=2)
+        return self._value
 
 
 class MelusineTransformer(IoMixin):
@@ -350,25 +364,138 @@ class MissingFieldError(Exception):
     """Exception raised when a missing field is encountered by a MelusineTransformer"""
 
 
-MatchData = dict[str, list[dict[str, Any]]]
+@dataclass(frozen=True)
+class MelusineRegexUnitMatch:
+    """Dataclass to structure a Unitary MelusineRegex match"""
+
+    start: int
+    stop: int
+    match_text: str
+
+    def __getitem__(self, index):
+        """GetItem"""
+        return getattr(self, index)
+
+
+MatchData: TypeAlias = dict[str, list[MelusineRegexUnitMatch]]
+
+
+@dataclass
+class MelusineRegexFullMatch:
+    """Dataclass to structure a Full MelusineRegex match"""
+
+    match_result: bool = False
+    positive: MatchData = field(default_factory=dict)
+    neutral: MatchData = field(default_factory=dict)
+    negative: MatchData = field(default_factory=dict)
+
+    @property
+    def positive_match_data(self):
+        """Legacy attribute name for compatibility"""
+        warnings.warn(
+            "positive_match_data attribute is deprecated, please use positive instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.positive
+
+    @property
+    def neutral_match_data(self):
+        """Legacy attribute name for compatibility"""
+        warnings.warn(
+            "neutral_match_data attribute is deprecated, please use neutral instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.neutral
+
+    @property
+    def negative_match_data(self):
+        """Legacy attribute name for compatibility"""
+        warnings.warn(
+            "negative_match_data attribute is deprecated, please use negative instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.negative
+
+    def reset_match(self, value: bool = False):
+        """Reset the match value"""
+        self.match_result = value
+
+    def reset_positive(self, values: MatchData | None = None) -> None:
+        """Reset the positive value"""
+        self.positive = values or {}
+
+    def reset_neutral(self, values: MatchData | None = None) -> None:
+        """Reset the neutral value"""
+        self.neutral = values or {}
+
+    def reset_negative(self, values: MatchData | None = None) -> None:
+        """Reset the negative value"""
+        self.negative = values or {}
+
+    @property
+    def positive_keys(self):
+        """Return the keys of positive match data."""
+        return self.positive.keys()
+
+    @property
+    def neutral_keys(self):
+        """Return the keys of neutral match data."""
+        return self.neutral.keys()
+
+    @property
+    def negative_keys(self):
+        """Return the keys of negative match data."""
+        return self.negative.keys()
+
+    def __getitem__(self, index):
+        """Legacy dict like access"""
+        warnings.warn(
+            "Dict like access is deprecated, please use direct attribute access instead",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return getattr(self, index)
 
 
 class MelusineRegex(ABC):
-    """Class to standardise text pattern detection using regex."""
+    """Class to standardize text pattern detection using regex."""
 
     REGEX_FLAGS: re.RegexFlag = re.IGNORECASE | re.MULTILINE
     PAIRED_MATCHING_PREFIX: str = "_"
 
-    # Match fields
-    MATCH_RESULT: str = "match_result"
-    NEUTRAL_MATCH_FIELD: str = "neutral_match_data"
-    POSITIVE_MATCH_FIELD: str = "positive_match_data"
-    NEGATIVE_MATCH_FIELD: str = "negative_match_data"
+    # Legacy aliases kept for compatibility
+    MATCH_RESULT = DeprecatedClassAttribute(
+        value="match_result",
+        message="MATCH_RESULT is deprecated, please use output.match_result instead",
+    )
+    NEUTRAL_MATCH_FIELD = DeprecatedClassAttribute(
+        value="neutral_match_data",
+        message="NEUTRAL_MATCH_FIELD is deprecated, please use my_result.neutral instead",
+    )
+    POSITIVE_MATCH_FIELD = DeprecatedClassAttribute(
+        value="positive_match_data",
+        message="POSITIVE_MATCH_FIELD is deprecated, please use output.positive instead",
+    )
+    NEGATIVE_MATCH_FIELD = DeprecatedClassAttribute(
+        value="negative_match_data",
+        message="NEGATIVE_MATCH_FIELD is deprecated, please use output.negative instead",
+    )
 
-    # Match data
-    MATCH_START: str = "start"
-    MATCH_STOP: str = "stop"
-    MATCH_TEXT: str = "match_text"
+    MATCH_START = DeprecatedClassAttribute(
+        value="start",
+        message="MATCH_START is deprecated",
+    )
+    MATCH_STOP = DeprecatedClassAttribute(
+        value="stop",
+        message="MATCH_STOP is deprecated",
+    )
+    MATCH_TEXT = DeprecatedClassAttribute(
+        value="match_text",
+        message="MATCH_TEXT is deprecated",
+    )
 
     def __init__(self, substitution_pattern: str = " ", default_match_group: str = "DEFAULT"):
         if not isinstance(substitution_pattern, str) or (len(substitution_pattern) > 1):
@@ -437,9 +564,7 @@ class MelusineRegex(ABC):
 
         """
 
-    def _get_match(
-        self, text: str, base_regex: str | dict[str, str], regex_group: str | None = None
-    ) -> dict[str, list[dict[str, Any]]]:
+    def _get_match(self, text: str, base_regex: str | dict[str, str], regex_group: str | None = None) -> MatchData:
         """Run specified regex on the input text and return a dict with matching group as key.
 
         Args:
@@ -469,11 +594,11 @@ class MelusineRegex(ABC):
                 start, stop = match.span()
 
                 match_data_dict[regex_group].append(
-                    {
-                        self.MATCH_START: start,
-                        self.MATCH_STOP: stop,
-                        self.MATCH_TEXT: text[start:stop],
-                    }
+                    MelusineRegexUnitMatch(
+                        start=start,
+                        stop=stop,
+                        match_text=text[start:stop],
+                    )
                 )
 
         return match_data_dict
@@ -481,7 +606,7 @@ class MelusineRegex(ABC):
     def ignore_text(
         self,
         text: str,
-        match_data_dict: dict[str, list[dict[str, Any]]],
+        match_data_dict: MatchData,
     ) -> str:
         """Replace neutral regex match text with substitution text to ignore it.
 
@@ -495,8 +620,8 @@ class MelusineRegex(ABC):
         """
         for _, match_list in match_data_dict.items():
             for match_data in match_list:
-                start = match_data[self.MATCH_START]
-                stop = match_data[self.MATCH_STOP]
+                start = match_data.start
+                stop = match_data.stop
 
                 # Mask text to ignore
                 text = text[:start] + self.substitution_pattern * (stop - start) + text[stop:]
@@ -504,20 +629,16 @@ class MelusineRegex(ABC):
         return text
 
     def get_match_result(self, text: str) -> bool:
-        """Apply MelusineRegex patterns (neutral, negative and positive) on the input text.
-        Return a boolean output of the match result.
+        """Legacy method for compatibility"""
+        warnings.warn(
+            "get_match_result method is deprecated, please use result.match_result instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        result: MelusineRegexFullMatch = self(text)
+        return result.match_result
 
-        Args:
-            text: input text.
-
-        Returns:
-            _: True if the MelusineRegex matches the input text.
-
-        """
-        result = self(text)
-        return result[self.MATCH_RESULT]
-
-    def __call__(self, text: str) -> dict[str, Any]:
+    def __call__(self, text: str) -> MelusineRegexFullMatch:
         """Apply MelusineRegex patterns (neutral, negative and positive) on the input text.
         Return a detailed output of the match results as a dict.
 
@@ -531,31 +652,31 @@ class MelusineRegex(ABC):
         # Apply pre match hook
         text = self.pre_match_hook(text)
 
-        match_dict = {
-            self.MATCH_RESULT: False,
-            self.NEUTRAL_MATCH_FIELD: {},
-            self.NEGATIVE_MATCH_FIELD: {},
-            self.POSITIVE_MATCH_FIELD: {},
-        }
+        match_dict = MelusineRegexFullMatch(
+            match_result=False,
+            neutral={},
+            negative={},
+            positive={},
+        )
 
         negative_match = False
 
         if self.neutral:
             neutral_match_data = self._get_match(text=text, base_regex=self.neutral)
-            match_dict[self.NEUTRAL_MATCH_FIELD] = neutral_match_data
+            match_dict.neutral = neutral_match_data
 
             text = self.ignore_text(text, neutral_match_data)
 
         if self.negative:
             negative_match_data = self._get_match(text=text, base_regex=self.negative)
             negative_match = bool(negative_match_data)
-            match_dict[self.NEGATIVE_MATCH_FIELD] = negative_match_data
+            match_dict.negative = negative_match_data
 
         positive_match_data = self._get_match(text=text, base_regex=self.positive)
         positive_match = bool(positive_match_data)
-        match_dict[self.POSITIVE_MATCH_FIELD] = positive_match_data
+        match_dict.positive = positive_match_data
 
-        match_dict[self.MATCH_RESULT] = positive_match and not negative_match
+        match_dict.match_result = positive_match and not negative_match
 
         # Apply post match hook
         match_dict = self.post_match_hook(match_dict)
@@ -571,7 +692,7 @@ class MelusineRegex(ABC):
 
         """
 
-        def _describe_match_field(match_field_data: dict[str, list[dict[str, Any]]]) -> None:
+        def _describe_match_field(match_field_data: MatchData) -> None:
             """Format and print result description text.
 
             Args:
@@ -580,39 +701,39 @@ class MelusineRegex(ABC):
             """
             for group, match_list in match_field_data.items():
                 for match_dict in match_list:
-                    print(f"{indent}({group}) {match_dict[self.MATCH_TEXT]}")
+                    print(f"{indent}({group}) {match_dict.match_text}")
                     if position:
-                        print(f"{indent}start: {match_dict[self.MATCH_START]}")
-                        print(f"{indent}stop: {match_dict[self.MATCH_STOP]}")
+                        print(f"{indent}start: {match_dict.start}")
+                        print(f"{indent}stop: {match_dict.stop}")
 
         indent = " " * 4
         match_data = self(text)
 
-        if match_data[self.MATCH_RESULT]:
+        if match_data.match_result:
             print("The MelusineRegex match result is : POSITIVE")
         else:
             print("The MelusineRegex match result is : NEGATIVE")
 
         if not any(
             [
-                match_data[self.NEUTRAL_MATCH_FIELD],
-                match_data[self.NEGATIVE_MATCH_FIELD],
-                match_data[self.POSITIVE_MATCH_FIELD],
+                match_data.neutral,
+                match_data.negative,
+                match_data.positive,
             ]
         ):
             print("The input text did not match anything.")
 
-        if match_data[self.NEUTRAL_MATCH_FIELD]:
+        if match_data.neutral:
             print("The following text was ignored:")
-            _describe_match_field(match_data[self.NEUTRAL_MATCH_FIELD])
+            _describe_match_field(match_data.neutral)
 
-        if match_data[self.NEGATIVE_MATCH_FIELD]:
+        if match_data.negative:
             print("The following text matched negatively:")
-            _describe_match_field(match_data[self.NEGATIVE_MATCH_FIELD])
+            _describe_match_field(match_data.negative)
 
-        if match_data[self.POSITIVE_MATCH_FIELD]:
+        if match_data.positive:
             print("The following text matched positively:")
-            _describe_match_field(match_data[self.POSITIVE_MATCH_FIELD])
+            _describe_match_field(match_data.positive)
 
     def apply_paired_matching(self, negative_match_data: MatchData, positive_match_data: MatchData) -> bool:
         """Check if negative match is effective in the case of paired matching.
@@ -650,7 +771,7 @@ class MelusineRegex(ABC):
         """
         return text
 
-    def post_match_hook(self, match_dict: dict[str, Any]) -> dict[str, Any]:
+    def post_match_hook(self, match_dict: MelusineRegexFullMatch) -> MelusineRegexFullMatch:
         """Hook to run after the Melusine regex match.
 
         Args:
@@ -661,12 +782,10 @@ class MelusineRegex(ABC):
 
         """
         # Paired matching
-        negative_match = self.apply_paired_matching(
-            match_dict[self.NEGATIVE_MATCH_FIELD], match_dict[self.POSITIVE_MATCH_FIELD]
-        )
-        positive_match = bool(match_dict[self.POSITIVE_MATCH_FIELD])
+        negative_match = self.apply_paired_matching(match_dict.negative, match_dict.positive)
+        positive_match = bool(match_dict.positive)
 
-        match_dict[self.MATCH_RESULT] = positive_match and not negative_match
+        match_dict.match_result = positive_match and not negative_match
 
         return match_dict
 
@@ -674,11 +793,11 @@ class MelusineRegex(ABC):
         """Test the MelusineRegex on the match_list and no_match_list."""
         for text in self.match_list:
             match = self(text)
-            assert match[self.MATCH_RESULT] is True, f"Expected match for text\n{text}\nObtained: {match}"
+            assert match.match_result is True, f"Expected match for text\n{text}\nObtained: {match}"
 
         for text in self.no_match_list:
             match = self(text)
-            assert match[self.MATCH_RESULT] is False, f"Expected no match for text:\n{text}\nObtained: {match}"
+            assert match.match_result is False, f"Expected no match for text:\n{text}\nObtained: {match}"
 
     def __repr__(self) -> str:
         """Repr for the class MelusineRegex."""

@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 from pandas import DataFrame
 
+from melusine.base import MelusineRegexFullMatch, MelusineRegexUnitMatch
 from melusine.detectors import ReplyDetector
 from melusine.pipeline import MelusinePipeline
 
@@ -131,12 +132,16 @@ def test_transform(df_emails, expected_result):
             ),
             True,
             {
-                "ReplyRegex": {
-                    "match_result": True,
-                    "negative_match_data": {},
-                    "neutral_match_data": {},
-                    "positive_match_data": {"DEFAULT": [{"match_text": "re:", "start": 0, "stop": 3}]},
-                },
+                "ReplyRegex": MelusineRegexFullMatch(
+                    **{
+                        "match_result": True,
+                        "negative": {},
+                        "neutral": {},
+                        "positive": {
+                            "DEFAULT": [MelusineRegexUnitMatch(**{"match_text": "re:", "start": 0, "stop": 3})]
+                        },
+                    }
+                ),
                 "reply_text": "re: suivi de dossier",
             },
         ),

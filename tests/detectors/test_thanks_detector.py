@@ -3,12 +3,10 @@ Unit test of the ThanksDetector.
 
 """
 
-from tempfile import TemporaryDirectory
-
 import pandas as pd
 import pytest
 
-from melusine.base import MissingFieldError
+from melusine.base import MelusineRegexFullMatch, MelusineRegexUnitMatch, MissingFieldError
 from melusine.detectors import ThanksDetector
 from melusine.message import Message
 
@@ -22,12 +20,14 @@ def thanks_detector_df():
     ]
     m0_messages = [m0]
     m0_expected = True
-    m0_debug_expected = {
-        "match_result": True,
-        "negative_match_data": {},
-        "neutral_match_data": {},
-        "positive_match_data": {"DEFAULT": [{"match_text": "Merci", "start": 0, "stop": 5}]},
-    }
+    m0_debug_expected = MelusineRegexFullMatch(
+        **{
+            "match_result": True,
+            "negative": {},
+            "neutral": {},
+            "positive": {"DEFAULT": [MelusineRegexUnitMatch(**{"match_text": "Merci", "start": 0, "stop": 5})]},
+        }
+    )
 
     m1 = Message("")
     m1.tags = [
@@ -36,12 +36,16 @@ def thanks_detector_df():
     ]
     m1_messages = [m1]
     m1_expected = False
-    m1_debug_expected = {
-        "match_result": False,
-        "negative_match_data": {"FORBIDDEN_WORDS": [{"match_text": "attend", "start": 9, "stop": 15}]},
-        "neutral_match_data": {},
-        "positive_match_data": {"DEFAULT": [{"match_text": "Merci", "start": 0, "stop": 5}]},
-    }
+    m1_debug_expected = MelusineRegexFullMatch(
+        **{
+            "match_result": False,
+            "negative": {
+                "FORBIDDEN_WORDS": [MelusineRegexUnitMatch(**{"match_text": "attend", "start": 9, "stop": 15})]
+            },
+            "neutral": {},
+            "positive": {"DEFAULT": [MelusineRegexUnitMatch(**{"match_text": "Merci", "start": 0, "stop": 5})]},
+        }
+    )
 
     df = pd.DataFrame(
         {
